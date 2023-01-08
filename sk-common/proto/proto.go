@@ -3,11 +3,11 @@ package proto
 // ------------------------ Common part
 
 type User struct {
-	Login  string   `json:"login"`
-	Name   string   `json:"name"`
-	Uid    int64    `json:"uid"`
-	Emails []string `json:"emails"`
-	Groups []string `json:"groups"`
+	Login       string   `json:"login"`
+	Uid         int64    `json:"uid"`
+	CommonNames []string `json:"commonNames"`
+	Emails      []string `json:"emails"`
+	Groups      []string `json:"groups"`
 }
 
 // -------------------- Login interface
@@ -25,10 +25,11 @@ type LoginResponse struct {
 
 // ------------------------- Provider interface
 
-type GetUserStatusRequest struct {
-	Login         string `json:"login"`
-	Password      string `json:"password"`
-	CheckPassword bool   `json:"checkPassword"`
+const UserStatusUrlPath = "/userstatus"
+
+type UserStatusRequest struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
 }
 
 type UserStatus string
@@ -40,7 +41,7 @@ const (
 	PasswordUnchecked = "passwordUnchecked"
 )
 
-type GetUserStatusResponse struct {
+type UserStatusResponse struct {
 	UserStatus UserStatus `json:"userStatus"`
 	User       User       `json:"user"` // Fulfilled if UserStatus == PasswordChecked or UserStatus == PasswordUnchecked
 }

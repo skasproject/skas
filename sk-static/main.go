@@ -1,18 +1,47 @@
-
-
 package main
 
-import "fmt"
-import "skas/sk-common/proto"
-
+import (
+	"context"
+	"fmt"
+	"os"
+	"skas/sk-common/proto"
+	"skas/sk-static/internal/config"
+	"skas/sk-static/internal/handlers"
+	"skas/sk-static/internal/httpserver"
+)
 
 func main() {
-    fmt.Println("Allo...")
+	if err := config.Setup(); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "Unable to load configuration: %v\n", err)
+		os.Exit(2)
+	}
 
-    req := &proto.LoginRequest{
-        Client: "xxxxx",
+	config.Config.Log.Info("sk-static start", "nbUsers", len(config.Config.UserByLogin))
 
-    }
-    fmt.Printf("%s\n", req.Client)
+	//config.Config.Log.Error(errors.New("there is a problem"), "Test ERROR")
+	//config.Config.Log.V(0).Info("Log V0")
+	//config.Config.Log.V(1).Info("Log V1")
+	//config.Config.Log.V(2).Info("Log V2")
+	//config.Config.Log.V(-1).Info("Log V-1")
+	//fmt.Printf("Users:\n%+v\n", config.Config.UserByLogin)
+
+	s := &httpserver.Server{
+		Name:     "static",
+		BindAddr: config.Config.BindAddr,
+		NoSsl:    config.Config.NoSsl,
+		CertDir:  config.Config.CertDir,
+		CertName: config.Config.CertName,
+		KeyName:  config.Config.KeyName,
+	}
+	s.Groom()
+	s.Router.Handle(proto.UserStatusUrlPath, &handlers.UserStatusHandler{
+		BaseHandler: httpserver.BaseHandler{
+			Logger: *s.Log,
+		},
+	}).Methods("GET")
+	err := s.Start(context.Background())
+	if err != nil {
+		s.Log.Error(err, "Server")
+		os.Exit(5)
+	}
 }
-

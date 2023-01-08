@@ -1,0 +1,9 @@
+users:
+  - login: sa
+    uid: 1957
+    commonNames: ["Serge ALEXANDRE" ]
+    emails: ["sa@broadsoftware.com" ]
+    groups: [ "devs", "admin" ]
+    passwordHash: "$2a$10$cPsdk3AE0KJxV1DuUwGovOPwrC0UnlPDspzKrvQ1eSD9kTVS1QRNa"    # as
+  - login: jt
+    groups: [ "devs" ]
