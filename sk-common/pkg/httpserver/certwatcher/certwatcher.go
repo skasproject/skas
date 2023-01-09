@@ -25,7 +25,6 @@ import (
 	"crypto/tls"
 	"github.com/go-logr/logr"
 	"gopkg.in/fsnotify.v1"
-	"skas/sk-static/internal/config"
 	"sync"
 )
 
@@ -44,11 +43,11 @@ type CertWatcher struct {
 }
 
 // New returns a new CertWatcher watching the given certificate and key.
-func New(name, certPath, keyPath string) (*CertWatcher, error) {
+func New(name, certPath, keyPath string, log logr.Logger) (*CertWatcher, error) {
 	var err error
 
 	cw := &CertWatcher{
-		logger:   config.Config.Log.WithName("certwatcher").WithValues("name", name, "certPath", certPath, "keyPath", keyPath),
+		logger:   log.WithName("certwatcher").WithValues("name", name, "certPath", certPath, "keyPath", keyPath),
 		certPath: certPath,
 		keyPath:  keyPath,
 	}

@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/proto"
 	"skas/sk-static/internal/config"
 	"skas/sk-static/internal/handlers"
-	"skas/sk-static/internal/httpserver"
 )
 
 func main() {
@@ -27,6 +27,7 @@ func main() {
 
 	s := &httpserver.Server{
 		Name:     "static",
+		Log:      config.Config.Log.WithName(fmt.Sprintf("%s http server", "static")),
 		BindAddr: config.Config.BindAddr,
 		NoSsl:    config.Config.NoSsl,
 		CertDir:  config.Config.CertDir,
@@ -36,7 +37,7 @@ func main() {
 	s.Groom()
 	s.Router.Handle(proto.UserStatusUrlPath, &handlers.UserStatusHandler{
 		BaseHandler: httpserver.BaseHandler{
-			Logger: *s.Log,
+			Logger: s.Log,
 		},
 	}).Methods("GET")
 	err := s.Start(context.Background())

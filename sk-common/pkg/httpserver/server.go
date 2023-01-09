@@ -10,14 +10,13 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"path/filepath"
-	"skas/sk-static/internal/config"
-	"skas/sk-static/internal/httpserver/certwatcher"
+	"skas/sk-common/pkg/httpserver/certwatcher"
 )
 
 type Server struct {
 	Name string
 
-	Log *logr.Logger
+	Log logr.Logger
 
 	BindAddr string
 
@@ -36,10 +35,6 @@ type Server struct {
 }
 
 func (server *Server) Groom() {
-	if server.Log == nil {
-		l := config.Config.Log.WithName(fmt.Sprintf("%s http server", server.Name))
-		server.Log = &l
-	}
 	if !server.NoSsl {
 		if server.CertName == "" {
 			server.CertName = "tls.crt"
@@ -52,10 +47,10 @@ func (server *Server) Groom() {
 		server.Router = mux.NewRouter()
 		server.Router.Use(LogHttp)
 		server.Router.MethodNotAllowedHandler = &MethodNotAllowedHandler{
-			Logger: *server.Log,
+			Logger: server.Log,
 		}
 		server.Router.NotFoundHandler = &NotFoundHandler{
-			Logger: *server.Log,
+			Logger: server.Log,
 		}
 	}
 	return
@@ -100,7 +95,7 @@ func (server *Server) Start(ctx context.Context) error {
 			return err
 		}
 	} else {
-		certWatcher, err := certwatcher.New(server.Name, certPath, keyPath)
+		certWatcher, err := certwatcher.New(server.Name, certPath, keyPath, server.Log)
 		if err != nil {
 			return err
 		}

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/proto"
 	"skas/sk-static/internal/config"
-	"skas/sk-static/internal/httpserver"
 )
 
 type UserStatusHandler struct {
@@ -15,7 +15,9 @@ type UserStatusHandler struct {
 
 func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
 	var requestPayload proto.UserStatusRequest
-	err := json.NewDecoder(request.Body).Decode(&requestPayload)
+	decoder := json.NewDecoder(request.Body)
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(&requestPayload)
 	if err != nil {
 		h.HttpError(response, err.Error(), http.StatusBadRequest)
 		return
