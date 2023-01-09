@@ -6,27 +6,26 @@ import (
 	"os"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/proto"
-	"skas/sk-static/internal/config"
-	"skas/sk-static/internal/handlers"
+	"skas/sk-ldap/internal/handlers"
 )
+import "skas/sk-ldap/internal/config"
 
 func main() {
 	if err := config.Setup(); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Unable to load configuration: %v\n", err)
 		os.Exit(2)
 	}
+	config.Log.Info("sk-ldap start", "ldapServer", config.Conf.Ldap.Host)
 
-	config.Log.Info("sk-static start", "nbUsers", len(config.UserByLogin))
+	//config.Log.V(0).Info("Log V0")
+	//config.Log.V(1).Info("Log V1")
+	//config.Log.V(2).Info("Log V2")
+	//config.Log.Error(errors.New("there is a problem"), "Test ERROR")
 
-	//config.Config.Log.V(0).Info("Log V0")
-	//config.Config.Log.V(1).Info("Log V1")
-	//config.Config.Log.V(2).Info("Log V2")
-	//config.Config.Log.Error(errors.New("there is a problem"), "Test ERROR")
-	//fmt.Printf("Users:\n%+v\n", config.Config.UserByLogin)
-
+	name := fmt.Sprintf("ldap[%s]", config.Conf.Ldap.Host)
 	s := &httpserver.Server{
-		Name:   "static",
-		Log:    config.Log.WithName(fmt.Sprintf("%s http server", "static")),
+		Name:   name,
+		Log:    config.Log.WithName(fmt.Sprintf("%s http server", name)),
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
@@ -40,4 +39,5 @@ func main() {
 		s.Log.Error(err, "Error on Start()")
 		os.Exit(5)
 	}
+
 }

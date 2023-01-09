@@ -1,0 +1,10 @@
+
+log:
+  mode: dev
+  level: debug
+
+
+server:
+  noSsl: true
+
+ldap:

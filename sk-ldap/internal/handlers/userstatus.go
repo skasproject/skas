@@ -2,11 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
-	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/proto"
-	"skas/sk-static/internal/config"
 )
 
 type UserStatusHandler struct {
@@ -23,21 +21,9 @@ func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *htt
 		return
 	}
 	var userStatus proto.UserStatus
-	user, ok := config.UserByLogin[requestPayload.Login]
-	if !ok {
-		userStatus = proto.NotFound
-	} else {
-		if requestPayload.Password == "" || user.PasswordHash == "" {
-			userStatus = proto.PasswordUnchecked
-		} else {
-			err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(requestPayload.Password))
-			if err == nil {
-				userStatus = proto.PasswordChecked
-			} else {
-				userStatus = proto.PasswordFail
-			}
-		}
-	}
+
+	user := proto.User{}
+
 	var responsePayload *proto.UserStatusResponse
 	if userStatus == proto.NotFound || userStatus == proto.PasswordFail {
 		responsePayload = &proto.UserStatusResponse{

@@ -13,34 +13,31 @@ import (
 	"skas/sk-common/pkg/httpserver/certwatcher"
 )
 
+type ServerConfig struct {
+	BindAddr string `yaml:"bindAddr@"`
+	NoSsl    bool   `yaml:"noSsl"`
+	CertDir  string `yaml:"certDir"`  // CertDir is the directory that contains the server key and certificate.
+	CertName string `yaml:"certName"` // CertName is the server certificate name. Defaults to tls.crt.
+	KeyName  string `yaml:"keyName"`  // KeyName is the server key name. Defaults to tls.key.
+}
+
 type Server struct {
 	Name string
 
 	Log logr.Logger
 
-	BindAddr string
-
-	NoSsl bool
-
-	// CertDir is the directory that contains the server key and certificate.
-	CertDir string
-
-	// CertName is the server certificate name. Defaults to tls.crt.
-	CertName string
-
-	// CertName is the server key name. Defaults to tls.key.
-	KeyName string
+	Config *ServerConfig
 
 	Router *mux.Router
 }
 
 func (server *Server) Groom() {
-	if !server.NoSsl {
-		if server.CertName == "" {
-			server.CertName = "tls.crt"
+	if !server.Config.NoSsl {
+		if server.Config.CertName == "" {
+			server.Config.CertName = "tls.crt"
 		}
-		if server.KeyName == "" {
-			server.KeyName = "tls.key"
+		if server.Config.KeyName == "" {
+			server.Config.KeyName = "tls.key"
 		}
 	}
 	if server.Router == nil {
@@ -84,17 +81,20 @@ func LogHttp(h http.Handler) http.Handler {
 
 func (server *Server) Start(ctx context.Context) error {
 	server.Log.Info("Starting Server")
-	certPath := filepath.Join(server.CertDir, server.CertName)
-	keyPath := filepath.Join(server.CertDir, server.KeyName)
 
 	var listener net.Listener
 	var err error
-	if server.NoSsl {
-		listener, err = net.Listen("tcp", server.BindAddr)
+	if server.Config.NoSsl {
+		listener, err = net.Listen("tcp", server.Config.BindAddr)
 		if err != nil {
 			return err
 		}
 	} else {
+		if server.Config.CertDir == "" {
+			return fmt.Errorf("CertDir is not defined while NoSsl is false")
+		}
+		certPath := filepath.Join(server.Config.CertDir, server.Config.CertName)
+		keyPath := filepath.Join(server.Config.CertDir, server.Config.KeyName)
 		certWatcher, err := certwatcher.New(server.Name, certPath, keyPath, server.Log)
 		if err != nil {
 			return err
@@ -110,13 +110,13 @@ func (server *Server) Start(ctx context.Context) error {
 			GetCertificate: certWatcher.GetCertificate,
 		}
 
-		listener, err = tls.Listen("tcp", server.BindAddr, cfg)
+		listener, err = tls.Listen("tcp", server.Config.BindAddr, cfg)
 		if err != nil {
 			return err
 		}
 	}
 
-	server.Log.Info("Listening", "bindAddr", server.BindAddr, "ssl", !server.NoSsl)
+	server.Log.Info("Listening", "bindAddr", server.Config.BindAddr, "ssl", !server.Config.NoSsl)
 
 	srv := &http.Server{
 		Handler: server.Router,
@@ -139,7 +139,7 @@ func (server *Server) Start(ctx context.Context) error {
 	if err != nil && err != http.ErrServerClosed {
 		return err
 	}
-	server.Log.Info("Auth Server shutdown")
+	server.Log.Info("Server shutdown")
 	<-idleConnsClosed
 	return nil
 }

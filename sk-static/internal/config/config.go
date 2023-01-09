@@ -2,16 +2,19 @@ package config
 
 import (
 	"github.com/go-logr/logr"
+	"skas/sk-common/pkg/httpserver"
+	"skas/sk-common/pkg/misc"
 )
 
-var Config struct {
-	BindAddr    string
-	UserByLogin map[string]StaticUser
+var (
+	Conf        Config
 	Log         logr.Logger
-	NoSsl       bool
-	CertDir     string
-	CertName    string
-	KeyName     string
+	UserByLogin map[string]StaticUser
+)
+
+type Config struct {
+	Log    misc.LogConfig          `yaml:"log"`
+	Server httpserver.ServerConfig `yaml:"server"`
 }
 
 type StaticUser struct {
@@ -22,6 +25,8 @@ type StaticUser struct {
 	Groups       []string `yaml:"groups"`
 	PasswordHash string   `yaml:"passwordHash"`
 }
+
+// This is the format of the users file
 
 type StaticUsers struct {
 	Users []StaticUser `yaml:"users"`
