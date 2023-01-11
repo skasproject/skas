@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/go-logr/logr"
 	"gopkg.in/ldap.v2"
+	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
-	"skas/sk-ldap/internal/handlers"
 	"strconv"
 	"strings"
 )
@@ -25,13 +25,6 @@ type ldapProvider struct {
 func (l *ldapProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
 	// Set some default values
 	response := proto.UserStatusResponse{
-		User: proto.User{
-			Login:       request.Login,
-			Uid:         0,
-			Groups:      []string{},
-			Emails:      []string{},
-			CommonNames: []string{},
-		},
 		UserStatus: proto.NotFound,
 	}
 	var ldapUser *ldap.Entry
@@ -47,6 +40,9 @@ func (l *ldapProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.Us
 			return err
 		}
 		if ldapUser != nil {
+			response.User = &proto.User{
+				Login: request.Login,
+			}
 			if request.Password != "" {
 				if response.UserStatus, err = l.checkPassword(conn, *ldapUser, request.Password); err != nil {
 					return err
@@ -54,17 +50,14 @@ func (l *ldapProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.Us
 			} else {
 				response.UserStatus = proto.PasswordUnchecked
 			}
-			// No need to collect groups if auth failed
-			if response.UserStatus != proto.PasswordFail {
-				// We need to bind again, as password check was performed on user
-				bindDesc := fmt.Sprintf("conn.Bind(%s, %s)", l.BindDN, "xxxxxxxx")
-				if err := conn.Bind(l.BindDN, l.BindPW); err != nil {
-					return fmt.Errorf("%s failed: %v", bindDesc, err)
-				}
-				l.logger.V(2).Info(fmt.Sprintf("%s => success", bindDesc))
-				if response.User.Groups, err = l.lookupGroups(conn, *ldapUser); err != nil {
-					return err
-				}
+			// We need to bind again, as password check was performed on user
+			bindDesc := fmt.Sprintf("conn.Bind(%s, %s)", l.BindDN, "xxxxxxxx")
+			if err := conn.Bind(l.BindDN, l.BindPW); err != nil {
+				return fmt.Errorf("%s failed: %v", bindDesc, err)
+			}
+			l.logger.V(2).Info(fmt.Sprintf("%s => success", bindDesc))
+			if response.User.Groups, err = l.lookupGroups(conn, *ldapUser); err != nil {
+				return err
 			}
 		}
 		return nil
@@ -81,8 +74,6 @@ func (l *ldapProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.Us
 		}
 		response.User.Emails = getAttrs(*ldapUser, l.UserSearch.EmailAttr)
 		response.User.CommonNames = getAttrs(*ldapUser, l.UserSearch.CnAttr)
-	} else {
-		response.UserStatus = proto.NotFound // Redundant, but more explicit.
 	}
 	return &response, nil
 }
