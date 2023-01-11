@@ -1,0 +1,30 @@
+
+log:
+  mode: dev
+  level: debug
+
+
+server:
+  noSsl: true
+
+ldap:
+  host: ldap.ops.scw01
+  #port: 636
+  timeoutSec: 10
+  insecureNoSSL: false
+  bindDN: cn=Manager,dc=odp,dc=com
+  bindPW: admin123
+  rootCA: ./ca-odp.crt
+  userSearch:
+    baseDN: ou=Users,dc=odp,dc=com
+    filter: (objectClass=inetOrgPerson)
+    loginAttr: uid
+    emailAttr: mail
+    numericalIdAttr: uidNumber
+    cnAttr: cn
+  groupSearch:
+    baseDN: ou=Groups,dc=odp,dc=com
+    filter: (objectClass=posixgroup)
+    nameAttr: cn
+    linkGroupAttr: memberUid
+    linkUserAttr: uid

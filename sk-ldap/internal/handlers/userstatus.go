@@ -2,13 +2,19 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/proto"
 )
 
+type StatusProvider interface {
+	GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error)
+}
+
 type UserStatusHandler struct {
 	httpserver.BaseHandler
+	Provider StatusProvider
 }
 
 func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
@@ -17,30 +23,14 @@ func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *htt
 	decoder.DisallowUnknownFields()
 	err := decoder.Decode(&requestPayload)
 	if err != nil {
-		h.HttpError(response, err.Error(), http.StatusBadRequest)
+		h.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
-	var userStatus proto.UserStatus
-
-	user := proto.User{}
-
-	var responsePayload *proto.UserStatusResponse
-	if userStatus == proto.NotFound || userStatus == proto.PasswordFail {
-		responsePayload = &proto.UserStatusResponse{
-			UserStatus: userStatus,
-		}
-	} else {
-		responsePayload = &proto.UserStatusResponse{
-			User: proto.User{
-				Login:       user.Login,
-				Uid:         user.Uid,
-				CommonNames: user.CommonNames,
-				Emails:      user.Emails,
-				Groups:      user.Groups,
-			},
-			UserStatus: userStatus,
-		}
-
+	responsePayload, err := h.Provider.GetUserStatus(requestPayload)
+	if err != nil {
+		h.HttpError(response, err.Error(), http.StatusInternalServerError)
+		return
 	}
+	h.GetLog().Info("User status", "login", requestPayload.Login, "status", responsePayload.UserStatus)
 	h.ServeJSON(response, responsePayload)
 }

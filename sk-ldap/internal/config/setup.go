@@ -29,11 +29,12 @@ func Setup() error {
 	}
 
 	// ------------------------------------ Load config file
-	fn, err := filepath.Abs(configFile)
+	var err error
+	ConfigFile, err = filepath.Abs(configFile)
 	if err != nil {
 		return err
 	}
-	file, err := os.Open(fn)
+	file, err := os.Open(ConfigFile)
 	if err != nil {
 		return err
 	}

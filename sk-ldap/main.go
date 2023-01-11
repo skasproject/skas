@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/proto"
 	"skas/sk-ldap/internal/handlers"
+	"skas/sk-ldap/internal/ldapprovider"
 )
 import "skas/sk-ldap/internal/config"
 
@@ -25,16 +27,22 @@ func main() {
 	name := fmt.Sprintf("ldap[%s]", config.Conf.Ldap.Host)
 	s := &httpserver.Server{
 		Name:   name,
-		Log:    config.Log.WithName(fmt.Sprintf("%s http server", name)),
+		Log:    config.Log.WithName(fmt.Sprintf("%s", name)),
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
+	provider, err := ldapprovider.New(&config.Conf.Ldap, config.Log, filepath.Dir(config.ConfigFile))
+	if err != nil {
+		config.Log.Error(err, "ldap config")
+		os.Exit(3)
+	}
 	s.Router.Handle(proto.UserStatusUrlPath, &handlers.UserStatusHandler{
 		BaseHandler: httpserver.BaseHandler{
 			Logger: s.Log,
 		},
+		Provider: provider,
 	}).Methods("GET")
-	err := s.Start(context.Background())
+	err = s.Start(context.Background())
 	if err != nil {
 		s.Log.Error(err, "Error on Start()")
 		os.Exit(5)
