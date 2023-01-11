@@ -8,7 +8,7 @@ import (
 	"gopkg.in/ldap.v2"
 	"os"
 	"path/filepath"
-	"skas/sk-ldap/internal/handlers"
+	"skas/sk-common/pkg/httpserver/handlers"
 	"time"
 )
 

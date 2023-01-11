@@ -6,11 +6,11 @@ import (
 	"os"
 	"path/filepath"
 	"skas/sk-common/pkg/httpserver"
+	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
-	"skas/sk-ldap/internal/handlers"
+	"skas/sk-ldap/internal/config"
 	"skas/sk-ldap/internal/ldapprovider"
 )
-import "skas/sk-ldap/internal/config"
 
 func main() {
 	if err := config.Setup(); err != nil {
@@ -37,7 +37,7 @@ func main() {
 		os.Exit(3)
 	}
 	s.Router.Handle(proto.UserStatusUrlPath, &handlers.UserStatusHandler{
-		BaseHandler: httpserver.BaseHandler{
+		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
 		Provider: provider,

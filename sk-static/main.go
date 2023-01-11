@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"os"
 	"skas/sk-common/pkg/httpserver"
+	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
 	"skas/sk-static/internal/config"
-	"skas/sk-static/internal/handlers"
+	"skas/sk-static/internal/staticprovider"
 )
 
 func main() {
@@ -31,9 +32,10 @@ func main() {
 	}
 	s.Groom()
 	s.Router.Handle(proto.UserStatusUrlPath, &handlers.UserStatusHandler{
-		BaseHandler: httpserver.BaseHandler{
+		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
+		Provider: staticprovider.New(),
 	}).Methods("GET")
 	err := s.Start(context.Background())
 	if err != nil {

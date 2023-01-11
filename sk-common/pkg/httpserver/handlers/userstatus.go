@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/proto"
 )
 
@@ -13,7 +12,7 @@ type StatusProvider interface {
 }
 
 type UserStatusHandler struct {
-	httpserver.BaseHandler
+	BaseHandler
 	Provider StatusProvider
 }
 

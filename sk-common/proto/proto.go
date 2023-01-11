@@ -43,5 +43,5 @@ const (
 
 type UserStatusResponse struct {
 	UserStatus UserStatus `json:"userStatus"`
-	User       User       `json:"user"` // Fulfilled if UserStatus == PasswordChecked or UserStatus == PasswordUnchecked
+	User       *User      `json:"user,omitempty"` // Fulfilled if UserStatus == PasswordChecked or UserStatus == PasswordUnchecked
 }

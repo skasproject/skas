@@ -53,7 +53,7 @@ func Setup() error {
 	decoder := yaml.NewDecoder(file)
 	decoder.SetStrict(true)
 	if err = decoder.Decode(&Conf); err != nil {
-		return err
+		return fmt.Errorf("file '%s': %w", configFile, err)
 	}
 
 	// -----------------------------------Handle logging  stuff
@@ -67,7 +67,10 @@ func Setup() error {
 	}
 
 	// --------------------------------------- Load users file
-	return loadUsers(userFile)
+	if err = loadUsers(userFile); err != nil {
+		return fmt.Errorf("file '%s': %w", userFile, err)
+	}
+	return nil
 }
 
 func loadUsers(fileName string) error {
@@ -89,6 +92,6 @@ func loadUsers(fileName string) error {
 	for idx, _ := range staticUsers.Users {
 		UserByLogin[staticUsers.Users[idx].Login] = staticUsers.Users[idx]
 	}
-	return err
+	return nil
 
 }
