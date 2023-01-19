@@ -27,7 +27,7 @@ func main() {
 	name := fmt.Sprintf("ldap[%s]", config.Conf.Ldap.Host)
 	s := &httpserver.Server{
 		Name:   name,
-		Log:    config.Log.WithName(fmt.Sprintf("%s", name)),
+		Log:    config.Log.WithName(fmt.Sprintf("%sServer", name)),
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
