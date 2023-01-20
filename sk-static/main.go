@@ -27,7 +27,7 @@ func main() {
 
 	s := &httpserver.Server{
 		Name:   "static",
-		Log:    config.Log.WithName("staticServer")),
+		Log:    config.Log.WithName("staticServer"),
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
