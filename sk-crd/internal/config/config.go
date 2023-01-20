@@ -12,7 +12,9 @@ var (
 )
 
 type Config struct {
-	Log       misc.LogConfig          `yaml:"log"`
-	Server    httpserver.ServerConfig `yaml:"server"`
-	Namespace string                  `yaml:"namespace"` // User database namepace
+	Log        misc.LogConfig          `yaml:"log"`
+	Server     httpserver.ServerConfig `yaml:"server"`
+	Namespace  string                  `yaml:"namespace"` // User database namepace
+	MetricAddr string                  `yaml:"metricAddr"`
+	ProbeAddr  string                  `yaml:"probeAddr"`
 }

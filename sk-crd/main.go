@@ -1,15 +1,27 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	"k8s.io/apimachinery/pkg/runtime"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"os"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
 	"skas/sk-crd/internal/config"
 	"skas/sk-crd/internal/crdprovider"
+	userdbv1alpha1 "skas/sk-crd/k8sapis/userdb/v1alpha1"
 )
+
+var scheme = runtime.NewScheme()
+
+func init() {
+	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
+	utilruntime.Must(userdbv1alpha1.AddToScheme(scheme))
+}
 
 func main() {
 	if err := config.Setup(); err != nil {
@@ -25,8 +37,31 @@ func main() {
 	//config.Config.Log.Error(errors.New("there is a problem"), "Test ERROR")
 	//fmt.Printf("Users:\n%+v\n", config.Config.UserByLogin)
 
+	ctrl.SetLogger(config.Log.WithName("controller-runtime"))
+
+	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+		Scheme:                 scheme,
+		MetricsBindAddress:     config.Conf.MetricAddr,
+		HealthProbeBindAddress: config.Conf.ProbeAddr,
+		LeaderElection:         false,
+		Logger:                 config.Log.WithName("manager"),
+		Namespace:              config.Conf.Namespace,
+	})
+	if err != nil {
+		config.Log.Error(err, "unable to start manager")
+		os.Exit(1)
+	}
+
+	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
+		config.Log.Error(err, "unable to set up health check")
+		os.Exit(1)
+	}
+	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
+		config.Log.Error(err, "unable to set up ready check")
+		os.Exit(1)
+	}
 	s := &httpserver.Server{
-		Name:   "static",
+		Name:   "crd",
 		Log:    config.Log.WithName("crdServer"),
 		Config: &config.Conf.Server,
 	}
@@ -37,9 +72,33 @@ func main() {
 		},
 		Provider: crdprovider.New(),
 	}).Methods("GET")
-	err := s.Start(context.Background())
-	if err != nil {
-		s.Log.Error(err, "Error on Start()")
-		os.Exit(5)
+
+	err = mgr.Add(s)
+
+	config.Log.Info("starting manager")
+	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
+		config.Log.Error(err, "problem running manager")
+		os.Exit(1)
 	}
+
+	/*
+		s := &httpserver.Server{
+			Name:   "crd",
+			Log:    config.Log.WithName("crdServer"),
+			Config: &config.Conf.Server,
+		}
+		s.Groom()
+		s.Router.Handle(proto.UserStatusUrlPath, &handlers.UserStatusHandler{
+			BaseHandler: handlers.BaseHandler{
+				Logger: s.Log,
+			},
+			Provider: crdprovider.New(),
+		}).Methods("GET")
+		err := s.Start(context.Background())
+		if err != nil {
+			s.Log.Error(err, "Error on Start()")
+			os.Exit(5)
+		}
+	*/
+
 }

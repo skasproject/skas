@@ -3,6 +3,8 @@ log:
   mode: dev
   level: debug
 
+metricAddr: "0"
+probeAddr: "0"
 
 server:
   noSsl: true
