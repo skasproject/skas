@@ -1,0 +1,33 @@
+
+
+{{- range .Values.users }}
+---
+apiVersion: userdb.skasproject.io/v1alpha1
+kind: User
+metadata:
+  name: {{ .login }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+      {{- include "sk-userdb.labels" $ | nindent 4 }}
+spec:
+{{- with .commonNames }}
+  commonNames:
+  {{- toYaml . | nindent 4 }}
+{{- end }}
+{{- with .passwordHash }}
+  passwordHash: {{ . }}
+{{- end }}
+{{- with .disabled}}
+  disabled: {{ . }}
+{{- end }}
+{{- with .emails }}
+  emails:
+  {{- toYaml . | nindent 4 }}
+{{- end }}
+{{- with .comment}}
+  comment: {{ . }}
+{{- end }}
+{{- with .uid}}
+  uid: {{ . }}
+{{- end }}
+{{- end }}
