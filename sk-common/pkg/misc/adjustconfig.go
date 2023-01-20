@@ -1,5 +1,9 @@
 package misc
 
+import (
+	"github.com/spf13/pflag"
+)
+
 // For all adjustConfigXxx(), we:
 // - panic when error is internal
 // - Display a message and exit(2) when error is from usage

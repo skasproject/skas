@@ -29,14 +29,18 @@ func (s staticProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.U
 			Emails:      user.Emails,
 			Groups:      user.Groups,
 		}
-		if request.Password == "" || user.PasswordHash == "" {
-			responsePayload.UserStatus = proto.PasswordUnchecked
+		if user.Disabled != nil && *user.Disabled {
+			responsePayload.UserStatus = proto.Disabled
 		} else {
-			err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(request.Password))
-			if err == nil {
-				responsePayload.UserStatus = proto.PasswordChecked
+			if request.Password == "" || user.PasswordHash == "" {
+				responsePayload.UserStatus = proto.PasswordUnchecked
 			} else {
-				responsePayload.UserStatus = proto.PasswordFail
+				err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(request.Password))
+				if err == nil {
+					responsePayload.UserStatus = proto.PasswordChecked
+				} else {
+					responsePayload.UserStatus = proto.PasswordFail
+				}
 			}
 		}
 	}

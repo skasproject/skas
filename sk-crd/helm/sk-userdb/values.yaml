@@ -31,11 +31,26 @@ users:
     passwordHash: "$2a$10$8/7dBTVWa1chfUB1yo7EROdS1evXoBPDcd8/I64NsFMGv9IdhL1jO"
 
   - login: "disabled"
+    disabled: true
 
   - login: "disabledwp"
     passwordHash: "$2a$10$ePQjmzbVK0Okf1ra2wRBceSrVzV0jnZtl9cSIuJxFpNeMdy.lBcFq"
+    disabled: true
 
   - login: jt
     commonNames: ["Jules TESTEUR"]
     emails: [ "jt@broadsoftware.com" ]
 
+groupBindings:
+  - user: raoul
+    group: dev
+  - user: raoul
+    group: all
+  - user: liane
+    group: all
+  - user: liane
+    group: marketing
+  - user: alfred
+    group: lost
+  - user: disabled
+    group: lost

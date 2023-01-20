@@ -7,6 +7,7 @@
 ## sk-static
 
 - Make user file dynamic (cf dexgate or certwatcher)
+- Refactor to be identical to crd (Add GroupBinding)
 
 
 

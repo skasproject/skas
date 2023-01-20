@@ -1,0 +1,15 @@
+
+
+{{- range .Values.groupBindings }}
+---
+apiVersion: userdb.skasproject.io/v1alpha1
+kind: GroupBinding
+metadata:
+  name: {{ .user }}-{{ .group }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+      {{- include "sk-userdb.labels" $ | nindent 4 }}
+spec:
+  user: {{ .user }}
+  group: {{ .group }}
+{{- end }}

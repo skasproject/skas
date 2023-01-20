@@ -27,9 +27,6 @@ spec:
     - jsonPath: .spec.group
       name: Group
       type: string
-    - jsonPath: .spec.disabled
-      name: Disabled
-      type: boolean
     name: v1alpha1
     schema:
       openAPIV3Schema:
@@ -49,10 +46,6 @@ spec:
             type: object
           spec:
             properties:
-              disabled:
-                description: Allow to 'hide' this groupbinding. Even if defined in
-                  another provider
-                type: boolean
               group:
                 minLength: 1
                 type: string

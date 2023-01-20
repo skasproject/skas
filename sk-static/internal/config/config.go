@@ -24,6 +24,7 @@ type StaticUser struct {
 	Emails       []string `yaml:"emails"`
 	Groups       []string `yaml:"groups"`
 	PasswordHash string   `yaml:"passwordHash"`
+	Disabled     *bool    `yaml:"disabled, omitempty"`
 }
 
 // This is the format of the users file

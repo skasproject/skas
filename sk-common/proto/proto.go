@@ -36,6 +36,7 @@ type UserStatus string
 
 const (
 	NotFound          = "notFound"
+	Disabled          = "disabled"
 	PasswordChecked   = "passwordChecked"
 	PasswordFail      = "passwordFail"
 	PasswordUnchecked = "passwordUnchecked"

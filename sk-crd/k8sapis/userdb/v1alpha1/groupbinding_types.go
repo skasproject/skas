@@ -28,10 +28,6 @@ type GroupBindingSpec struct {
 	// +kubebuilder:validation:MinLength=1
 	// +required
 	Group string `json:"group"`
-
-	// Allow to 'hide' this groupbinding. Even if defined in another provider
-	// +optional
-	Disabled *bool `json:"disabled,omitempty"`
 }
 
 // GroupBindingStatus defines the observed state of GroupBinding
@@ -43,7 +39,6 @@ type GroupBindingStatus struct {
 // +kubebuilder:resource:scope=Namespaced,shortName=gb;skgroupbinding;skgb;skasgb
 // +kubebuilder:printcolumn:name="User",type=string,JSONPath=`.spec.user`
 // +kubebuilder:printcolumn:name="Group",type=string,JSONPath=`.spec.group`
-// +kubebuilder:printcolumn:name="Disabled",type=boolean,JSONPath=`.spec.disabled`
 
 // GroupBinding is the Schema for the groupbindings API
 type GroupBinding struct {

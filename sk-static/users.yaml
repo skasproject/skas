@@ -6,4 +6,8 @@ users:
     groups: [ "devs", "admin" ]
     passwordHash: "$2a$10$cPsdk3AE0KJxV1DuUwGovOPwrC0UnlPDspzKrvQ1eSD9kTVS1QRNa"    # as
   - login: jt
-    groups: [ "devs" ]
+    groups: [ "devs", "all" ]
+
+  - login: disabled
+    groups: ["all"]
+    disabled: true

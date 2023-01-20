@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"os"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
@@ -70,10 +72,19 @@ func main() {
 		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
-		Provider: crdprovider.New(),
+		Provider: crdprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
 	}).Methods("GET")
 
 	err = mgr.Add(s)
+
+	err = mgr.GetFieldIndexer().IndexField(context.TODO(), &userdbv1alpha1.GroupBinding{}, "userkey", func(rawObj client.Object) []string {
+		ugb := rawObj.(*userdbv1alpha1.GroupBinding)
+		return []string{ugb.Spec.User}
+	})
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
+		os.Exit(1)
+	}
 
 	config.Log.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
