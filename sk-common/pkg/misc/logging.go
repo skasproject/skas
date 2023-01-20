@@ -13,22 +13,8 @@ type LogConfig struct {
 	Mode  string `yaml:"mode"`
 }
 
-func HandleLog(logConfig *LogConfig, logLevel string, logMode string) (logr.Logger, error) {
+func HandleLog(logConfig *LogConfig) (logr.Logger, error) {
 
-	// Override configFile value by command line ones
-	if logMode != "" {
-		logConfig.Mode = logMode
-	}
-	if logLevel != "" {
-		logConfig.Level = logLevel
-	}
-	// Set default values
-	if logConfig.Mode == "" {
-		logConfig.Mode = "json"
-	}
-	if logConfig.Level == "" {
-		logConfig.Level = "INFO"
-	}
 	logConfig.Mode = strings.ToLower(logConfig.Mode)
 	logConfig.Level = strings.ToUpper(logConfig.Level)
 

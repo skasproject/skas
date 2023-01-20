@@ -1,10 +1,10 @@
 
-log:
-  mode: dev
-  level: debug
 
 metricAddr: "0"
 probeAddr: "0"
+log:
+  mode: dev
+  level: debug
 
 server:
   noSsl: true

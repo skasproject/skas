@@ -14,7 +14,7 @@ import (
 )
 
 type ServerConfig struct {
-	BindAddr string `yaml:"bindAddr@"`
+	BindAddr string `yaml:"bindAddr"`
 	NoSsl    bool   `yaml:"noSsl"`
 	CertDir  string `yaml:"certDir"`  // CertDir is the directory that contains the server key and certificate.
 	CertName string `yaml:"certName"` // CertName is the server certificate name. Defaults to tls.crt.

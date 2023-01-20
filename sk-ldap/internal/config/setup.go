@@ -17,8 +17,8 @@ func Setup() error {
 
 	pflag.StringVar(&configFile, "configFile", "config.yaml", "Configuration file")
 	pflag.BoolVar(&version, "version", false, "Display version info")
-	pflag.StringVar(&logLevel, "logLevel", "", "Log level (PANIC|FATAL|ERROR|WARN|INFO|DEBUG|TRACE)")
-	pflag.StringVar(&logMode, "logMode", "", "Log mode: 'dev' or 'json'")
+	pflag.StringVar(&logLevel, "logLevel", "INFO", "Log level (PANIC|FATAL|ERROR|WARN|INFO|DEBUG|TRACE)")
+	pflag.StringVar(&logMode, "logMode", "json", "Log mode: 'dev' or 'json'")
 
 	pflag.Parse()
 
@@ -44,8 +44,11 @@ func Setup() error {
 		return err
 	}
 
+	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Mode, "logMode")
+	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Level, "logLevel")
+
 	// -----------------------------------Handle logging  stuff
-	Log, err = misc.HandleLog(&Conf.Log, logLevel, logMode)
+	Log, err = misc.HandleLog(&Conf.Log)
 	if err != nil {
 		return err
 	}
