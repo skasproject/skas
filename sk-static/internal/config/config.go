@@ -7,9 +7,10 @@ import (
 )
 
 var (
-	Conf        Config
-	Log         logr.Logger
-	UserByLogin map[string]StaticUser
+	Conf         Config
+	Log          logr.Logger
+	UserByLogin  map[string]StaticUser
+	GroupsByUser map[string][]string
 )
 
 type Config struct {
@@ -19,16 +20,21 @@ type Config struct {
 
 type StaticUser struct {
 	Login        string   `yaml:"login"`
-	Uid          int64    `yaml:"uid"`
+	Uid          *int64   `yaml:"uid,omitempty"`
 	CommonNames  []string `yaml:"commonNames"`
 	Emails       []string `yaml:"emails"`
-	Groups       []string `yaml:"groups"`
 	PasswordHash string   `yaml:"passwordHash"`
-	Disabled     *bool    `yaml:"disabled, omitempty"`
+	Disabled     *bool    `yaml:"disabled,omitempty"`
+}
+
+type StaticGroupBinding struct {
+	User  string `yaml:"user"`
+	Group string `yaml:"group"`
 }
 
 // This is the format of the users file
 
 type StaticUsers struct {
-	Users []StaticUser `yaml:"users"`
+	Users         []StaticUser         `yaml:"users"`
+	GroupBindings []StaticGroupBinding `yaml:"groupBindings"`
 }

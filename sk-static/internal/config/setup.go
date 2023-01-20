@@ -84,6 +84,16 @@ func loadUsers(fileName string) error {
 	for idx, _ := range staticUsers.Users {
 		UserByLogin[staticUsers.Users[idx].Login] = staticUsers.Users[idx]
 	}
+	GroupsByUser = make(map[string][]string)
+	for _, gb := range staticUsers.GroupBindings {
+		u := gb.User
+		g := gb.Group
+		groups, ok := GroupsByUser[u]
+		if ok {
+			GroupsByUser[u] = append(groups, g)
+		} else {
+			GroupsByUser[u] = []string{g}
+		}
+	}
 	return nil
-
 }

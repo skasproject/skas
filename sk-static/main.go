@@ -35,7 +35,7 @@ func main() {
 		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
-		Provider: staticprovider.New(),
+		Provider: staticprovider.New(config.Log.WithName("staticProvider")),
 	}).Methods("GET")
 	err := s.Start(context.Background())
 	if err != nil {
