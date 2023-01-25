@@ -1,15 +1,5 @@
 package proto
 
-// ------------------------ Common part
-
-type User struct {
-	Login       string   `json:"login"`
-	Uid         int64    `json:"uid"`
-	CommonNames []string `json:"commonNames"`
-	Emails      []string `json:"emails"`
-	Groups      []string `json:"groups"`
-}
-
 // -------------------- Login interface
 
 type LoginRequest struct {
@@ -19,8 +9,12 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Success bool `json:"success"`
-	User    User `json:"user"` // Fulfilled only if Success == True
+	Login       string   `json:"login"`
+	Success     bool     `json:"success"`
+	Uid         int64    `json:"uid"`
+	CommonNames []string `json:"commonNames"`
+	Emails      []string `json:"emails"`
+	Groups      []string `json:"groups"`
 }
 
 // ------------------------- Provider interface
@@ -43,6 +37,10 @@ const (
 )
 
 type UserStatusResponse struct {
-	UserStatus UserStatus `json:"userStatus"`
-	User       *User      `json:"user,omitempty"` // Fulfilled if UserStatus == PasswordChecked or UserStatus == PasswordUnchecked
+	Login       string     `json:"login"`
+	UserStatus  UserStatus `json:"userStatus"`
+	Uid         int64      `json:"uid"`
+	CommonNames []string   `json:"commonNames"`
+	Emails      []string   `json:"emails"`
+	Groups      []string   `json:"groups"`
 }

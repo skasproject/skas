@@ -28,13 +28,12 @@ func New(kubeClient client.Client, namespace string, logger logr.Logger) handler
 
 func (p crdProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
 	responsePayload := &proto.UserStatusResponse{
-		UserStatus: proto.NotFound,
-		User: &proto.User{
-			Login:       request.Login,
-			Emails:      []string{},
-			CommonNames: []string{},
-			Groups:      []string{},
-		},
+		Login:       request.Login,
+		UserStatus:  proto.NotFound,
+		Uid:         0,
+		Emails:      []string{},
+		CommonNames: []string{},
+		Groups:      []string{},
 	}
 	// ------------------- Handle groups (Even if notFound)
 	list := userdbv1alpha1.GroupBindingList{}
@@ -43,9 +42,9 @@ func (p crdProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.User
 		return responsePayload, err
 	}
 	if len(list.Items) > 0 {
-		responsePayload.User.Groups = make([]string, 0, len(list.Items))
+		responsePayload.Groups = make([]string, 0, len(list.Items))
 		for idx, _ := range list.Items {
-			responsePayload.User.Groups = append(responsePayload.User.Groups, list.Items[idx].Spec.Group)
+			responsePayload.Groups = append(responsePayload.Groups, list.Items[idx].Spec.Group)
 		}
 	}
 	// Try to fetch user
@@ -63,13 +62,13 @@ func (p crdProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.User
 		return responsePayload, nil
 	}
 	if usr.Spec.Uid != nil {
-		responsePayload.User.Uid = int64(*usr.Spec.Uid)
+		responsePayload.Uid = int64(*usr.Spec.Uid)
 	}
 	if len(usr.Spec.CommonNames) > 0 { // Avoid copying a nil
-		responsePayload.User.CommonNames = usr.Spec.CommonNames
+		responsePayload.CommonNames = usr.Spec.CommonNames
 	}
 	if len(usr.Spec.Emails) > 0 { // Avoid copying a nil
-		responsePayload.User.Emails = usr.Spec.Emails
+		responsePayload.Emails = usr.Spec.Emails
 	}
 	if usr.Spec.Disabled != nil && *usr.Spec.Disabled {
 		p.logger.V(1).Info("User found but disabled", "user", request.Login)
@@ -85,7 +84,7 @@ func (p crdProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.User
 		} else {
 			responsePayload.UserStatus = proto.PasswordUnchecked
 		}
-		p.logger.V(1).Info("User found", "user", responsePayload.User.Login, "status", responsePayload.UserStatus)
+		p.logger.V(1).Info("User found", "user", responsePayload.Login, "status", responsePayload.UserStatus)
 	}
 	return responsePayload, nil
 }

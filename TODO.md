@@ -1,9 +1,7 @@
 
 ## All
 
-- Secure communication with client certificate or clientId/secretID, or netpols
-
-- proto: Flatten the user structure
+- Secure communication with client certificate and/or clientId/secretID, and/or netpols
 
 ## sk-static
 

@@ -25,7 +25,12 @@ type ldapProvider struct {
 func (l *ldapProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
 	// Set some default values
 	response := proto.UserStatusResponse{
-		UserStatus: proto.NotFound,
+		Login:       request.Login,
+		UserStatus:  proto.NotFound,
+		Uid:         0,
+		CommonNames: []string{},
+		Emails:      []string{},
+		Groups:      []string{},
 	}
 	var ldapUser *ldap.Entry
 	err := l.do(func(conn *ldap.Conn) error {
@@ -40,9 +45,6 @@ func (l *ldapProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.Us
 			return err
 		}
 		if ldapUser != nil {
-			response.User = &proto.User{
-				Login: request.Login,
-			}
 			if request.Password != "" {
 				if response.UserStatus, err = l.checkPassword(conn, *ldapUser, request.Password); err != nil {
 					return err
@@ -56,7 +58,7 @@ func (l *ldapProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.Us
 				return fmt.Errorf("%s failed: %v", bindDesc, err)
 			}
 			l.logger.V(2).Info(fmt.Sprintf("%s => success", bindDesc))
-			if response.User.Groups, err = l.lookupGroups(conn, *ldapUser); err != nil {
+			if response.Groups, err = l.lookupGroups(conn, *ldapUser); err != nil {
 				return err
 			}
 		}
@@ -69,11 +71,11 @@ func (l *ldapProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.Us
 		l.logger.V(2).Info(fmt.Sprint("Will fetch Attributes"))
 		uid := getAttr(*ldapUser, l.UserSearch.NumericalIdAttr)
 
-		if response.User.Uid, err = strconv.ParseInt(uid, 10, 64); err != nil {
+		if response.Uid, err = strconv.ParseInt(uid, 10, 64); err != nil {
 			l.logger.Error(err, "Non numerical Uid value (%s) for user '%s'", uid, request.Login)
 		}
-		response.User.Emails = getAttrs(*ldapUser, l.UserSearch.EmailAttr)
-		response.User.CommonNames = getAttrs(*ldapUser, l.UserSearch.CnAttr)
+		response.Emails = getAttrs(*ldapUser, l.UserSearch.EmailAttr)
+		response.CommonNames = getAttrs(*ldapUser, l.UserSearch.CnAttr)
 	}
 	return &response, nil
 }

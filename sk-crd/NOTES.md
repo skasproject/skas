@@ -3,9 +3,14 @@
 # Deployment
 
 ```
-. ./tmp/.kspray6
+. ./tmp/.kspray6.local
 ```
 
+Or 
+
+```
+. ./tmp/.kspray6.local
+```
 
 ```
 cd helm/sk-crd
