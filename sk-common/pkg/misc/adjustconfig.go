@@ -14,7 +14,10 @@ func AdjustConfigString(flagSet *pflag.FlagSet, inConfig *string, param string) 
 		if *inConfig, err = flagSet.GetString(param); err != nil {
 			panic(err)
 		}
+		//fmt.Printf("param(%s).Changed: value: %s\n",param, *inConfig)
 	} else if *inConfig == "" {
 		*inConfig = flagSet.Lookup(param).DefValue
+		//fmt.Printf("param(%s).Default: value: %s\n",param, *inConfig)
 	}
+	
 }

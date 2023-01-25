@@ -17,7 +17,7 @@ func main() {
 		_, _ = fmt.Fprintf(os.Stderr, "Unable to load configuration: %v\n", err)
 		os.Exit(2)
 	}
-	config.Log.Info("sk-ldap start", "ldapServer", config.Conf.Ldap.Host)
+	config.Log.Info("sk-ldap start", "ldapServer", config.Conf.Ldap.Host, "version", config.Version)
 
 	//config.Log.V(0).Info("Log V0")
 	//config.Log.V(1).Info("Log V1")

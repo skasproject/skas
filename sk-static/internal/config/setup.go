@@ -12,15 +12,17 @@ import (
 func Setup() error {
 	var configFile string
 	var version bool
-	var userFile string
+	var usersFile string
 	var logLevel string
 	var logMode string
+	var bindAddr string
 
 	pflag.StringVar(&configFile, "configFile", "config.yaml", "Configuration file")
-	pflag.StringVar(&userFile, "userFile", "users.yaml", "Users file")
+	pflag.StringVar(&usersFile, "usersFile", "users.yaml", "Users file")
 	pflag.BoolVar(&version, "version", false, "Display version info")
 	pflag.StringVar(&logLevel, "logLevel", "INFO", "Log level (PANIC|FATAL|ERROR|WARN|INFO|DEBUG|TRACE)")
 	pflag.StringVar(&logMode, "logMode", "json", "Log mode: 'dev' or 'json'")
+	pflag.StringVar(&bindAddr, "bindAddr", "127.0.0.1:7010", "Server bind address <host>:<port>")
 
 	pflag.Parse()
 
@@ -47,20 +49,16 @@ func Setup() error {
 
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Mode, "logMode")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Level, "logLevel")
+	misc.AdjustConfigString(pflag.CommandLine, &Conf.Server.BindAddr, "bindAddr")
 
 	// -----------------------------------Handle logging  stuff
 	Log, err = misc.HandleLog(&Conf.Log)
 	if err != nil {
 		return err
 	}
-	// ------------------------------------------- Set some default
-	if Conf.Server.BindAddr == "" {
-		Conf.Server.BindAddr = "127.0.0.1:7010"
-	}
-
 	// --------------------------------------- Load users file
-	if err = loadUsers(userFile); err != nil {
-		return fmt.Errorf("file '%s': %w", userFile, err)
+	if err = loadUsers(usersFile); err != nil {
+		return fmt.Errorf("file '%s': %w", usersFile, err)
 	}
 	return nil
 }

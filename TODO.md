@@ -2,6 +2,7 @@
 ## All
 
 - Secure communication with client certificate and/or clientId/secretID, and/or netpols
+- Ensure copyright message in all relevant location
 
 ## sk-static
 

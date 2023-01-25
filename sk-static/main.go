@@ -17,7 +17,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	config.Log.Info("sk-static start", "nbUsers", len(config.UserByLogin))
+	config.Log.Info("sk-static start", "version", config.Version, "nbUsers", len(config.UserByLogin))
 
 	//config.Config.Log.V(0).Info("Log V0")
 	//config.Config.Log.V(1).Info("Log V1")
