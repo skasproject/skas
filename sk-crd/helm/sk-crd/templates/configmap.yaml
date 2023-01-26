@@ -11,4 +11,15 @@ metadata:
   {{- end }}
 data:
   config.yaml: |
-    {{- toYaml .Values.config | nindent 4 }}
+    namespace: {{ .Values.userdbNamespace }}
+    log:
+      mode: {{ .Values.log.mode }}
+      level: {{ .Values.log.level }}
+    metricAddr: ":{{ .Values.metric.port }}"
+    probeAddr: ":{{ .Values.probe.port }}"
+    server:
+      ssl: {{ .Values.server.ssl }}
+      bindAddr: ":{{ .Values.server.port}}"
+    {{ if .Values.server.ssl }}
+      certDir: /tmp/cert/server
+    {{ end }}

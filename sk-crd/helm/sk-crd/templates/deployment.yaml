@@ -5,8 +5,9 @@ metadata:
   name: {{ include "sk-crd.fullname" . }}
   labels:
     {{- include "sk-crd.labels" . | nindent 4 }}
-  {{- with .Values.commonAnnotations }}
   annotations:
+    configmap.reloader.stakater.com/reload: "{{ include "sk-crd.fullname" . }}"
+  {{- with .Values.commonAnnotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
@@ -34,10 +35,6 @@ spec:
           args:
             - --configFile
             - /config.yaml
-            - --bindAddr
-            - ":{{ .Values.server.port }}"
-            - --namespace
-            - {{ .Values.userdbNamespace }}
         {{-  range .Values.additionalArgs }}
             - {{ . }}
         {{- end }}
@@ -74,6 +71,11 @@ spec:
             - mountPath: /config.yaml
               name: config
               subPath: config.yaml
+            {{ if .Values.server.ssl }}
+            - mountPath: /tmp/cert/server
+              name: server-cert
+              readOnly: true
+            {{ end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       serviceAccountName: {{ include "sk-crd.serviceAccountName" . }}
@@ -94,4 +96,10 @@ spec:
         - name: config
           configMap:
             name: {{ include "sk-crd.fullname" . }}
+        {{ if .Values.server.ssl }}
+        - name: server-cert
+          secret:
+            defaultMode: 420
+            secretName: {{ include "sk-crd.certificateSecretName" . }}
+        {{ end }}
 

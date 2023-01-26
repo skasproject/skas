@@ -11,10 +11,12 @@ image:
   tag:
   pullPolicy: Always
 
-
 crds:
   create: true
 
+log:
+  mode: dev
+  level: info
 
 # -- Additional arguments to be added to the operator's args list
 additionalArgs: {}
@@ -34,6 +36,22 @@ metric:
 
 server:
   port: 7012
+  ssl: true
+  # certificateSecretName: ,# Will default to {{ include "sk-crd.fullname" . }}-cert
+  # Cert-manger cluster issuer
+  clusterIssuer: cluster-issuer1
+  # If not provided and ssl:true, then a certificate must be provided externally as a secret. Here is a sample layout:
+  #
+  #      apiVersion: v1
+  #      kind: Secret
+  #      metadata:
+  #        name: {{ include "sk-crd.fullname" . }}-cert
+  #        namespace: skas-system
+  #      type: kubernetes.io/tls
+  #      data:
+  #        ca.crt: LS0tLS.......
+  #        tls.crt: LS0tLS.....
+  #        tls.key: LS0t......
 
 # -- Security Context for the whole pod
 podSecurityContext:
@@ -41,7 +59,6 @@ podSecurityContext:
   seccompProfile:
     type: RuntimeDefault
   # fsGroup: 2000
-
 
 resources: {}
 # If you want to specify resources, uncomment the following
@@ -82,10 +99,4 @@ ingress:
   class: nginx
   host: sk-crd.ingress.kspray1.project33.scw01
 
-config:
-  log:
-    mode: dev
-    level: debug
 
-  server:
-    noSsl: true

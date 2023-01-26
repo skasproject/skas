@@ -64,3 +64,10 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
+
+{{/*
+Create the name of the secret hosting the server certificate
+*/}}
+{{- define "sk-crd.certificateSecretName" -}}
+{{- default (printf "%s-cert" (include "sk-crd.fullname" .)) .Values.server.certificateSecretName }}
+{{- end }}

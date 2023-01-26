@@ -4,7 +4,7 @@ log:
 
 
 server:
-  noSsl: true
+  ssl: false
 
 ldap:
   host: n0.ipa2
