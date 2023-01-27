@@ -1,6 +1,33 @@
 
-nameOverride: ""
-fullNameOverride: ""
+nameOverride:
+fullNameOverride:
+
+# ---------------------------------------------------------------------
+# Following will allow renaming of resources. You can safely leave undefined and let default values
+#
+# Will default to {{ include "sk-crd.fullname" . }}-cert
+certificateSecretName:
+# Will default to {{ include "sk-crd.fullname" . }}
+certificateName:
+# The name of the service account to use.If not set and create is true, a name is generated using the fullname template
+serviceAccountName:
+# Will default to {{ include "sk-crd.fullname" . }}
+deploymentName:
+# Will default to {{ include "sk-crd.fullname" . }}-config
+configName:
+# Will default to {{ include "sk-crd.fullname" . }}
+serviceName:
+# Will default to {{ include "sk-crd.fullname" . }}
+ingressName:
+# Used when cross-ns. Will default to skas:{{ .Release.Namespace }}-{{ include "sk-crd.fullname" . }}
+clusterRoleName:
+# Used when same-ns. Will default to {{ include "sk-crd.fullname" . }}
+roleName:
+# A role to be bound to a user allowed to manage userdb. Will default to {{ include "sk-crd.fullname" . }}-editor
+editorRoleName:
+
+# ---------------------------------------------------------------------
+
 
 replicaCount: 1
 
@@ -15,8 +42,15 @@ crds:
   create: true
 
 log:
-  mode: dev
+  mode: json
   level: info
+
+probe:
+  port: 8181
+  scheme: HTTP
+
+metric:
+  port: 8080
 
 # -- Additional arguments to be added to the operator's args list
 additionalArgs: {}
@@ -27,31 +61,9 @@ podAnnotations: {}
 # -- Annotations to be added to all other resources
 commonAnnotations: {}
 
-probe:
-  port: 8181
-  scheme: HTTP
-
-metric:
-  port: 8080
-
 server:
   port: 7012
   ssl: true
-  # certificateSecretName: ,# Will default to {{ include "sk-crd.fullname" . }}-cert
-  # Cert-manger cluster issuer
-  clusterIssuer: cluster-issuer1
-  # If not provided and ssl:true, then a certificate must be provided externally as a secret. Here is a sample layout:
-  #
-  #      apiVersion: v1
-  #      kind: Secret
-  #      metadata:
-  #        name: {{ include "sk-crd.fullname" . }}-cert
-  #        namespace: skas-system
-  #      type: kubernetes.io/tls
-  #      data:
-  #        ca.crt: LS0tLS.......
-  #        tls.crt: LS0tLS.....
-  #        tls.key: LS0t......
 
 # -- Security Context for the whole pod
 podSecurityContext:
@@ -84,19 +96,43 @@ affinity: {}
 serviceAccount:
   # -- Specifies whether the service account should be created
   create: true
-  # -- The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
 
 rbac:
   # -- Specifies whether ClusterRole and ClusterRoleBinding should be created
   create: true
 
-userdbNamespace: skas-userdb
+ingressClass: nginx # Don't change, as only 'nginx' is supported for now.
 
+# The namespace hosting users and groupBindings definition. Default to deployment namespace
+userdbNamespace:
+
+
+# ---------------------------------------------------------------------------------------
+# The following are context dependant. Should be defined in a context related values file
+
+# The To access the service from outside k8s cluster
 ingress:
-  enabled: true
-  class: nginx
-  host:
+  enabled: false
+  Host:
+
+# Cert-manger cluster issuer
+clusterIssuer:
+# If not provided and ssl:true, then a certificate must be provided externally as a secret. Here is a sample layout:
+#
+#      apiVersion: v1
+#      kind: Secret
+#      metadata:
+#        name: {{ include "sk-crd.fullname" . }}-cert
+#        namespace: skas-system
+#      type: kubernetes.io/tls
+#      data:
+#        ca.crt: LS0tLS.......
+#        tls.crt: LS0tLS.....
+#        tls.key: LS0t......
+#
+# Refer to the documentation for more information about certificate creation
+
+
+
 
 

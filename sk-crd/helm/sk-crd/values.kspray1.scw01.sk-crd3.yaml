@@ -1,0 +1,17 @@
+# Everything in skas-userdb3
+#
+# kubectl create ns skas-userdb3
+# helm -n skas-userdb3 upgrade -i --values ./values.kspray1.scw01.sk-crd3.yaml sk-crd3 .
+#
+# helm -n skas-userdb3 uninstall sk-crd3
+
+log:
+  mode: dev
+  level: info
+
+clusterIssuer: cluster-issuer1
+
+ingress:
+  enabled: true
+  host: sk-crd3.ingress.kspray1.project33.scw01
+

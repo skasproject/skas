@@ -1,0 +1,20 @@
+
+# Pod in skas-system, userdb in skas-userdb2 namespace
+#
+# kubectl create ns skas-system
+# kubectl create ns skas-userdb2
+# helm -n skas-system upgrade -i --values ./values.kspray1.scw01.sk-crd2.yaml sk-crd2 .
+
+
+log:
+  mode: dev
+  level: debug
+
+clusterIssuer: cluster-issuer1
+
+userdbNamespace: skas-userdb2
+
+ingress:
+  enabled: true
+  host: sk-crd2.ingress.kspray1.project33.scw01
+

@@ -1,8 +1,7 @@
 
-
-# kubectl  create ns skas-userdb1
-# helm -n skas-userdb2 upgrade -i --values ./values.userdb2.yaml sk-userdb2 .
-
+# helm -n skas-xxxxx upgrade -i --values ./values.userdb2.yaml sk-userdb2 .
+#
+# helm -n skas-xxxxx uninstall sk-userdb2
 
 groupBindings:
   - user: raoul

@@ -2,11 +2,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "sk-crd.fullname" . }}
+  name: {{ include "sk-crd.deploymentName" . }}
   labels:
     {{- include "sk-crd.labels" . | nindent 4 }}
   annotations:
-    configmap.reloader.stakater.com/reload: "{{ include "sk-crd.fullname" . }}"
+    configmap.reloader.stakater.com/reload: "{{ include "sk-crd.configName" . }}"
   {{- with .Values.commonAnnotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -95,7 +95,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "sk-crd.fullname" . }}
+            name: {{ include "sk-crd.configName" . }}
         {{ if .Values.server.ssl }}
         - name: server-cert
           secret:

@@ -1,6 +1,7 @@
 
-# kubectl  create ns skas-userdb1
-# helm -n skas-userdb1 upgrade -i --values ./values.userdb1.yaml sk-userdb1 .
+# helm -n skas-xxxx upgrade -i --values ./values.userdb1.yaml sk-userdb1 .
+#
+# helm -n skas-xxxxx uninstall sk-userdb1
 
 # Passwords are login values
 

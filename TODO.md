@@ -10,6 +10,10 @@
 - Make user file dynamic (cf dexgate or certwatcher)
 
 
+## Doc:
+
+Refer to topolvm docs for the following:
+- Manually create a secret
 
 
 

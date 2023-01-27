@@ -1,9 +1,9 @@
-{{ if and .Values.server.ssl .Values.server.clusterIssuer }}
+{{ if and .Values.server.ssl .Values.clusterIssuer }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ include "sk-crd.fullname" . }}
+  name: {{ include "sk-crd.certificateName" . }}
   labels:
     {{- include "sk-crd.labels" . | nindent 4 }}
   {{- with .Values.commonAnnotations }}
@@ -12,12 +12,12 @@ metadata:
   {{- end }}
 spec:
   dnsNames:
-    - {{ include "sk-crd.fullname" . }}.{{ .Release.Namespace }}.svc
+    - {{ include "sk-crd.serviceName" . }}.{{ .Release.Namespace }}.svc
   {{ if .Values.ingress.enabled }}
     - {{ .Values.ingress.host }}
   {{ end }}
   secretName: {{ include "sk-crd.certificateSecretName" . }}
   issuerRef:
     kind: ClusterIssuer
-    name: {{ .Values.server.clusterIssuer }}
+    name: {{ .Values.clusterIssuer }}
 {{ end }}
