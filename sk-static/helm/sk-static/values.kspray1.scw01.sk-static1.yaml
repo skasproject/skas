@@ -10,6 +10,8 @@ log:
   mode: dev
   level: debug
 
+replicaCount: 1
+
 clusterIssuer: cluster-issuer1
 
 ingress:

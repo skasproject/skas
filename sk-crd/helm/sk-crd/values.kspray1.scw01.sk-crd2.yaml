@@ -5,6 +5,7 @@
 # kubectl create ns skas-userdb2
 # helm -n skas-system upgrade -i --values ./values.kspray1.scw01.sk-crd2.yaml sk-crd2 .
 
+replicaCount: 1
 
 log:
   mode: dev

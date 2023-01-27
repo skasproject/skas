@@ -6,6 +6,8 @@
 #
 # helm -n skas-system uninstall sk-crd1
 
+replicaCount: 1
+
 log:
   mode: dev
   level: info

@@ -5,6 +5,8 @@
 #
 # helm -n skas-userdb3 uninstall sk-crd3
 
+replicaCount: 1
+
 log:
   mode: dev
   level: info

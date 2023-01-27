@@ -11,12 +11,18 @@ metadata:
   {{- end }}
 data:
   users.yaml: |
+    {{ if not .Values.usersDb.users  }}
+    users: []
+    {{ end }}
     {{- with .Values.usersDb.users }}
     users:
       {{- range . }}
       - {{- toYaml . | nindent 8 }}
       {{- end }}
     {{- end }}
+    {{ if not .Values.usersDb.groupBindings  }}
+    groupBindings: []
+    {{ end }}
     {{- with .Values.usersDb.groupBindings }}
     groupBindings:
       {{- range . }}

@@ -29,7 +29,7 @@ editorRoleName:
 # ---------------------------------------------------------------------
 
 
-replicaCount: 1
+replicaCount: 2
 
 image:
   pullSecrets: []

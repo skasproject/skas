@@ -13,8 +13,6 @@ certificateName:
 deploymentName:
 # Will default to {{ include "sk-crd.fullname" . }}-config
 configName:
-# ConfigMap hosting users and groupBinding. Will default to {{ include "sk-crd.fullname" . }}-users
-usersDbName:
 # Will default to {{ include "sk-crd.fullname" . }}
 serviceName:
 # Will default to {{ include "sk-crd.fullname" . }}
@@ -46,7 +44,7 @@ podAnnotations: {}
 commonAnnotations: {}
 
 server:
-  port: 7010
+  port: 7011
   ssl: true
 
 # -- Security Context for the whole pod
@@ -103,10 +101,70 @@ clusterIssuer:
 #
 # Refer to the documentation for more information about certificate creation
 
-# The users database
-usersDb:
-  users: []
-  groupBindings: []
+# --------------------------------- LDAP configuration
+ldap:
+  # The host and port of the LDAP server.
+  # If port isn't supplied, it will be guessed based on the TLS configuration. 389 or 636.
+  host:
+  port:
 
+  # Timeout on connection to ldap server. Default to 10
+  timeoutSec: 10
 
+  # Required if LDAP host does not use TLS.
+  insecureNoSSL: false
+
+  # Don't verify the CA.
+  insecureSkipVerify: false
+
+  # Connect to the insecure port then issue a StartTLS command to negotiate a
+  # secure connection. If unsupplied secure connections will use the LDAPS protocol.
+  startTLS: false
+
+  # Path to a trusted root certificate file, or Base64 encoded PEM data containing root CAs.
+  rootCA:
+  rootCAData:
+
+  # If server require client authentication with certificate.
+  #  Path to a client cert file and a private key file
+  clientCert:
+  clientKey:
+
+  # BindDN and BindPW for an application service account. The connector uses these
+  # credentials to search for users and groups.
+  bindDN:
+  bindPW:
+
+  userSearch:
+    # BaseDN to start the search from. For example "cn=users,dc=example,dc=com"
+    baseDN:
+    # Optional filter to apply when searching the directory. For example "(objectClass=person)"
+    filter:
+    # Attribute to match against the login. This will be translated and combined
+    # with the other filter as "(<loginAttr>=<login>)".
+    loginAttr:
+    #  Can either be:
+    # * "sub" - search the whole sub tree (Default)
+    # * "one" - only search one level
+    scope: "sub"
+    # The attribute providing the numerical user ID
+    numericalIdAttr:
+    # The attribute providing the user's email
+    emailAttr:
+    # The attribute providing the user's common name
+    cnAttr:
+
+  groupSearch:
+    # BaseDN to start the search from. For example "cn=groups,dc=example,dc=com"
+    baseDN:
+    # Optional filter to apply when searching the directory. For example "(objectClass=posixGroup)"
+    filter: (objectClass=posixgroup)
+    # Defaults to "sub"
+    scope: "sub"
+    # The attribute of the group that represents its name.
+    nameAttr: cn
+    # The filter for group/user relationship will be: (<linkGroupAttr>=<Value of LinkUserAttr for the user>)
+    # If there is several value for LinkUserAttr, we will loop on.
+    linkGroupAttr:
+    linkUserAttr:
 
