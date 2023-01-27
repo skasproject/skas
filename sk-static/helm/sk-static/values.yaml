@@ -1,0 +1,112 @@
+
+nameOverride:
+fullNameOverride:
+
+# ---------------------------------------------------------------------
+# Following will allow renaming of resources. You can safely leave undefined and let default values
+#
+# Will default to {{ include "sk-crd.fullname" . }}-cert
+certificateSecretName:
+# Will default to {{ include "sk-crd.fullname" . }}
+certificateName:
+# Will default to {{ include "sk-crd.fullname" . }}
+deploymentName:
+# Will default to {{ include "sk-crd.fullname" . }}-config
+configName:
+# ConfigMap hosting users and groupBinding. Will default to {{ include "sk-crd.fullname" . }}-users
+usersDbName:
+# Will default to {{ include "sk-crd.fullname" . }}
+serviceName:
+# Will default to {{ include "sk-crd.fullname" . }}
+ingressName:
+
+# ---------------------------------------------------------------------
+
+replicaCount: 1
+
+image:
+  pullSecrets: []
+  repository: ghcr.io/skasproject/skas
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag:
+  pullPolicy: Always
+
+log:
+  mode: json
+  level: info
+
+
+# -- Additional arguments to be added to the operator's args list
+additionalArgs: {}
+
+# -- Annotations to be added to the pod
+podAnnotations: {}
+
+# -- Annotations to be added to all other resources
+commonAnnotations: {}
+
+server:
+  port: 7010
+  ssl: true
+
+# -- Security Context for the whole pod
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+  # fsGroup: 2000
+
+resources: {}
+# If you want to specify resources, uncomment the following
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+#
+#  limits:
+#    cpu: 100m
+#    memory: 200Mi
+#  requests:
+#    cpu: 100m
+#    memory: 100Mi
+
+# -- Nodeselector for the operator to be installed
+nodeSelector: {}
+
+# -- Tolerations for the operator to be installed
+tolerations: []
+
+# -- Affinity for the operator to be installed
+affinity: {}
+
+ingressClass: nginx # Don't change, as only 'nginx' is supported for now.
+
+# ---------------------------------------------------------------------------------------
+# The following are context dependant. Should be defined in a context related values file
+
+# The To access the service from outside k8s cluster
+ingress:
+  enabled: false
+  Host:
+
+# Cert-manger cluster issuer
+clusterIssuer:
+# If not provided and ssl:true, then a certificate must be provided externally as a secret. Here is a sample layout:
+#
+#      apiVersion: v1
+#      kind: Secret
+#      metadata:
+#        name: {{ include "sk-crd.fullname" . }}-cert
+#        namespace: skas-system
+#      type: kubernetes.io/tls
+#      data:
+#        ca.crt: LS0tLS.......
+#        tls.crt: LS0tLS.....
+#        tls.key: LS0t......
+#
+# Refer to the documentation for more information about certificate creation
+
+# The users database
+usersDb:
+  users: []
+  groupBindings: []
+
+
+

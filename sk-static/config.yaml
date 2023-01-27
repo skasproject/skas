@@ -1,7 +1,7 @@
 
 log:
   mode: dev
-  level: debug
+  level: info
 
 
 server:

@@ -93,5 +93,6 @@ func loadUsers(fileName string) error {
 			GroupsByUser[u] = []string{g}
 		}
 	}
+	GroupBindingCount = len(staticUsers.GroupBindings)
 	return nil
 }
