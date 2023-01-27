@@ -97,6 +97,6 @@ userdbNamespace: skas-userdb
 ingress:
   enabled: true
   class: nginx
-  host: sk-crd.ingress.kspray1.project33.scw01
+  host:
 
 
