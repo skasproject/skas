@@ -7,13 +7,13 @@ import (
 	"skas/sk-common/proto"
 )
 
-type StatusProvider interface {
+type StatusServerProvider interface {
 	GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error)
 }
 
 type UserStatusHandler struct {
 	BaseHandler
-	Provider StatusProvider
+	Provider StatusServerProvider
 }
 
 func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {

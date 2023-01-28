@@ -8,7 +8,7 @@ import (
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
 	"skas/sk-static/internal/config"
-	"skas/sk-static/internal/staticprovider"
+	"skas/sk-static/internal/staticstatusprovider"
 )
 
 func main() {
@@ -35,7 +35,7 @@ func main() {
 		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
-		Provider: staticprovider.New(config.Log.WithName("staticProvider")),
+		Provider: staticstatusprovider.New(config.Log.WithName("staticProvider")),
 	}).Methods("GET")
 	err := s.Start(context.Background())
 	if err != nil {

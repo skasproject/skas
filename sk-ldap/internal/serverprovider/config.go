@@ -1,4 +1,6 @@
-package ldapprovider
+package serverprovider
+
+// NB: These values are strongly inspired from dex configuration (https://github.com/dexidp/dex)
 
 type Config struct {
 

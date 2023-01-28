@@ -1,4 +1,4 @@
-package crdprovider
+package crdstatusprovider
 
 import (
 	"context"
@@ -10,23 +10,23 @@ import (
 	userdbv1alpha1 "skas/sk-crd/k8sapis/userdb/v1alpha1"
 )
 
-var _ handlers.StatusProvider = &crdProvider{}
+var _ handlers.StatusProvider = &crdStatusProvider{}
 
-type crdProvider struct {
+type crdStatusProvider struct {
 	kubeClient client.Client
 	namespace  string
 	logger     logr.Logger
 }
 
 func New(kubeClient client.Client, namespace string, logger logr.Logger) handlers.StatusProvider {
-	return &crdProvider{
+	return &crdStatusProvider{
 		kubeClient: kubeClient,
 		namespace:  namespace,
 		logger:     logger,
 	}
 }
 
-func (p crdProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
+func (p crdStatusProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
 	responsePayload := &proto.UserStatusResponse{
 		Login:       request.Login,
 		UserStatus:  proto.NotFound,

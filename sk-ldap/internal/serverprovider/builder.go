@@ -1,4 +1,4 @@
-package ldapprovider
+package serverprovider
 
 import (
 	"crypto/tls"
@@ -13,9 +13,9 @@ import (
 	"time"
 )
 
-func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (handlers.StatusProvider, error) {
+func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (handlers.StatusServerProvider, error) {
 
-	prvd := ldapProvider{
+	prvd := ldapStatusServerProvider{
 		Config: ldapConfig,
 	}
 	if prvd.Host == "" {

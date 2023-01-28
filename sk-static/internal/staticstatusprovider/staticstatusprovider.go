@@ -1,4 +1,4 @@
-package staticprovider
+package staticstatusprovider
 
 import (
 	"github.com/go-logr/logr"
@@ -8,19 +8,19 @@ import (
 	"skas/sk-static/internal/config"
 )
 
-var _ handlers.StatusProvider = &staticProvider{}
+var _ handlers.StatusProvider = &staticStatusProvider{}
 
-type staticProvider struct {
+type staticStatusProvider struct {
 	logger logr.Logger
 }
 
 func New(logger logr.Logger) handlers.StatusProvider {
-	return &staticProvider{
+	return &staticStatusProvider{
 		logger: logger,
 	}
 }
 
-func (s staticProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
+func (s staticStatusProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
 	responsePayload := &proto.UserStatusResponse{
 		Login:       request.Login,
 		UserStatus:  proto.NotFound,
