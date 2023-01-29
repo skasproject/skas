@@ -44,3 +44,22 @@ type UserStatusResponse struct {
 	Emails      []string   `json:"emails"`
 	Groups      []string   `json:"groups"`
 }
+
+// ----------------------------------- UserDescribe interface
+
+const UserDescribeUrlPath = "/userdescribe"
+
+type UserDescribeRequest struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+}
+
+type UserDescribeItem struct {
+	UserStatusResponse
+	ProviderName string `yaml:"providerName"`
+	Authority    bool   `yaml:"authority"` // Is this provider Authority for authentication (password) for this user
+}
+
+type UserDescribeResponse struct {
+	Items []UserDescribeItem `yaml:"items"`
+}

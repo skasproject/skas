@@ -12,4 +12,5 @@ type ScanItem struct {
 
 type ClientProviderChain interface {
 	Scan(login, password string) ([]ScanItem, error)
+	GetLength() int
 }

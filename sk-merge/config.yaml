@@ -1,8 +1,0 @@
-
-log:
-  mode: dev
-  level: info
-
-
-server:
-  ssl: false

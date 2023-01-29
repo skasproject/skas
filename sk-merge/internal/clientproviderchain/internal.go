@@ -15,7 +15,7 @@ type clientProviderChain struct {
 
 func (c clientProviderChain) Scan(login, password string) ([]ScanItem, error) {
 	result := make([]ScanItem, 0, len(c.providers))
-	for _, provider := range c.providers {
+	for idx, provider := range c.providers {
 		userStatusResponse, err := provider.GetUserStatus(login, password)
 		if err != nil {
 			if provider.IsCritical() {
@@ -27,9 +27,13 @@ func (c clientProviderChain) Scan(login, password string) ([]ScanItem, error) {
 		}
 		item := ScanItem{
 			UserStatusResponse: userStatusResponse,
-			Provider:           &provider,
+			Provider:           &c.providers[idx], // NOT &provider
 		}
 		result = append(result, item)
 	}
 	return result, nil
+}
+
+func (c clientProviderChain) GetLength() int {
+	return len(c.providers)
 }

@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"os"
 	"skas/sk-common/pkg/httpserver"
-	"skas/sk-common/pkg/httpserver/handlers"
+	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
+	"skas/sk-merge/internal/clientproviderchain"
 	"skas/sk-merge/internal/config"
+	"skas/sk-merge/internal/handlers"
 	"skas/sk-merge/internal/serverproviders"
 )
 
@@ -24,21 +26,39 @@ func main() {
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
-	provider, err := serverproviders.New(config.Log)
+
+	providerChain, err := clientproviderchain.New(config.Log.WithName("providerChain"))
 	if err != nil {
-		config.Log.Error(err, "ldap config")
+		config.Log.Error(err, "Error on clientProviderChain creation")
+		os.Exit(6)
+	}
+	if providerChain.GetLength() == 0 {
+		config.Log.Error(fmt.Errorf("no client provider defined"), "No client provider defined")
+		os.Exit(7)
+	}
+	// --------------------- UserDescribe handler
+	s.Router.Handle(proto.UserDescribeUrlPath, handlers.UserDescribeHandler{
+		BaseHandler: commonHandlers.BaseHandler{
+			Logger: s.Log.WithName("userDescribe handler"),
+		},
+		Chain: providerChain,
+	})
+	// --------------------- UserStatus handler
+	statusServerProvider, err := serverproviders.NewStatusServerProvider(config.Log)
+	if err != nil {
+		config.Log.Error(err, "Error on statusServerProvider creation")
 		os.Exit(3)
 	}
-	s.Router.Handle(proto.UserStatusUrlPath, &handlers.UserStatusHandler{
-		BaseHandler: handlers.BaseHandler{
-			Logger: s.Log,
+	s.Router.Handle(proto.UserStatusUrlPath, &commonHandlers.UserStatusHandler{
+		BaseHandler: commonHandlers.BaseHandler{
+			Logger: s.Log.WithName("userStatus handler"),
 		},
-		Provider: provider,
+		Provider: statusServerProvider,
 	}).Methods("GET")
+
 	err = s.Start(context.Background())
 	if err != nil {
 		s.Log.Error(err, "Error on Start()")
 		os.Exit(5)
 	}
-
 }

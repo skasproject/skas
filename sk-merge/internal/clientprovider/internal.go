@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"skas/sk-common/proto"
 	"skas/sk-merge/internal/config"
 )
@@ -14,6 +15,10 @@ var _ ClientProvider = &clientProvider{}
 type clientProvider struct {
 	config.ClientProviderConfig
 	httpClient *http.Client
+}
+
+func (c clientProvider) IsAuthority() bool {
+	return *c.CredentialAuthority
 }
 
 func (c clientProvider) IsCritical() bool {
@@ -32,7 +37,11 @@ func (c clientProvider) GetUserStatus(login, password string) (*proto.UserStatus
 	if err != nil {
 		return nil, fmt.Errorf("unable to marshal login UserStatusRequest (login:'%s'): %w", login, err)
 	}
-	request, err := http.NewRequest("GET", c.HttpClientConfig.Url, bytes.NewBuffer(body))
+	u, err := url.JoinPath(c.HttpClientConfig.Url, proto.UserStatusUrlPath)
+	if err != nil {
+		return nil, fmt.Errorf("unable to join %s to %s: %w", proto.UserStatusUrlPath, c.HttpClientConfig.Url, err)
+	}
+	request, err := http.NewRequest("GET", u, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, fmt.Errorf("unable to build request")
 	}

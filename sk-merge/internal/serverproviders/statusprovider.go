@@ -12,7 +12,7 @@ type statusServerProvider struct {
 	logger logr.Logger
 }
 
-func New(logger logr.Logger) (handlers.StatusServerProvider, error) {
+func NewStatusServerProvider(logger logr.Logger) (handlers.StatusServerProvider, error) {
 	return &statusServerProvider{
 		logger: logger,
 	}, nil
