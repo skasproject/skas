@@ -34,6 +34,7 @@ const (
 	PasswordChecked   = "passwordChecked"
 	PasswordFail      = "passwordFail"
 	PasswordUnchecked = "passwordUnchecked"
+	Undefined         = "undefined" // Used to mark a non-critical failing provider in userDescribe
 )
 
 type UserStatusResponse struct {
@@ -55,9 +56,16 @@ type UserDescribeRequest struct {
 }
 
 type UserDescribeItem struct {
-	UserStatusResponse
-	ProviderName string `yaml:"providerName"`
-	Authority    bool   `yaml:"authority"` // Is this provider Authority for authentication (password) for this user
+	UserStatusResponse UserStatusResponse `yaml:"userStatusResponse"`
+	Provider           struct {
+		Name                string `yaml:"name"`
+		CredentialAuthority bool   `yaml:"credentialAuthority"` // Is this provider Authority for authentication (password) for this user
+		GroupAuthority      bool   `yaml:"groupAuthority"`      // Should we take groups in account
+	} `yaml:"provider"`
+	Translated struct {
+		Groups []string `yaml:"groups"`
+		Uid    int64    `yaml:"uid"`
+	} `yaml:"translated"`
 }
 
 type UserDescribeResponse struct {

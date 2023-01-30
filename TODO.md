@@ -5,6 +5,7 @@
 - Ensure copyright message in all relevant location
 - Inject environment variable in config files
 - Reference and normalize os.exit() code
+- Switch to logrus, to have more level (i.e WARNING)
 
 ## sk-static
 

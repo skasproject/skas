@@ -17,7 +17,11 @@ type clientProvider struct {
 	httpClient *http.Client
 }
 
-func (c clientProvider) IsAuthority() bool {
+func (c clientProvider) IsGroupAuthority() bool {
+	return *c.GroupAuthority
+}
+
+func (c clientProvider) IsCredentialAuthority() bool {
 	return *c.CredentialAuthority
 }
 

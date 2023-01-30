@@ -3,6 +3,7 @@ package httpserver
 import (
 	"fmt"
 	"github.com/go-logr/logr"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/http/httputil"
 )
@@ -32,7 +33,11 @@ func LogHttp(h http.Handler) http.Handler {
 					lh.GetLog().V(1).Info("-----> HTTP Request", "method", r.Method, "uri", r.RequestURI, "remote", r.RemoteAddr)
 				}
 			}
-
+		} else {
+			// We don't have logger. We hack just to indicate this case. (All our Handler should support LoggingHandler)
+			logrusLog := logrus.New()
+			logrusLog.SetLevel(logrus.DebugLevel)
+			logrusLog.Log(logrus.WarnLevel, "An handler does not implements LoggingHandler interface")
 		}
 		h.ServeHTTP(w, r)
 	})

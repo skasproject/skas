@@ -38,19 +38,13 @@ func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 		Items: make([]proto.UserDescribeItem, 0, u.Chain.GetLength()),
 	}
 	for idx, _ := range items {
-		fmt.Printf("**************** provider name: %s\n", (*items[idx].Provider).GetName())
 		udi := &proto.UserDescribeItem{
 			UserStatusResponse: *items[idx].UserStatusResponse,
-			ProviderName:       (*items[idx].Provider).GetName(),
-			Authority:          (*items[idx].Provider).IsAuthority(),
 		}
+		udi.Provider.Name = (*items[idx].Provider).GetName()
+		udi.Provider.CredentialAuthority = (*items[idx].Provider).IsCredentialAuthority()
+		udi.Provider.GroupAuthority = (*items[idx].Provider).IsGroupAuthority()
 		responsePayload.Items = append(responsePayload.Items, *udi)
-
-		//responsePayload.Items = append(responsePayload.Items, proto.UserDescribeItem{
-		//	UserStatusResponse: *items[idx].UserStatusResponse,
-		//	ProviderName:       (*items[idx].Provider).GetName(),
-		//	Authority:          (*items[idx].Provider).IsAuthority(),
-		//})
 	}
 	u.GetLog().Info("User describe", "login", requestPayload.Login)
 	u.ServeJSON(response, responsePayload)

@@ -17,6 +17,7 @@ providers:
       url: https://sk-ldap1.ingress.kspray1.project33.scw01
     enabled: true
     credentialAuthority: false
+    critical: false
   - name: crd
     httpClient:
       url: https://sk-crd1.ingress.kspray1.project33.scw01

@@ -6,8 +6,8 @@ import (
 )
 
 type ScanItem struct {
-	*proto.UserStatusResponse
-	Provider *clientprovider.ClientProvider
+	UserStatusResponse *proto.UserStatusResponse
+	Provider           *clientprovider.ClientProvider
 }
 
 type ClientProviderChain interface {
