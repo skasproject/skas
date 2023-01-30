@@ -12,6 +12,7 @@ metadata:
   {{- end }}
 spec:
   dnsNames:
+    - {{ include "sk-ldap.serviceName" . }}
     - {{ include "sk-ldap.serviceName" . }}.{{ .Release.Namespace }}.svc
   {{ if .Values.ingress.enabled }}
     - {{ .Values.ingress.host }}

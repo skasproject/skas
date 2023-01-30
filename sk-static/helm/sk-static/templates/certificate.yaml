@@ -12,6 +12,7 @@ metadata:
   {{- end }}
 spec:
   dnsNames:
+    - {{ include "sk-static.serviceName" . }}
     - {{ include "sk-static.serviceName" . }}.{{ .Release.Namespace }}.svc
   {{ if .Values.ingress.enabled }}
     - {{ .Values.ingress.host }}

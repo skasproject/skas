@@ -8,13 +8,13 @@ import (
 	"skas/sk-static/internal/config"
 )
 
-var _ handlers.StatusProvider = &staticStatusProvider{}
+var _ handlers.StatusServerProvider = &staticStatusProvider{}
 
 type staticStatusProvider struct {
 	logger logr.Logger
 }
 
-func New(logger logr.Logger) handlers.StatusProvider {
+func New(logger logr.Logger) handlers.StatusServerProvider {
 	return &staticStatusProvider{
 		logger: logger,
 	}

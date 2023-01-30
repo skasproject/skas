@@ -26,6 +26,10 @@ COPY sk-static/go.mod sk-static/go.mod
 COPY sk-static/go.sum sk-static/go.sum
 RUN cd sk-static && go mod download
 
+COPY sk-merge/go.mod sk-merge/go.mod
+COPY sk-merge/go.sum sk-merge/go.sum
+RUN cd sk-merge && go mod download
+
 # Copy and build go programs
 
 COPY sk-common/pkg/ sk-common/pkg/
@@ -44,6 +48,11 @@ COPY sk-static/internal/ sk-static/internal/
 COPY sk-static/main.go sk-static/main.go
 RUN cd sk-static && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o sk-static main.go
 
+COPY sk-merge/internal/ sk-merge/internal/
+COPY sk-merge/main.go sk-merge/main.go
+RUN cd sk-merge && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o sk-merge main.go
+
+
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
@@ -51,6 +60,7 @@ WORKDIR /
 COPY --from=builder /workspace/sk-crd/sk-crd .
 COPY --from=builder /workspace/sk-ldap/sk-ldap .
 COPY --from=builder /workspace/sk-static/sk-static .
+COPY --from=builder /workspace/sk-merge/sk-merge .
 USER 65532:65532
 
 #ENTRYPOINT [""]

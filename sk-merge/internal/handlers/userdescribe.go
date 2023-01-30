@@ -51,7 +51,7 @@ func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 		udi.Provider.GroupAuthority = (*items[idx].Provider).IsGroupAuthority()
 		responsePayload.Items = append(responsePayload.Items, *udi)
 	}
-	u.GetLog().Info("User describe", "login", requestPayload.Login)
+	u.GetLog().Info("User describe", "login", requestPayload.Login, "status", responsePayload.Merged.UserStatus)
 	u.ServeJSON(response, responsePayload)
 }
 

@@ -34,7 +34,7 @@ log:
   level: info
 
 
-# -- Additional arguments to be added to the operator's args list
+# -- Additional arguments to be added to the executable's args list
 additionalArgs: {}
 
 # -- Annotations to be added to the pod

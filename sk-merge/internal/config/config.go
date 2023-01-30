@@ -38,6 +38,6 @@ type Config struct {
 	Server    httpserver.ServerConfig `yaml:"server"`
 	Providers []ClientProviderConfig  `yaml:"providers"`
 	// values added to above Providers
-	RootCaPath string `yaml:"rootCAPath"` // Path to a trusted root CA file
-	RootCaData string `yaml:"rootCAData"` // Base64 encoded PEM data containing root CA
+	RootCaPath string `yaml:"rootCaPath"` // Path to a trusted root CA file
+	RootCaData string `yaml:"rootCaData"` // Base64 encoded PEM data containing root CA
 }

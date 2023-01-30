@@ -3,21 +3,21 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ include "sk-crd.certificateName" . }}
+  name: {{ include "sk-merge.certificateName" . }}
   labels:
-    {{- include "sk-crd.labels" . | nindent 4 }}
+    {{- include "sk-merge.labels" . | nindent 4 }}
   {{- with .Values.commonAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   dnsNames:
-    - {{ include "sk-crd.serviceName" . }}
-    - {{ include "sk-crd.serviceName" . }}.{{ .Release.Namespace }}.svc
+    - {{ include "sk-merge.serviceName" . }}
+    - {{ include "sk-merge.serviceName" . }}.{{ .Release.Namespace }}.svc
   {{ if .Values.ingress.enabled }}
     - {{ .Values.ingress.host }}
   {{ end }}
-  secretName: {{ include "sk-crd.certificateSecretName" . }}
+  secretName: {{ include "sk-merge.certificateSecretName" . }}
   issuerRef:
     kind: ClusterIssuer
     name: {{ .Values.clusterIssuer }}

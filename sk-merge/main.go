@@ -43,6 +43,13 @@ func main() {
 		},
 		Chain: providerChain,
 	})
+	// --------------------- Login handler
+	s.Router.Handle(proto.LoginUrlPath, handlers.LoginHandler{
+		BaseHandler: commonHandlers.BaseHandler{
+			Logger: s.Log.WithName("login handler"),
+		},
+		Chain: providerChain,
+	})
 	// --------------------- UserStatus handler
 	statusServerProvider, err := serverproviders.NewStatusServerProvider(providerChain, config.Log)
 	if err != nil {

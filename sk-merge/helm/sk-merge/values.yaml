@@ -9,8 +9,6 @@ fullNameOverride:
 certificateSecretName:
 # Will default to {{ include "sk-crd.fullname" . }}
 certificateName:
-# The name of the service account to use.If not set and create is true, a name is generated using the fullname template
-serviceAccountName:
 # Will default to {{ include "sk-crd.fullname" . }}
 deploymentName:
 # Will default to {{ include "sk-crd.fullname" . }}-config
@@ -19,15 +17,8 @@ configName:
 serviceName:
 # Will default to {{ include "sk-crd.fullname" . }}
 ingressName:
-# Used when cross-ns. Will default to skas:{{ .Release.Namespace }}-{{ include "sk-crd.fullname" . }}
-clusterRoleName:
-# Used when same-ns. Will default to {{ include "sk-crd.fullname" . }}
-roleName:
-# A role to be bound to a user allowed to manage userdb. Will default to {{ include "sk-crd.fullname" . }}-editor
-editorRoleName:
 
 # ---------------------------------------------------------------------
-
 
 replicaCount: 2
 
@@ -38,19 +29,10 @@ image:
   tag:
   pullPolicy: Always
 
-crds:
-  create: true
-
 log:
   mode: json
   level: info
 
-probe:
-  port: 8181
-  scheme: HTTP
-
-metric:
-  port: 8080
 
 # -- Additional arguments to be added to the executable's args list
 additionalArgs: {}
@@ -62,7 +44,7 @@ podAnnotations: {}
 commonAnnotations: {}
 
 server:
-  port: 7012
+  port: 7013
   ssl: true
 
 # -- Security Context for the whole pod
@@ -92,20 +74,7 @@ tolerations: []
 # -- Affinity for the operator to be installed
 affinity: {}
 
-
-serviceAccount:
-  # -- Specifies whether the service account should be created
-  create: true
-
-rbac:
-  # -- Specifies whether ClusterRole and ClusterRoleBinding should be created
-  create: true
-
 ingressClass: nginx # Don't change, as only 'nginx' is supported for now.
-
-# The namespace hosting users and groupBindings definition. Default to deployment namespace
-userdbNamespace:
-
 
 # ---------------------------------------------------------------------------------------
 # The following are context dependant. Should be defined in a context related values file
@@ -116,6 +85,7 @@ ingress:
   Host:
 
 # Cert-manger cluster issuer
+# This is used to generate a certificate for our http server, on our 'top side'
 clusterIssuer:
 # If not provided and ssl:true, then a certificate must be provided externally as a secret. Here is a sample layout:
 #
@@ -132,7 +102,35 @@ clusterIssuer:
 #
 # Refer to the documentation for more information about certificate creation
 
+# This is used to validate the certificate of the identity provider in our 'bottom side'
+rootCaData:
+rootCaPath:
 
+# -------------------------------- underlying providers
 
+providers:
+#  - name: static
+#    enabled: true
+#    httpClient:
+#      url: https://sk-static1.ingress.kspray1.project33.scw01
+#      rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
+#      insecureSkipVerify: false
+#    credentialAuthority: true
+#    groupAuthority: true
+#    critical: true
+#    groupPattern: "%s"
+#    uidOffset: 0
 
+#  - name: ldap1
+#    httpClient:
+#      url: https://sk-ldap1.ingress.kspray1.project33.scw01
+#    enabled: true
+#    credentialAuthority: true
+#    critical: true
+#    groupPattern: "ldap_%s"
+#    uidOffset: 10000
 
+#  - name: crd
+#    httpClient:
+#      url: https://sk-crd1.ingress.kspray1.project33.scw01
+#    credentialAuthority: true

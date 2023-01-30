@@ -2,6 +2,11 @@ package proto
 
 // -------------------- Login interface
 
+// One important difference between Login and UserStatus API, is Lohin does not provide user info
+// if password is not validated.
+
+const LoginUrlPath = "/login"
+
 type LoginRequest struct {
 	Client   string `json:"client"` // A client identifier. For information purpose
 	Login    string `json:"login"`

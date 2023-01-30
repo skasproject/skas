@@ -15,6 +15,10 @@
 
 - Manage certificate with the same logic as sk-merge
 
+## sk-merge
+
+- Manage rootCaPath in helm chart (Global and  by provider)
+
 ## Doc:
 
 Refer to topolvm docs for the following:
