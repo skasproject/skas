@@ -7,4 +7,4 @@ log:
   level: debug
 
 server:
-  noSsl: true
+  ssl: false

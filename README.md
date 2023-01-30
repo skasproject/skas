@@ -24,7 +24,7 @@ sk-ldap
 
 ## Identity aggregator
 
-sk-join
+sk-merger
 
 ## Identity consumers:
 

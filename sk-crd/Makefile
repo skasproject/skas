@@ -14,14 +14,22 @@ CONTROLLER_TOOLS_VERSION ?= v0.11.1
 .PHONY: all
 all: manifests generate	## Generate all dependencies (crd, zz_generated...)
 
+
+# Setting SHELL to bash allows bash commands to be executed by recipes.
+# This is a requirement for 'setup-envtest.sh' in the test target.
+# Options are set to exit when a recipe line exits non-zero or a piped command fails.
+ SHELL = /usr/bin/env bash -o pipefail
+.SHELLFLAGS = -ec
+
+
 .PHONY: manifests
 manifests: controller-gen ## Generate CustomResourceDefinition objects.
 	$(CONTROLLER_GEN) crd paths="./..." output:crd:artifacts:config=helm/sk-crd/crds
+	#cd helm/sk-crd/crds && ls | while read f; do (echo "{{- if .Values.crds.create }}" && cat $$f  && echo "{{- end }}") >.tmp && mv .tmp $$f ; done
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
 	$(CONTROLLER_GEN) object:headerFile="misc/boilerplate.go.txt" paths="./..."
-
 
 .PHONY: controller-gen
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary. If wrong version is installed, it will be overwritten.

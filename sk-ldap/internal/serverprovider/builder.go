@@ -1,8 +1,9 @@
-package ldapprovider
+package serverprovider
 
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/base64"
 	"fmt"
 	"github.com/go-logr/logr"
 	"gopkg.in/ldap.v2"
@@ -12,9 +13,9 @@ import (
 	"time"
 )
 
-func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (handlers.StatusProvider, error) {
+func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (handlers.StatusServerProvider, error) {
 
-	prvd := ldapProvider{
+	prvd := ldapStatusServerProvider{
 		Config: ldapConfig,
 	}
 	if prvd.Host == "" {
@@ -64,11 +65,17 @@ func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (handlers
 
 	prvd.tlsConfig = &tls.Config{ServerName: prvd.Host, InsecureSkipVerify: prvd.InsecureSkipVerify}
 	if prvd.RootCA != "" || len(prvd.RootCAData) != 0 {
-		data := prvd.RootCAData
-		if len(data) == 0 {
+		var data []byte
+		if len(prvd.RootCAData) != 0 {
+			data = make([]byte, base64.StdEncoding.DecodedLen(len(prvd.RootCAData)))
+			_, err := base64.StdEncoding.Decode(data, []byte(prvd.RootCAData))
+			if err != nil {
+				return &prvd, fmt.Errorf("error while parsing RootCAData : %w", err)
+			}
+		} else {
 			var err error
 			if data, err = os.ReadFile(prvd.RootCA); err != nil {
-				return &prvd, fmt.Errorf("read CA file: %v", err)
+				return &prvd, fmt.Errorf("error while reading CA file: %w", err)
 			}
 		}
 		rootCAs := x509.NewCertPool()

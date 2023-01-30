@@ -7,10 +7,11 @@ import (
 )
 
 var (
-	Conf         Config
-	Log          logr.Logger
-	UserByLogin  map[string]StaticUser
-	GroupsByUser map[string][]string
+	Conf              Config
+	Log               logr.Logger
+	UserByLogin       map[string]StaticUser
+	GroupsByUser      map[string][]string
+	GroupBindingCount int
 )
 
 type Config struct {

@@ -1,8 +1,8 @@
 
 log:
   mode: dev
-  level: debug
+  level: info
 
 
 server:
-  noSsl: true
+  ssl: false

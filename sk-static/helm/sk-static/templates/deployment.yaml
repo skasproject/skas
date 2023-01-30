@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sk-static.deploymentName" . }}
+  labels:
+    {{- include "sk-static.labels" . | nindent 4 }}
+  annotations:
+    configmap.reloader.stakater.com/reload: "{{ include "sk-static.configName" . }}, {{ include "sk-static.usersDbName" . }}"
+  {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "sk-static.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "sk-static.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: sk-static
+          command:
+          - /sk-static
+          args:
+            - --configFile
+            - /config.yaml
+        {{-  range .Values.additionalArgs }}
+            - {{ . }}
+        {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.server.port }}
+              name: proto
+              protocol: TCP
+          {{- with .Values.resources }}
+          resources:
+          {{- toYaml . | nindent 12 }}
+          {{ end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - "ALL"
+          volumeMounts:
+            - mountPath: /config.yaml
+              name: config
+              subPath: config.yaml
+            - mountPath: /users.yaml
+              name: users
+              subPath: users.yaml
+            {{ if .Values.server.ssl }}
+            - mountPath: /tmp/cert/server
+              name: server-cert
+              readOnly: true
+            {{ end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 10
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "sk-static.configName" . }}
+        - name: users
+          configMap:
+            name: {{ include "sk-static.usersDbName" . }}
+        {{ if .Values.server.ssl }}
+        - name: server-cert
+          secret:
+            defaultMode: 420
+            secretName: {{ include "sk-static.certificateSecretName" . }}
+        {{ end }}
+

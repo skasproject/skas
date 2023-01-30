@@ -15,7 +15,7 @@ import (
 
 type ServerConfig struct {
 	BindAddr string `yaml:"bindAddr"`
-	NoSsl    bool   `yaml:"noSsl"`
+	Ssl      bool   `yaml:"ssl"`
 	CertDir  string `yaml:"certDir"`  // CertDir is the directory that contains the server key and certificate.
 	CertName string `yaml:"certName"` // CertName is the server certificate name. Defaults to tls.crt.
 	KeyName  string `yaml:"keyName"`  // KeyName is the server key name. Defaults to tls.key.
@@ -32,7 +32,7 @@ type Server struct {
 }
 
 func (server *Server) Groom() {
-	if !server.Config.NoSsl {
+	if server.Config.Ssl {
 		if server.Config.CertName == "" {
 			server.Config.CertName = "tls.crt"
 		}
@@ -58,7 +58,7 @@ func (server *Server) Start(ctx context.Context) error {
 
 	var listener net.Listener
 	var err error
-	if server.Config.NoSsl {
+	if !server.Config.Ssl {
 		listener, err = net.Listen("tcp", server.Config.BindAddr)
 		if err != nil {
 			return err
@@ -90,7 +90,7 @@ func (server *Server) Start(ctx context.Context) error {
 		}
 	}
 
-	server.Log.Info("Listening", "bindAddr", server.Config.BindAddr, "ssl", !server.Config.NoSsl)
+	server.Log.Info("Listening", "bindAddr", server.Config.BindAddr, "ssl", server.Config.Ssl)
 
 	srv := &http.Server{
 		Handler: server.Router,

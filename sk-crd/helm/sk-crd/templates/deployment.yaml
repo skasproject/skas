@@ -1,0 +1,105 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sk-crd.deploymentName" . }}
+  labels:
+    {{- include "sk-crd.labels" . | nindent 4 }}
+  annotations:
+    configmap.reloader.stakater.com/reload: "{{ include "sk-crd.configName" . }}"
+  {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "sk-crd.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "sk-crd.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: sk-crd
+          command:
+          - /sk-crd
+          args:
+            - --configFile
+            - /config.yaml
+        {{-  range .Values.additionalArgs }}
+            - {{ . }}
+        {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          livenessProbe:
+            httpGet:
+              path: /readyz
+              port: {{ .Values.probe.port }}
+              scheme: {{ .Values.probe.scheme }}
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: {{ .Values.probe.port }}
+              scheme: {{ .Values.probe.scheme }}
+          ports:
+            - containerPort: {{ .Values.metric.port }}
+              name: metrics
+              protocol: TCP
+            - containerPort: {{ .Values.server.port }}
+              name: proto
+              protocol: TCP
+          {{- with .Values.resources }}
+          resources:
+          {{- toYaml . | nindent 12 }}
+          {{ end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - "ALL"
+          volumeMounts:
+            - mountPath: /config.yaml
+              name: config
+              subPath: config.yaml
+            {{ if .Values.server.ssl }}
+            - mountPath: /tmp/cert/server
+              name: server-cert
+              readOnly: true
+            {{ end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      serviceAccountName: {{ include "sk-crd.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 10
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "sk-crd.configName" . }}
+        {{ if .Values.server.ssl }}
+        - name: server-cert
+          secret:
+            defaultMode: 420
+            secretName: {{ include "sk-crd.certificateSecretName" . }}
+        {{ end }}
+

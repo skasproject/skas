@@ -1,4 +1,6 @@
-package ldapprovider
+package serverprovider
+
+// NB: These values are strongly inspired from dex configuration (https://github.com/dexidp/dex)
 
 type Config struct {
 
@@ -24,7 +26,7 @@ type Config struct {
 	// Path to a trusted root certificate file.
 	RootCA string `yaml:"rootCA"`
 	// Base64 encoded PEM data containing root CAs.
-	RootCAData []byte `yaml:"rootCAData"`
+	RootCAData string `yaml:"rootCAData"`
 	// Path to a client cert file
 	ClientCert string `yaml:"clientCert"`
 	// Path to a client private key file

@@ -14,7 +14,7 @@ import (
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
 	"skas/sk-crd/internal/config"
-	"skas/sk-crd/internal/crdprovider"
+	"skas/sk-crd/internal/crdstatusprovider"
 	userdbv1alpha1 "skas/sk-crd/k8sapis/userdb/v1alpha1"
 )
 
@@ -31,7 +31,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	config.Log.Info("sk-crd start", "userDbNamespace", config.Conf.Namespace)
+	config.Log.Info("sk-crd start", "userDbNamespace", config.Conf.Namespace, "version", config.Version, "logLevel", config.Conf.Log.Level)
 
 	//config.Config.Log.V(0).Info("Log V0")
 	//config.Config.Log.V(1).Info("Log V1")
@@ -72,7 +72,7 @@ func main() {
 		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
-		Provider: crdprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
+		Provider: crdstatusprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
 	}).Methods("GET")
 
 	err = mgr.Add(s)

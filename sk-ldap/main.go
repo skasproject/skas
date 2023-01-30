@@ -9,7 +9,7 @@ import (
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
 	"skas/sk-ldap/internal/config"
-	"skas/sk-ldap/internal/ldapprovider"
+	"skas/sk-ldap/internal/serverprovider"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 		_, _ = fmt.Fprintf(os.Stderr, "Unable to load configuration: %v\n", err)
 		os.Exit(2)
 	}
-	config.Log.Info("sk-ldap start", "ldapServer", config.Conf.Ldap.Host)
+	config.Log.Info("sk-ldap start", "ldapServer", config.Conf.Ldap.Host, "version", config.Version, "logLevel", config.Conf.Log.Level)
 
 	//config.Log.V(0).Info("Log V0")
 	//config.Log.V(1).Info("Log V1")
@@ -31,7 +31,7 @@ func main() {
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
-	provider, err := ldapprovider.New(&config.Conf.Ldap, config.Log, filepath.Dir(config.ConfigFile))
+	provider, err := serverprovider.New(&config.Conf.Ldap, config.Log, filepath.Dir(config.ConfigFile))
 	if err != nil {
 		config.Log.Error(err, "ldap config")
 		os.Exit(3)

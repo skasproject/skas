@@ -1,0 +1,20 @@
+
+# Everything in skas-system
+#
+# kubectl create ns skas-system
+# helm -n skas-system upgrade -i --values ./values.kspray1.scw01.sk-crd1.yaml sk-crd1 .
+#
+# helm -n skas-system uninstall sk-crd1
+
+replicaCount: 1
+
+log:
+  mode: dev
+  level: info
+
+clusterIssuer: cluster-issuer1
+
+ingress:
+  enabled: true
+  host: sk-crd1.ingress.kspray1.project33.scw01
+

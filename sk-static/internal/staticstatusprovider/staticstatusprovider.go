@@ -1,4 +1,4 @@
-package staticprovider
+package staticstatusprovider
 
 import (
 	"github.com/go-logr/logr"
@@ -8,32 +8,31 @@ import (
 	"skas/sk-static/internal/config"
 )
 
-var _ handlers.StatusProvider = &staticProvider{}
+var _ handlers.StatusServerProvider = &staticStatusProvider{}
 
-type staticProvider struct {
+type staticStatusProvider struct {
 	logger logr.Logger
 }
 
-func New(logger logr.Logger) handlers.StatusProvider {
-	return &staticProvider{
+func New(logger logr.Logger) handlers.StatusServerProvider {
+	return &staticStatusProvider{
 		logger: logger,
 	}
 }
 
-func (s staticProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
+func (s staticStatusProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
 	responsePayload := &proto.UserStatusResponse{
-		UserStatus: proto.NotFound,
-		User: &proto.User{
-			Login:       request.Login,
-			Emails:      []string{},
-			CommonNames: []string{},
-			Groups:      []string{},
-		},
+		Login:       request.Login,
+		UserStatus:  proto.NotFound,
+		Uid:         0,
+		Emails:      []string{},
+		CommonNames: []string{},
+		Groups:      []string{},
 	}
 	// Handle groups, even if not found
 	groups, ok := config.GroupsByUser[request.Login]
 	if ok {
-		responsePayload.User.Groups = groups
+		responsePayload.Groups = groups
 	}
 
 	user, ok := config.UserByLogin[request.Login]
@@ -43,13 +42,13 @@ func (s staticProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.U
 		return responsePayload, nil
 	}
 	if user.Uid != nil {
-		responsePayload.User.Uid = *user.Uid
+		responsePayload.Uid = *user.Uid
 	}
 	if len(user.CommonNames) > 0 { // Avoid copying a nil
-		responsePayload.User.CommonNames = user.CommonNames
+		responsePayload.CommonNames = user.CommonNames
 	}
 	if len(user.Emails) > 0 { // Avoid copying a nil
-		responsePayload.User.Emails = user.Emails
+		responsePayload.Emails = user.Emails
 	}
 	if user.Disabled != nil && *user.Disabled {
 		s.logger.V(1).Info("User found but disabled", "user", request.Login)
@@ -65,7 +64,7 @@ func (s staticProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.U
 				responsePayload.UserStatus = proto.PasswordFail
 			}
 		}
-		s.logger.V(1).Info("User found", "user", responsePayload.User.Login, "status", responsePayload.UserStatus)
+		s.logger.V(1).Info("User found", "user", responsePayload.Login, "status", responsePayload.UserStatus)
 	}
 	return responsePayload, nil
 }

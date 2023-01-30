@@ -1,0 +1,52 @@
+
+# Everything in skas-system
+#
+# kubectl create ns skas-system
+# helm -n skas-system upgrade -i --values ./values.kspray1.scw01.sk-static1.yaml sk-static1 .
+#
+# helm -n skas-system uninstall sk-static1
+
+log:
+  mode: dev
+  level: debug
+
+replicaCount: 1
+
+clusterIssuer: cluster-issuer1
+
+ingress:
+  enabled: true
+  host: sk-static1.ingress.kspray1.project33.scw01
+
+usersDb:
+  users:
+    - login: sa
+      uid: 1957
+      commonNames: ["Serge ALEXANDRE" ]
+      emails: ["sa@broadsoftware.com" ]
+      passwordHash: "$2a$10$cPsdk3AE0KJxV1DuUwGovOPwrC0UnlPDspzKrvQ1eSD9kTVS1QRNa"    # as
+    - login: jt
+
+    - login: disabled
+      disabled: true
+
+
+  groupBindings:
+    - user: sa
+      group: devs
+    - user: sa
+      group: admin
+
+    - user: jt
+      group: devs
+    - user: jt
+      group: all
+
+    - user: disabled
+      group: all
+
+    - user: albert
+      group: all
+
+    - user: raymond
+      group: lost
