@@ -8,6 +8,7 @@ import (
 type ScanItem struct {
 	UserStatusResponse *proto.UserStatusResponse
 	Provider           *clientprovider.ClientProvider
+	Translated         *proto.Translated
 }
 
 type ClientProviderChain interface {

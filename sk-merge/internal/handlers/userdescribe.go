@@ -34,12 +34,17 @@ func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 		u.HttpError(response, fmt.Sprintf("Providers scan: %v", err), http.StatusInternalServerError)
 		return
 	}
+	merged, credentialAuthorityProvider := clientproviderchain.Merge(requestPayload.Login, items)
+
 	responsePayload := &proto.UserDescribeResponse{
-		Items: make([]proto.UserDescribeItem, 0, u.Chain.GetLength()),
+		Items:                       make([]proto.UserDescribeItem, 0, u.Chain.GetLength()),
+		Merged:                      *merged,
+		CredentialAuthorityProvider: credentialAuthorityProvider,
 	}
 	for idx, _ := range items {
 		udi := &proto.UserDescribeItem{
 			UserStatusResponse: *items[idx].UserStatusResponse,
+			Translated:         *items[idx].Translated,
 		}
 		udi.Provider.Name = (*items[idx].Provider).GetName()
 		udi.Provider.CredentialAuthority = (*items[idx].Provider).IsCredentialAuthority()

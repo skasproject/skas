@@ -55,6 +55,11 @@ type UserDescribeRequest struct {
 	Password string `json:"password"`
 }
 
+type Translated struct {
+	Groups []string `yaml:"groups"`
+	Uid    int64    `yaml:"uid"`
+}
+
 type UserDescribeItem struct {
 	UserStatusResponse UserStatusResponse `yaml:"userStatusResponse"`
 	Provider           struct {
@@ -62,12 +67,11 @@ type UserDescribeItem struct {
 		CredentialAuthority bool   `yaml:"credentialAuthority"` // Is this provider Authority for authentication (password) for this user
 		GroupAuthority      bool   `yaml:"groupAuthority"`      // Should we take groups in account
 	} `yaml:"provider"`
-	Translated struct {
-		Groups []string `yaml:"groups"`
-		Uid    int64    `yaml:"uid"`
-	} `yaml:"translated"`
+	Translated Translated `yaml:"translated"`
 }
 
 type UserDescribeResponse struct {
-	Items []UserDescribeItem `yaml:"items"`
+	Items                       []UserDescribeItem `yaml:"items"`
+	Merged                      UserStatusResponse `yaml:"merged"`
+	CredentialAuthorityProvider string             `yaml:"credentialAuthorityProvider"`
 }

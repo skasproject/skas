@@ -44,7 +44,7 @@ func main() {
 		Chain: providerChain,
 	})
 	// --------------------- UserStatus handler
-	statusServerProvider, err := serverproviders.NewStatusServerProvider(config.Log)
+	statusServerProvider, err := serverproviders.NewStatusServerProvider(providerChain, config.Log)
 	if err != nil {
 		config.Log.Error(err, "Error on statusServerProvider creation")
 		os.Exit(3)

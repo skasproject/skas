@@ -10,7 +10,7 @@ import (
 	userdbv1alpha1 "skas/sk-crd/k8sapis/userdb/v1alpha1"
 )
 
-var _ handlers.StatusProvider = &crdStatusProvider{}
+var _ handlers.StatusServerProvider = &crdStatusProvider{}
 
 type crdStatusProvider struct {
 	kubeClient client.Client
@@ -18,7 +18,7 @@ type crdStatusProvider struct {
 	logger     logr.Logger
 }
 
-func New(kubeClient client.Client, namespace string, logger logr.Logger) handlers.StatusProvider {
+func New(kubeClient client.Client, namespace string, logger logr.Logger) handlers.StatusServerProvider {
 	return &crdStatusProvider{
 		kubeClient: kubeClient,
 		namespace:  namespace,
