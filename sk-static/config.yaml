@@ -10,5 +10,5 @@ server:
 
 clients:
   - id: "merger"
-    secret: "1234"
+    secret: "${MERGER_SECRET}"
 

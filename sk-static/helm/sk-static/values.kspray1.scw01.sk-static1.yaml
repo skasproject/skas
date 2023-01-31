@@ -18,6 +18,10 @@ ingress:
   enabled: true
   host: sk-static1.ingress.kspray1.project33.scw01
 
+clients:
+  - id: "merger"
+    secret: "1234"
+
 usersDb:
   users:
     - login: sa

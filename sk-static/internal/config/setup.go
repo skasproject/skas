@@ -33,18 +33,9 @@ func Setup() error {
 	}
 
 	// ------------------------------------ Load config file
-	fn, err := filepath.Abs(configFile)
+	_, err := misc.LoadConfig(configFile, &Conf)
 	if err != nil {
 		return err
-	}
-	file, err := os.Open(fn)
-	if err != nil {
-		return err
-	}
-	decoder := yaml.NewDecoder(file)
-	decoder.SetStrict(true)
-	if err = decoder.Decode(&Conf); err != nil {
-		return fmt.Errorf("file '%s': %w", configFile, err)
 	}
 
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Mode, "logMode")

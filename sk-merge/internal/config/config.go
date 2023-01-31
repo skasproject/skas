@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/go-logr/logr"
-	"skas/sk-common/clientmanager"
+	"skas/sk-common/pkg/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/misc"
 )

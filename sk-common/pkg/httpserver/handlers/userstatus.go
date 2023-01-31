@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"skas/sk-common/clientmanager"
+	"skas/sk-common/pkg/clientmanager"
 	"skas/sk-common/proto"
 )
 

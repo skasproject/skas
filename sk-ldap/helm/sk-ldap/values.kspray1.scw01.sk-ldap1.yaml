@@ -18,6 +18,9 @@ ingress:
   enabled: true
   host: sk-ldap1.ingress.kspray1.project33.scw01
 
+clients:
+  - id: "merger"
+    secret: "1234"
 
 ldap:
   host: ldap.ops.scw01

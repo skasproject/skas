@@ -23,3 +23,5 @@ data:
     {{ if .Values.server.ssl }}
       certDir: /tmp/cert/server
     {{ end }}
+    clients:
+{{ .Values.clients | toYaml | indent 6 }}

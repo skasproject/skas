@@ -115,6 +115,13 @@ ingress:
   enabled: false
   Host:
 
+clients:
+#  - id: "merger"
+#    secret: "1234"
+# To be fully open (No authentication):
+#  - id: "*"
+#  - secret: "*"
+
 # Cert-manger cluster issuer
 clusterIssuer:
 # If not provided and ssl:true, then a certificate must be provided externally as a secret. Here is a sample layout:
