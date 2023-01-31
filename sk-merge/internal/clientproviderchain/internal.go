@@ -29,8 +29,11 @@ func (c clientProviderChain) Scan(login, password string) ([]ScanItem, error) {
 				item = ScanItem{
 					Provider: &c.providers[idx], // NOT &provider
 					UserStatusResponse: &proto.UserStatusResponse{
-						Login:      login,
-						UserStatus: proto.Undefined,
+						Login:       login,
+						UserStatus:  proto.Undefined,
+						CommonNames: []string{},
+						Emails:      []string{},
+						Groups:      []string{},
 					},
 					Translated: &proto.Translated{
 						Uid:    0,

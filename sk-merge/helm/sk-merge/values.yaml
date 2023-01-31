@@ -102,11 +102,31 @@ clusterIssuer:
 #
 # Refer to the documentation for more information about certificate creation
 
+# ---------------------------------- Provided services:
+
+services:
+  login:
+    enabled: true
+#   clients:
+#     - id: "*"
+#       secret: "1234"
+  userStatus:
+    enabled: false
+#   clients:
+#     - id: "*"
+#       secret: "1234"
+  userDescribe:
+    enabled: true
+#   clients:
+#     - id: "*"
+#       secret: "1234"
+
+
+# -------------------------------- underlying providers
+
 # This is used to validate the certificate of the identity provider in our 'bottom side'
 rootCaData:
 rootCaPath:
-
-# -------------------------------- underlying providers
 
 providers:
 #  - name: static

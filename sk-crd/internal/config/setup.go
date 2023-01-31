@@ -3,9 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/pflag"
-	"gopkg.in/yaml.v2"
 	"os"
-	"path/filepath"
 	"skas/sk-common/pkg/misc"
 )
 
@@ -37,19 +35,7 @@ func Setup() error {
 	}
 
 	// ------------------------------------ Load config file
-	fn, err := filepath.Abs(configFile)
-	if err != nil {
-		return err
-	}
-	file, err := os.Open(fn)
-	if err != nil {
-		return err
-	}
-	decoder := yaml.NewDecoder(file)
-	decoder.SetStrict(true)
-	if err = decoder.Decode(&Conf); err != nil {
-		return fmt.Errorf("file '%s': %w", configFile, err)
-	}
+	_, err := misc.LoadConfig(configFile, &Conf)
 
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Mode, "logMode")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Level, "logLevel")

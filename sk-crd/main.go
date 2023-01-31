@@ -10,7 +10,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
-	"skas/sk-common/clientmanager"
+	"skas/sk-common/pkg/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"

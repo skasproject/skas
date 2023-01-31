@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"skas/sk-common/clientmanager"
+	"skas/sk-common/pkg/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
