@@ -22,7 +22,7 @@ func (c clientProviderChain) Scan(login, password string) ([]ScanItem, error) {
 		if err != nil {
 			if provider.IsCritical() {
 				c.logger.Error(err, "Provider error. aborting", "provider", provider.GetName())
-				return nil, fmt.Errorf("error on provider %s: %w", provider.GetName(), err)
+				return nil, fmt.Errorf("error on provider '%s': %w", provider.GetName(), err)
 			} else {
 				c.logger.Error(err, "Provider error. Skipping", "provider", provider.GetName())
 				// Build a fake ScanItem

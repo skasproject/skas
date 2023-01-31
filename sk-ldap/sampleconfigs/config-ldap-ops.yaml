@@ -7,6 +7,13 @@ log:
 server:
   ssl: false
 
+clients:
+  - id: "xxxx"
+    secret: "abcd"
+  - id: "merger"
+    secret: "1234"
+
+
 ldap:
   host: ldap.ops.scw01
   #port: 636

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"skas/sk-common/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
@@ -40,7 +41,8 @@ func main() {
 		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
-		Provider: provider,
+		Provider:      provider,
+		ClientManager: clientmanager.New(config.Conf.Clients),
 	}).Methods("GET")
 	err = s.Start(context.Background())
 	if err != nil {

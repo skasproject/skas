@@ -8,3 +8,7 @@ log:
 
 server:
   ssl: false
+
+clients:
+  - id: "merger"
+    secret: "1234"

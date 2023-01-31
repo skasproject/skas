@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-logr/logr"
 	"net/http"
+	"skas/sk-common/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
@@ -17,7 +18,8 @@ var _ httpserver.LoggingHandler = &UserDescribeHandler{}
 
 type UserDescribeHandler struct {
 	commonHandlers.BaseHandler
-	Chain clientproviderchain.ClientProviderChain
+	Chain         clientproviderchain.ClientProviderChain
+	ClientManager clientmanager.ClientManager
 }
 
 func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
@@ -27,6 +29,10 @@ func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 	err := decoder.Decode(&requestPayload)
 	if err != nil {
 		u.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
+		return
+	}
+	if !u.ClientManager.Validate(&requestPayload.ClientAuth) {
+		u.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
 	items, err := u.Chain.Scan(requestPayload.Login, requestPayload.Password)

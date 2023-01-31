@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"skas/sk-common/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
@@ -37,31 +38,40 @@ func main() {
 		os.Exit(7)
 	}
 	// --------------------- UserDescribe handler
-	s.Router.Handle(proto.UserDescribeUrlPath, handlers.UserDescribeHandler{
-		BaseHandler: commonHandlers.BaseHandler{
-			Logger: s.Log.WithName("userDescribe handler"),
-		},
-		Chain: providerChain,
-	})
-	// --------------------- Login handler
-	s.Router.Handle(proto.LoginUrlPath, handlers.LoginHandler{
-		BaseHandler: commonHandlers.BaseHandler{
-			Logger: s.Log.WithName("login handler"),
-		},
-		Chain: providerChain,
-	})
-	// --------------------- UserStatus handler
-	statusServerProvider, err := serverproviders.NewStatusServerProvider(providerChain, config.Log)
-	if err != nil {
-		config.Log.Error(err, "Error on statusServerProvider creation")
-		os.Exit(3)
+	if config.Conf.Services.UserDescribe.Enabled {
+		s.Router.Handle(proto.UserDescribeUrlPath, handlers.UserDescribeHandler{
+			BaseHandler: commonHandlers.BaseHandler{
+				Logger: s.Log.WithName("userDescribe handler"),
+			},
+			Chain:         providerChain,
+			ClientManager: clientmanager.New(config.Conf.Services.UserDescribe.Clients),
+		}).Methods("GET")
 	}
-	s.Router.Handle(proto.UserStatusUrlPath, &commonHandlers.UserStatusHandler{
-		BaseHandler: commonHandlers.BaseHandler{
-			Logger: s.Log.WithName("userStatus handler"),
-		},
-		Provider: statusServerProvider,
-	}).Methods("GET")
+	// --------------------- Login handler
+	if config.Conf.Services.Login.Enabled {
+		s.Router.Handle(proto.LoginUrlPath, handlers.LoginHandler{
+			BaseHandler: commonHandlers.BaseHandler{
+				Logger: s.Log.WithName("login handler"),
+			},
+			Chain:         providerChain,
+			ClientManager: clientmanager.New(config.Conf.Services.Login.Clients),
+		}).Methods("GET")
+	}
+	// --------------------- UserStatus handler
+	if config.Conf.Services.UserStatus.Enabled {
+		statusServerProvider, err := serverproviders.NewStatusServerProvider(providerChain, config.Log)
+		if err != nil {
+			config.Log.Error(err, "Error on statusServerProvider creation")
+			os.Exit(3)
+		}
+		s.Router.Handle(proto.UserStatusUrlPath, &commonHandlers.UserStatusHandler{
+			BaseHandler: commonHandlers.BaseHandler{
+				Logger: s.Log.WithName("userStatus handler"),
+			},
+			Provider:      statusServerProvider,
+			ClientManager: clientmanager.New(config.Conf.Services.UserStatus.Clients),
+		}).Methods("GET")
+	}
 
 	err = s.Start(context.Background())
 	if err != nil {

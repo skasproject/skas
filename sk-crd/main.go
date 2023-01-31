@@ -10,6 +10,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
+	"skas/sk-common/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto"
@@ -72,7 +73,8 @@ func main() {
 		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
-		Provider: crdstatusprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
+		Provider:      crdstatusprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
+		ClientManager: clientmanager.New(config.Conf.Clients),
 	}).Methods("GET")
 
 	err = mgr.Add(s)
