@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"skas/sk-common/clientmanager"
 	"skas/sk-common/proto"
 )
 
@@ -13,7 +14,8 @@ type StatusServerProvider interface {
 
 type UserStatusHandler struct {
 	BaseHandler
-	Provider StatusServerProvider
+	Provider      StatusServerProvider
+	ClientManager clientmanager.ClientManager
 }
 
 func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
@@ -23,6 +25,10 @@ func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *htt
 	err := decoder.Decode(&requestPayload)
 	if err != nil {
 		h.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
+		return
+	}
+	if !h.ClientManager.Validate(&requestPayload.ClientAuth) {
+		h.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
 	responsePayload, err := h.Provider.GetUserStatus(requestPayload)

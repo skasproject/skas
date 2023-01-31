@@ -37,6 +37,10 @@ func (c clientProvider) GetUserStatus(login, password string) (*proto.UserStatus
 	body, err := json.Marshal(proto.UserStatusRequest{
 		Login:    login,
 		Password: password,
+		ClientAuth: proto.ClientAuth{
+			Id:     c.Client.Id,
+			Secret: c.Client.Secret,
+		},
 	})
 	if err != nil {
 		return nil, nil, fmt.Errorf("unable to marshal login UserStatusRequest (login:'%s'): %w", login, err)

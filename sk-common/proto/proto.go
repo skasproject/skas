@@ -7,10 +7,15 @@ package proto
 
 const LoginUrlPath = "/login"
 
+type ClientAuth struct {
+	Id     string `json:"id"`
+	Secret string `json:"secret"`
+}
+
 type LoginRequest struct {
-	Client   string `json:"client"` // A client identifier. For information purpose
-	Login    string `json:"login"`
-	Password string `json:"password"`
+	ClientAuth ClientAuth `json:"clientAuth"`
+	Login      string     `json:"login"`
+	Password   string     `json:"password"`
 }
 
 type LoginResponse struct {
@@ -27,8 +32,9 @@ type LoginResponse struct {
 const UserStatusUrlPath = "/userstatus"
 
 type UserStatusRequest struct {
-	Login    string `json:"login"`
-	Password string `json:"password"`
+	ClientAuth ClientAuth `json:"clientAuth"`
+	Login      string     `json:"login"`
+	Password   string     `json:"password"`
 }
 
 type UserStatus string
@@ -56,8 +62,9 @@ type UserStatusResponse struct {
 const UserDescribeUrlPath = "/userdescribe"
 
 type UserDescribeRequest struct {
-	Login    string `json:"login"`
-	Password string `json:"password"`
+	ClientAuth ClientAuth `json:"clientAuth"`
+	Login      string     `json:"login"`
+	Password   string     `json:"password"`
 }
 
 type Translated struct {

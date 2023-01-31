@@ -18,6 +18,8 @@
 ## sk-merge
 
 - Manage rootCaPath in helm chart (Global and  by provider)
+- On startup, perform a scan to check underlying providers (A flag to disable)
+- Rename userDescribe to userExplain
 
 ## Doc:
 

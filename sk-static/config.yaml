@@ -1,8 +1,14 @@
 
 log:
   mode: dev
-  level: info
+  level: trace
 
 
 server:
   ssl: false
+
+
+clients:
+  - id: "merger"
+    secret: "1234"
+
