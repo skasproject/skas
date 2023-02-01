@@ -57,6 +57,10 @@ spec:
             - containerPort: {{ .Values.server.port }}
               name: proto
               protocol: TCP
+          {{- with .Values.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.resources }}
           resources:
           {{- toYaml . | nindent 12 }}

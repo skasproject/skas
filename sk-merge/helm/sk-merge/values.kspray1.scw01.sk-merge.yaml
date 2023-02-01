@@ -8,7 +8,7 @@
 
 log:
   mode: dev
-  level: debug
+  level: info
 
 replicaCount: 1
 
@@ -47,7 +47,7 @@ providers:
     critical: false
     client:
       id: merger
-      secret: 1234
+      secret: ${BELOW_SECRET}
   - name: ldap1
     httpClient:
       url: https://sk-ldap1:7011
@@ -57,7 +57,7 @@ providers:
     uidOffset: 10000
     client:
       id: merger
-      secret: 1234
+      secret: ${BELOW_SECRET}
   - name: crd
     httpClient:
       url: https://sk-crd1:7012
@@ -65,4 +65,22 @@ providers:
     critical: false
     client:
       id: merger
-      secret: 1234
+      secret: ${BELOW_SECRET}
+
+generatedSecrets:
+  - secretName: sk-merge-above
+    fields:
+      - name: userDescribe
+      - name: userStatus
+      - name: login
+  - secretName: sk-merge-below
+    fields:
+      - name: userStatus
+
+extraEnv:
+  - name: BELOW_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: sk-merge-below
+        key: userStatus
+

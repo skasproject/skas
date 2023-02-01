@@ -20,7 +20,14 @@ ingress:
 
 clients:
   - id: "merger"
-    secret: "1234"
+    secret: ${MERGER_SECRET}
+
+extraEnv:
+  - name: MERGER_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: sk-merge-below
+        key: userStatus
 
 ldap:
   host: ldap.ops.scw01
