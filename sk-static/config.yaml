@@ -9,6 +9,8 @@ server:
 
 
 clients:
-  - id: "merger"
-    secret: "${MERGER_SECRET}"
+  - id: "*"
+    secret: "*"
+#  - id: "merger"
+#    secret: "$#{MERGER_SECRET}"
 

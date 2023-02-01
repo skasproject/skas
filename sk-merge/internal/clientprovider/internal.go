@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/config"
 )
 

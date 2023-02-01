@@ -6,7 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	userdbv1alpha1 "skas/sk-crd/k8sapis/userdb/v1alpha1"
 )
 
@@ -28,12 +28,14 @@ func New(kubeClient client.Client, namespace string, logger logr.Logger) handler
 
 func (p crdStatusProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
 	responsePayload := &proto.UserStatusResponse{
-		Login:       request.Login,
-		UserStatus:  proto.NotFound,
-		Uid:         0,
-		Emails:      []string{},
-		CommonNames: []string{},
-		Groups:      []string{},
+		UserStatus: proto.NotFound,
+		User: proto.User{
+			Login:       request.Login,
+			Uid:         0,
+			Emails:      []string{},
+			CommonNames: []string{},
+			Groups:      []string{},
+		},
 	}
 	// ------------------- Handle groups (Even if notFound)
 	list := userdbv1alpha1.GroupBindingList{}

@@ -3,7 +3,7 @@ package clientproviderchain
 import (
 	"fmt"
 	"github.com/go-logr/logr"
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/clientprovider"
 )
 
@@ -29,11 +29,13 @@ func (c clientProviderChain) Scan(login, password string) ([]ScanItem, error) {
 				item = ScanItem{
 					Provider: &c.providers[idx], // NOT &provider
 					UserStatusResponse: &proto.UserStatusResponse{
-						Login:       login,
-						UserStatus:  proto.Undefined,
-						CommonNames: []string{},
-						Emails:      []string{},
-						Groups:      []string{},
+						User: proto.User{
+							Login:       login,
+							CommonNames: []string{},
+							Emails:      []string{},
+							Groups:      []string{},
+						},
+						UserStatus: proto.Undefined,
 					},
 					Translated: &proto.Translated{
 						Uid:    0,

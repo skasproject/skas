@@ -8,7 +8,7 @@ import (
 	"skas/sk-common/pkg/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/clientproviderchain"
 )
 
@@ -45,21 +45,25 @@ func (l LoginHandler) ServeHTTP(response http.ResponseWriter, request *http.Requ
 	var responsePayload *proto.LoginResponse
 	if merged.UserStatus == proto.PasswordChecked {
 		responsePayload = &proto.LoginResponse{
-			Login:       merged.Login,
-			Success:     true,
-			Uid:         merged.Uid,
-			CommonNames: merged.CommonNames,
-			Emails:      merged.Emails,
-			Groups:      merged.Groups,
+			Success: true,
+			User: proto.User{
+				Login:       merged.Login,
+				Uid:         merged.Uid,
+				CommonNames: merged.CommonNames,
+				Emails:      merged.Emails,
+				Groups:      merged.Groups,
+			},
 		}
 	} else {
 		responsePayload = &proto.LoginResponse{
-			Login:       merged.Login,
-			Success:     false,
-			Uid:         0,
-			CommonNames: []string{},
-			Emails:      []string{},
-			Groups:      []string{},
+			Success: false,
+			User: proto.User{
+				Login:       merged.Login,
+				Uid:         0,
+				CommonNames: []string{},
+				Emails:      []string{},
+				Groups:      []string{},
+			},
 		}
 	}
 	l.GetLog().Info("User login", "login", requestPayload.Login, "success", responsePayload.Success, "groups", responsePayload.Groups)

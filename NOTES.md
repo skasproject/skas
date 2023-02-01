@@ -51,3 +51,36 @@ git status
 ```
 
 One can now create a goland project, (Create from existing sources). Then change gopath, and revert go.mod.
+
+# Kubernetes session initial object creation
+
+> sktoken is a temporary project. Then some elements will be copied inside sk-token. (sk-token will not be under the control of kubebuilder)
+
+```
+brew upgrade kubebuilder
+
+cd ..../scratch
+mkdir sktoken
+cd sktoken/
+go mod init skas/sktoken
+kubebuilder init --domain skasproject.io
+kubebuilder edit --multigroup=true
+kubebuilder create api --group session --kind Token --version v1alpha1
+Create Resource [y/n]
+y
+Create Controller [y/n]
+n
+
+
+make manifests
+
+
+git init
+git add .
+git status
+git commit -m "initial commit"
+git status
+
+```
+
+One can now create a goland project, (Create from existing sources). Then change gopath, and revert go.mod.

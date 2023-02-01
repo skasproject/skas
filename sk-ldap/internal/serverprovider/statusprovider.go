@@ -6,7 +6,7 @@ import (
 	"github.com/go-logr/logr"
 	"gopkg.in/ldap.v2"
 	"skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	"strconv"
 	"strings"
 )
@@ -25,12 +25,14 @@ type ldapStatusServerProvider struct {
 func (l *ldapStatusServerProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
 	// Set some default values
 	response := proto.UserStatusResponse{
-		Login:       request.Login,
-		UserStatus:  proto.NotFound,
-		Uid:         0,
-		CommonNames: []string{},
-		Emails:      []string{},
-		Groups:      []string{},
+		UserStatus: proto.NotFound,
+		User: proto.User{
+			Login:       request.Login,
+			Uid:         0,
+			CommonNames: []string{},
+			Emails:      []string{},
+			Groups:      []string{},
+		},
 	}
 	var ldapUser *ldap.Entry
 	err := l.do(func(conn *ldap.Conn) error {

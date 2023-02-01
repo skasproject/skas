@@ -1,6 +1,6 @@
 package clientmanager
 
-import "skas/sk-common/proto"
+import "skas/sk-common/proto/v1/proto"
 
 // This is the structure to define a client in our configuration
 

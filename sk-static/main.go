@@ -7,7 +7,7 @@ import (
 	"skas/sk-common/pkg/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	"skas/sk-static/internal/config"
 	"skas/sk-static/internal/staticstatusprovider"
 )

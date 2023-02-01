@@ -1,18 +1,20 @@
 package clientproviderchain
 
 import (
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	"sort"
 )
 
 func Merge(login string, scanItems []ScanItem) (merged *proto.UserStatusResponse, credentialAuthorityProvider string) {
 	merged = &proto.UserStatusResponse{
-		Login:       login,
-		UserStatus:  proto.NotFound,
-		Uid:         0,
-		CommonNames: make([]string, 0, 2),
-		Emails:      make([]string, 0, 2),
-		Groups:      make([]string, 0, 10),
+		User: proto.User{
+			Login:       login,
+			Uid:         0,
+			CommonNames: make([]string, 0, 2),
+			Emails:      make([]string, 0, 2),
+			Groups:      make([]string, 0, 10),
+		},
+		UserStatus: proto.NotFound,
 	}
 
 	for _, item := range scanItems {
