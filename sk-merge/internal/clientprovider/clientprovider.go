@@ -1,7 +1,7 @@
 package clientprovider
 
 import (
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 )
 
 type ClientProvider interface {

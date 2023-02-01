@@ -28,7 +28,7 @@ sk-merger
 
 ## Identity consumers:
 
-- sk-k8s: An authentication webhook to control Kubernetes access  
+- sk-auth: An authentication webhook to control Kubernetes access  
 - dex: A dex modified with a skas connector
 - sk-gate: A web proxy, controlling access to an unauthenticated web site. Replace Dex/Dexgate association. 
   May also handle session token for Kubernetes dashboard access.
@@ -37,7 +37,7 @@ sk-merger
 
 SKAS components interaction involve two communication interface:
 
-- login interface: Provided by sk-join.
+- login interface: Provided by sk-merge.
 
   Request is only user login/password and response is user's attribute (name, email, groups, ...) if authenticated
   

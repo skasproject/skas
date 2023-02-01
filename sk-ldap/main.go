@@ -8,7 +8,7 @@ import (
 	"skas/sk-common/pkg/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	"skas/sk-ldap/internal/config"
 	"skas/sk-ldap/internal/serverprovider"
 )
