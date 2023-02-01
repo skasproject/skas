@@ -36,6 +36,9 @@ func Setup() error {
 
 	// ------------------------------------ Load config file
 	_, err := misc.LoadConfig(configFile, &Conf)
+	if err != nil {
+		return err
+	}
 
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Mode, "logMode")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Level, "logLevel")
