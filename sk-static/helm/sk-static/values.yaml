@@ -56,6 +56,14 @@ podSecurityContext:
     type: RuntimeDefault
   # fsGroup: 2000
 
+extraEnv: {}
+# Add here environment variable definitions. May be used to inject secret value in config file
+#  - name: MY_SECRET
+#    valueFrom:
+#      secretKeyRef:
+#        name: k8s-secret-name
+#        key: theSecret
+
 resources: {}
 # If you want to specify resources, uncomment the following
 # lines, adjust them as necessary, and remove the curly braces after 'resources:'.

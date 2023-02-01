@@ -54,6 +54,14 @@ podSecurityContext:
     type: RuntimeDefault
   # fsGroup: 2000
 
+extraEnv: {}
+# Add here environment variable definitions. May be used to inject secret value in config file
+#  - name: MY_SECRET
+#    valueFrom:
+#      secretKeyRef:
+#        name: k8s-secret-name
+#        key: theSecret
+
 resources: {}
 # If you want to specify resources, uncomment the following
 # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
@@ -75,6 +83,15 @@ tolerations: []
 affinity: {}
 
 ingressClass: nginx # Don't change, as only 'nginx' is supported for now.
+
+# Kubernetes secrets can be generated automatically. These are intended to be shared between modules for client.id/secret.
+# NB: Generation require kubernetes-secret-generator (https://github.com/mittwald/kubernetes-secret-generator) to be deployed in the cluster
+generatedSecrets: []
+#  - secretName:
+#    fields:
+#      - name:
+#        encoding: base64  # Default: Base 64
+#        length: 15
 
 # ---------------------------------------------------------------------------------------
 # The following are context dependant. Should be defined in a context related values file
