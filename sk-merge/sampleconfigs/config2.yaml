@@ -1,7 +1,7 @@
 
 log:
   mode: dev
-  level: debug
+  level: info
 
 
 server:
@@ -23,18 +23,33 @@ services:
   userStatus:
     enabled: true
     clients:
-      - id: "test1"
-        secret: "test1"
+      - id: "*"
+        secret: "*"
   userDescribe:
     enabled: true
     clients:
-      - id: "test2"
-        secret: "test2a"
+      - id: "*"
+        secret: "*"
   login:
     enabled: true
     clients:
-      - id: "test2"
-        secret: "test2a"
-      - id: "test3"
-        secret: "abcd"
+      - id: "*"
+        secret: "*"
 
+#  userStatus:
+#    enabled: true
+#    clients:
+#      - id: "test1"
+#        secret: "test1"
+#  userDescribe:
+#    enabled: true
+#    clients:
+#      - id: "test2"
+#        secret: "test2a"
+#  login:
+#    enabled: true
+#    clients:
+#      - id: "test2"
+#        secret: "test2a"
+#      - id: "test3"
+#        secret: "abcd"

@@ -4,7 +4,7 @@ import (
 	"github.com/go-logr/logr"
 	"golang.org/x/crypto/bcrypt"
 	"skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	"skas/sk-static/internal/config"
 )
 
@@ -22,12 +22,14 @@ func New(logger logr.Logger) handlers.StatusServerProvider {
 
 func (s staticStatusProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
 	responsePayload := &proto.UserStatusResponse{
-		Login:       request.Login,
-		UserStatus:  proto.NotFound,
-		Uid:         0,
-		Emails:      []string{},
-		CommonNames: []string{},
-		Groups:      []string{},
+		User: proto.User{
+			Login:       request.Login,
+			Uid:         0,
+			Emails:      []string{},
+			CommonNames: []string{},
+			Groups:      []string{},
+		},
+		UserStatus: proto.NotFound,
 	}
 	// Handle groups, even if not found
 	groups, ok := config.GroupsByUser[request.Login]

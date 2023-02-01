@@ -1,7 +1,7 @@
 package clientproviderchain
 
 import (
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/clientprovider"
 )
 

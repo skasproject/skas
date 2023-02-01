@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"skas/sk-common/pkg/clientmanager"
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 )
 
 type StatusServerProvider interface {

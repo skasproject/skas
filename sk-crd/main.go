@@ -13,7 +13,7 @@ import (
 	"skas/sk-common/pkg/clientmanager"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/proto"
+	"skas/sk-common/proto/v1/proto"
 	"skas/sk-crd/internal/config"
 	"skas/sk-crd/internal/crdstatusprovider"
 	userdbv1alpha1 "skas/sk-crd/k8sapis/userdb/v1alpha1"
