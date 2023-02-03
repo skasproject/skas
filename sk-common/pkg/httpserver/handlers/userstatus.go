@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"skas/sk-common/pkg/clientmanager"
+	"skas/sk-common/pkg/client"
 	"skas/sk-common/proto/v1/proto"
 )
 
@@ -15,7 +15,7 @@ type StatusServerProvider interface {
 type UserStatusHandler struct {
 	BaseHandler
 	Provider      StatusServerProvider
-	ClientManager clientmanager.ClientManager
+	ClientManager client.Manager
 }
 
 func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {

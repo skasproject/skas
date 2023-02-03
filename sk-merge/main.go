@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"skas/sk-common/pkg/clientmanager"
+	"skas/sk-common/pkg/client"
 	"skas/sk-common/pkg/httpserver"
 	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto/v1/proto"
@@ -44,7 +44,7 @@ func main() {
 				Logger: s.Log.WithName("userDescribe handler"),
 			},
 			Chain:         providerChain,
-			ClientManager: clientmanager.New(config.Conf.Services.UserDescribe.Clients),
+			ClientManager: client.New(config.Conf.Services.UserDescribe.Clients),
 		}).Methods("GET")
 	}
 	// --------------------- Login handler
@@ -54,7 +54,7 @@ func main() {
 				Logger: s.Log.WithName("login handler"),
 			},
 			Chain:         providerChain,
-			ClientManager: clientmanager.New(config.Conf.Services.Login.Clients),
+			ClientManager: client.New(config.Conf.Services.Login.Clients),
 		}).Methods("GET")
 	}
 	// --------------------- UserStatus handler
@@ -69,7 +69,7 @@ func main() {
 				Logger: s.Log.WithName("userStatus handler"),
 			},
 			Provider:      statusServerProvider,
-			ClientManager: clientmanager.New(config.Conf.Services.UserStatus.Clients),
+			ClientManager: client.New(config.Conf.Services.UserStatus.Clients),
 		}).Methods("GET")
 	}
 

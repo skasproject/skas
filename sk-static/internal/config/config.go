@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/go-logr/logr"
-	"skas/sk-common/pkg/clientmanager"
+	"skas/sk-common/pkg/client"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/misc"
 )
@@ -16,9 +16,9 @@ var (
 )
 
 type Config struct {
-	Log     misc.LogConfig               `yaml:"log"`
-	Server  httpserver.ServerConfig      `yaml:"server"`
-	Clients []clientmanager.ClientConfig `yaml:"clients"`
+	Log     misc.LogConfig          `yaml:"log"`
+	Server  httpserver.ServerConfig `yaml:"server"`
+	Clients []client.Config         `yaml:"clients"`
 }
 
 type StaticUser struct {

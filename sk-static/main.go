@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"skas/sk-common/pkg/clientmanager"
+	"skas/sk-common/pkg/client"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto/v1/proto"
@@ -37,7 +37,7 @@ func main() {
 			Logger: s.Log,
 		},
 		Provider:      staticstatusprovider.New(config.Log.WithName("staticProvider")),
-		ClientManager: clientmanager.New(config.Conf.Clients),
+		ClientManager: client.New(config.Conf.Clients),
 	}).Methods("GET")
 	err := s.Start(context.Background())
 	if err != nil {
