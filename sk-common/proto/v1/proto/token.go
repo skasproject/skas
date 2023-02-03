@@ -1,6 +1,10 @@
 package proto
 
-import "time"
+import (
+	"fmt"
+	"io"
+	"time"
+)
 
 // This API is used by sk-cli to retrieve tokens.
 
@@ -8,11 +12,15 @@ import "time"
 
 var TokenRequestUrlPath = "/v1/token"
 
+var _ RequestPayload = &TokenRequest{}
+
 type TokenRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`
 	Login      string     `json:"login"`
 	Password   string     `json:"password"`
 }
+
+var _ ResponsePayload = &TokenResponse{}
 
 type TokenResponse struct {
 	Success   bool          `json:"success"`
@@ -33,4 +41,20 @@ type TokenRenewRequest struct {
 type TokenRenewResponse struct {
 	Token string `json:"token"`
 	Valid bool   `json:"valid"`
+}
+
+// ------------------------------------------------------
+
+func (t *TokenRequest) String() string {
+	return fmt.Sprintf("TokenRequest(login=%s)", t.Login)
+}
+func (t *TokenRequest) ToJson() ([]byte, error) {
+	return toJson(t)
+}
+func (t *TokenRequest) FromJson(r io.Reader) error {
+	return fromJson(r, t)
+}
+
+func (t *TokenResponse) FromJson(r io.Reader) error {
+	return fromJson(r, t)
 }

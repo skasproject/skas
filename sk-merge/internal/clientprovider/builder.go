@@ -6,15 +6,13 @@ import (
 )
 
 func New(conf config.ClientProviderConfig) (ClientProvider, error) {
-	cp := &clientProvider{
-		ClientProviderConfig: conf,
-	}
-	var err error
-	skclient, err := skhttp.New(&conf.HttpClient, config.Conf.RootCaPath, config.Conf.RootCaData)
+	httpClient, err := skhttp.New(&conf.HttpClient, config.Conf.RootCaPath, config.Conf.RootCaData)
 	if err != nil {
 		return nil, err
 	}
+	return &clientProvider{
+		ClientProviderConfig: conf,
+		httpClient:           httpClient,
+	}, nil
 
-	cp.httpClient = skclient.GetHttpClient()
-	return cp, nil
 }

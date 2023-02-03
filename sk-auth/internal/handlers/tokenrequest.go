@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"skas/sk-auth/internal/tokenstore"
@@ -23,10 +22,8 @@ type TokenRequestHandler struct {
 }
 
 func (t TokenRequestHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
-	var requestPayload proto.TokenRequest
-	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
-	err := decoder.Decode(&requestPayload)
+	var requestPayload = proto.TokenRequest{}
+	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		t.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return

@@ -1,7 +1,6 @@
 package proto
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 )
@@ -27,45 +26,19 @@ type LoginResponse struct {
 
 // -----------------------------------------------------
 
-var _ Payload = &LoginRequest{}
-var _ Payload = &LoginResponse{}
+var _ RequestPayload = &LoginRequest{}
+var _ ResponsePayload = &LoginResponse{}
 
 func (l *LoginRequest) ToJson() ([]byte, error) {
 	return toJson(l)
 }
-
 func (l *LoginRequest) FromJson(r io.Reader) error {
 	return fromJson(r, l)
 }
-
 func (l *LoginRequest) String() string {
-	return fmt.Sprintf("LoginRequest(login:%s", l.Login)
-}
-
-func (l *LoginResponse) ToJson() ([]byte, error) {
-	return toJson(l)
+	return fmt.Sprintf("LoginRequest(login:%s)", l.Login)
 }
 
 func (l *LoginResponse) FromJson(r io.Reader) error {
 	return fromJson(r, l)
-}
-
-func (l *LoginResponse) String() string {
-	return fmt.Sprintf("LoginResponse(found=%q, login=%s)", l.Success, l.Login)
-}
-
-// -----------------------------------------------------
-
-func toJson(payload interface{}) ([]byte, error) {
-	body, err := json.Marshal(payload)
-	if err != nil {
-		return []byte{}, err
-	}
-	return body, nil
-}
-
-func fromJson(r io.Reader, payload interface{}) error {
-	decoder := json.NewDecoder(r)
-	decoder.DisallowUnknownFields()
-	return decoder.Decode(payload)
 }
