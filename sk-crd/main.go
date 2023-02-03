@@ -8,9 +8,9 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"os"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
+	kubeclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
-	"skas/sk-common/pkg/clientmanager"
+	"skas/sk-common/pkg/client"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto/v1/proto"
@@ -74,12 +74,12 @@ func main() {
 			Logger: s.Log,
 		},
 		Provider:      crdstatusprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
-		ClientManager: clientmanager.New(config.Conf.Clients),
+		ClientManager: client.New(config.Conf.Clients),
 	}).Methods("GET")
 
 	err = mgr.Add(s)
 
-	err = mgr.GetFieldIndexer().IndexField(context.TODO(), &userdbv1alpha1.GroupBinding{}, "userkey", func(rawObj client.Object) []string {
+	err = mgr.GetFieldIndexer().IndexField(context.TODO(), &userdbv1alpha1.GroupBinding{}, "userkey", func(rawObj kubeclient.Object) []string {
 		ugb := rawObj.(*userdbv1alpha1.GroupBinding)
 		return []string{ugb.Spec.User}
 	})

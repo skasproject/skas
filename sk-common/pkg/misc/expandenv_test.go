@@ -48,7 +48,7 @@ func TestTest2(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Equal(t, 3, err.(MissingVariableError).line)
 	assert.Equal(t, "A_VARIABLE", err.(MissingVariableError).variable)
-	assert.Equal(t, "variable 'A_VARIABLE' at line 3 is not defined", err.Error())
+	assert.Equal(t, "environment variable 'A_VARIABLE' at line 3 is not defined", err.Error())
 }
 
 var test3 = `${VAR}
