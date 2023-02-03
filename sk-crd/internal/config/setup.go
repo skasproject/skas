@@ -22,7 +22,7 @@ func Setup() error {
 	pflag.StringVar(&logLevel, "logLevel", "INFO", "Log level (PANIC|FATAL|ERROR|WARN|INFO|DEBUG|TRACE)")
 	pflag.StringVar(&logMode, "logMode", "json", "Log mode: 'dev' or 'json'")
 	pflag.StringVar(&bindAddr, "bindAddr", "127.0.0.1:7012", "Server bind address <host>:<port>")
-	pflag.StringVar(&namespace, "namespace", "skas-userdb", "Namespace hosting user definition")
+	pflag.StringVar(&namespace, "namespace", "skas-system", "Namespace hosting user definition")
 	pflag.StringVar(&metricAddr, "metricAddr", ":8080", "Metrics bind address (\"0\" to disable)")
 	pflag.StringVar(&probeAddr, "probeAddr", ":8181", "Probe bind address (\"0\" to disable)\"")
 

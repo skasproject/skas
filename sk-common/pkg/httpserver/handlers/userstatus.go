@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"skas/sk-common/pkg/clientauth"
@@ -20,9 +19,7 @@ type UserStatusHandler struct {
 
 func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
 	var requestPayload proto.UserStatusRequest
-	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
-	err := decoder.Decode(&requestPayload)
+	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		h.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return

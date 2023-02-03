@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/go-logr/logr"
-	"skas/sk-common/pkg/client"
+	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/misc"
 	"skas/sk-ldap/internal/serverprovider"
@@ -19,6 +19,6 @@ var (
 type Config struct {
 	Log     misc.LogConfig          `yaml:"log"`
 	Server  httpserver.ServerConfig `yaml:"server"`
-	Clients []client.Config         `yaml:"clients"`
+	Clients []clientauth.Config     `yaml:"clients"`
 	Ldap    serverprovider.Config   `yaml:"ldap"`
 }
