@@ -1,5 +1,10 @@
 package proto
 
+import (
+	"fmt"
+	"io"
+)
+
 // ----------------------------Shared stuff
 
 type ClientAuth struct {
@@ -16,4 +21,10 @@ type User struct {
 	CommonNames []string `json:"commonNames"`
 	Emails      []string `json:"emails"`
 	Groups      []string `json:"groups"`
+}
+
+type Payload interface {
+	fmt.Stringer // For debug & error message
+	ToJson() ([]byte, error)
+	FromJson(r io.Reader) error
 }

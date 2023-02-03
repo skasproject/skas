@@ -38,16 +38,16 @@ func (c clientProvider) GetUserStatus(login, password string) (*proto.UserStatus
 		Login:    login,
 		Password: password,
 		ClientAuth: proto.ClientAuth{
-			Id:     c.Client.Id,
-			Secret: c.Client.Secret,
+			Id:     c.HttpClient.ClientAuth.Id,
+			Secret: c.HttpClient.ClientAuth.Secret,
 		},
 	})
 	if err != nil {
 		return nil, nil, fmt.Errorf("unable to marshal login UserStatusRequest (login:'%s'): %w", login, err)
 	}
-	u, err := url.JoinPath(c.HttpClientConfig.Url, proto.UserStatusUrlPath)
+	u, err := url.JoinPath(c.HttpClient.Url, proto.UserStatusUrlPath)
 	if err != nil {
-		return nil, nil, fmt.Errorf("unable to join %s to %s: %w", proto.UserStatusUrlPath, c.HttpClientConfig.Url, err)
+		return nil, nil, fmt.Errorf("unable to join %s to %s: %w", proto.UserStatusUrlPath, c.HttpClient.Url, err)
 	}
 	request, err := http.NewRequest("GET", u, bytes.NewBuffer(body))
 	if err != nil {
@@ -69,7 +69,7 @@ func (c clientProvider) GetUserStatus(login, password string) (*proto.UserStatus
 		Uid:    userStatusResponse.Uid + c.UidOffset,
 		Groups: make([]string, len(userStatusResponse.Groups)),
 	}
-	for idx, _ := range userStatusResponse.Groups {
+	for idx := range userStatusResponse.Groups {
 		translated.Groups[idx] = fmt.Sprintf(c.GroupPattern, userStatusResponse.Groups[idx])
 	}
 	return userStatusResponse, translated, nil

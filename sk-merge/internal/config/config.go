@@ -2,10 +2,10 @@ package config
 
 import (
 	"github.com/go-logr/logr"
-	"skas/sk-common/pkg/client"
-	"skas/sk-common/pkg/httpclient"
+	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/misc"
+	"skas/sk-common/pkg/skhttp"
 )
 
 // Exported vars
@@ -18,20 +18,19 @@ var (
 // NB: All RootCA will be cumulated
 
 type ClientProviderConfig struct {
-	Name                string            `yaml:"name"`
-	HttpClientConfig    httpclient.Config `yaml:"httpClient"`
-	Enabled             *bool             `yaml:"enabled"`             // Allow to disable a provider
-	CredentialAuthority *bool             `yaml:"credentialAuthority"` // Is this ldap is authority for password checking
-	GroupAuthority      *bool             `yaml:"groupAuthority"`      // Group will be fetched. Default true
-	Critical            *bool             `yaml:"critical"`            // If true (default), a failure on this provider will leads 'invalid login'. Even if another provider grants access
-	GroupPattern        string            `yaml:"groupPattern"`        // Group pattern. Default "%s"
-	UidOffset           int64             `yaml:"uidOffset"`           // Will be added to the returned Uid. Default to 0
-	Client              client.Config     `yaml:"client"`
+	Name                string        `yaml:"name"`
+	HttpClient          skhttp.Config `yaml:"httpClient"`
+	Enabled             *bool         `yaml:"enabled"`             // Allow to disable a provider
+	CredentialAuthority *bool         `yaml:"credentialAuthority"` // Is this ldap is authority for password checking
+	GroupAuthority      *bool         `yaml:"groupAuthority"`      // Group will be fetched. Default true
+	Critical            *bool         `yaml:"critical"`            // If true (default), a failure on this provider will leads 'invalid login'. Even if another provider grants access
+	GroupPattern        string        `yaml:"groupPattern"`        // Group pattern. Default "%s"
+	UidOffset           int64         `yaml:"uidOffset"`           // Will be added to the returned Uid. Default to 0
 }
 
 type ServiceConfig struct {
-	Enabled bool            `yaml:"enabled"`
-	Clients []client.Config `yaml:"clients"`
+	Enabled bool                `yaml:"enabled"`
+	Clients []clientauth.Config `yaml:"clients"`
 }
 
 type Config struct {
