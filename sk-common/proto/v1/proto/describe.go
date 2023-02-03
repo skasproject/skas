@@ -1,5 +1,10 @@
 package proto
 
+import (
+	"fmt"
+	"io"
+)
+
 // ----------------------------------- UserDescribe interface
 
 // This is issued by sk-cli to sk-auth, which validate the token.
@@ -7,11 +12,21 @@ package proto
 
 const UserDescribeUrlPath = "/v1/userdescribe"
 
+var _ RequestPayload = &UserDescribeRequest{}
+
 type UserDescribeRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`
 	Token      string     `json:"token"`
 	Login      string     `json:"login"`
 	Password   string     `json:"password"` // Optional
+}
+
+var _ ResponsePayload = &UserDescribeResponse{}
+
+type UserDescribeResponse struct {
+	Items                       []UserDescribeItem `yaml:"items"`
+	Merged                      UserStatusResponse `yaml:"merged"`
+	CredentialAuthorityProvider string             `yaml:"credentialAuthorityProvider"`
 }
 
 type Translated struct {
@@ -29,8 +44,18 @@ type UserDescribeItem struct {
 	Translated Translated `yaml:"translated"`
 }
 
-type UserDescribeResponse struct {
-	Items                       []UserDescribeItem `yaml:"items"`
-	Merged                      UserStatusResponse `yaml:"merged"`
-	CredentialAuthorityProvider string             `yaml:"credentialAuthorityProvider"`
+// -------------------------------------------------------------------------
+
+func (u *UserDescribeRequest) String() string {
+	return fmt.Sprintf("UserDescribeRequest(login=%s)", u.Login)
+}
+func (u *UserDescribeRequest) ToJson() ([]byte, error) {
+	return toJson(u)
+}
+func (u *UserDescribeRequest) FromJson(r io.Reader) error {
+	return fromJson(r, u)
+}
+
+func (u *UserDescribeResponse) FromJson(r io.Reader) error {
+	return fromJson(r, u)
 }

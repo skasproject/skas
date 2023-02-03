@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/go-logr/logr"
 	"net/http"
@@ -24,9 +23,7 @@ type UserDescribeHandler struct {
 
 func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
 	var requestPayload proto.UserDescribeRequest
-	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
-	err := decoder.Decode(&requestPayload)
+	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		u.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return

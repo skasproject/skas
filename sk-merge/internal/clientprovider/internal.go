@@ -1,11 +1,8 @@
 package clientprovider
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/url"
+	"skas/sk-common/pkg/skhttp"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/config"
 )
@@ -14,7 +11,7 @@ var _ ClientProvider = &clientProvider{}
 
 type clientProvider struct {
 	config.ClientProviderConfig
-	httpClient *http.Client
+	httpClient skhttp.Client
 }
 
 func (c clientProvider) IsGroupAuthority() bool {
@@ -34,36 +31,15 @@ func (c clientProvider) GetName() string {
 }
 
 func (c clientProvider) GetUserStatus(login, password string) (*proto.UserStatusResponse, *proto.Translated, error) {
-	body, err := json.Marshal(proto.UserStatusRequest{
-		Login:    login,
-		Password: password,
-		ClientAuth: proto.ClientAuth{
-			Id:     c.HttpClient.ClientAuth.Id,
-			Secret: c.HttpClient.ClientAuth.Secret,
-		},
-	})
-	if err != nil {
-		return nil, nil, fmt.Errorf("unable to marshal login UserStatusRequest (login:'%s'): %w", login, err)
-	}
-	u, err := url.JoinPath(c.HttpClient.Url, proto.UserStatusUrlPath)
-	if err != nil {
-		return nil, nil, fmt.Errorf("unable to join %s to %s: %w", proto.UserStatusUrlPath, c.HttpClient.Url, err)
-	}
-	request, err := http.NewRequest("GET", u, bytes.NewBuffer(body))
-	if err != nil {
-		return nil, nil, fmt.Errorf("unable to build request")
-	}
-	response, err := c.httpClient.Do(request)
-	if err != nil {
-		return nil, nil, fmt.Errorf("error on http connection: %w", err)
-	}
-	if response.StatusCode != 200 {
-		return nil, nil, fmt.Errorf("invalid status code: %d (%s)", response.StatusCode, response.Status)
+	usr := &proto.UserStatusRequest{
+		Login:      login,
+		Password:   password,
+		ClientAuth: c.httpClient.GetClientAuth(),
 	}
 	userStatusResponse := &proto.UserStatusResponse{}
-	err = json.NewDecoder(response.Body).Decode(userStatusResponse)
+	err := c.httpClient.Do(proto.UserStatusUrlPath, usr, userStatusResponse)
 	if err != nil {
-		return nil, nil, fmt.Errorf("unable to parse server response: %w", err)
+		return nil, nil, err // Do() return a documented message
 	}
 	translated := &proto.Translated{
 		Uid:    userStatusResponse.Uid + c.UidOffset,
