@@ -29,6 +29,8 @@ func (h *BaseHandler) ServeJSON(response http.ResponseWriter, data interface{}) 
 func (h *BaseHandler) HttpError(response http.ResponseWriter, message string, httpCode int) {
 	if h.Logger.V(1).Enabled() {
 		h.Logger.V(1).Info("<----- httpError", "message", message, "httpCode", httpCode)
+	} else {
+		h.Logger.Info("!!! http error", "message", message, "httpCode", httpCode)
 	}
 	http.Error(response, message, httpCode)
 }

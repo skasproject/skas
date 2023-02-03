@@ -10,7 +10,8 @@
 - Rename sk-xxxx to skas-xxxxx ? or ska-xxxx
 - Rename userDescribe to userExplain
 - Rename userStatus to userIdentity
-
+- In config file, for http client url. Set full url, including the path OR define by scheme:, host: and port (Currently, it is ambiguous, as a partial)
+ 
 ## sk-static
 
 - Make user file dynamic (cf dexgate or certwatcher)
@@ -25,6 +26,10 @@
 - On startup, perform a scan to check underlying providers (A flag to disable)
 - rename to sk-bind ?
 - Add an optional providerList, to modify order of provider. Needed when appending a new provider to list as 'extraProvider' in helm chart
+
+## sk-auth
+
+- Simplify tokenstore interface (Is TokenBag useful )
 
 ## Doc:
 

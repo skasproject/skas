@@ -42,7 +42,7 @@ func Setup() error {
 	base := filepath.Dir(configFile)
 	Conf.RootCaPath = misc.AdjustPath(base, Conf.RootCaPath)
 	for idx, _ := range Conf.Providers {
-		Conf.Providers[idx].HttpClientConfig.RootCaPath = misc.AdjustPath(base, Conf.Providers[idx].HttpClientConfig.RootCaPath)
+		Conf.Providers[idx].HttpClient.RootCaPath = misc.AdjustPath(base, Conf.Providers[idx].HttpClient.RootCaPath)
 	}
 	// ----------------------------------- Handle logging  stuff
 	Log, err = misc.HandleLog(&Conf.Log)

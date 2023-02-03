@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/go-logr/logr"
 	"net/http"
-	"skas/sk-common/pkg/client"
+	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/httpserver"
 	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto/v1/proto"
@@ -19,7 +19,7 @@ var _ httpserver.LoggingHandler = &UserDescribeHandler{}
 type UserDescribeHandler struct {
 	commonHandlers.BaseHandler
 	Chain         clientproviderchain.ClientProviderChain
-	ClientManager client.Manager
+	ClientManager clientauth.Manager
 }
 
 func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {

@@ -1,4 +1,4 @@
-package httpclient
+package skhttp
 
 import (
 	"crypto/tls"
@@ -14,16 +14,10 @@ import (
 	"time"
 )
 
-type Config struct {
-	Url                string `yaml:"url"`
-	RootCaPath         string `yaml:"rootCaPath"` // Path to a trusted root CA file
-	RootCaData         string `yaml:"rootCaData"` // Base64 encoded PEM data containing root CA
-	InsecureSkipVerify bool   `yaml:"insecureSkipVerify"`
-}
+// Inspired from oauth.go connector.
 
-// Copied from oauth.go connector. rawUrl parameter is just to
-
-func NewHTTPClient(conf *Config, altRootCAPaths string, altRootCaDatas string) (*http.Client, error) {
+func New(conf *Config, altRootCAPaths string, altRootCaDatas string) (Client, error) {
+	// Just a test. Not used in this function
 	u, err := url.Parse(conf.Url)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse url '%s': %w", conf.Url, err)
@@ -60,7 +54,7 @@ func NewHTTPClient(conf *Config, altRootCAPaths string, altRootCaDatas string) (
 			}
 		}
 	}
-	return &http.Client{
+	httpclient := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: tlsConfig,
 			Proxy:           http.ProxyFromEnvironment,
@@ -73,6 +67,10 @@ func NewHTTPClient(conf *Config, altRootCAPaths string, altRootCaDatas string) (
 			TLSHandshakeTimeout:   10 * time.Second,
 			ExpectContinueTimeout: 1 * time.Second,
 		},
+	}
+	return &client{
+		Config:     *conf,
+		httpClient: httpclient,
 	}, nil
 }
 
