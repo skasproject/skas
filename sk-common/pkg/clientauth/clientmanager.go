@@ -1,15 +1,8 @@
-package client
+package clientauth
 
 import (
 	"skas/sk-common/proto/v1/proto"
 )
-
-// This is the structure to define a client in our configuration. Both on client and server side
-
-type Config struct {
-	Id     string `yaml:"id"`
-	Secret string `yaml:"secret"`
-}
 
 var _ Manager = &manager{}
 

@@ -8,7 +8,12 @@ server:
   ssl: false
 
 
-clients:
+tokenClients:
   - id: "*"
     secret: "*"
+
+loginProvider:
+  url: http://127.0.0.1:7013
+  clientAuth:
+    id: "auth"
 

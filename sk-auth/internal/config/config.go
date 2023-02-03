@@ -2,10 +2,10 @@ package config
 
 import (
 	"github.com/go-logr/logr"
-	"skas/sk-common/pkg/client"
-	"skas/sk-common/pkg/httpclient"
+	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/misc"
+	"skas/sk-common/pkg/skhttp"
 	"time"
 )
 
@@ -26,10 +26,7 @@ type TokenConfig struct {
 type Config struct {
 	Log           misc.LogConfig          `yaml:"log"`
 	Server        httpserver.ServerConfig `yaml:"server"`
-	Clients       []client.Config         `yaml:"clients"`
+	TokenClients  []clientauth.Config     `yaml:"tokenClients"`
 	TokenConfig   TokenConfig             `yaml:"tokenConfig"`
-	LoginProvider struct {
-		HttpClientConfig httpclient.Config `yaml:"httpClient"`
-		Client           client.Config     `yaml:"client"`
-	}
+	LoginProvider skhttp.Config           `yaml:"loginProvider"`
 }

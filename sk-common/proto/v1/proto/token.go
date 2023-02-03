@@ -6,7 +6,7 @@ import "time"
 
 // ------------------------------------------------------
 
-var TokenUrlPath = "/v1/token"
+var TokenRequestUrlPath = "/v1/token"
 
 type TokenRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`
@@ -15,8 +15,9 @@ type TokenRequest struct {
 }
 
 type TokenResponse struct {
-	Token string `json:"token"`
-	User
+	Success   bool          `json:"success"`
+	Token     string        `json:"token"`
+	User      User          `json:"user"`
 	ClientTTL time.Duration `json:"clientTTL"`
 }
 
