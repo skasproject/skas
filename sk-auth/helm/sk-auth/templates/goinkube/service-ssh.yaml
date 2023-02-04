@@ -1,0 +1,33 @@
+{{ if .Values.goinkube.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sk-auth.fullname" . }}-goinkube-ssh
+  namespace: {{ .Release.Namespace  }}
+  {{- if .Values.goinkube.sshEndpoint.metallb.enabled }}
+  annotations:
+    {{- if .Values.goinkube.sshEndpoint.metallb.externalIp }}
+    metallb.universe.tf/loadBalancerIPs: {{ .Values.goinkube.sshEndpoint.metallb.externalIp }}
+    {{- end }}
+    {{- if .Values.goinkube.sshEndpoint.metallb.ipSharingKey }}
+    metallb.universe.tf/allow-shared-ip: {{ .Values.goinkube.sshEndpoint.metallb.ipSharingKey }}
+    {{- end }}
+  {{- end }}
+spec:
+  selector:
+    {{- include "sk-auth.selectorLabels" . | nindent 4 }}
+{{ if .Values.goinkube.sshEndpoint.metallb.enabled }}
+  type: LoadBalancer
+{{ end }}
+{{ if .Values.goinkube.sshEndpoint.nodePort.enabled }}
+  type: NodePort
+{{ end }}
+  ports:
+    - protocol: TCP
+      port: 22
+      targetPort: 22
+{{ if .Values.goinkube.sshEndpoint.nodePort.enabled }}
+      nodePort: {{ .Values.goinkube.sshEndpoint.nodePort.value }}
+{{ end }}
+{{ end }}
