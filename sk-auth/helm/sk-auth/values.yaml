@@ -124,6 +124,29 @@ tokenConfig:
   # The namespace used as storage for token definition. Default to deployment namespace
   namespace:
 
+# Used for development. See https://github.com/SergeAlexandre/workinkube
+goinkube:
+  enabled: false
+  relaxPsp: false
+  image:
+    repository: ghcr.io/sergealexandre/goinkube
+    tag: "1.19.5-0"
+    pullPolicy: Always
+  storage:
+    enabled: false
+    class:
+    size:
+  sshEndpoint:
+    enabled: false
+    metallb:
+      enabled: false
+      ipSharingKey:
+      externalIp:       # Chosen by metallb if not specified
+    nodePort:
+      enabled: false
+      value:
+
+
 # ---------------------------------------------------------------------------------------
 # The following are context dependant. Should be defined in a context related values file
 

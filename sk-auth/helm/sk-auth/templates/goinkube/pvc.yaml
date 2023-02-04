@@ -1,0 +1,17 @@
+{{ if and .Values.goinkube.enabled .Values.goinkube.storage.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "sk-auth.fullname" . }}-goinkube
+  namespace: {{ .Release.Namespace  }}
+  labels:
+    {{- include "sk-auth.labels" . | nindent 4 }}
+spec:
+  storageClassName: {{ .Values.goinkube.storage.class }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.goinkube.storage.size }}
+{{ end }}
