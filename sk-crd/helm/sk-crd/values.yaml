@@ -38,9 +38,6 @@ image:
   tag:
   pullPolicy: Always
 
-crds:
-  create: true
-
 log:
   mode: json
   level: info

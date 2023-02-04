@@ -42,30 +42,30 @@ providers:
   - name: static
     httpClient:
       url: https://sk-static1:7010
+      clientAuth:
+        id: merger
+        secret: ${BELOW_SECRET}
     groupPattern: "static_%s"
     credentialAuthority: true
     critical: false
-    client:
-      id: merger
-      secret: ${BELOW_SECRET}
   - name: ldap1
     httpClient:
       url: https://sk-ldap1:7011
+      clientAuth:
+        id: merger
+        secret: ${BELOW_SECRET}
     enabled: true
     credentialAuthority: true
     critical: false
     uidOffset: 10000
-    client:
-      id: merger
-      secret: ${BELOW_SECRET}
   - name: crd
     httpClient:
       url: https://sk-crd1:7012
+      clientAuth:
+        id: merger
+        secret: ${BELOW_SECRET}
     credentialAuthority: true
     critical: false
-    client:
-      id: merger
-      secret: ${BELOW_SECRET}
 
 generatedSecrets:
   - secretName: sk-merge-above
