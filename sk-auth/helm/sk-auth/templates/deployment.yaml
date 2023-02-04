@@ -30,17 +30,22 @@ spec:
       {{- end }}
       containers:
         - name: sk-auth
+          {{- if .Values.goinkube.enabled }}
+          image: "{{ .Values.goinkube.image.repository }}:{{ .Values.goinkube.image.tag }}"
+          imagePullPolicy: {{ .Values.goinkube.image.pullPolicy }}
+          {{ else }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-          - /sk-auth
+            - /sk-auth
           args:
             - --configFile
             - /config.yaml
-        {{-  range .Values.additionalArgs }}
+          {{-  range .Values.additionalArgs }}
             - {{ . }}
-        {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-{{- if eq .Values.tokenConfig.storageType "crd" }}
+          {{- end }}
+          {{ end }}
+          {{- if eq .Values.tokenConfig.storageType "crd" }}
           livenessProbe:
             httpGet:
               path: /readyz
@@ -51,16 +56,16 @@ spec:
               path: /readyz
               port: {{ .Values.probe.port }}
               scheme: {{ .Values.probe.scheme }}
-{{- end }}
+          {{- end }}
           ports:
             - containerPort: {{ .Values.server.port }}
               name: proto
               protocol: TCP
-{{- if eq .Values.tokenConfig.storageType "crd" }}
+          {{- if eq .Values.tokenConfig.storageType "crd" }}
             - containerPort: {{ .Values.metric.port }}
               name: metrics
               protocol: TCP
-{{- end }}
+          {{- end }}
           {{- with .Values.extraEnv }}
           env:
             {{- toYaml . | nindent 12 }}
@@ -70,11 +75,18 @@ spec:
           {{- toYaml . | nindent 12 }}
           {{ end }}
           securityContext:
+          {{- if .Values.goinkube.enabled }}
+            allowPrivilegeEscalation: true
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+          {{- else }}
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            runAsNonRoot: true
             capabilities:
               drop:
                 - "ALL"
+          {{- end }}
           volumeMounts:
             - mountPath: /config.yaml
               name: config
@@ -83,6 +95,10 @@ spec:
             - mountPath: /tmp/cert/server
               name: server-cert
               readOnly: true
+            {{ end }}
+            {{ if .Values.goinkube.storage.enabled }}
+            - mountPath: /work
+              name: work
             {{ end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -110,4 +126,8 @@ spec:
             defaultMode: 420
             secretName: {{ include "sk-auth.certificateSecretName" . }}
         {{ end }}
-
+        {{ if .Values.goinkube.storage.enabled }}
+        - name: work
+          persistentVolumeClaim:
+            claimName: {{ include "sk-auth.fullname" . }}-goinkube
+        {{ end }}

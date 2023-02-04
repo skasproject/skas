@@ -1,0 +1,18 @@
+{{ if and .Values.goinkube.enabled .Values.goinkube.relaxPsp }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "sk-auth.serviceAccountName" . }}:pspfree
+  namespace:  {{ .Release.namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: psp:privileged
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "sk-auth.serviceAccountName" . }}
+    namespace: {{ .Release.namespace }}
+{{ end }}
+

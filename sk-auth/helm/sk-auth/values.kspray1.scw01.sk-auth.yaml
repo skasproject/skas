@@ -35,3 +35,16 @@ loginProvider:
 
 
 
+goinkube:
+  enabled: true
+  relaxPsp: false
+  storage:
+    enabled: true
+    class: topolvm-ssd
+    size: 1G
+  sshEndpoint:
+    enabled: true
+    metallb:
+      enabled: true
+      ipSharingKey: ingress
+      externalIp: 10.33.0.200      # Chosen by metallb if not specified

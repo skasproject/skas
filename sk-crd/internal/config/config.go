@@ -16,7 +16,7 @@ type Config struct {
 	Log        misc.LogConfig          `yaml:"log"`
 	Server     httpserver.ServerConfig `yaml:"server"`
 	Clients    []clientauth.Config     `yaml:"clients"`
-	Namespace  string                  `yaml:"namespace"` // User database namepace
+	Namespace  string                  `yaml:"namespace"` // User database namespace
 	MetricAddr string                  `yaml:"metricAddr"`
 	ProbeAddr  string                  `yaml:"probeAddr"`
 }
