@@ -23,10 +23,17 @@ type TokenConfig struct {
 	LastHitStep       int            `yaml:"lastHitStep"`       // When tokenStorage==crd, the max difference between reality and what is stored in API Server. In per mille of InactivityTimeout. Aim is to avoid API server overloading
 }
 
+type ServiceConfig struct {
+	Enabled bool                `yaml:"enabled"`
+	Clients []clientauth.Config `yaml:"clients"`
+}
+
 type Config struct {
 	Log           misc.LogConfig          `yaml:"log"`
 	Server        httpserver.ServerConfig `yaml:"server"`
-	TokenClients  []clientauth.Config     `yaml:"tokenClients"`
 	TokenConfig   TokenConfig             `yaml:"tokenConfig"`
 	LoginProvider skhttp.Config           `yaml:"loginProvider"`
+	Services      struct {
+		Token ServiceConfig `yaml:"token"`
+	} `yaml:"services"`
 }

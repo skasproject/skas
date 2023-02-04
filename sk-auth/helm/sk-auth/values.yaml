@@ -5,20 +5,29 @@ fullNameOverride:
 # ---------------------------------------------------------------------
 # Following will allow renaming of resources. You can safely leave undefined and let default values
 #
-# Will default to {{ include "sk-crd.fullname" . }}-cert
+# Will default to {{ include "sk-auth.fullname" . }}-cert
 certificateSecretName:
-# Will default to {{ include "sk-crd.fullname" . }}
+# Will default to {{ include "sk-auth.fullname" . }}
 certificateName:
-# Will default to {{ include "sk-crd.fullname" . }}
+# The name of the service account to use.If not set and create is true, a name is generated using the fullname template
+serviceAccountName:
+# Will default to {{ include "sk-auth.fullname" . }}
 deploymentName:
-# Will default to {{ include "sk-crd.fullname" . }}-config
+# Will default to {{ include "sk-auth.fullname" . }}-config
 configName:
-# Will default to {{ include "sk-crd.fullname" . }}
+# Will default to {{ include "sk-auth.fullname" . }}
 serviceName:
-# Will default to {{ include "sk-crd.fullname" . }}
+# Will default to {{ include "sk-auth.fullname" . }}
 ingressName:
+# Used when cross-ns. Will default to skas:{{ .Release.Namespace }}-{{ include "sk-auth.fullname" . }}
+clusterRoleName:
+# Used when same-ns. Will default to {{ include "sk-auth.fullname" . }}
+roleName:
+# A role to be bound to a user allowed to manage token. Will default to {{ include "sk-auth.fullname" . }}-editor
+editorRoleName:
 
 # ---------------------------------------------------------------------
+
 
 replicaCount: 2
 
@@ -33,6 +42,12 @@ log:
   mode: json
   level: info
 
+probe:
+  port: 8181
+  scheme: HTTP
+
+metric:
+  port: 8080
 
 # -- Additional arguments to be added to the executable's args list
 additionalArgs: {}
@@ -44,7 +59,7 @@ podAnnotations: {}
 commonAnnotations: {}
 
 server:
-  port: 7013
+  port: 7014
   ssl: true
 
 # -- Security Context for the whole pod
@@ -82,16 +97,32 @@ tolerations: []
 # -- Affinity for the operator to be installed
 affinity: {}
 
+
+serviceAccount:
+  # -- Specifies whether the service account should be created
+  create: true
+
+rbac:
+  # -- Specifies whether ClusterRole and ClusterRoleBinding should be created
+  create: true
+
 ingressClass: nginx # Don't change, as only 'nginx' is supported for now.
 
-# Kubernetes secrets can be generated automatically. These are intended to be shared between modules for client.id/secret.
-# NB: Generation require kubernetes-secret-generator (https://github.com/mittwald/kubernetes-secret-generator) to be deployed in the cluster
-generatedSecrets: []
-#  - secretName:
-#    fields:
-#      - name:
-#        encoding: base64  # Default: Base 64
-#        length: 15
+tokenConfig:
+  # After this period without token validation, the session expire
+  inactivityTimeout: "30m"
+  # After this period, the session expire, in all case.
+  sessionMaxTTL: "12h"
+  # This is intended for the client CLI, for token caching
+  clientTokenTTL: "30s"
+  # 'memory' or 'crd'
+  storageType: memory
+  # When tokenStorage==crd, delay to store lastHit in CRD, when tokenStorage==crd. In %% (per mille) of inactivityTimeout
+  # Will be he max difference between reality and what is stored in API Server
+  # Aim is to avoid API server overloading
+  lastHitStep: "3"
+  # The namespace used as storage for token definition. Default to deployment namespace
+  namespace:
 
 # ---------------------------------------------------------------------------------------
 # The following are context dependant. Should be defined in a context related values file
@@ -101,15 +132,21 @@ ingress:
   enabled: false
   Host:
 
+tokenClients:
+#  - id: "merger"
+#    secret: "1234"
+# To be fully open (No authentication):
+#  - id: "*"
+#  - secret: "*"
+
 # Cert-manger cluster issuer
-# This is used to generate a certificate for our http server, on our 'top side'
 clusterIssuer:
 # If not provided and ssl:true, then a certificate must be provided externally as a secret. Here is a sample layout:
 #
 #      apiVersion: v1
 #      kind: Secret
 #      metadata:
-#        name: {{ include "sk-crd.fullname" . }}-cert
+#        name: {{ include "sk-auth.fullname" . }}-cert
 #        namespace: skas-system
 #      type: kubernetes.io/tls
 #      data:
@@ -119,64 +156,26 @@ clusterIssuer:
 #
 # Refer to the documentation for more information about certificate creation
 
+
 # ---------------------------------- Provided services:
 
 services:
-  login:
-    enabled: true
-#   clients:
-#     - id: "*"
-#       secret: "1234"
-  userStatus:
-    enabled: false
-#   clients:
-#     - id: "*"
-#       secret: "1234"
-  userDescribe:
+  token:
     enabled: true
 #   clients:
 #     - id: "*"
 #       secret: "1234"
 
 
-# -------------------------------- underlying providers
+# -------------------------------- underlying login provider
 
-# This is used to validate the certificate of the identity provider in our 'bottom side'
-rootCaData:
-rootCaPath:
+loginProvider:
+#  url: https://sk-static1.ingress.kspray1.project33.scw01
+#  rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
+#  insecureSkipVerify: false
+#  clientAuth:
+#    id: merger
+#    secret: "1234"
 
-providers:
-#  - name: static
-#    enabled: true
-#    httpClient:
-#      url: https://sk-static1.ingress.kspray1.project33.scw01
-#      rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
-#      insecureSkipVerify: false
-#      clientAuth:
-#        id: merger
-#        secret: "1234"
-#    credentialAuthority: true
-#    groupAuthority: true
-#    critical: true
-#    groupPattern: "%s"
-#    uidOffset: 0
 
-#  - name: ldap1
-#    httpClient:
-#      url: https://sk-ldap1.ingress.kspray1.project33.scw01
-#      clientAuth:
-#        id: merger
-#        secret: "1234"
-#    enabled: true
-#    credentialAuthority: true
-#    critical: true
-#    groupPattern: "ldap_%s"
-#    uidOffset: 10000
 
-#  - name: crd
-#    httpClient:
-#      url: https://sk-crd1.ingress.kspray1.project33.scw01
-#      clientAuth:
-#        id: merger
-#        secret: "1234"
-#    credentialAuthority: true
