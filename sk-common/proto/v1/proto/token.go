@@ -10,7 +10,7 @@ import (
 
 // ------------------------------------------------------
 
-var TokenRequestUrlPath = "/v1/token"
+const TokenRequestUrlPath = "/v1/token"
 
 var _ RequestPayload = &TokenRequest{}
 
@@ -31,7 +31,7 @@ type TokenResponse struct {
 
 // ------------------------------------------------------
 
-var TokenRenewUrlPath = "/v1/tokenrenew"
+const TokenRenewUrlPath = "/v1/tokenrenew"
 
 type TokenRenewRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`

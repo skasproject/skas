@@ -7,10 +7,12 @@ log:
 server:
   ssl: false
 
-
-tokenClients:
-  - id: "*"
-    secret: "*"
+services:
+  token:
+    enabled: true
+    clients:
+      - id: "*"
+        secret: "*"
 
 loginProvider:
   url: http://127.0.0.1:7013

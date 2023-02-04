@@ -18,6 +18,10 @@ COPY sk-crd/go.mod sk-crd/go.mod
 COPY sk-crd/go.sum sk-crd/go.sum
 RUN cd sk-crd && go mod download
 
+COPY sk-auth/go.mod sk-auth/go.mod
+COPY sk-auth/go.sum sk-auth/go.sum
+RUN cd sk-auth && go mod download
+
 COPY sk-ldap/go.mod sk-ldap/go.mod
 COPY sk-ldap/go.sum sk-ldap/go.sum
 RUN cd sk-ldap && go mod download
@@ -40,6 +44,11 @@ COPY sk-crd/k8sapis/ sk-crd/k8sapis/
 COPY sk-crd/main.go sk-crd/main.go
 RUN cd sk-crd && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o sk-crd main.go
 
+COPY sk-auth/internal/ sk-auth/internal/
+COPY sk-auth/k8sapis/ sk-auth/k8sapis/
+COPY sk-auth/main.go sk-auth/main.go
+RUN cd sk-auth && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o sk-auth main.go
+
 COPY sk-ldap/internal/ sk-ldap/internal/
 COPY sk-ldap/main.go sk-ldap/main.go
 RUN cd sk-ldap && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o sk-ldap main.go
@@ -61,6 +70,7 @@ COPY --from=builder /workspace/sk-crd/sk-crd .
 COPY --from=builder /workspace/sk-ldap/sk-ldap .
 COPY --from=builder /workspace/sk-static/sk-static .
 COPY --from=builder /workspace/sk-merge/sk-merge .
+COPY --from=builder /workspace/sk-auth/sk-auth .
 USER 65532:65532
 
 #ENTRYPOINT [""]

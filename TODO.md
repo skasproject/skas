@@ -11,6 +11,7 @@
 - Rename userDescribe to userExplain
 - Rename userStatus to userIdentity
 - In config file, for http client url. Set full url, including the path OR define by scheme:, host: and port (Currently, it is ambiguous, as a partial)
+- liveness, readyness probes on all modules
  
 ## sk-static
 

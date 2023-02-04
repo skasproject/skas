@@ -42,14 +42,16 @@ func main() {
 		config.Log.Error(err, "Error on client login creation")
 	}
 
-	s.Router.Handle(proto.TokenRequestUrlPath, &handlers.TokenRequestHandler{
-		BaseHandler: basehandlers.BaseHandler{
-			Logger: s.Log,
-		},
-		ClientManager: clientauth.New(config.Conf.TokenClients),
-		TokenStore:    tokenStore,
-		LoginClient:   loginClient,
-	}).Methods("GET")
+	if config.Conf.Services.Token.Enabled {
+		s.Router.Handle(proto.TokenRequestUrlPath, &handlers.TokenRequestHandler{
+			BaseHandler: basehandlers.BaseHandler{
+				Logger: s.Log,
+			},
+			ClientManager: clientauth.New(config.Conf.Services.Token.Clients),
+			TokenStore:    tokenStore,
+			LoginClient:   loginClient,
+		}).Methods("GET")
+	}
 
 	if config.Conf.TokenConfig.StorageType == "memory" {
 		err := s.Start(context.Background())

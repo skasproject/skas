@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"skas/sk-auth/internal/config"
 	"skas/sk-auth/internal/tokenstore"
-	"skas/sk-auth/k8sapi/session/v1alpha1"
+	"skas/sk-auth/k8sapis/session/v1alpha1"
 	"skas/sk-common/pkg/misc"
 	"skas/sk-common/proto/v1/proto"
 	"sort"
