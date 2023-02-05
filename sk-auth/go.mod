@@ -7,6 +7,7 @@ replace skas/sk-common v0.1.0 => ../sk-common
 require (
 	github.com/bombsimon/logrusr/v4 v4.0.0
 	github.com/go-logr/logr v1.2.3
+	github.com/pior/runnable v0.11.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.1

@@ -24,11 +24,14 @@ spec:
     - jsonPath: .spec.user.login
       name: User login
       type: string
+    - jsonPath: .spec.authority
+      name: Auth.
+      type: string
     - jsonPath: .spec.user.uid
       name: User ID
       type: string
-    - jsonPath: .spec.user.groups
-      name: User Groups
+    - jsonPath: .spec.creation
+      name: Creation
       type: string
     - jsonPath: .status.lastHit
       name: Last hit
@@ -51,6 +54,9 @@ spec:
             type: object
           spec:
             properties:
+              authority:
+                description: The identity provider which validate the password
+                type: string
               client:
                 type: string
               creation:
@@ -96,6 +102,7 @@ spec:
                 - uid
                 type: object
             required:
+            - authority
             - client
             - creation
             - lifecycle

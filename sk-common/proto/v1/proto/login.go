@@ -7,7 +7,7 @@ import (
 
 // -------------------- Login API
 
-// Ti be used by any application which want to validate user's credential.
+// To be used by any application which want to validate user's credential.
 //
 // One important difference between Login and UserStatus API, is Login does not provide user info if password is not validated.
 
@@ -22,6 +22,7 @@ type LoginRequest struct {
 type LoginResponse struct {
 	Success bool `json:"success"`
 	User
+	Authority string `json:"authority"`
 }
 
 // -----------------------------------------------------

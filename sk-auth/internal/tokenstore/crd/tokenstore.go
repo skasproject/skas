@@ -51,7 +51,7 @@ func New(conf config.TokenConfig, kubeClient client.Client, logger logr.Logger) 
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyz"
 
-func (t *tokenStore) NewToken(clientId string, user proto.User) (tokenstore.TokenBag, error) {
+func (t *tokenStore) NewToken(clientId string, user proto.User, authority string) (tokenstore.TokenBag, error) {
 	b := make([]byte, 48)
 	for i := range b {
 		b[i] = letterBytes[rand.Intn(len(letterBytes))]
@@ -68,6 +68,7 @@ func (t *tokenStore) NewToken(clientId string, user proto.User) (tokenstore.Toke
 			User:      user,
 			Creation:  metav1.Time{Time: now},
 			Lifecycle: *t.defaultLifecycle,
+			Authority: authority,
 		},
 		Status: v1alpha1.TokenStatus{
 			LastHit: metav1.Time{Time: now},

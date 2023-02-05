@@ -1,8 +1,8 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	"github.com/pior/runnable"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -21,6 +21,7 @@ import (
 	basehandlers "skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/pkg/skhttp"
 	"skas/sk-common/proto/v1/proto"
+	"time"
 )
 
 var scheme = runtime.NewScheme()
@@ -40,6 +41,8 @@ func main() {
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager
+
+	// -----------------------------------------------------------------First step of setup
 
 	if config.Conf.TokenConfig.StorageType == "memory" {
 		tokenStore = memory.New(config.Conf.TokenConfig, config.Log.WithName("tokenstore"))
@@ -69,6 +72,8 @@ func main() {
 		tokenStore = crd.New(config.Conf.TokenConfig, mgr.GetClient(), config.Log.WithName("tokenstore"))
 	}
 
+	// --------------------------------------------------------------- http server setup
+
 	s := &httpserver.Server{
 		Name:   "auth",
 		Log:    config.Log.WithName("authServer"),
@@ -80,7 +85,6 @@ func main() {
 	if err != nil {
 		config.Log.Error(err, "Error on client login creation")
 	}
-
 	if config.Conf.Services.Token.Enabled {
 		s.Router.Handle(proto.TokenRequestUrlPath, &handlers.TokenRequestHandler{
 			BaseHandler: basehandlers.BaseHandler{
@@ -89,19 +93,42 @@ func main() {
 			ClientManager: clientauth.New(config.Conf.Services.Token.Clients),
 			TokenStore:    tokenStore,
 			LoginClient:   loginClient,
-		}).Methods("GET")
+		}).Methods("POST")
+		s.Router.Handle(proto.TokenRenewUrlPath, &handlers.TokenRenewHandler{
+			BaseHandler: basehandlers.BaseHandler{
+				Logger: s.Log,
+			},
+			ClientManager: clientauth.New(config.Conf.Services.Token.Clients),
+			TokenStore:    tokenStore,
+		}).Methods("POST")
 	}
+	// ---------------------------------------------------------- End init and launch
 
 	if config.Conf.TokenConfig.StorageType == "memory" {
-		err := s.Start(context.Background())
-		if err != nil {
-			s.Log.Error(err, "Error on Start()")
-			os.Exit(5)
-		}
+		runnableMgr := runnable.NewManager()
+		runnableMgr.Add(s)
+		runnableMgr.Add(&tokenstore.Cleaner{
+			Period:     60 * time.Second,
+			TokenStore: tokenStore,
+		})
+		runnable.Run(runnableMgr.Build())
+		//err := s.Start(context.Background())
+		//if err != nil {
+		//	s.Log.Error(err, "Error on Start()")
+		//	os.Exit(5)
+		//}
 	} else {
 		err = mgr.Add(s)
 		if err != nil {
 			config.Log.Error(err, "problem adding http server to the manager")
+			os.Exit(1)
+		}
+		err := mgr.Add(&tokenstore.Cleaner{
+			Period:     60 * time.Second,
+			TokenStore: tokenStore,
+		})
+		if err != nil {
+			config.Log.Error(err, "problem adding cleaner to the manager")
 			os.Exit(1)
 		}
 		config.Log.Info("starting manager")

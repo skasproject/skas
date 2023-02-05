@@ -37,12 +37,12 @@ func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 		u.HttpError(response, fmt.Sprintf("Providers scan: %v", err), http.StatusInternalServerError)
 		return
 	}
-	merged, credentialAuthorityProvider := clientproviderchain.Merge(requestPayload.Login, items)
+	merged, authority := clientproviderchain.Merge(requestPayload.Login, items)
 
 	responsePayload := &proto.UserDescribeResponse{
-		Items:                       make([]proto.UserDescribeItem, 0, u.Chain.GetLength()),
-		Merged:                      *merged,
-		CredentialAuthorityProvider: credentialAuthorityProvider,
+		Items:     make([]proto.UserDescribeItem, 0, u.Chain.GetLength()),
+		Merged:    *merged,
+		Authority: authority,
 	}
 	for idx, _ := range items {
 		udi := &proto.UserDescribeItem{

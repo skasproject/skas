@@ -1,9 +1,7 @@
 
 ## All
 
-- Secure communication with client certificate and/or clientId/secretID, and/or netpols
 - Ensure copyright message in all relevant location
-- Inject environment variable in config files
 - Reference and normalize os.exit() code
 - Switch to logrus, to have more level (i.e WARNING)
 - Display client.id in relevant message
@@ -31,6 +29,7 @@
 ## sk-auth
 
 - Simplify tokenstore interface (Is TokenBag useful )
+- If memory or another non-k8s storage is used in production, one may modify the runnable package (Start() instead of Run(), a standart logger, ...)
 
 ## Doc:
 

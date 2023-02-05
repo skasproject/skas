@@ -53,6 +53,10 @@ func (server *Server) Groom() {
 	return
 }
 
+func (server *Server) Run(ctx context.Context) error {
+	return server.Start(ctx)
+}
+
 func (server *Server) Start(ctx context.Context) error {
 	server.Log.Info("Starting Server")
 

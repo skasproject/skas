@@ -17,12 +17,12 @@ providers:
         secret: 1234
     groupPattern: "static_%s"
     credentialAuthority: true
-  - name: crd
-    httpClient:
-      url: http://localhost:7012
-      clientAuth:
-        id: merger
-        secret: 1234
+#  - name: crd
+#    httpClient:
+#      url: http://localhost:7012
+#      clientAuth:
+#        id: merger
+#        secret: 1234
 
 
 services:

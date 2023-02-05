@@ -40,6 +40,10 @@ type TokenSpec struct {
 
 	// +required
 	Lifecycle TokenLifecycle `json:"lifecycle"`
+
+	// The identity provider which validate the password
+	// +required
+	Authority string `json:"authority"`
 }
 
 // TokenStatus defines the observed state of Token
@@ -52,8 +56,9 @@ type TokenStatus struct {
 // +kubebuilder:resource:scope=Namespaced,shortName=skastoken
 // +kubebuilder:printcolumn:name="Client",type=string,JSONPath=`.spec.client`
 // +kubebuilder:printcolumn:name="User login",type=string,JSONPath=`.spec.user.login`
+// +kubebuilder:printcolumn:name="Auth.",type=string,JSONPath=`.spec.authority`
 // +kubebuilder:printcolumn:name="User ID",type=string,JSONPath=`.spec.user.uid`
-// +kubebuilder:printcolumn:name="User Groups",type=string,JSONPath=`.spec.user.groups`
+// +kubebuilder:printcolumn:name="Creation",type=string,JSONPath=`.spec.creation`
 // +kubebuilder:printcolumn:name="Last hit",type=string,JSONPath=`.status.lastHit`
 type Token struct {
 	metav1.TypeMeta   `json:",inline"`
