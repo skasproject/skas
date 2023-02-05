@@ -42,7 +42,7 @@ func New(conf config.TokenConfig, logger logr.Logger) tokenstore.TokenStore {
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyz"
 
-func (t *tokenStore) NewToken(clientId string, user proto.User) (tokenstore.TokenBag, error) {
+func (t *tokenStore) NewToken(clientId string, user proto.User, authority string) (tokenstore.TokenBag, error) {
 	b := make([]byte, 48)
 	for i := range b {
 		b[i] = letterBytes[rand.Intn(len(letterBytes))]
@@ -55,6 +55,7 @@ func (t *tokenStore) NewToken(clientId string, user proto.User) (tokenstore.Toke
 			User:      user,
 			Creation:  metav1.Time{Time: now},
 			Lifecycle: *t.defaultLifecycle,
+			Authority: authority,
 		},
 		LastHit: now,
 	}

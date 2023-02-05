@@ -32,9 +32,9 @@ func (t TokenRequestHandler) ServeHTTP(response http.ResponseWriter, request *ht
 		t.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
-	user, err := t.login(requestPayload.Login, requestPayload.Password)
+	user, authority, err := t.login(requestPayload.Login, requestPayload.Password)
 	if err != nil {
-		t.HttpError(response, err.Error(), http.StatusInternalServerError)
+		t.HttpError(response, fmt.Sprintf("Error on downside login request: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 	var responsePayload *proto.TokenResponse
@@ -43,7 +43,7 @@ func (t TokenRequestHandler) ServeHTTP(response http.ResponseWriter, request *ht
 			Success: false,
 		}
 	} else {
-		tokenBag, err := t.TokenStore.NewToken(requestPayload.ClientAuth.Id, *user)
+		tokenBag, err := t.TokenStore.NewToken(requestPayload.ClientAuth.Id, *user, authority)
 		if err != nil {
 			t.HttpError(response, fmt.Sprintf("Error on token creation for login '%s': %s", requestPayload.Login, err.Error()), http.StatusInternalServerError)
 			return
@@ -53,6 +53,7 @@ func (t TokenRequestHandler) ServeHTTP(response http.ResponseWriter, request *ht
 			Token:     tokenBag.Token,
 			User:      *user,
 			ClientTTL: tokenBag.TokenSpec.Lifecycle.ClientTTL.Duration,
+			Authority: authority,
 		}
 
 	}
@@ -60,7 +61,7 @@ func (t TokenRequestHandler) ServeHTTP(response http.ResponseWriter, request *ht
 	t.ServeJSON(response, responsePayload)
 }
 
-func (t TokenRequestHandler) login(login, password string) (*proto.User, error) {
+func (t TokenRequestHandler) login(login, password string) (*proto.User /*authority*/, string, error) {
 	lr := &proto.LoginRequest{
 		Login:      login,
 		Password:   password,
@@ -69,11 +70,11 @@ func (t TokenRequestHandler) login(login, password string) (*proto.User, error) 
 	loginResponse := &proto.LoginResponse{}
 	err := t.LoginClient.Do(proto.LoginUrlPath, lr, loginResponse)
 	if err != nil {
-		return nil, err // Do() return a documented message
+		return nil, "", fmt.Errorf("error on exchange on %s: %w", proto.LoginUrlPath, err) // Do() return a documented message
 	}
 	if loginResponse.Success {
-		return &loginResponse.User, nil
+		return &loginResponse.User, loginResponse.Authority, nil
 	} else {
-		return nil, nil
+		return nil, "", nil
 	}
 }

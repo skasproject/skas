@@ -24,9 +24,9 @@ type UserDescribeRequest struct {
 var _ ResponsePayload = &UserDescribeResponse{}
 
 type UserDescribeResponse struct {
-	Items                       []UserDescribeItem `yaml:"items"`
-	Merged                      UserStatusResponse `yaml:"merged"`
-	CredentialAuthorityProvider string             `yaml:"credentialAuthorityProvider"`
+	Items     []UserDescribeItem `yaml:"items"`
+	Merged    UserStatusResponse `yaml:"merged"`
+	Authority string             `yaml:"authority"`
 }
 
 type Translated struct {
