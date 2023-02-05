@@ -6,7 +6,9 @@ metadata:
   labels:
     {{- include "sk-auth.labels" . | nindent 4 }}
   annotations:
+    {{ if not .Values.goinkube.enabled }}
     configmap.reloader.stakater.com/reload: "{{ include "sk-auth.configName" . }}"
+    {{ end }}
   {{- with .Values.commonAnnotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -45,7 +47,7 @@ spec:
             - {{ . }}
           {{- end }}
           {{ end }}
-          {{- if eq .Values.tokenConfig.storageType "crd" }}
+          {{- if and (eq .Values.tokenConfig.storageType "crd") (not .Values.goinkube.enabled )}}
           livenessProbe:
             httpGet:
               path: /readyz

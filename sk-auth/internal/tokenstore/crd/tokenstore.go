@@ -84,6 +84,13 @@ func (t *tokenStore) NewToken(clientId string, user proto.User) (tokenstore.Toke
 		t.logger.Error(err, "token create failed", "login", user.Login)
 		return tokenstore.TokenBag{}, err
 	}
+	// Update status, as it is a subresource, so, not updated by the Create. Must set again the status
+	crdToken.Status.LastHit = metav1.Time{Time: now}
+	err = t.kubeClient.Status().Update(context.TODO(), crdToken)
+	if err != nil {
+		t.logger.Error(err, "token status update failed", "login", user.Login)
+		return tokenstore.TokenBag{}, err
+	}
 	t.logger.V(0).Info("Token created", "token", misc.ShortenString(tkn), "login", user.Login)
 
 	return tokenBag, nil
@@ -151,7 +158,7 @@ func (t *tokenStore) touch(tkn *v1alpha1.Token, now time.Time) error {
 	if now.After(tkn.Status.LastHit.Add(t.lastHitStep)) {
 		t.logger.V(1).Info("Will effectively update LastHit", "token", tkn.Name, "login", tkn.Spec.User.Login)
 		tkn.Status.LastHit = metav1.Time{Time: now}
-		err := t.kubeClient.Update(context.TODO(), tkn)
+		err := t.kubeClient.Status().Update(context.TODO(), tkn)
 		if err != nil {
 			return err
 		}

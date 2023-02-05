@@ -48,3 +48,11 @@ goinkube:
       enabled: true
       ipSharingKey: ingress
       externalIp: 10.33.0.200      # Chosen by metallb if not specified
+
+#resources:
+#  limits:
+#    cpu: 1500m
+#    memory: 1G
+#  requests:
+#    cpu: 1000m
+#    memory: 64Mi

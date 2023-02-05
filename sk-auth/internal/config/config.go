@@ -36,4 +36,6 @@ type Config struct {
 	Services      struct {
 		Token ServiceConfig `yaml:"token"`
 	} `yaml:"services"`
+	MetricAddr string `yaml:"metricAddr"`
+	ProbeAddr  string `yaml:"probeAddr"`
 }

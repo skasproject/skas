@@ -13,6 +13,8 @@ func Setup() error {
 	var logLevel string
 	var logMode string
 	var bindAddr string
+	var metricAddr string
+	var probeAddr string
 
 	var inactivityTimeout string
 	var sessionMaxTTL string
@@ -26,6 +28,8 @@ func Setup() error {
 	pflag.StringVar(&logLevel, "logLevel", "INFO", "Log level (PANIC|FATAL|ERROR|WARN|INFO|DEBUG|TRACE)")
 	pflag.StringVar(&logMode, "logMode", "json", "Log mode: 'dev' or 'json'")
 	pflag.StringVar(&bindAddr, "bindAddr", "127.0.0.1:7014", "Server bind address <host>:<port>")
+	pflag.StringVar(&metricAddr, "metricAddr", ":8080", "Metrics bind address (\"0\" to disable)")
+	pflag.StringVar(&probeAddr, "probeAddr", ":8181", "Probe bind address (\"0\" to disable)\"")
 
 	pflag.StringVar(&inactivityTimeout, "inactivityTimeout", "30m", "Session inactivity time out")
 	pflag.StringVar(&sessionMaxTTL, "sessionMaxTTL", "24h", "Session max TTL")
@@ -52,6 +56,8 @@ func Setup() error {
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Mode, "logMode")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Level, "logLevel")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Server.BindAddr, "bindAddr")
+	misc.AdjustConfigString(pflag.CommandLine, &Conf.MetricAddr, "metricAddr")
+	misc.AdjustConfigString(pflag.CommandLine, &Conf.ProbeAddr, "probeAddr")
 
 	misc.AdjustConfigDuration(pflag.CommandLine, &Conf.TokenConfig.InactivityTimeout, "inactivityTimeout")
 	misc.AdjustConfigDuration(pflag.CommandLine, &Conf.TokenConfig.SessionMaxTTL, "sessionMaxTTL")
