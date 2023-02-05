@@ -37,7 +37,7 @@ func (l LoginHandler) ServeHTTP(response http.ResponseWriter, request *http.Requ
 		l.HttpError(response, fmt.Sprintf("Providers scan: %v", err), http.StatusInternalServerError)
 		return
 	}
-	merged, _ := clientproviderchain.Merge(requestPayload.Login, items)
+	merged, authority := clientproviderchain.Merge(requestPayload.Login, items)
 
 	var responsePayload *proto.LoginResponse
 	if merged.UserStatus == proto.PasswordChecked {
@@ -50,6 +50,7 @@ func (l LoginHandler) ServeHTTP(response http.ResponseWriter, request *http.Requ
 				Emails:      merged.Emails,
 				Groups:      merged.Groups,
 			},
+			Authority: authority,
 		}
 	} else {
 		responsePayload = &proto.LoginResponse{
@@ -61,6 +62,7 @@ func (l LoginHandler) ServeHTTP(response http.ResponseWriter, request *http.Requ
 				Emails:      []string{},
 				Groups:      []string{},
 			},
+			Authority: "",
 		}
 	}
 	l.GetLog().Info("User login", "login", requestPayload.Login, "success", responsePayload.Success, "groups", responsePayload.Groups)

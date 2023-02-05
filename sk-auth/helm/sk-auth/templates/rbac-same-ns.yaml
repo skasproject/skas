@@ -17,6 +17,7 @@ rules:
   - apiGroups: ["session.skasproject.io"]
     resources:
       - tokens
+      - tokens/status
     verbs: ["*"]
 
 ---

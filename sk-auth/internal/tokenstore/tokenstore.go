@@ -13,7 +13,7 @@ type TokenBag struct {
 }
 
 type TokenStore interface {
-	NewToken(clientId string, user proto.User) (TokenBag, error)
+	NewToken(clientId string, user proto.User, authority string) (TokenBag, error)
 	Get(token string) (*TokenBag, error) // Return nil, nil if token does not exists or is expired
 	GetAll() ([]TokenBag, error)
 	Clean() error // Remove expired token

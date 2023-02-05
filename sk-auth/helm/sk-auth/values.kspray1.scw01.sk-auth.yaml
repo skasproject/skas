@@ -5,6 +5,7 @@
 # helm -n skas-system upgrade -i --values ./values.kspray1.scw01.sk-auth.yaml sk-auth .
 #
 # helm -n skas-system uninstall sk-auth
+# kubectl delete crd tokens.session.skasproject.io
 
 log:
   mode: dev
@@ -36,7 +37,7 @@ loginProvider:
 
 
 goinkube:
-  enabled: true
+  enabled: false
   relaxPsp: false
   storage:
     enabled: true

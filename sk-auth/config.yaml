@@ -19,3 +19,11 @@ loginProvider:
   clientAuth:
     id: "auth"
 
+
+tokenConfig:
+  inactivityTimeout: "30m"
+  sessionMaxTTL: "12h"
+  clientTokenTTL: "30s"
+  storageType: crd
+  lastHitStep: 3
+  namespace:
