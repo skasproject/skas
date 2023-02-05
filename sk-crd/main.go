@@ -51,7 +51,7 @@ func main() {
 		Namespace:              config.Conf.Namespace,
 	})
 	if err != nil {
-		config.Log.Error(err, "unable to start manager")
+		config.Log.Error(err, "unable to initialize manager")
 		os.Exit(1)
 	}
 
@@ -78,6 +78,10 @@ func main() {
 	}).Methods("GET")
 
 	err = mgr.Add(s)
+	if err != nil {
+		config.Log.Error(err, "problem adding http server to the manager")
+		os.Exit(1)
+	}
 
 	err = mgr.GetFieldIndexer().IndexField(context.TODO(), &userdbv1alpha1.GroupBinding{}, "userkey", func(rawObj kubeclient.Object) []string {
 		ugb := rawObj.(*userdbv1alpha1.GroupBinding)

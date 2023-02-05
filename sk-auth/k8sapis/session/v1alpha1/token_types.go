@@ -47,9 +47,6 @@ type TokenStatus struct {
 	LastHit metav1.Time `json:"lastHit"`
 }
 
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
-
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Namespaced,shortName=skastoken

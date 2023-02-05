@@ -116,7 +116,7 @@ tokenConfig:
   # This is intended for the client CLI, for token caching
   clientTokenTTL: "30s"
   # 'memory' or 'crd'
-  storageType: memory
+  storageType: crd
   # When tokenStorage==crd, delay to store lastHit in CRD, when tokenStorage==crd. In %% (per mille) of inactivityTimeout
   # Will be he max difference between reality and what is stored in API Server
   # Aim is to avoid API server overloading
