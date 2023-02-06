@@ -1,21 +1,14 @@
 package tokenstore
 
 import (
-	"skas/sk-auth/k8sapis/session/v1alpha1"
 	"skas/sk-common/proto/v1/proto"
 	"time"
 )
 
-type TokenBag struct {
-	Token     string
-	TokenSpec v1alpha1.TokenSpec
-	LastHit   time.Time
-}
-
 type TokenStore interface {
-	NewToken(clientId string, user proto.User, authority string) (TokenBag, error)
-	Get(token string) (*TokenBag, error) // Return nil, nil if token does not exists or is expired
-	GetAll() ([]TokenBag, error)
-	Clean() error // Remove expired token
-	Delete(token string) (bool, error)
+	NewToken(clientId string, user proto.User, authority string) (string, error)
+	Get(token string) (*proto.User, error) // Return nil, nil if token does not exists or is expired
+	Clean() error                          // Remove expired token
+	// Delete(token string) (bool, error)
+	GetClientTtl() time.Duration
 }

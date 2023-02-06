@@ -98,7 +98,7 @@ spec:
               name: server-cert
               readOnly: true
             {{ end }}
-            {{ if .Values.goinkube.storage.enabled }}
+            {{ if and .Values.goinkube.enabled .Values.goinkube.storage.enabled }}
             - mountPath: /work
               name: work
             {{ end }}
@@ -128,7 +128,7 @@ spec:
             defaultMode: 420
             secretName: {{ include "sk-auth.certificateSecretName" . }}
         {{ end }}
-        {{ if .Values.goinkube.storage.enabled }}
+        {{ if and .Values.goinkube.enabled .Values.goinkube.storage.enabled }}
         - name: work
           persistentVolumeClaim:
             claimName: {{ include "sk-auth.fullname" . }}-goinkube

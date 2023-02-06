@@ -31,14 +31,14 @@ func (t TokenRenewHandler) ServeHTTP(response http.ResponseWriter, request *http
 		return
 	}
 
-	tokenBag, err := t.TokenStore.Get(requestPayload.Token)
+	user, err := t.TokenStore.Get(requestPayload.Token)
 	if err != nil {
 		t.HttpError(response, fmt.Sprintf("Error while retreiving token in the store: %v", err.Error()), http.StatusUnauthorized)
 		return
 	}
 	responsePayload := &proto.TokenRenewResponse{
 		Token: requestPayload.Token,
-		Valid: tokenBag != nil,
+		Valid: user != nil,
 	}
 	t.GetLog().Info("Token renew", "token", misc.ShortenString(requestPayload.Token), "valid", responsePayload.Valid)
 	t.ServeJSON(response, responsePayload)

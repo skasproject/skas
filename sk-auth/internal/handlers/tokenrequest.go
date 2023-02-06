@@ -43,16 +43,16 @@ func (t TokenRequestHandler) ServeHTTP(response http.ResponseWriter, request *ht
 			Success: false,
 		}
 	} else {
-		tokenBag, err := t.TokenStore.NewToken(requestPayload.ClientAuth.Id, *user, authority)
+		token, err := t.TokenStore.NewToken(requestPayload.ClientAuth.Id, *user, authority)
 		if err != nil {
 			t.HttpError(response, fmt.Sprintf("Error on token creation for login '%s': %s", requestPayload.Login, err.Error()), http.StatusInternalServerError)
 			return
 		}
 		responsePayload = &proto.TokenResponse{
 			Success:   true,
-			Token:     tokenBag.Token,
+			Token:     token,
 			User:      *user,
-			ClientTTL: tokenBag.TokenSpec.Lifecycle.ClientTTL.Duration,
+			ClientTTL: t.TokenStore.GetClientTtl(),
 			Authority: authority,
 		}
 
