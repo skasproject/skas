@@ -41,7 +41,7 @@ func newClient() client.Client {
 
 func getLogger() logr.Logger {
 	l := logrus.New()
-	l.SetLevel(logrus.InfoLevel)
+	l.SetLevel(logrus.DebugLevel)
 	l.SetFormatter(&logrus.TextFormatter{})
 	return logrusr.New(l)
 }
@@ -70,8 +70,15 @@ var config3s = config.TokenConfig{
 	LastHitStep:       3,
 }
 
-func TestMain(m *testing.M) {
+var configMaxTtl = config.TokenConfig{
+	InactivityTimeout: ParseDurationOrPanic("1h"),
+	SessionMaxTTL:     ParseDurationOrPanic("3s"),
+	ClientTokenTTL:    ParseDurationOrPanic("10s"),
+	Namespace:         "skas-system",
+	LastHitStep:       3,
+}
 
+func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
@@ -84,14 +91,14 @@ func TestNew(t *testing.T) {
 		CommonNames: []string{},
 		Uid:         0,
 	}
-	tokenBag, err := store.NewToken("testClient", user)
+	token, err := store.NewToken("testClient", user, "auth")
 	assert.Nil(t, err)
-	assert.NotNil(t, tokenBag)
+	assert.NotNil(t, token)
 	time.Sleep(time.Second * 1)
-	tokenBag2, err := store.Get(tokenBag.Token)
+	user2, err := store.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, tokenBag2, "tokenBag2 should be found")
-	assert.Equal(t, "Alfred", tokenBag2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 }
 
 func TestTimeout1(t *testing.T) {
@@ -103,15 +110,16 @@ func TestTimeout1(t *testing.T) {
 		CommonNames: []string{},
 		Uid:         1,
 	}
-	tokenBag, err := store.NewToken("testClient", user)
+	token, err := store.NewToken("testClient", user, "auth")
 	assert.Nil(t, err)
 	time.Sleep(time.Second * 3)
-	userToken2, err := store.Get(tokenBag.Token)
+	user2, err := store.Get(token)
 	assert.Nil(t, err)
-	assert.Nil(t, userToken2, "userToken should be nil (Not found)")
+	assert.Nil(t, user2, "user2 should be nil (Not found)")
 }
 
 func TestTimeout2(t *testing.T) {
+
 	store := New(config3s, newClient(), getLogger())
 	user := proto.User{
 		Login:       "Alfred",
@@ -120,37 +128,69 @@ func TestTimeout2(t *testing.T) {
 		CommonNames: []string{},
 		Uid:         2,
 	}
-	tokenBag, err := store.NewToken("testClient", user)
+	token, err := store.NewToken("testClient", user, "auth")
 	assert.Nil(t, err)
-
-	token := tokenBag.Token
 
 	time.Sleep(time.Second)
 
-	tokenBag2, err := store.Get(token)
+	user2, err := store.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, tokenBag2, "tokenBag2 should be found")
-	assert.Equal(t, "Alfred", tokenBag2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 
 	time.Sleep(time.Second)
 
-	tokenBag2, err = store.Get(token)
+	user2, err = store.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, tokenBag2, "tokenBag2 should be found")
-	assert.Equal(t, "Alfred", tokenBag2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 
 	time.Sleep(time.Second)
 
-	tokenBag2, err = store.Get(token)
+	user2, err = store.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, tokenBag2, "tokenBag2 should be found")
-	assert.Equal(t, "Alfred", tokenBag2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 
 	time.Sleep(time.Second * 3)
 
-	tokenBag2, err = store.Get(token)
+	user2, err = store.Get(token)
 	assert.Nil(t, err)
-	assert.Nil(t, tokenBag2, "tokenBag2 should not be found")
+	assert.Nil(t, user2, "user2 should not be found")
+}
+
+func TestTimeout3(t *testing.T) {
+
+	store := New(configMaxTtl, newClient(), getLogger())
+	user := proto.User{
+		Login:       "Alfred",
+		Emails:      []string{},
+		Groups:      []string{"xx"},
+		CommonNames: []string{},
+		Uid:         2,
+	}
+	token, err := store.NewToken("testClient", user, "auth")
+	assert.Nil(t, err)
+
+	time.Sleep(time.Second)
+
+	user2, err := store.Get(token)
+	assert.Nil(t, err)
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
+
+	time.Sleep(time.Second)
+
+	user2, err = store.Get(token)
+	assert.Nil(t, err)
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
+
+	time.Sleep(time.Second * 3)
+
+	user2, err = store.Get(token)
+	assert.Nil(t, err)
+	assert.Nil(t, user2, "user2 should not be found")
 }
 
 func TestMultipleGet(t *testing.T) {
@@ -162,24 +202,24 @@ func TestMultipleGet(t *testing.T) {
 		CommonNames: []string{},
 		Uid:         3,
 	}
-	tokenBag, err := store.NewToken("testClient", user)
+	token, err := store.NewToken("testClient", user, "auth")
 	assert.Nil(t, err)
 
-	userToken2, err := store.Get(tokenBag.Token)
+	user2, err := store.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, userToken2, "userToken2 should be found")
-	assert.Equal(t, "Alfred", userToken2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 
 	time.Sleep(time.Second)
-	userToken2, err = store.Get(tokenBag.Token)
+	user2, err = store.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, userToken2, "userToken2 should be found")
-	assert.Equal(t, "Alfred", userToken2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "userToken2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 
-	userToken2, err = store.Get(tokenBag.Token)
+	user3, err := store.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, userToken2, "userToken2 should be found")
-	assert.Equal(t, "Alfred", userToken2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user3, "user3 should be found")
+	assert.Equal(t, "Alfred", user3.Login, "Login should be Alfred")
 }
 
 func TestMultipleBasket(t *testing.T) {
@@ -192,23 +232,23 @@ func TestMultipleBasket(t *testing.T) {
 	}
 	basket1 := New(config3s, newClient(), getLogger())
 	basket2 := New(config3s, newClient(), getLogger())
-	userToken, err := basket1.NewToken("testClient", user)
+	token, err := basket1.NewToken("testClient", user, "auth")
 	assert.Nil(t, err)
 
-	userToken2, err := basket1.Get(userToken.Token)
+	user2, err := basket1.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, userToken2, "userToken2 should be found")
-	assert.Equal(t, "Alfred", userToken2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 
 	//time.Sleep(time.Second * 2)
-	userToken2, err = basket2.Get(userToken.Token)
+	user2, err = basket2.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, userToken2, "userToken2 should be found")
-	assert.Equal(t, "Alfred", userToken2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 
 	time.Sleep(time.Second)
-	userToken2, err = basket1.Get(userToken.Token)
+	user2, err = basket1.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, userToken2, "ok should be found")
-	assert.Equal(t, "Alfred", userToken2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 }

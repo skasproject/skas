@@ -28,8 +28,7 @@
 
 ## sk-auth
 
-- Simplify tokenstore interface (Is TokenBag useful )
-- If memory or another non-k8s storage is used in production, one may modify the runnable package (Start() instead of Run(), a standart logger, ...)
+- If memory or another non-k8s storage is used in production, one may modify the runnable package (Start() instead of Run(), a standard logger, ...)
 
 ## Doc:
 

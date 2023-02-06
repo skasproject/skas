@@ -62,19 +62,6 @@ spec:
               creation:
                 format: date-time
                 type: string
-              lifecycle:
-                properties:
-                  clientTTL:
-                    type: string
-                  inactivityTimeout:
-                    type: string
-                  maxTTL:
-                    type: string
-                required:
-                - clientTTL
-                - inactivityTimeout
-                - maxTTL
-                type: object
               user:
                 properties:
                   commonNames:
@@ -105,7 +92,6 @@ spec:
             - authority
             - client
             - creation
-            - lifecycle
             - user
             type: object
           status:

@@ -5,6 +5,7 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"skas/sk-auth/internal/config"
 	"skas/sk-common/proto/v1/proto"
 	"testing"
@@ -31,6 +32,12 @@ var config3s = config.TokenConfig{
 	ClientTokenTTL:    ParseDurationOrPanic("10s"),
 }
 
+var configMaxTtl = config.TokenConfig{
+	InactivityTimeout: ParseDurationOrPanic("1h"),
+	SessionMaxTTL:     ParseDurationOrPanic("3s"),
+	ClientTokenTTL:    ParseDurationOrPanic("10s"),
+}
+
 func getLogger() logr.Logger {
 	l := logrus.New()
 	l.SetLevel(logrus.InfoLevel)
@@ -38,17 +45,21 @@ func getLogger() logr.Logger {
 	return logrusr.New(l)
 }
 
+func TestMain(m *testing.M) {
+	os.Exit(m.Run())
+}
+
 func TestNew(t *testing.T) {
 	store := New(config3s, getLogger())
 	user := proto.User{
 		Login: "Alfred",
 	}
-	userToken, err := store.NewToken("testClient", user)
+	userToken, err := store.NewToken("testClient", user, "auth")
 	assert.Nil(t, err)
-	userToken2, err := store.Get(userToken.Token)
+	user2, err := store.Get(userToken)
 	assert.Nil(t, err)
-	assert.NotNil(t, userToken2, "userToken should be found")
-	assert.Equal(t, "Alfred", userToken2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 }
 
 func TestTimeout1(t *testing.T) {
@@ -56,12 +67,12 @@ func TestTimeout1(t *testing.T) {
 	user := proto.User{
 		Login: "Alfred",
 	}
-	userToken, err := store.NewToken("testClient", user)
+	userToken, err := store.NewToken("testClient", user, "auth")
 	assert.Nil(t, err)
 	time.Sleep(time.Second * 3)
-	userToken2, err := store.Get(userToken.Token)
+	user2, err := store.Get(userToken)
 	assert.Nil(t, err)
-	assert.Nil(t, userToken2, "userToken should be nil (Not found)")
+	assert.Nil(t, user2, "userToken should be nil (Not found)")
 }
 
 func TestTimeout2(t *testing.T) {
@@ -69,34 +80,67 @@ func TestTimeout2(t *testing.T) {
 	user := proto.User{
 		Login: "Alfred",
 	}
-	userToken, err := store.NewToken("testClient", user)
+	token, err := store.NewToken("testClient", user, "auth")
 	assert.Nil(t, err)
-	token := userToken.Token
 
 	time.Sleep(time.Second)
 
-	userToken2, err := store.Get(token)
+	user2, err := store.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, userToken2, "userToken2 should be found")
-	assert.Equal(t, "Alfred", userToken2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 
 	time.Sleep(time.Second)
 
-	userToken2, err = store.Get(token)
+	user2, err = store.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, userToken2, "userToken2 should be found")
-	assert.Equal(t, "Alfred", userToken2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 
 	time.Sleep(time.Second)
 
-	userToken2, err = store.Get(token)
+	user2, err = store.Get(token)
 	assert.Nil(t, err)
-	assert.NotNil(t, userToken2, "userToken2 should be found")
-	assert.Equal(t, "Alfred", userToken2.TokenSpec.User.Login, "Login should be Alfred")
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
 
 	time.Sleep(time.Second * 3)
 
-	userToken2, err = store.Get(token)
+	user2, err = store.Get(token)
 	assert.Nil(t, err)
-	assert.Nil(t, userToken2, "userToken2 should not be found")
+	assert.Nil(t, user2, "user2 should not be found")
+}
+
+func TestTimeout3(t *testing.T) {
+
+	store := New(configMaxTtl, getLogger())
+	user := proto.User{
+		Login:       "Alfred",
+		Emails:      []string{},
+		Groups:      []string{"xx"},
+		CommonNames: []string{},
+		Uid:         2,
+	}
+	token, err := store.NewToken("testClient", user, "auth")
+	assert.Nil(t, err)
+
+	time.Sleep(time.Second)
+
+	user2, err := store.Get(token)
+	assert.Nil(t, err)
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
+
+	time.Sleep(time.Second)
+
+	user2, err = store.Get(token)
+	assert.Nil(t, err)
+	assert.NotNil(t, user2, "user2 should be found")
+	assert.Equal(t, "Alfred", user2.Login, "Login should be Alfred")
+
+	time.Sleep(time.Second * 3)
+
+	user2, err = store.Get(token)
+	assert.Nil(t, err)
+	assert.Nil(t, user2, "user2 should not be found")
 }

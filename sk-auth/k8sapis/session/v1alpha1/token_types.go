@@ -21,12 +21,6 @@ import (
 	"skas/sk-common/proto/v1/proto"
 )
 
-type TokenLifecycle struct {
-	InactivityTimeout metav1.Duration `json:"inactivityTimeout"`
-	MaxTTL            metav1.Duration `json:"maxTTL"`
-	ClientTTL         metav1.Duration `json:"clientTTL"`
-}
-
 type TokenSpec struct {
 
 	// +required
@@ -37,9 +31,6 @@ type TokenSpec struct {
 
 	// +required
 	Creation metav1.Time `json:"creation"`
-
-	// +required
-	Lifecycle TokenLifecycle `json:"lifecycle"`
 
 	// The identity provider which validate the password
 	// +required
