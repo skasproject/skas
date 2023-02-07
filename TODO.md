@@ -9,7 +9,8 @@
 - Rename userDescribe to userExplain
 - Rename userStatus to userIdentity
 - In config file, for http client url. Set full url, including the path OR define by scheme:, host: and port (Currently, it is ambiguous, as a partial)
-- liveness, readyness probes on all modules
+- liveliness, readiness probes on all modules
+- Generalize the concept of service in the config of all id provider. 
  
 ## sk-static
 
@@ -19,16 +20,23 @@
 
 - Manage certificate with the same logic as sk-merge
 
+## sk-crd
+
+- Add a service to change password
+
 ## sk-merge
 
 - Manage rootCaPath in helm chart (Global and  by provider)
 - On startup, perform a scan to check underlying providers (A flag to disable)
 - rename to sk-bind ?
 - Add an optional providerList, to modify order of provider. Needed when appending a new provider to list as 'extraProvider' in helm chart
+- Relay the changePassword service
 
 ## sk-auth
 
 - If memory or another non-k8s storage is used in production, one may modify the runnable package (Start() instead of Run(), a standard logger, ...)
+- Relay with authentication the changePassword service
+
 
 ## Doc:
 
