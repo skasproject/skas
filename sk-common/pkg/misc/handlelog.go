@@ -25,7 +25,6 @@ func HandleLog(logConfig *LogConfig) (logr.Logger, error) {
 	if !ok {
 		return logr.New(nil), fmt.Errorf("%s is an invalid value for Log.Level\n", logConfig.Level)
 	}
-
 	logrusLog := logrus.New()
 	logrusLog.SetLevel(llevel)
 	if logConfig.Mode == "json" {
