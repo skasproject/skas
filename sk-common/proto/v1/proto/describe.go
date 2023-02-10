@@ -10,9 +10,12 @@ import (
 // This is issued by sk-cli to sk-auth, which validate the token.
 // Then, it is forwarded to sk-merge, without Token but with ClientAuth
 
-const UserDescribeUrlPath = "/v1/userdescribe"
-
 var _ RequestPayload = &UserDescribeRequest{}
+
+var UserDescribeMeta = &RequestMeta{
+	Method:  "GET",
+	UrlPath: "/v1/userdescribe",
+}
 
 type UserDescribeRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`

@@ -1,34 +1,41 @@
 package cmd
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/spf13/cobra"
+	"os"
+	"skas/sk-clientgo/internal/config"
+	"skas/sk-clientgo/internal/tokenbag"
 )
+
+// This is intended to be used as client-go exc plugin. It communicates by a json printed on stdout.
+// So, not other print to stdout should be performed. Use stderr to display messages to the user
 
 var authCmd = &cobra.Command{
 	Use:    "auth",
 	Short:  "To be used as client-go exec plugin",
 	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("AUTH")
-		//common.InitHttpConnection()
-		//tokenBag := common.RetrieveTokenBag()
-		//if tokenBag == nil {
-		//	tokenBag = common.DoLoginSilently("", "")
-		//}
-		//ec := ExecCredential{
-		//	ApiVersion: "client.authentication.k8s.io/v1beta1",
-		//	Kind:       "ExecCredential",
-		//}
-		//if tokenBag == nil {
-		//	// No tokenBag
-		//} else {
-		//	ec.Status.Token = tokenBag.Token
-		//}
-		//err := json.NewEncoder(os.Stdout).Encode(ec)
-		//if err != nil {
-		//	panic(err)
-		//}
+
+		config.InitHttpClient()
+
+		tokenBag := tokenbag.Retrieve()
+		if tokenBag == nil {
+			tokenBag = tokenbag.InteractiveLogin("", "")
+		}
+		ec := ExecCredential{
+			ApiVersion: "client.authentication.k8s.io/v1beta1",
+			Kind:       "ExecCredential",
+		}
+		if tokenBag == nil {
+			// No tokenBag
+		} else {
+			ec.Status.Token = tokenBag.Token
+		}
+		err := json.NewEncoder(os.Stdout).Encode(ec)
+		if err != nil {
+			panic(err)
+		}
 	},
 }
 

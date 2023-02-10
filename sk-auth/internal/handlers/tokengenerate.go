@@ -10,9 +10,9 @@ import (
 	"skas/sk-common/proto/v1/proto"
 )
 
-var _ http.Handler = &TokenRequestHandler{}
+var _ http.Handler = &TokenGenerateHandler{}
 
-type TokenRequestHandler struct {
+type TokenGenerateHandler struct {
 	// Server related stuff
 	commonHandlers.BaseHandler
 	ClientManager clientauth.Manager
@@ -21,8 +21,8 @@ type TokenRequestHandler struct {
 	LoginClient skhttp.Client
 }
 
-func (t TokenRequestHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
-	var requestPayload = proto.TokenRequest{}
+func (t TokenGenerateHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+	var requestPayload = proto.TokenGenerateRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		t.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
@@ -37,9 +37,9 @@ func (t TokenRequestHandler) ServeHTTP(response http.ResponseWriter, request *ht
 		t.HttpError(response, fmt.Sprintf("Error on downside login request: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
-	var responsePayload *proto.TokenResponse
+	var responsePayload *proto.TokenGenerateResponse
 	if user == nil {
-		responsePayload = &proto.TokenResponse{
+		responsePayload = &proto.TokenGenerateResponse{
 			Success: false,
 		}
 	} else {
@@ -48,7 +48,7 @@ func (t TokenRequestHandler) ServeHTTP(response http.ResponseWriter, request *ht
 			t.HttpError(response, fmt.Sprintf("Error on token creation for login '%s': %s", requestPayload.Login, err.Error()), http.StatusInternalServerError)
 			return
 		}
-		responsePayload = &proto.TokenResponse{
+		responsePayload = &proto.TokenGenerateResponse{
 			Success:   true,
 			Token:     token,
 			User:      *user,
@@ -61,16 +61,16 @@ func (t TokenRequestHandler) ServeHTTP(response http.ResponseWriter, request *ht
 	t.ServeJSON(response, responsePayload)
 }
 
-func (t TokenRequestHandler) login(login, password string) (*proto.User /*authority*/, string, error) {
+func (t TokenGenerateHandler) login(login, password string) (*proto.User /*authority*/, string, error) {
 	lr := &proto.LoginRequest{
 		Login:      login,
 		Password:   password,
 		ClientAuth: t.LoginClient.GetClientAuth(),
 	}
 	loginResponse := &proto.LoginResponse{}
-	err := t.LoginClient.Do(proto.LoginUrlPath, lr, loginResponse)
+	err := t.LoginClient.Do(proto.LoginMeta, lr, loginResponse)
 	if err != nil {
-		return nil, "", fmt.Errorf("error on exchange on %s: %w", proto.LoginUrlPath, err) // Do() return a documented message
+		return nil, "", fmt.Errorf("error on exchange on %s: %w", proto.LoginMeta.UrlPath, err) // Do() return a documented message
 	}
 	if loginResponse.Success {
 		return &loginResponse.User, loginResponse.Authority, nil

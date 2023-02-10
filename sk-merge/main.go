@@ -39,23 +39,23 @@ func main() {
 	}
 	// --------------------- UserDescribe handler
 	if config.Conf.Services.UserDescribe.Enabled {
-		s.Router.Handle(proto.UserDescribeUrlPath, handlers.UserDescribeHandler{
+		s.Router.Handle(proto.UserDescribeMeta.UrlPath, handlers.UserDescribeHandler{
 			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("userDescribe handler"),
 			},
 			Chain:         providerChain,
 			ClientManager: clientauth.New(config.Conf.Services.UserDescribe.Clients),
-		}).Methods("GET")
+		}).Methods(proto.UserDescribeMeta.Method)
 	}
 	// --------------------- Login handler
 	if config.Conf.Services.Login.Enabled {
-		s.Router.Handle(proto.LoginUrlPath, handlers.LoginHandler{
+		s.Router.Handle(proto.LoginMeta.UrlPath, handlers.LoginHandler{
 			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("login handler"),
 			},
 			Chain:         providerChain,
 			ClientManager: clientauth.New(config.Conf.Services.Login.Clients),
-		}).Methods("GET")
+		}).Methods(proto.LoginMeta.Method)
 	}
 	// --------------------- UserStatus handler
 	if config.Conf.Services.UserStatus.Enabled {
@@ -64,13 +64,13 @@ func main() {
 			config.Log.Error(err, "Error on statusServerProvider creation")
 			os.Exit(3)
 		}
-		s.Router.Handle(proto.UserStatusUrlPath, &commonHandlers.UserStatusHandler{
+		s.Router.Handle(proto.UserStatusMeta.UrlPath, &commonHandlers.UserStatusHandler{
 			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("userStatus handler"),
 			},
 			Provider:      statusServerProvider,
 			ClientManager: clientauth.New(config.Conf.Services.UserStatus.Clients),
-		}).Methods("GET")
+		}).Methods(proto.UserStatusMeta.Method)
 	}
 
 	err = s.Start(context.Background())

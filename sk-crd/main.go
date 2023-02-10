@@ -69,13 +69,13 @@ func main() {
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
-	s.Router.Handle(proto.UserStatusUrlPath, &handlers.UserStatusHandler{
+	s.Router.Handle(proto.UserStatusMeta.UrlPath, &handlers.UserStatusHandler{
 		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
 		Provider:      crdstatusprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
 		ClientManager: clientauth.New(config.Conf.Clients),
-	}).Methods("GET")
+	}).Methods(proto.UserStatusMeta.Method)
 
 	err = mgr.Add(s)
 	if err != nil {

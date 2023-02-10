@@ -37,7 +37,7 @@ func (c clientProvider) GetUserStatus(login, password string) (*proto.UserStatus
 		ClientAuth: c.httpClient.GetClientAuth(),
 	}
 	userStatusResponse := &proto.UserStatusResponse{}
-	err := c.httpClient.Do(proto.UserStatusUrlPath, usr, userStatusResponse)
+	err := c.httpClient.Do(proto.UserStatusMeta, usr, userStatusResponse)
 	if err != nil {
 		return nil, nil, err // Do() return a documented message
 	}

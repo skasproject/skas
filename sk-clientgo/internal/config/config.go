@@ -15,6 +15,7 @@ import (
 // Exposed global variables
 
 var Conf *Config
+var SkhttpClient skhttp.Client
 
 type Config struct {
 	skhttp.Config
@@ -46,4 +47,12 @@ func buildPath(context string) string {
 		panic(err)
 	}
 	return path.Join(usr.HomeDir, fmt.Sprintf(".kube/cache/skas/%s/config.json", context))
+}
+
+func InitHttpClient() {
+	var err error
+	SkhttpClient, err = skhttp.New(&Conf.Config, "", "")
+	if err != nil {
+		log.Log.Error(err, "error in InitHttpClient")
+	}
 }
