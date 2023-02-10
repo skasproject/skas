@@ -13,6 +13,11 @@ type ClientAuth struct {
 	Secret string `json:"secret"`
 }
 
+type RequestMeta struct {
+	Method  string
+	UrlPath string
+}
+
 // This object is also used in Token K8s api in sk-auth
 
 // +kubebuilder:object:generate:=true

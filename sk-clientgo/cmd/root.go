@@ -27,12 +27,14 @@ func init() {
 	// We must declare child in parent.
 	// Performing RootCmd.AddCommand(...) in the child init() function will not works as there is chance the child package will not be loaded, as not imported by any package.
 	RootCmd.AddCommand(authCmd)
-	RootCmd.AddCommand(contextCmd)
 	RootCmd.AddCommand(versionCmd)
+	RootCmd.AddCommand(LoginCmd)
+	RootCmd.AddCommand(LogoutCmd)
+	RootCmd.AddCommand(WhoamiCmd)
 
-	RootCmd.PersistentFlags().StringVar(&kubecontext.KubeContext, "Context", "", "Context")
-	RootCmd.PersistentFlags().StringVar(&kubeconfig, "kubeconfig", "", "Kubeconfig file path. Used to lookup Context")
-	RootCmd.PersistentFlags().StringVar(&logConfig.Level, "logLevel", "DEBUG", "Log level")
+	RootCmd.PersistentFlags().StringVar(&kubecontext.KubeContext, "context", "", "Allow Overriding of the context of kubeconfig file")
+	RootCmd.PersistentFlags().StringVar(&kubeconfig, "kubeconfig", "", "kubeconfig file path. Override default configuration.")
+	RootCmd.PersistentFlags().StringVar(&logConfig.Level, "logLevel", "INFO", "Log level")
 	RootCmd.PersistentFlags().StringVar(&logConfig.Mode, "logMode", "dev", "Log mode: 'dev' or 'json'")
 
 	RootCmd.PersistentFlags().BoolVar(&reset, "reset", false, "Reset configuration")
@@ -72,7 +74,7 @@ func init() {
 				server.RootCaPath = path.Join(cwd, server.RootCaPath)
 			}
 		}
-		if cmd != contextCmd && cmd != versionCmd && cmd != contextListCmd {
+		if cmd != versionCmd {
 			config.Load()
 			if config.Conf == nil || reset {
 				config.Conf = &config.Config{

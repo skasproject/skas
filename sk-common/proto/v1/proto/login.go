@@ -11,7 +11,10 @@ import (
 //
 // One important difference between Login and UserStatus API, is Login does not provide user info if password is not validated.
 
-const LoginUrlPath = "/v1/login"
+var LoginMeta = &RequestMeta{
+	Method:  "GET",
+	UrlPath: "/v1/login",
+}
 
 type LoginRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`

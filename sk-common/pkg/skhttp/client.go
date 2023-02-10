@@ -9,8 +9,7 @@ import (
 )
 
 type Client interface {
-	Do(urlPath string, request proto.RequestPayload, response proto.ResponsePayload) error
-	GetHttpClient() *http.Client // TODO: Remove this as only for compatibility before refactoring
+	Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload) error
 	GetClientAuth() proto.ClientAuth
 }
 
@@ -28,22 +27,16 @@ func (c client) GetClientAuth() proto.ClientAuth {
 	}
 }
 
-// TODO: Remove this as only for compatibility before refactoring
-
-func (c client) GetHttpClient() *http.Client {
-	return c.httpClient
-}
-
-func (c client) Do(urlPath string, request proto.RequestPayload, response proto.ResponsePayload) error {
+func (c client) Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload) error {
 	body, err := request.ToJson()
 	if err != nil {
 		return fmt.Errorf("unable to marshal %s: %w", request.String(), err)
 	}
-	u, err := url.JoinPath(c.Url, urlPath)
+	u, err := url.JoinPath(c.Url, meta.UrlPath)
 	if err != nil {
-		return fmt.Errorf("unable to join %s to %s: %w", urlPath, c.Url, err)
+		return fmt.Errorf("unable to join %s to %s: %w", meta.UrlPath, c.Url, err)
 	}
-	req, err := http.NewRequest("GET", u, bytes.NewBuffer(body))
+	req, err := http.NewRequest(meta.Method, u, bytes.NewBuffer(body))
 	if err != nil {
 		return fmt.Errorf("unable to build request")
 	}

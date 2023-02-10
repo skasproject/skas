@@ -37,13 +37,13 @@ func main() {
 		config.Log.Error(err, "ldap config")
 		os.Exit(3)
 	}
-	s.Router.Handle(proto.UserStatusUrlPath, &handlers.UserStatusHandler{
+	s.Router.Handle(proto.UserStatusMeta.UrlPath, &handlers.UserStatusHandler{
 		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
 		Provider:      provider,
 		ClientManager: clientauth.New(config.Conf.Clients),
-	}).Methods("GET")
+	}).Methods(proto.UserStatusMeta.Method)
 	err = s.Start(context.Background())
 	if err != nil {
 		s.Log.Error(err, "Error on Start()")

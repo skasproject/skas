@@ -86,21 +86,21 @@ func main() {
 		config.Log.Error(err, "Error on client login creation")
 	}
 	if config.Conf.Services.Token.Enabled {
-		s.Router.Handle(proto.TokenRequestUrlPath, &handlers.TokenRequestHandler{
+		s.Router.Handle(proto.TokenGenerateMeta.UrlPath, &handlers.TokenGenerateHandler{
 			BaseHandler: basehandlers.BaseHandler{
 				Logger: s.Log,
 			},
 			ClientManager: clientauth.New(config.Conf.Services.Token.Clients),
 			TokenStore:    tokenStore,
 			LoginClient:   loginClient,
-		}).Methods("POST")
-		s.Router.Handle(proto.TokenRenewUrlPath, &handlers.TokenRenewHandler{
+		}).Methods(proto.TokenGenerateMeta.Method)
+		s.Router.Handle(proto.TokenRenewMeta.UrlPath, &handlers.TokenRenewHandler{
 			BaseHandler: basehandlers.BaseHandler{
 				Logger: s.Log,
 			},
 			ClientManager: clientauth.New(config.Conf.Services.Token.Clients),
 			TokenStore:    tokenStore,
-		}).Methods("POST")
+		}).Methods(proto.TokenRenewMeta.Method)
 	}
 	// ---------------------------------------------------------- End init and launch
 

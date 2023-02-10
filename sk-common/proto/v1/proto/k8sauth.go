@@ -5,7 +5,10 @@ package proto
 // Request is issued by Kubernetes API Server authentication webhook to validate a token
 // Protocol is defined by Kubernetes
 
-var TokenReviewUrlPath = "/v1/tokenReview"
+var TokenReviewMeta = RequestMeta{
+	Method:  "POST",
+	UrlPath: "/v1/tokenReview",
+}
 
 type TokenReviewRequest struct {
 	ApiVersion string `json:"apiVersion"`

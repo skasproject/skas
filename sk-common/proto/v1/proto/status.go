@@ -9,7 +9,10 @@ import (
 
 // This is the API provided by all kind of Identity provider. Consumed by sk-merge
 
-const UserStatusUrlPath = "/v1/userstatus"
+var UserStatusMeta = &RequestMeta{
+	Method:  "GET",
+	UrlPath: "/v1/userstatus",
+}
 
 var _ RequestPayload = &UserStatusRequest{}
 
