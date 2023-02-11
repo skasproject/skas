@@ -1,5 +1,7 @@
 package proto
 
+import "io"
+
 // -------------------------- Kubernetes Authentication webkook protocol
 
 // Request is issued by Kubernetes API Server authentication webhook to validate a token
@@ -24,6 +26,8 @@ type TokenReviewUser struct {
 	Groups   []string `json:"groups"`
 }
 
+var _ ResponsePayload = &TokenReviewResponse{}
+
 type TokenReviewResponse struct {
 	ApiVersion string `json:"apiVersion"`
 	Kind       string `json:"kind"`
@@ -31,4 +35,8 @@ type TokenReviewResponse struct {
 		Authenticated bool             `json:"authenticated"`
 		User          *TokenReviewUser `json:"user,omitempty"`
 	} `json:"status"`
+}
+
+func (t *TokenReviewResponse) FromJson(r io.Reader) error {
+	return fromJson(r, t)
 }

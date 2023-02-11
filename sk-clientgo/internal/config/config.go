@@ -26,15 +26,15 @@ func Load() {
 	if loadsave.LoadStuff(configPath, func(decoder *yaml.Decoder) error {
 		return decoder.Decode(&Conf)
 	}) {
-		log.Log.V(1).Info("LoadConfig()", "path", configPath, "server", Conf.Url, "rootCaPath", Conf.RootCaPath, "rootCaData", misc.ShortenString(Conf.RootCaData), "clientId", Conf.ClientAuth.Id)
+		log.Log.V(1).Info("LoadConfig()", "path", configPath, "server", Conf.Url, "rootCaPath", Conf.RootCaPath, "rootCaData", misc.ShortenString(Conf.RootCaData), "clientId", Conf.ClientAuth.Id, "clientSecret", "*****")
 	} else {
-		log.Log.Info("LoadConfig() -> nil", "configPath", configPath)
+		log.Log.V(1).Info("LoadConfig() -> nil", "configPath", configPath)
 	}
 }
 
 func Save() {
 	configPath := buildPath(kubecontext.KubeContext)
-	log.Log.V(1).Info("SaveConfig()", "configPath", configPath, "server", Conf.Url, "rootCaPath", Conf.RootCaPath, "rootCaData", misc.ShortenString(Conf.RootCaData))
+	log.Log.V(1).Info("SaveConfig()", "configPath", configPath, "server", Conf.Url, "rootCaPath", Conf.RootCaPath, "rootCaData", misc.ShortenString(Conf.RootCaData), "clientId", Conf.ClientAuth.Id, "clientSecret", "*****")
 	loadsave.SaveStuff(configPath, func(encoder *yaml.Encoder) error {
 		return encoder.Encode(Conf)
 	})

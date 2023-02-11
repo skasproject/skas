@@ -1,4 +1,9 @@
 
+
+
+metricAddr: "0"
+probeAddr: "0"
+
 log:
   mode: dev
   level: trace
@@ -9,6 +14,11 @@ server:
 
 services:
   token:
+    enabled: true
+    clients:
+      - id: "*"
+        secret: "*"
+  k8sAuth:
     enabled: true
     clients:
       - id: "*"

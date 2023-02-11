@@ -20,6 +20,9 @@ func main() {
 		os.Exit(2)
 	}
 	config.Log.Info("sk-merge start", "version", config.Version, "logLevel", config.Conf.Log.Level)
+	config.Log.Info("Login service", "enabled", config.Conf.Services.Login.Enabled)
+	config.Log.Info("UserStatus service", "enabled", config.Conf.Services.UserStatus.Enabled)
+	config.Log.Info("UserDescribe service", "enabled", config.Conf.Services.UserDescribe.Enabled)
 
 	s := &httpserver.Server{
 		Name:   "merge",

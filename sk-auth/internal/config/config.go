@@ -34,7 +34,8 @@ type Config struct {
 	TokenConfig   TokenConfig             `yaml:"tokenConfig"`
 	LoginProvider skhttp.Config           `yaml:"loginProvider"`
 	Services      struct {
-		Token ServiceConfig `yaml:"token"`
+		Token   ServiceConfig `yaml:"token"`
+		K8sAuth ServiceConfig `yaml:"k8sAuth"`
 	} `yaml:"services"`
 	MetricAddr string `yaml:"metricAddr"`
 	ProbeAddr  string `yaml:"probeAddr"`

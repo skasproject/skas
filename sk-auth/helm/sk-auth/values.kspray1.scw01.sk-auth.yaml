@@ -19,12 +19,12 @@ ingress:
   enabled: true
   host: sk-auth.ingress.kspray1.project33.scw01
 
-services:
-  token:
-    enabled: true
-    clients:
-      - id: "*"
-        secret: "1234"
+#services:
+#  token:
+#    enabled: true
+#    clients:
+#      - id: "*"
+#        secret: "1234"
 
 
 loginProvider:
