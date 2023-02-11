@@ -37,7 +37,7 @@ func main() {
 			Logger: s.Log,
 		},
 		Provider:      staticstatusprovider.New(config.Log.WithName("staticProvider")),
-		ClientManager: clientauth.New(config.Conf.Clients),
+		ClientManager: clientauth.New(config.Conf.Clients, true),
 	}).Methods(proto.UserStatusMeta.Method)
 	err := s.Start(context.Background())
 	if err != nil {

@@ -129,3 +129,14 @@ Create the name of the Role for a manager to access tokens
 {{- define "sk-auth.editorRoleName" -}}
 {{- default (printf "%s-editor" (include "sk-auth.fullname" .)) .Values.editorRoleName }}
 {{- end }}
+
+{{/*
+Compute the serverUrl for the kubeconfig.User.AuthServerUrl (Automatic client configuration)
+*/}}
+{{- define "sk-auth.kubeconfig.authServerUrl" -}}
+{{- if .Values.ingress.enabled }}
+{{- default (printf "https://%s" .Values.ingress.host) .Values.kubeconfig.user.authServerUrl }}
+{{- else }}
+{{- .Values.kubeconfig.user.authServerUrl }}
+{{- end }}
+{{- end }}

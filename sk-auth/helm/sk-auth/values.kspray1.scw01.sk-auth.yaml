@@ -21,7 +21,7 @@ ingress:
 
 #services:
 #  token:
-#    enabled: true
+#    disabled: false
 #    clients:
 #      - id: "*"
 #        secret: "1234"
@@ -37,7 +37,7 @@ loginProvider:
 
 
 goinkube:
-  enabled: false
+  enabled: true
   relaxPsp: false
   storage:
     enabled: true
@@ -57,3 +57,7 @@ goinkube:
 #  requests:
 #    cpu: 1000m
 #    memory: 64Mi
+
+kubeconfig:
+  cluster:
+    apiServerUrl: https://10.33.0.99:6443

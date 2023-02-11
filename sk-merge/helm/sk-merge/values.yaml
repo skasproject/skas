@@ -123,17 +123,17 @@ clusterIssuer:
 
 services:
   login:
-    enabled: true
+    disabled: false
 #   clients:
 #     - id: "*"
 #       secret: "1234"
   userStatus:
-    enabled: false
+    disabled: false
 #   clients:
 #     - id: "*"
 #       secret: "1234"
   userDescribe:
-    enabled: true
+    disabled: false
 #   clients:
 #     - id: "*"
 #       secret: "1234"

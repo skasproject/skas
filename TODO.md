@@ -48,13 +48,13 @@
 - rename to sk-bind ?
 - Add an optional providerList, to modify order of provider. Needed when appending a new provider to list as 'extraProvider' in helm chart
 - Relay the changePassword service
-- Enable service by default (Replace Enabled by Disabled)
 
 ## sk-auth
 
 - If memory or another non-k8s storage is used in production, one may modify the runnable package (Start() instead of Run(), a standard logger, ...)
 - Relay with authentication the changePassword service
   vi /etc/kubernetes/manifests/kube-apiserver.yaml
+- Allow several kubeconfig definitions (Selected by ../v1/kubeconfig/<id>)
 
 ## Doc:
 

@@ -34,9 +34,10 @@ func Merge(login string, scanItems []ScanItem) (merged *proto.UserStatusResponse
 			}
 			merged.CommonNames = append(merged.CommonNames, item.UserStatusResponse.CommonNames...)
 			merged.Emails = append(merged.Emails, item.UserStatusResponse.Emails...)
-			if (*item.Provider).IsGroupAuthority() {
-				merged.Groups = append(merged.Groups, item.Translated.Groups...)
-			}
+		}
+		// A provider can carry Groups information even for an non existing-user
+		if (*item.Provider).IsGroupAuthority() {
+			merged.Groups = append(merged.Groups, item.Translated.Groups...)
 		}
 	}
 	merged.CommonNames = dedupAndSort(merged.CommonNames)

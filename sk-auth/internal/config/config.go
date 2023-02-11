@@ -2,10 +2,10 @@ package config
 
 import (
 	"github.com/go-logr/logr"
-	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/misc"
 	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/proto/v1/proto"
 	"time"
 )
 
@@ -24,18 +24,20 @@ type TokenConfig struct {
 }
 
 type ServiceConfig struct {
-	Enabled bool                `yaml:"enabled"`
-	Clients []clientauth.Config `yaml:"clients"`
+	Disabled bool               `yaml:"disabled"`
+	Clients  []proto.ClientAuth `yaml:"clients"`
 }
 
 type Config struct {
 	Log           misc.LogConfig          `yaml:"log"`
 	Server        httpserver.ServerConfig `yaml:"server"`
 	TokenConfig   TokenConfig             `yaml:"tokenConfig"`
+	Kubeconfig    proto.KubeconfigConfig  `yaml:"kubeconfig"`
 	LoginProvider skhttp.Config           `yaml:"loginProvider"`
 	Services      struct {
-		Token   ServiceConfig `yaml:"token"`
-		K8sAuth ServiceConfig `yaml:"k8sAuth"`
+		Token      ServiceConfig `yaml:"token"`
+		K8sAuth    ServiceConfig `yaml:"k8sAuth"`
+		Kubeconfig ServiceConfig `yaml:"kubeconfig"`
 	} `yaml:"services"`
 	MetricAddr string `yaml:"metricAddr"`
 	ProbeAddr  string `yaml:"probeAddr"`
