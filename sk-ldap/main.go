@@ -42,7 +42,7 @@ func main() {
 			Logger: s.Log,
 		},
 		Provider:      provider,
-		ClientManager: clientauth.New(config.Conf.Clients),
+		ClientManager: clientauth.New(config.Conf.Clients, true),
 	}).Methods(proto.UserStatusMeta.Method)
 	err = s.Start(context.Background())
 	if err != nil {

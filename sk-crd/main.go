@@ -74,7 +74,7 @@ func main() {
 			Logger: s.Log,
 		},
 		Provider:      crdstatusprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
-		ClientManager: clientauth.New(config.Conf.Clients),
+		ClientManager: clientauth.New(config.Conf.Clients, true),
 	}).Methods(proto.UserStatusMeta.Method)
 
 	err = mgr.Add(s)

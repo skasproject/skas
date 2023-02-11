@@ -73,6 +73,12 @@ func Setup() error {
 	}
 
 	// Handle some defaults
+	if !Conf.Services.Kubeconfig.Disabled {
+		err = initKubeconfig(&Conf.Kubeconfig)
+		if err != nil {
+			return fmt.Errorf("error in Kubeconfig section: %w", err)
+		}
+	}
 
 	return nil
 }

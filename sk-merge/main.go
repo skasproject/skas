@@ -20,9 +20,9 @@ func main() {
 		os.Exit(2)
 	}
 	config.Log.Info("sk-merge start", "version", config.Version, "logLevel", config.Conf.Log.Level)
-	config.Log.Info("Login service", "enabled", config.Conf.Services.Login.Enabled)
-	config.Log.Info("UserStatus service", "enabled", config.Conf.Services.UserStatus.Enabled)
-	config.Log.Info("UserDescribe service", "enabled", config.Conf.Services.UserDescribe.Enabled)
+	config.Log.Info("Login service", "enabled", !config.Conf.Services.Login.Disabled)
+	config.Log.Info("UserStatus service", "enabled", !config.Conf.Services.UserStatus.Disabled)
+	config.Log.Info("UserDescribe service", "enabled", !config.Conf.Services.UserDescribe.Disabled)
 
 	s := &httpserver.Server{
 		Name:   "merge",
@@ -41,27 +41,27 @@ func main() {
 		os.Exit(7)
 	}
 	// --------------------- UserDescribe handler
-	if config.Conf.Services.UserDescribe.Enabled {
+	if !config.Conf.Services.UserDescribe.Disabled {
 		s.Router.Handle(proto.UserDescribeMeta.UrlPath, handlers.UserDescribeHandler{
 			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("userDescribe handler"),
 			},
 			Chain:         providerChain,
-			ClientManager: clientauth.New(config.Conf.Services.UserDescribe.Clients),
+			ClientManager: clientauth.New(config.Conf.Services.UserDescribe.Clients, true),
 		}).Methods(proto.UserDescribeMeta.Method)
 	}
 	// --------------------- Login handler
-	if config.Conf.Services.Login.Enabled {
+	if !config.Conf.Services.Login.Disabled {
 		s.Router.Handle(proto.LoginMeta.UrlPath, handlers.LoginHandler{
 			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("login handler"),
 			},
 			Chain:         providerChain,
-			ClientManager: clientauth.New(config.Conf.Services.Login.Clients),
+			ClientManager: clientauth.New(config.Conf.Services.Login.Clients, true),
 		}).Methods(proto.LoginMeta.Method)
 	}
 	// --------------------- UserStatus handler
-	if config.Conf.Services.UserStatus.Enabled {
+	if !config.Conf.Services.UserStatus.Disabled {
 		statusServerProvider, err := serverproviders.NewStatusServerProvider(providerChain, config.Log)
 		if err != nil {
 			config.Log.Error(err, "Error on statusServerProvider creation")
@@ -72,7 +72,7 @@ func main() {
 				Logger: s.Log.WithName("userStatus handler"),
 			},
 			Provider:      statusServerProvider,
-			ClientManager: clientauth.New(config.Conf.Services.UserStatus.Clients),
+			ClientManager: clientauth.New(config.Conf.Services.UserStatus.Clients, true),
 		}).Methods(proto.UserStatusMeta.Method)
 	}
 

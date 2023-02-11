@@ -26,18 +26,5 @@ data:
     providers:
 {{ .Values.providers | toYaml | indent 6 }}
     services:
-      login:
-        enabled: {{ .Values.services.login.enabled }}
-        clients:
-{{ .Values.services.login.clients | toYaml | indent 10 }}
-      userStatus:
-        enabled: {{ .Values.services.userStatus.enabled }}
-        clients:
-{{ .Values.services.userStatus.clients | toYaml | indent 10 }}
-      userDescribe:
-        enabled: {{ .Values.services.userDescribe.enabled }}
-        clients:
-{{ .Values.services.userDescribe.clients | toYaml | indent 10 }}
-
-
+{{ .Values.services | toYaml | indent 6  }}
 

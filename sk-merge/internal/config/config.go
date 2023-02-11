@@ -2,10 +2,10 @@ package config
 
 import (
 	"github.com/go-logr/logr"
-	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/misc"
 	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/proto/v1/proto"
 )
 
 // Exported vars
@@ -29,8 +29,8 @@ type ClientProviderConfig struct {
 }
 
 type ServiceConfig struct {
-	Enabled bool                `yaml:"enabled"`
-	Clients []clientauth.Config `yaml:"clients"`
+	Disabled bool               `yaml:"disabled"`
+	Clients  []proto.ClientAuth `yaml:"clients"`
 }
 
 type Config struct {

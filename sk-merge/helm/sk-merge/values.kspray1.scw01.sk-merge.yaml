@@ -20,17 +20,17 @@ ingress:
 
 services:
   login:
-    enabled: true
+    disabled: false
     clients:
       - id: "*"
         secret: "1234"
   userStatus:
-    enabled: true
+    disabled: false
     clients:
       - id: "*"
         secret: "1234"
   userDescribe:
-    enabled: true
+    disabled: false
     clients:
       - id: "*"
         secret: "1234"

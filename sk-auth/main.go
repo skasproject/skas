@@ -38,8 +38,9 @@ func main() {
 	}
 
 	config.Log.Info("sk-auth start", "version", config.Version, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.TokenConfig.StorageType)
-	config.Log.Info("Token service", "enabled", config.Conf.Services.Token.Enabled)
-	config.Log.Info("K8sAuth service", "enabled", config.Conf.Services.K8sAuth.Enabled)
+	config.Log.Info("Token service", "enabled", !config.Conf.Services.Token.Disabled)
+	config.Log.Info("K8sAuth service", "enabled", !config.Conf.Services.K8sAuth.Disabled)
+	config.Log.Info("Kubeconfig service", "enabled", !config.Conf.Services.Kubeconfig.Disabled)
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager
@@ -89,12 +90,12 @@ func main() {
 	if err != nil {
 		config.Log.Error(err, "Error on client login creation")
 	}
-	if config.Conf.Services.Token.Enabled {
+	if !config.Conf.Services.Token.Disabled {
 		s.Router.Handle(proto.TokenGenerateMeta.UrlPath, &handlers.TokenGenerateHandler{
 			BaseHandler: basehandlers.BaseHandler{
 				Logger: s.Log,
 			},
-			ClientManager: clientauth.New(config.Conf.Services.Token.Clients),
+			ClientManager: clientauth.New(config.Conf.Services.Token.Clients, false),
 			TokenStore:    tokenStore,
 			LoginClient:   loginClient,
 		}).Methods(proto.TokenGenerateMeta.Method)
@@ -102,11 +103,11 @@ func main() {
 			BaseHandler: basehandlers.BaseHandler{
 				Logger: s.Log,
 			},
-			ClientManager: clientauth.New(config.Conf.Services.Token.Clients),
+			ClientManager: clientauth.New(config.Conf.Services.Token.Clients, false),
 			TokenStore:    tokenStore,
 		}).Methods(proto.TokenRenewMeta.Method)
 	}
-	if config.Conf.Services.K8sAuth.Enabled {
+	if !config.Conf.Services.K8sAuth.Disabled {
 		s.Router.Handle(proto.TokenReviewMeta.UrlPath, &handlers.TokenReviewHandler{
 			BaseHandler: basehandlers.BaseHandler{
 				Logger: s.Log,
@@ -114,6 +115,16 @@ func main() {
 			TokenStore: tokenStore,
 		}).Methods(proto.TokenReviewMeta.Method)
 	}
+
+	if !config.Conf.Services.Kubeconfig.Disabled {
+		s.Router.Handle(proto.KubeconfigMeta.UrlPath, &handlers.KubeconfigHandler{
+			BaseHandler: basehandlers.BaseHandler{
+				Logger: s.Log,
+			},
+			ClientManager: clientauth.New(config.Conf.Services.Kubeconfig.Clients, false),
+		}).Methods(proto.KubeconfigMeta.Method)
+	}
+
 	// ---------------------------------------------------------- End init and launch
 
 	if config.Conf.TokenConfig.StorageType == "memory" {

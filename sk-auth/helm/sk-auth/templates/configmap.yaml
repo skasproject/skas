@@ -21,9 +21,9 @@ data:
     server:
       ssl: {{ .Values.server.ssl }}
       bindAddr: ":{{ .Values.server.port}}"
-    {{ if .Values.server.ssl }}
+    {{- if .Values.server.ssl }}
       certDir: /tmp/cert/server
-    {{ end }}
+    {{- end }}
     loginProvider:
 {{ .Values.loginProvider | toYaml | indent 6 }}
     tokenConfig:
@@ -34,13 +34,23 @@ data:
       lastHitStep: {{ .Values.tokenConfig.lastHitStep }}
       namespace:
     services:
-      token:
-        enabled: {{ .Values.services.token.enabled }}
-        clients:
-{{ .Values.services.token.clients | toYaml | indent 10 }}
-      k8sAuth:
-        enabled: {{ .Values.services.k8sAuth.enabled }}
-        clients:
-{{ .Values.services.k8sAuth.clients | toYaml | indent 10 }}
-
-
+{{ .Values.services | toYaml | indent 6  }}
+    kubeconfig:
+      contextName: "{{ .Values.kubeconfig.contextName }}"
+      cluster:
+        apiServerUrl: "{{ .Values.kubeconfig.cluster.apiServerUrl }}"
+        rootCaData: "{{ .Values.kubeconfig.cluster.rootCaData }}"
+        insecureSkipVerify: {{ default false .Values.kubeconfig.cluster.insecureSkipVerify }}
+      user:
+        command: "{{ .Values.kubeconfig.user.command }}"
+        authServerUrl: {{ include "sk-auth.kubeconfig.authServerUrl" . }}
+        rootCaData: "{{ .Values.kubeconfig.user.rootCaData }}"
+        rootCaPath: "{{ .Values.kubeconfig.user.rootCaPath }}"
+        insecureSkipVerify: {{ default false .Values.kubeconfig.user.insecureSkipVerify }}
+        {{- with .Values.kubeconfig.user.clientAuth }}
+        clientAuth:
+          id: "{{ .id }}"
+          secret: "{{ .secret }}"
+        {{- end }}
+        args: {{ .Values.kubeconfig.user.args }}
+      namespace: "{{ .Values.kubeconfig.namespace }}"
