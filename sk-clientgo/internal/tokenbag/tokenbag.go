@@ -64,7 +64,7 @@ func load() *TokenBag {
 
 func save(tokenBag *TokenBag) {
 	tokenBagPath := buildPath()
-	log.Log.V(1).Info("SaveTokenBag() %s token:%s  ttl:%s  created:%s)", "path", tokenBagPath, "token", tokenBag.Token, "clientTTL", tokenBag.ClientTTL, "lastAccess", tokenBag.LastAccess)
+	log.Log.V(1).Info("SaveTokenBag()", "path", tokenBagPath, "token", tokenBag.Token, "clientTTL", tokenBag.ClientTTL, "lastAccess", tokenBag.LastAccess)
 	loadsave.SaveStuff(tokenBagPath, func(encoder *yaml.Encoder) error {
 		return encoder.Encode(tokenBag)
 	})

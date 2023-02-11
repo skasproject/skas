@@ -38,3 +38,9 @@ data:
         enabled: {{ .Values.services.token.enabled }}
         clients:
 {{ .Values.services.token.clients | toYaml | indent 10 }}
+      k8sAuth:
+        enabled: {{ .Values.services.k8sAuth.enabled }}
+        clients:
+{{ .Values.services.k8sAuth.clients | toYaml | indent 10 }}
+
+

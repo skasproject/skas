@@ -14,7 +14,6 @@ type LogConfig struct {
 }
 
 func HandleLog(logConfig *LogConfig) (logr.Logger, error) {
-
 	logConfig.Mode = strings.ToLower(logConfig.Mode)
 	logConfig.Level = strings.ToUpper(logConfig.Level)
 
@@ -31,6 +30,7 @@ func HandleLog(logConfig *LogConfig) (logr.Logger, error) {
 		logrusLog.SetFormatter(&logrus.JSONFormatter{})
 	}
 	l := logrusr.New(logrusLog)
+
 	return l, nil
 
 }

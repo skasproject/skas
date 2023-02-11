@@ -181,13 +181,19 @@ clusterIssuer:
 
 
 # ---------------------------------- Provided services:
+# (Activated and unprotected by default)
 
 services:
   token:
     enabled: true
-#   clients:
-#     - id: "*"
-#       secret: "1234"
+    clients:
+      - id: "*"
+        secret: "*"
+  k8sAuth:
+    enabled: true
+    clients:
+      - id: "*"
+        secret: "*"
 
 
 # -------------------------------- underlying login provider

@@ -38,6 +38,8 @@ func main() {
 	}
 
 	config.Log.Info("sk-auth start", "version", config.Version, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.TokenConfig.StorageType)
+	config.Log.Info("Token service", "enabled", config.Conf.Services.Token.Enabled)
+	config.Log.Info("K8sAuth service", "enabled", config.Conf.Services.K8sAuth.Enabled)
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager
@@ -47,6 +49,7 @@ func main() {
 	if config.Conf.TokenConfig.StorageType == "memory" {
 		tokenStore = memory.New(config.Conf.TokenConfig, config.Log.WithName("tokenstore"))
 	} else {
+		ctrl.SetLogger(config.Log.WithName("controller-runtime"))
 		var err error
 		mgr, err = ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 			Scheme:                 scheme,
@@ -56,18 +59,19 @@ func main() {
 			Logger:                 config.Log.WithName("manager"),
 			Namespace:              config.Conf.TokenConfig.Namespace,
 		})
+		time.Sleep(time.Second)
 		if err != nil {
 			config.Log.Error(err, "unable to initialize manager")
-			os.Exit(1)
+			os.Exit(2)
 		}
 
 		if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 			config.Log.Error(err, "unable to set up health check")
-			os.Exit(1)
+			os.Exit(3)
 		}
 		if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
 			config.Log.Error(err, "unable to set up ready check")
-			os.Exit(1)
+			os.Exit(4)
 		}
 		tokenStore = crd.New(config.Conf.TokenConfig, mgr.GetClient(), config.Log.WithName("tokenstore"))
 	}
@@ -101,6 +105,14 @@ func main() {
 			ClientManager: clientauth.New(config.Conf.Services.Token.Clients),
 			TokenStore:    tokenStore,
 		}).Methods(proto.TokenRenewMeta.Method)
+	}
+	if config.Conf.Services.K8sAuth.Enabled {
+		s.Router.Handle(proto.TokenReviewMeta.UrlPath, &handlers.TokenReviewHandler{
+			BaseHandler: basehandlers.BaseHandler{
+				Logger: s.Log,
+			},
+			TokenStore: tokenStore,
+		}).Methods(proto.TokenReviewMeta.Method)
 	}
 	// ---------------------------------------------------------- End init and launch
 
