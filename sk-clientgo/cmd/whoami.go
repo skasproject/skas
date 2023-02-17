@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"skas/sk-clientgo/internal/config"
+	"skas/sk-clientgo/internal/log"
 	"skas/sk-clientgo/internal/tokenbag"
 	"skas/sk-common/pkg/misc"
 	"strings"
@@ -20,8 +21,13 @@ func init() {
 var WhoamiCmd = &cobra.Command{
 	Use:   "whoami",
 	Short: "Display current logged user, if any",
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		config.InitHttpClient()
+		err := config.InitHttpClient()
+		if err != nil {
+			log.Log.Error(err, "error on InitHttpClient()")
+			os.Exit(10)
+		}
 		tokenBag := tokenbag.Retrieve()
 		if tokenBag != nil {
 			tw := new(tabwriter.Writer)

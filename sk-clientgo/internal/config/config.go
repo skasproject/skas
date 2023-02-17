@@ -26,19 +26,22 @@ func Load() {
 	if loadsave.LoadStuff(configPath, func(decoder *yaml.Decoder) error {
 		return decoder.Decode(&Conf)
 	}) {
-		log.Log.V(1).Info("LoadConfig()", "path", configPath, "server", Conf.Url, "rootCaPath", Conf.RootCaPath, "rootCaData", misc.ShortenString(Conf.RootCaData), "clientId", Conf.ClientAuth.Id, "clientSecret", "*****")
+		log.Log.V(1).Info("LoadConfig()", "path", configPath, "server", Conf.Url, "rootCaPath", Conf.RootCaPath, "rootCaData", misc.ShortenString(Conf.RootCaData), "clientId", Conf.ClientAuth.Id, "clientSecret", "*****", "insecureSkipVerify", Conf.InsecureSkipVerify)
 	} else {
 		log.Log.V(1).Info("LoadConfig() -> nil", "configPath", configPath)
 	}
 }
 
-func Save() {
+func Save() error {
 	configPath := buildPath(kubecontext.KubeContext)
-	log.Log.V(1).Info("SaveConfig()", "configPath", configPath, "server", Conf.Url, "rootCaPath", Conf.RootCaPath, "rootCaData", misc.ShortenString(Conf.RootCaData), "clientId", Conf.ClientAuth.Id, "clientSecret", "*****")
-	loadsave.SaveStuff(configPath, func(encoder *yaml.Encoder) error {
+	log.Log.V(1).Info("SaveConfig()", "configPath", configPath, "server", Conf.Url, "rootCaPath", Conf.RootCaPath, "rootCaData", misc.ShortenString(Conf.RootCaData), "clientId", Conf.ClientAuth.Id, "clientSecret", "*****", "insecureSkipVerify", Conf.InsecureSkipVerify)
+	err := loadsave.SaveStuff(configPath, func(encoder *yaml.Encoder) error {
 		return encoder.Encode(Conf)
 	})
-
+	if err != nil {
+		return fmt.Errorf("error while saving configuration in '%s': %w", configPath, err)
+	}
+	return nil
 }
 
 func buildPath(context string) string {
@@ -49,10 +52,11 @@ func buildPath(context string) string {
 	return path.Join(usr.HomeDir, fmt.Sprintf(".kube/cache/skas/%s/config.json", context))
 }
 
-func InitHttpClient() {
+func InitHttpClient() error {
 	var err error
 	SkhttpClient, err = skhttp.New(&Conf.Config, "", "")
 	if err != nil {
-		log.Log.Error(err, "error in InitHttpClient")
+		return err
 	}
+	return nil
 }

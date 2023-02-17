@@ -24,15 +24,11 @@ type KubeconfigConfig struct {
 		InsecureSkipVerify bool   `yaml:"insecureSkipVerify" json:"insecureSkipVerify"`
 	} `yaml:"cluster" json:"cluster"`
 	User struct {
-		Command string `yaml:"command" json:"command"`
-		// The following is used if Args==nil (Should be the usual case)
 		AuthServerUrl      string     `yaml:"authServerUrl" json:"authServerUrl"` // Typically, the ingress of the sk-auth servic
 		RootCaData         string     `yaml:"rootCaData" json:"rootCaData"`
 		RootCaPath         string     `yaml:"rootCaPath,omitempty" json:"rootCaPath,omitempty"` // This can be used in config. It will be read and set in RootCaData, as it is not relevant in client context
 		InsecureSkipVerify bool       `yaml:"insecureSkipVerify" json:"insecureSkipVerify"`
 		ClientAuth         ClientAuth `yaml:"clientAuth" json:"clientAuth"`
-		// Args are explicitly listed. If not null, the 5 parameters above are will be dropped
-		Args []string `yaml:"args" json:"args"`
 	} `yaml:"user" json:"user"`
 	Namespace string `yaml:"namespace" json:"namespace"`
 }

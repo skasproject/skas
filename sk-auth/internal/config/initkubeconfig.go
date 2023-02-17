@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"skas/sk-common/proto/v1/proto"
-	"strconv"
 )
 
 // Try to fetch the cluster certificate in a 'well known" location
@@ -52,9 +51,6 @@ func initKubeconfig(kc *proto.KubeconfigConfig) error {
 		}
 	}
 	// User section
-	if kc.User.Command == "" {
-		kc.User.Command = "kubectl-skas"
-	}
 	if kc.User.AuthServerUrl == "" {
 		return fmt.Errorf("user.authServerUrl is a required parameter")
 	}
@@ -68,17 +64,6 @@ func initKubeconfig(kc *proto.KubeconfigConfig) error {
 		}
 	}
 
-	if kc.User.Args == nil {
-		kc.User.Args = []string{
-			"- auth",
-			"- --serverUrl=" + kc.User.AuthServerUrl,
-			"- --insecureSkipVerify=" + strconv.FormatBool(kc.User.InsecureSkipVerify),
-			"- --reset",
-			"- --rootCaData=" + kc.User.RootCaData,
-			"- --clientId=" + kc.User.ClientAuth.Id,
-			"- --clientSecret=" + kc.User.ClientAuth.Secret,
-		}
-	}
 	if kc.ContextName == "" {
 		kc.ContextName = "skas"
 	}

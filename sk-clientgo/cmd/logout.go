@@ -9,6 +9,7 @@ import (
 var LogoutCmd = &cobra.Command{
 	Use:   "logout",
 	Short: "Clear local token",
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		tokenbag.DeleteTokenBag()
 		fmt.Printf("Bye!\n")

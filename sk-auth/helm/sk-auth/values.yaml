@@ -213,7 +213,6 @@ kubeconfig:
     rootCaData:                          # Default from '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
     insecureSkipVerify: false
   user:
-    command: kubectl-skas               # Default 'kubectl-skas'
     authServerUrl:                      # Default will be taken from ingress.host. If ingress is not enabled, a value must be provided here
     rootCaPath: /tmp/cert/server/ca.crt
     rootCaData:                         # Default will be set from rootCaPath
@@ -221,5 +220,4 @@ kubeconfig:
     clientAuth:
       id:                               # Default ""
       secret:                           # Default ""
-    args: []
   namespace:                            # Default ""

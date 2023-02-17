@@ -1,7 +1,7 @@
 
-## API Server configuration
+## API Server configuration (Authentication webhok)
 
-As depicted on the previous schema, we must now configure the Authentication Webhook of the API server.
+The Authentication Webhook of the API server should be configured to reach our authentication module.
 
 Depending of your installation, the directory mentioned below may differs.
 Also, this procedure assume the API Server is managed by the Kubelet, as a static Pod. If your API Server is managed by another system (i.e. systemd), you should adapt accordingly.

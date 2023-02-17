@@ -14,7 +14,7 @@ var KubeContext string
 
 func loadRawConfig(kubeconfig string) clientcmdapi.Config {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
-	loadingRules.ExplicitPath = kubeconfig // From the command line. Must take precedence TODO: check it
+	loadingRules.ExplicitPath = kubeconfig // From the command line. Must take precedence
 	configOverrides := &clientcmd.ConfigOverrides{}
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 
