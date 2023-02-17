@@ -207,10 +207,12 @@ loginProvider:
 
 # Parameters for client kubeconfig init. Not used if services.kubeconfig.disabled==true
 kubeconfig:
-  contextName: skas
+  context:
+    name: skas@cluster.local
+    namespace:                          # Default ""
   cluster:
     apiServerUrl:                       # Required
-    rootCaData:                          # Default from '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+    rootCaData:                         # Default from '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
     insecureSkipVerify: false
   user:
     authServerUrl:                      # Default will be taken from ingress.host. If ingress is not enabled, a value must be provided here
@@ -220,4 +222,3 @@ kubeconfig:
     clientAuth:
       id:                               # Default ""
       secret:                           # Default ""
-  namespace:                            # Default ""

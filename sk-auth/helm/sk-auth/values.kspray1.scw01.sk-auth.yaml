@@ -59,6 +59,7 @@ goinkube:
 #    memory: 64Mi
 
 kubeconfig:
-  contextName: skas@kspray1.scw01
+  context:
+    name: skas@kspray1.scw01
   cluster:
     apiServerUrl: https://10.33.0.99:6443

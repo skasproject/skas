@@ -17,8 +17,7 @@ type KubeconfigRequest struct {
 // This structure is also used in configuration. So the yaml
 
 type KubeconfigConfig struct {
-	ContextName string `yaml:"contextName" json:"contextName"` // Cluster will be named <context>-cluster and user <context>-user
-	Cluster     struct {
+	Cluster struct {
 		ApiServerUrl       string `yaml:"apiServerUrl" json:"apiServerUrl"`
 		RootCaData         string `yaml:"rootCaData" json:"rootCaData"`
 		InsecureSkipVerify bool   `yaml:"insecureSkipVerify" json:"insecureSkipVerify"`
@@ -30,7 +29,10 @@ type KubeconfigConfig struct {
 		InsecureSkipVerify bool       `yaml:"insecureSkipVerify" json:"insecureSkipVerify"`
 		ClientAuth         ClientAuth `yaml:"clientAuth" json:"clientAuth"`
 	} `yaml:"user" json:"user"`
-	Namespace string `yaml:"namespace" json:"namespace"`
+	Context struct {
+		Name      string `yaml:"name" json:"name"` // Cluster will be named <context>-cluster and user <context>-user
+		Namespace string `yaml:"namespace" json:"namespace"`
+	}
 }
 
 type KubeconfigResponse struct {

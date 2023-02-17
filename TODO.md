@@ -2,8 +2,10 @@
 ## Features
 
 - Deployment in one pod
+- A role and an ezcluster plugin.
 - Dex connector
 - SkaGate
+- A front for user management.
 - Documentation
   - Installation
   - Usage
@@ -56,10 +58,11 @@ DONE:
 
 - If memory or another non-k8s storage is used in production, one may modify the runnable package (Start() instead of Run(), a standard logger, ...)
 - Relay with authentication the changePassword service
-  vi /etc/kubernetes/manifests/kube-apiserver.yaml
-- Allow several kubeconfig definitions (Selected by ../v1/kubeconfig/<id>)
-- kubeconfig configuration: Replace contextName and namespace by context.name and context.namespace
+- Allow several kubeconfig definitions (Selected by ../v1/kubeconfig/<id>) ?
 - Embed CLI binary with a download url
+
+DONE
+- kubeconfig configuration: Replace contextName and namespace by context.name and context.namespace
 
 ## sk-filer
 

@@ -28,7 +28,7 @@ var authCmd = &cobra.Command{
 			tokenBag = tokenbag.InteractiveLogin("", "")
 		}
 		ec := ExecCredential{
-			ApiVersion: "client.authentication.k8s.io/v1beta1",
+			ApiVersion: "client.authentication.k8s.io/v1",
 			Kind:       "ExecCredential",
 		}
 		if tokenBag == nil {

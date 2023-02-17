@@ -64,8 +64,8 @@ func initKubeconfig(kc *proto.KubeconfigConfig) error {
 		}
 	}
 
-	if kc.ContextName == "" {
-		kc.ContextName = "skas"
+	if kc.Context.Name == "" {
+		kc.Context.Name = "skas@cluster.local"
 	}
 	return nil
 }

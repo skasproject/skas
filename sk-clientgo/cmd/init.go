@@ -51,10 +51,10 @@ var InitCmd = &cobra.Command{
 			log.Log.Error(err, "error on GET kubeconfig from remote server")
 			os.Exit(4)
 		}
-		log.Log.V(1).Info("Fetched kubeconfig from remote", "contextName", kubeConfigResponse.ContextName)
+		log.Log.V(1).Info("Fetched kubeconfig from remote", "contextName", kubeConfigResponse.Context.Name)
 		// ---------------------------------------------------- Override parameters
 		if contextNameOverride != "" {
-			kubeConfigResponse.ContextName = contextNameOverride
+			kubeConfigResponse.Context.Name = contextNameOverride
 		}
 		if authServerUrlOverride != "" {
 			kubeConfigResponse.User.AuthServerUrl = authServerUrlOverride
@@ -63,7 +63,7 @@ var InitCmd = &cobra.Command{
 			kubeConfigResponse.Cluster.ApiServerUrl = apiServerUrlOverride
 		}
 		if namespaceOverride != "" {
-			kubeConfigResponse.Namespace = namespaceOverride
+			kubeConfigResponse.Context.Namespace = namespaceOverride
 		}
 
 		loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -73,7 +73,7 @@ var InitCmd = &cobra.Command{
 		rawConfig, err := kubeConfig.RawConfig()
 		configAccess := kubeConfig.ConfigAccess()
 
-		contextName := kubeConfigResponse.ContextName
+		contextName := kubeConfigResponse.Context.Name
 		clusterName := contextName + "-cluster"
 		userName := contextName + "-user"
 
@@ -88,7 +88,8 @@ var InitCmd = &cobra.Command{
 			rawConfig.Contexts = make(map[string]*api.Context)
 		}
 		// Test overwrite
-		if _, ok := rawConfig.Contexts[contextName]; ok && !force {
+		_, exitingContext := rawConfig.Contexts[contextName]
+		if exitingContext && !force {
 			_, _ = fmt.Fprintf(os.Stderr, "ERROR: context '%s' already existing in this config file\n", contextName)
 			os.Exit(15)
 		}
@@ -100,7 +101,11 @@ var InitCmd = &cobra.Command{
 			_, _ = fmt.Fprintf(os.Stderr, "ERROR: user '%s' already existing in this config file\n", userName)
 			os.Exit(15)
 		}
-		log.Log.V(0).Info("Setup new context", "context", contextName, "kubeconfig", kubeConfig.ConfigAccess().GetDefaultFilename())
+		if exitingContext {
+			log.Log.V(0).Info("Update existing context", "context", contextName, "kubeconfig", kubeConfig.ConfigAccess().GetDefaultFilename())
+		} else {
+			log.Log.V(0).Info("Setup new context", "context", contextName, "kubeconfig", kubeConfig.ConfigAccess().GetDefaultFilename())
+		}
 
 		rootCaData, err := base64.StdEncoding.DecodeString(kubeConfigResponse.Cluster.RootCaData)
 		if err != nil {
@@ -114,8 +119,9 @@ var InitCmd = &cobra.Command{
 		}
 		rawConfig.AuthInfos[userName] = &api.AuthInfo{
 			Exec: &api.ExecConfig{
-				APIVersion: "client.authentication.k8s.io/v1beta1",
-				Command:    command,
+				APIVersion:      "client.authentication.k8s.io/v1",
+				Command:         command,
+				InteractiveMode: "Always",
 				Args: []string{
 					"auth",
 					"--authServerUrl=" + kubeConfigResponse.User.AuthServerUrl,
@@ -129,7 +135,7 @@ var InitCmd = &cobra.Command{
 		rawConfig.Contexts[contextName] = &api.Context{
 			Cluster:   clusterName,
 			AuthInfo:  userName,
-			Namespace: kubeConfigResponse.Namespace,
+			Namespace: kubeConfigResponse.Context.Namespace,
 		}
 		if rawConfig.CurrentContext == "" || !noContextSwitch {
 			rawConfig.CurrentContext = contextName
