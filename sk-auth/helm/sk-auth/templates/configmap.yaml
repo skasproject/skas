@@ -36,7 +36,9 @@ data:
     services:
 {{ .Values.services | toYaml | indent 6  }}
     kubeconfig:
-      contextName: "{{ .Values.kubeconfig.contextName }}"
+      context:
+        name: "{{ .Values.kubeconfig.context.name }}"
+        namespace: "{{ .Values.kubeconfig.context.namespace }}"
       cluster:
         apiServerUrl: "{{ .Values.kubeconfig.cluster.apiServerUrl }}"
         rootCaData: "{{ .Values.kubeconfig.cluster.rootCaData }}"
@@ -51,4 +53,3 @@ data:
           id: "{{ .id }}"
           secret: "{{ .secret }}"
         {{- end }}
-      namespace: "{{ .Values.kubeconfig.namespace }}"
