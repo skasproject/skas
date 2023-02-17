@@ -17,7 +17,7 @@ import (
 // Inspired from oauth.go connector.
 
 func New(conf *Config, altRootCAPaths string, altRootCaDatas string) (Client, error) {
-	// Just a test. Not used in this function
+	// Just a test for validity. Not used in this function
 	u, err := url.Parse(conf.Url)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse url '%s': %w", conf.Url, err)
@@ -49,9 +49,9 @@ func New(conf *Config, altRootCAPaths string, altRootCaDatas string) (Client, er
 					caCount++
 				}
 			}
-			if caCount == 0 {
-				return nil, fmt.Errorf("no root CA certificate was configured")
-			}
+			//if caCount == 0 {
+			//	return nil, fmt.Errorf("no root CA certificate was configured")
+			//}
 		}
 	}
 	httpclient := &http.Client{

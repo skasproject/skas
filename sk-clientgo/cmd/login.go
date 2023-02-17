@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"skas/sk-clientgo/internal/config"
+	"skas/sk-clientgo/internal/log"
 	"skas/sk-clientgo/internal/tokenbag"
 )
 
@@ -19,8 +20,13 @@ func init() {
 var LoginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "Logout and get a new token",
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		config.InitHttpClient()
+		err := config.InitHttpClient()
+		if err != nil {
+			log.Log.Error(err, "error on InitHttpClient()")
+			os.Exit(10)
+		}
 		tokenbag.DeleteTokenBag() // Logout first. Don't stay logged with old token if we are unable to login
 		tokenBag := tokenbag.InteractiveLogin(login, password)
 		if tokenBag == nil {

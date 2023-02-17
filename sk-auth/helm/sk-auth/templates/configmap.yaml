@@ -42,7 +42,6 @@ data:
         rootCaData: "{{ .Values.kubeconfig.cluster.rootCaData }}"
         insecureSkipVerify: {{ default false .Values.kubeconfig.cluster.insecureSkipVerify }}
       user:
-        command: "{{ .Values.kubeconfig.user.command }}"
         authServerUrl: {{ include "sk-auth.kubeconfig.authServerUrl" . }}
         rootCaData: "{{ .Values.kubeconfig.user.rootCaData }}"
         rootCaPath: "{{ .Values.kubeconfig.user.rootCaPath }}"
@@ -52,5 +51,4 @@ data:
           id: "{{ .id }}"
           secret: "{{ .secret }}"
         {{- end }}
-        args: {{ .Values.kubeconfig.user.args }}
       namespace: "{{ .Values.kubeconfig.namespace }}"

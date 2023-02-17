@@ -1,6 +1,7 @@
 package loadsave
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"
@@ -21,25 +22,37 @@ func LoadStuff(path string, decode func(decoder *yaml.Decoder) error) bool {
 	}
 }
 
-func SaveStuff(path string, encode func(encoder *yaml.Encoder) error) {
-	ensureDir(filepath.Dir(path))
-	var err error
-	var file *os.File
-	if file, err = os.Create(path); err == nil {
-		if err = encode(yaml.NewEncoder(file)); err == nil {
-			err = file.Close()
-		}
-	}
+func SaveStuff(path string, encode func(encoder *yaml.Encoder) error) error {
+	err := ensureDir(filepath.Dir(path))
 	if err != nil {
-		panic(err)
+		return err
 	}
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	encoder := yaml.NewEncoder(file)
+	err = encode(encoder)
+	if err != nil {
+		return err
+	}
+	_ = encoder.Close()
+	_ = file.Close()
+	return nil
 }
 
-func ensureDir(dirName string) {
-	if _, serr := os.Stat(dirName); serr != nil {
-		merr := os.MkdirAll(dirName, 0700)
-		if merr != nil {
-			panic(merr)
+func ensureDir(dirName string) error {
+	st, err := os.Stat(dirName)
+	if err != nil {
+		// We consider it is a file not found
+		err = os.MkdirAll(dirName, 0700)
+		if err != nil {
+			return err
 		}
+		return nil
 	}
+	if !st.IsDir() {
+		return fmt.Errorf("path '%s' is a file. We need this to be a folder", dirName)
+	}
+	return nil
 }

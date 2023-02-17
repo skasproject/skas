@@ -33,6 +33,12 @@ sk-merger
 - sk-gate: A web proxy, controlling access to an unauthenticated web site. Replace Dex/Dexgate association. 
   May also handle session token for Kubernetes dashboard access.
 
+## User filter
+
+A module with login protocol up and down. Il will allow to accept/reject login based on user login and/or groups.
+Aim is to offer a standard solution to grant/deny access to resources (i.e. dexgate, skagate)
+There may be several filters, associated to client.id
+
 ## Interfaces
 
 SKAS components interaction involve two communication interface:

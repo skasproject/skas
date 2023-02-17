@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"skas/sk-clientgo/internal/config"
+	"skas/sk-clientgo/internal/log"
 	"skas/sk-clientgo/internal/tokenbag"
 )
 
@@ -15,10 +16,13 @@ var authCmd = &cobra.Command{
 	Use:    "auth",
 	Short:  "To be used as client-go exec plugin",
 	Hidden: true,
+	Args:   cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		config.InitHttpClient()
-
+		err := config.InitHttpClient()
+		if err != nil {
+			log.Log.Error(err, "error on InitHttpClient()")
+			os.Exit(10)
+		}
 		tokenBag := tokenbag.Retrieve()
 		if tokenBag == nil {
 			tokenBag = tokenbag.InteractiveLogin("", "")
@@ -32,7 +36,7 @@ var authCmd = &cobra.Command{
 		} else {
 			ec.Status.Token = tokenBag.Token
 		}
-		err := json.NewEncoder(os.Stdout).Encode(ec)
+		err = json.NewEncoder(os.Stdout).Encode(ec)
 		if err != nil {
 			panic(err)
 		}
