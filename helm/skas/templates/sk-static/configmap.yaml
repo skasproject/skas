@@ -35,5 +35,5 @@ data:
         secret: "*"
     {{- end }}
 
+{{ end }}
 
-    {{ end }}

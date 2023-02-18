@@ -32,8 +32,11 @@ DONE:
 - liveliness, readiness probes on all modules
 - Generalize the concept of service in the config of all id provider.
 - Think about concept of domain. May be corresponding to a list of providers. Check login@domain through DEX
+- Refactor the provider configuration. To ease helm chart usage. (May be related to domain)
 - For certificates, provide a fallback when no cluster-issuer provided (cf topolvm)
 - Provide schema for helm chart values.
+- Change the way we handle SSL: Always keep an non-ssl port on localhost, and add another port with SSL when required. When done, can remove localhost from certificate
+- Add debug/trace on skhttp client.
  
 ## sk-static
 
@@ -55,6 +58,7 @@ DONE:
 - rename to sk-bind ?
 - Add an optional providerList, to modify order of provider. Needed when appending a new provider to list as 'extraProvider' in helm chart
 - Relay the changePassword service
+- Display the list of provider as info on boot
 
 ## sk-auth
 

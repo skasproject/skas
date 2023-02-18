@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "skas.labels" . | nindent 4 }}
   annotations:
-    configmap.reloader.stakater.com/reload: "{{ include "skStatic.configmapName" . }}, {{ include "skStatic.usersDbName" . }}"
+    configmap.reloader.stakater.com/reload: "{{ include "skas.watchedConfigmap" . }}"
   {{- with .Values.commonAnnotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -54,6 +54,10 @@ spec:
             {{- with .Values.skStatic.securityContext }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+          ports:
+            - containerPort: {{ .Values.skStatic.serverPort }}
+              name: proto
+              protocol: TCP
           volumeMounts:
             - mountPath: /config.yaml
               name: sk-static-config
@@ -64,6 +68,45 @@ spec:
             {{ if and .Values.skStatic.exposure.enabled .Values.skStatic.exposure.ssl }}
             - mountPath: /tmp/cert/server
               name: sk-static-server-cert
+              readOnly: true
+            {{ end }}
+{{ end }}
+{{ if .Values.skMerge.enabled }}
+        - name: sk-merge
+          command:
+            - /sk-merge
+          args:
+            - --configFile
+            - /config.yaml
+            {{-  range .Values.skMerge.additionalArgs }}
+            - {{ . }}
+            {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.skMerge.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.skMerge.resources }}
+          resources:
+          {{- toYaml . | nindent 12 }}
+          {{ end }}
+          securityContext:
+            {{- toYaml .Values.commonContainerSecurityContext | nindent 12 }}
+            {{- with .Values.skMerge.securityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - containerPort: {{ .Values.skMerge.serverPort }}
+              name: proto
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config.yaml
+              name: sk-merge-config
+              subPath: config.yaml
+            {{ if and .Values.skMerge.exposure.enabled .Values.skMerge.exposure.ssl }}
+            - mountPath: /tmp/cert/server
+              name: sk-merge-server-cert
               readOnly: true
             {{ end }}
 {{ end }}
@@ -83,19 +126,31 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+{{ if .Values.skStatic.enabled }}
         - name: sk-static-config
           configMap:
             name: {{ include "skStatic.configmapName" . }}
         - name: sk-static-users
           configMap:
             name: {{ include "skStatic.usersDbName" . }}
-        {{ if and .Values.skStatic.enabled .Values.skStatic.exposure.enabled .Values.skStatic.exposure.ssl }}
+        {{ if and .Values.skStatic.exposure.enabled .Values.skStatic.exposure.ssl }}
         - name: sk-static-server-cert
           secret:
             defaultMode: 420
             secretName: {{ include "skStatic.certificateSecretName" . }}
         {{ end }}
-
+{{ end }}
+{{ if .Values.skMerge.enabled }}
+        - name: sk-merge-config
+          configMap:
+            name: {{ include "skMerge.configmapName" . }}
+        {{ if and .Values.skMerge.exposure.enabled .Values.skMerge.exposure.ssl }}
+        - name: sk-merge-server-cert
+          secret:
+            defaultMode: 420
+            secretName: {{ include "skMerge.certificateSecretName" . }}
+        {{ end }}
+{{ end }}
 
 
 

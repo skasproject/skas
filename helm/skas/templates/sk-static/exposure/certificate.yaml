@@ -15,6 +15,7 @@ spec:
   dnsNames:
     - {{ include "skStatic.serviceName" . }}
     - {{ include "skStatic.serviceName" . }}.{{ .Release.Namespace }}.svc
+    - localhost
   {{ if .Values.skStatic.exposure.ingress.enabled }}
     - {{ .Values.skStatic.exposure.ingress.host }}
   {{ end }}

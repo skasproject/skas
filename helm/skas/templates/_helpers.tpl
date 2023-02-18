@@ -60,3 +60,14 @@ Create the name of the deployment
 {{- default (printf "%s" (include "skas.fullname" .)) .Values.deploymentName }}
 {{- end }}
 
+{{/*
+Create list of config map for reloader.stakater.com
+*/}}
+{{- define "skas.watchedConfigmap" -}}
+{{- if .Values.skMerge.enabled }}
+{{- include "skMerge.configmapName" . }},
+{{- end }}
+{{- if .Values.skStatic.enabled }}
+{{- include "skStatic.configmapName" . }},{{ include "skStatic.usersDbName" . }},
+{{- end }}
+{{- end }}

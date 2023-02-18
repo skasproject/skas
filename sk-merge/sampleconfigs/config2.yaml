@@ -11,12 +11,12 @@ server:
 providers:
   - name: static
     httpClient:
-      url: http://localhost:7010
-      clientAuth:
-        id: merger
-        secret: 1234
-    groupPattern: "static_%s"
-    credentialAuthority: true
+      url: http://127.0.0.1:7010
+#      clientAuth:
+#        id: merger
+#        secret: 1234
+#    groupPattern: "static_%s"
+#    credentialAuthority: true
 #  - name: crd
 #    httpClient:
 #      url: http://localhost:7012

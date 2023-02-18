@@ -27,7 +27,7 @@ image:
 
 # Default value. Mau be overridden by component
 log:
-  mode: json
+  mode: dev
   level: info
 
 # Security Context for all containers
@@ -72,11 +72,23 @@ clusterIssuer:
 
 ingressClass: nginx # Don't change, as only 'nginx' is supported for now.
 
+# Base 64 encoded certificate of Root CA. Used to validate all https communication between skas module
+rootCaData:
+
+# Kubernetes secrets can be generated automatically. These are intended to be shared between modules for client.id/secret.
+# NB: Generation require kubernetes-secret-generator (https://github.com/mittwald/kubernetes-secret-generator) to be deployed in the cluster
+generatedSecrets: []
+#  - secretName:
+#    fields:
+#      - name:
+#        encoding: base64  # Default: Base 64
+#        length: 15
+
 skStatic:
   enabled: false
 
   log:
-    mode: dev
+    mode:
     level:
 
   # Will default to {{ include "skas.fullname" . }}-static-config
@@ -129,3 +141,104 @@ skStatic:
     groupBindings: []
 
 skMerge:
+  enabled: true
+
+  log:
+    mode:
+    level:
+
+  # Will default to {{ include "skas.fullname" . }}-static-config
+  configmapName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+  #    If you want to specify resources, uncomment the following
+  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #    limits:
+  #      cpu: 100m
+  #      memory: 200Mi
+  #    requests:
+  #      cpu: 100m
+  #      memory: 100Mi
+
+  serverPort: 7013
+
+  providers:
+  #  - name: static
+  #    enabled: true
+  #    httpClient:
+  #      url: https://sk-static1.ingress.kspray1.project33.scw01
+  #      rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
+  #      insecureSkipVerify: false
+  #      clientAuth:
+  #        id: merger
+  #        secret: "1234"
+  #    credentialAuthority: true
+  #    groupAuthority: true
+  #    critical: true
+  #    groupPattern: "%s"
+  #    uidOffset: 0
+
+  #  - name: ldap1
+  #    httpClient:
+  #      url: https://sk-ldap1.ingress.kspray1.project33.scw01
+  #      clientAuth:
+  #        id: merger
+  #        secret: "1234"
+  #    enabled: true
+  #    credentialAuthority: true
+  #    critical: true
+  #    groupPattern: "ldap_%s"
+  #    uidOffset: 10000
+
+  #  - name: crd
+  #    httpClient:
+  #      url: https://sk-crd1.ingress.kspray1.project33.scw01
+  #      clientAuth:
+  #        id: merger
+  #        secret: "1234"
+  #    credentialAuthority: true
+
+
+  exposure:
+    enabled: false
+    ssl: true
+    ingress:
+      enabled: false
+      host:
+    # Will default to {{ include "sk-merge.fullname" . }}-cert
+    certificateSecretName:
+    # Will default to {{ include "sk-merge.fullname" . }}
+    certificateName:
+    # Will default to {{ include "sk-merge.fullname" . }}
+    serviceName:
+    # Will default to {{ include "sk-merge.fullname" . }}
+    ingressName:
+
+    # Provided services
+    services:
+      login:
+        disabled: false
+      #   clients:
+      #     - id: "*"
+      #       secret: "1234"
+      userStatus:
+        disabled: false
+      #   clients:
+      #     - id: "*"
+      #       secret: "1234"
+      userDescribe:
+        disabled: false
+    #   clients:
+    #     - id: "*"
+    #       secret: "1234"
+
+

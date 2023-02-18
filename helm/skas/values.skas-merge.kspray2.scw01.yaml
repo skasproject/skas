@@ -1,12 +1,12 @@
-# ------- Deployment of all component. Expose all
+# ------- Deployment of sk-merge only component
 #
 # kubectl create ns skas-system
-# helm -n skas-system upgrade -i --values ./values.skas-exp.kspray2.scw01.yaml --values ./values.user1.yaml skas-exp .
+# helm -n skas-system upgrade -i --values ./values.skas-merge.kspray2.scw01.yaml --values ./values.user1.yaml skas-merge .
 #
-# helm -n skas-system uninstall skas-exp
+# helm -n skas-system uninstall skas-merge
 
 # Debugging
-# helm -n skas-system template --debug  --values ./values.skas-exp.kspray2.scw01.yaml --values ./values.user1.yaml skas-exp . >/tmp/xx
+# helm -n skas-system template --debug  --values ./values.skas-merge.kspray2.scw01.yaml --values ./values.user1.yaml skas-merge . >/tmp/xx
 
 clusterIssuer: cluster-issuer1
 
@@ -16,45 +16,48 @@ rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUdTekNDQkRPZ0F3SUJBZ0lKQU4
 
 log:
   mode: dev
-  level: trace
+  level: info
 
-skStatic:
-  enabled: true
 
-  exposure:
-    enabled: true
-    ingress:
-      enabled: true
-      host:  skas-exp-static.ingress.kspray2.project33.scw01
-    clients:
-      - id: "*"
-        secret: "1234"
+generatedSecrets:
+  - secretName: skas-shared
+    fields:
+      - name: secret
+
 
 skMerge:
+
+  extraEnv:
+    - name: SKAS_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: skas-shared
+          key: secret
+
   providers:
     - name: static
       httpClient:
-        url: https://localhost:7010
+        url: https://skas-static.ingress.kspray2.project33.scw01
         clientAuth:
-          id: ""
-          secret: "1234"
+          id: "merge"
+          secret: ${SKAS_SECRET}
 
   exposure:
     enabled: true
     ingress:
       enabled: true
-      host:  skas-exp-merge.ingress.kspray2.project33.scw01
+      host:  skas-merge.ingress.kspray2.project33.scw01
     services:
       login:
         clients:
-          - id: "*"
+          - id: "backdoor"
             secret: "1234"
       userStatus:
         clients:
-          - id: "*"
+          - id: "backdoor"
             secret: "1234"
       userDescribe:
         clients:
-          - id: "*"
+          - id: "backdoor"
             secret: "1234"
 

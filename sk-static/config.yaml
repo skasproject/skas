@@ -6,6 +6,7 @@ log:
 
 server:
   ssl: false
+  bindAddr: ":7010"
 
 
 clients:

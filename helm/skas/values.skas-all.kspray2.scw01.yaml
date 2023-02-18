@@ -10,3 +10,11 @@
 
 skStatic:
   enabled: true
+
+skMerge:
+  providers:
+    - name: static
+      httpClient:
+        url: http://127.0.0.1:7010
+
+
