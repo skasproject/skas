@@ -1,0 +1,17 @@
+
+skStatic:
+  usersDb:
+    users:
+      - login: sa
+        uid: 1957
+        commonNames: ["Serge ALEXANDRE" ]
+        emails: ["sa@broadsoftware.com" ]
+        passwordHash: "$2a$10$cPsdk3AE0KJxV1DuUwGovOPwrC0UnlPDspzKrvQ1eSD9kTVS1QRNa"    # as
+
+      - login: jt
+        passwordHash: "$2a$10$ix8JNI/ajI5OTgIXOfAREOQm1wzNgIymIK8wAvEV5YPGVL2.wQFf6"    # tj
+
+
+    groupBindings:
+      - user: sa
+        group: devs

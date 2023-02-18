@@ -1,0 +1,101 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "skas.deploymentName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  annotations:
+    configmap.reloader.stakater.com/reload: "{{ include "skStatic.configmapName" . }}, {{ include "skStatic.usersDbName" . }}"
+  {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "skas.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "skas.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+{{ if .Values.skStatic.enabled }}
+        - name: sk-static
+          command:
+          - /sk-static
+          args:
+            - --configFile
+            - /config.yaml
+            {{-  range .Values.skStatic.additionalArgs }}
+            - {{ . }}
+            {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.skStatic.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.skStatic.resources }}
+          resources:
+          {{- toYaml . | nindent 12 }}
+          {{ end }}
+          securityContext:
+            {{- toYaml .Values.commonContainerSecurityContext | nindent 12 }}
+            {{- with .Values.skStatic.securityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /config.yaml
+              name: sk-static-config
+              subPath: config.yaml
+            - mountPath: /users.yaml
+              name: sk-static-users
+              subPath: users.yaml
+            {{ if and .Values.skStatic.exposure.enabled .Values.skStatic.exposure.ssl }}
+            - mountPath: /tmp/cert/server
+              name: sk-static-server-cert
+              readOnly: true
+            {{ end }}
+{{ end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 10
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: sk-static-config
+          configMap:
+            name: {{ include "skStatic.configmapName" . }}
+        - name: sk-static-users
+          configMap:
+            name: {{ include "skStatic.usersDbName" . }}
+        {{ if and .Values.skStatic.enabled .Values.skStatic.exposure.enabled .Values.skStatic.exposure.ssl }}
+        - name: sk-static-server-cert
+          secret:
+            defaultMode: 420
+            secretName: {{ include "skStatic.certificateSecretName" . }}
+        {{ end }}
+
+
+
+

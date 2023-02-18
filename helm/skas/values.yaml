@@ -1,0 +1,131 @@
+
+
+replicaCount: 1
+
+# Allow overriding base name of all resources
+fullNameOverride:
+
+# Allow chart name overriding
+nameOverride:
+
+# Will default to {{ include "skas.fullname" . }}
+deploymentName:
+
+# -- Annotations to be added to the pod
+podAnnotations: {}
+
+# -- Annotations to be added to all other resources
+commonAnnotations: {}
+
+
+image:
+  pullSecrets: []
+  repository: ghcr.io/skasproject/skas
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag:
+  pullPolicy: Always
+
+# Default value. Mau be overridden by component
+log:
+  mode: json
+  level: info
+
+# Security Context for all containers
+commonContainerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - "ALL"
+
+# -- Security Context for the whole pod
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+# Nodeselector for the pod to be installed
+nodeSelector: {}
+
+# -- Tolerations for the pod to be installed
+tolerations: []
+
+# -- Affinity for the pod to be installed
+affinity: {}
+
+# Cert-manger cluster issuer
+clusterIssuer:
+# If not provided and <submodule>.exposure.server.ssl == true, then a certificate must be provided externally as a secret. Here is a sample layout:
+#
+#      apiVersion: v1
+#      kind: Secret
+#      metadata:
+#        name: <deployment>-<static|ldap|crd|merge|auth>-cert
+#        namespace: skas-system
+#      type: kubernetes.io/tls
+#      data:
+#        ca.crt: LS0tLS.......
+#        tls.crt: LS0tLS.....
+#        tls.key: LS0t......
+#
+# Refer to the documentation for more information about certificate creation
+
+ingressClass: nginx # Don't change, as only 'nginx' is supported for now.
+
+skStatic:
+  enabled: false
+
+  log:
+    mode: dev
+    level:
+
+  # Will default to {{ include "skas.fullname" . }}-static-config
+  configmapName:
+
+  # ConfigMap hosting users and groupBinding. Will default to {{ include "skas.fullname" . }}-users
+  usersDbName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+#    If you want to specify resources, uncomment the following
+#    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+#    limits:
+#      cpu: 100m
+#      memory: 200Mi
+#    requests:
+#      cpu: 100m
+#      memory: 100Mi
+
+  serverPort: 7010
+
+  exposure:
+    enabled: false
+    clients: []
+    ssl: true
+    ingress:
+      enabled: false
+      host:
+    # Will default to {{ include "sk-static.fullname" . }}-cert
+    certificateSecretName:
+    # Will default to {{ include "sk-static.fullname" . }}
+    certificateName:
+    # Will default to {{ include "sk-static.fullname" . }}
+    serviceName:
+    # Will default to {{ include "sk-static.fullname" . }}
+    ingressName:
+
+
+  # The users database
+  usersDb:
+    users: []
+    groupBindings: []
+
+skMerge:

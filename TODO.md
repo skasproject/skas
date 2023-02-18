@@ -28,10 +28,12 @@ DONE:
 - Rename sk-xxxx to skas-xxxxx ? or ska-xxxx
 - Rename userDescribe to userExplain
 - Rename userStatus to userIdentity
-- In config file, for http client url. Set full url, including the path OR define by scheme:, host: and port (Currently, it is ambiguous, as a partial)
+- In config file, for http client url. Set full url, including the path OR define by scheme:, host: and port (Currently, it is ambiguous, as a partial) ?
 - liveliness, readiness probes on all modules
 - Generalize the concept of service in the config of all id provider.
 - Think about concept of domain. May be corresponding to a list of providers. Check login@domain through DEX
+- For certificates, provide a fallback when no cluster-issuer provided (cf topolvm)
+- Provide schema for helm chart values.
  
 ## sk-static
 
@@ -60,6 +62,7 @@ DONE:
 - Relay with authentication the changePassword service
 - Allow several kubeconfig definitions (Selected by ../v1/kubeconfig/<id>) ?
 - Embed CLI binary with a download url
+- In config, rename tokenConfig to token
 
 DONE
 - kubeconfig configuration: Replace contextName and namespace by context.name and context.namespace

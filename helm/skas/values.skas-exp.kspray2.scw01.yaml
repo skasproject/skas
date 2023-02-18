@@ -1,0 +1,23 @@
+# ------- Deployment of all component. Expose all
+#
+# kubectl create ns skas-system
+# helm -n skas-system upgrade -i --values ./values.skas-exp.kspray2.scw01.yaml --values ./values.user1.yaml skas-exp .
+#
+# helm -n skas-system uninstall skas-exp
+
+# Debugging
+# helm -n skas-system template --debug  --values ./values.skas-exp.kspray2.scw01.yaml --values ./values.user1.yaml skas-exp . >/tmp/xx
+
+clusterIssuer: cluster-issuer1
+
+skStatic:
+  enabled: true
+
+  exposure:
+    enabled: true
+    ingress:
+      enabled: true
+      host:  skas-exp-static.ingress.kspray2.project33.scw01
+    clients:
+      - id: "*"
+        secret: "1234"

@@ -1,0 +1,12 @@
+# ------- Deployment of all components in one pod
+#
+# kubectl create ns skas-system
+# helm -n skas-system upgrade -i --values ./values.skas-all.kspray2.scw01.yaml --values ./values.user1.yaml skas-all .
+#
+# helm -n skas-system uninstall skas-all
+
+# Debugging
+# helm -n skas-system template --debug  --values ./values.skas-all.kspray2.scw01.yaml --values ./values.user1.yaml skas-all . >/tmp/xx
+
+skStatic:
+  enabled: true

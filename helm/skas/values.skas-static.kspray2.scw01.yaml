@@ -1,0 +1,23 @@
+# ------- Deployment of sk-static only component
+#
+# kubectl create ns skas-system
+# helm -n skas-system upgrade -i --values ./values.skas-static.kspray2.scw01.yaml --values ./values.user1.yaml skas-static .
+#
+# helm -n skas-system uninstall skas-static
+
+# Debugging
+# helm -n skas-system template --debug  --values ./values.skas-static.kspray2.scw01.yaml --values ./values.user1.yaml skas-static . >/tmp/xx
+
+clusterIssuer: cluster-issuer1
+
+skStatic:
+  enabled: true
+
+  exposure:
+    enabled: true
+    ingress:
+      enabled: true
+      host:  skas-static.ingress.kspray2.project33.scw01
+    clients:
+      - id: "*"
+        secret: "1234"
