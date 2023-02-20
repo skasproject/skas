@@ -1,10 +1,11 @@
-{{- if .Values.skAuth.enabled }}
 
+
+{{- if .Values.skCrd.enabled }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: "{{ include "skAuth.roleName" . }}"
+  name: "{{ include "skCrd.roleName" . }}"
   labels:
     {{- include "skas.labels" . | nindent 4 }}
   {{- with .Values.commonAnnotations }}
@@ -12,17 +13,17 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 rules:
-  - apiGroups: ["session.skasproject.io"]
+  - apiGroups: ["userdb.skasproject.io"]
     resources:
-      - tokens
-      - tokens/status
-    verbs: ["*"]
+      - groupbindings
+      - users
+    verbs: ["get", "list", "watch"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: "{{ include "skAuth.roleName" . }}-{{ include "skas.serviceAccountName" . }}"
+  name: "{{ include "skCrd.roleName" . }}-{{ include "skas.serviceAccountName" . }}"
   labels:
     {{- include "skas.labels" . | nindent 4 }}
   {{- with .Values.commonAnnotations }}
@@ -36,14 +37,13 @@ subjects:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: "{{ include "skAuth.roleName" . }}"
-
+  name: "{{ include "skCrd.roleName" . }}"
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: "{{ include "skAuth.editorRoleName" . }}"
+  name: "{{ include "skCrd.editorRoleName" . }}"
   labels:
     {{- include "skas.labels" . | nindent 4 }}
   {{- with .Values.commonAnnotations }}
@@ -51,10 +51,13 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 rules:
-  - apiGroups: ["session.skasproject.io"]
+  - apiGroups: ["userdb.skasproject.io"]
     resources:
-      - tokens
-    verbs: ["get", "list", "watch", "delete"]
+      - groupbindings
+      - users
+    verbs: ["*"]
 
 
 {{- end }}
+
+

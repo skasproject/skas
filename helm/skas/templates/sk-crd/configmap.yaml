@@ -1,0 +1,41 @@
+{{ if .Values.skCrd.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "skCrd.configmapName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  config.yaml: |
+    log:
+      mode: {{ default .Values.log.mode .Values.skCrd.log.mode }}
+      level: {{ default .Values.log.level .Values.skCrd.log.level }}
+    metricAddr: ":{{ .Values.skCrd.metric.port }}"
+    probeAddr: ":{{ .Values.skCrd.probe.port }}"
+    server:
+      {{- if .Values.skCrd.exposure.enabled }}
+      ssl: {{ .Values.skCrd.exposure.ssl}}
+      bindAddr: ":{{ .Values.skCrd.serverPort}}"
+      {{- if .Values.skCrd.exposure.ssl }}
+      certDir: /tmp/cert/server
+      {{- end }}
+      {{- else }}
+      ssl: no
+      bindAddr: "127.0.0.1:{{ .Values.skCrd.serverPort}}"
+      {{- end }}
+    {{- if .Values.skCrd.exposure.enabled }}
+    clients:
+{{ .Values.skCrd.exposure.clients | toYaml | indent 6 }}
+    {{- else }}
+    clients:
+      - id: "*"
+        secret: "*"
+    {{- end }}
+
+{{ end }}
+

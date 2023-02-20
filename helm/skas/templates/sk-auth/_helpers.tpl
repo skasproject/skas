@@ -16,6 +16,13 @@ Create the name of the role
 {{- default (printf "%s-auth" (include "skas.fullname" .)) .Values.skAuth.roleName }}
 {{- end }}
 
+{{/*
+Create the name of the token editor role
+*/}}
+{{- define "skAuth.editorRoleName" -}}
+{{- default (printf "%s-auth-edit" (include "skas.fullname" .)) .Values.skAuth.editorRoleName }}
+{{- end }}
+
 
 {{/*
 Compute the serverUrl for the kubeconfig.User.AuthServerUrl (Automatic client configuration)

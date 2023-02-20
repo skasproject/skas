@@ -29,15 +29,18 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        {{- if .Values.skStatic.enabled }}
-        {{- include "container.skStatic" . | nindent 8 }}
-        {{- end }}
-        {{- if .Values.skMerge.enabled }}
-        {{- include "container.skMerge" . | nindent 8 }}
-        {{- end }}
         {{ if .Values.skAuth.enabled }}
         {{- include "container.skAuth" . | nindent 8 }}
         {{ end }}
+        {{- if .Values.skMerge.enabled }}
+        {{- include "container.skMerge" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skStatic.enabled }}
+        {{- include "container.skStatic" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skCrd.enabled }}
+        {{- include "container.skCrd" . | nindent 8 }}
+        {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if or .Values.skAuth.enabled .Values.skCrd.enabled }}
@@ -57,14 +60,17 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        {{- if .Values.skStatic.enabled }}
-        {{- include "volumes.skStatic" . | nindent 8 }}
+        {{- if .Values.skAuth.enabled }}
+        {{- include "volumes.skAuth" . | nindent 8 }}
         {{- end }}
         {{- if .Values.skMerge.enabled }}
         {{- include "volumes.skMerge" . | nindent 8 }}
         {{- end }}
-        {{- if .Values.skAuth.enabled }}
-        {{- include "volumes.skAuth" . | nindent 8 }}
+        {{- if .Values.skStatic.enabled }}
+        {{- include "volumes.skStatic" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skCrd.enabled }}
+        {{- include "volumes.skCrd" . | nindent 8 }}
         {{- end }}
 
 

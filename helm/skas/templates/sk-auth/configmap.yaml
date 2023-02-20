@@ -15,6 +15,10 @@ data:
     log:
       mode: {{ default .Values.log.mode .Values.skAuth.log.mode }}
       level: {{ default .Values.log.level .Values.skAuth.log.level }}
+    {{- if eq .Values.skAuth.tokenConfig.storageType "crd" }}
+    metricAddr: ":{{ .Values.skAuth.metric.port }}"
+    probeAddr: ":{{ .Values.skAuth.probe.port }}"
+    {{- end }}
     server:
       {{- if .Values.skAuth.exposure.enabled }}
       ssl: {{ .Values.skAuth.exposure.ssl}}

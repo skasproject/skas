@@ -1,0 +1,44 @@
+# ------- Deployment of all components in one pod
+#
+# kubectl create ns skas-system
+# helm -n skas-system upgrade -i --values ./samples/kspray2/values.skas-all.scw01.yaml --values ./samples/values.user1.yaml skas-all .
+#
+# helm -n skas-system uninstall skas-all
+
+# Debugging
+# helm -n skas-system template --debug  --values ./samples/kspray2/values.skas-all.scw01.yaml --values ./samples/values.user1.yaml skas-all . >./tmp/xx
+
+
+clusterIssuer: cluster-issuer1
+
+
+skAuth:
+  enabled: true
+  exposure:
+    ingress:
+      host: skas-all-auth.ingress.kspray2.project33.scw01
+
+  kubeconfig:
+    context:
+      name: skas@kspray2.scw01
+    cluster:
+      apiServerUrl: https://10.33.0.99:6443
+
+
+skMerge:
+  providers:
+    - name: static
+      httpClient:
+        url: http://127.0.0.1:7010
+    - name: crd
+      httpClient:
+        url: http://127.0.0.1:7012
+
+
+
+skStatic:
+  enabled: true
+
+skCrd:
+  enabled: true
+
