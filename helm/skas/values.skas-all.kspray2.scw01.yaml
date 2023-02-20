@@ -6,7 +6,12 @@
 # helm -n skas-system uninstall skas-all
 
 # Debugging
-# helm -n skas-system template --debug  --values ./values.skas-all.kspray2.scw01.yaml --values ./values.user1.yaml skas-all . >/tmp/xx
+# helm -n skas-system template --debug  --values ./values.skas-all.kspray2.scw01.yaml --values ./values.user1.yaml skas-all . >./tmp/xx
+
+
+clusterIssuer: cluster-issuer1
+
+
 
 skStatic:
   enabled: true
@@ -18,3 +23,14 @@ skMerge:
         url: http://127.0.0.1:7010
 
 
+skAuth:
+  enabled: true
+  exposure:
+    ingress:
+      host: skas-all-auth.ingress.kspray2.project33.scw01
+
+  kubeconfig:
+    context:
+      name: skas@kspray2.scw01
+    cluster:
+      apiServerUrl: https://10.33.0.99:6443

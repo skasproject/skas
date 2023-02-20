@@ -22,7 +22,8 @@ all: manifests generate	## Generate all dependencies (crd, zz_generated...)
 
 .PHONY: manifests
 manifests: controller-gen ## Generate CustomResourceDefinition objects.
-	$(CONTROLLER_GEN) crd paths="./..." output:crd:artifacts:config=helm/sk-auth/crds
+	$(CONTROLLER_GEN) crd paths="./..." output:crd:artifacts:config=../helm/skas/crds
+
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.

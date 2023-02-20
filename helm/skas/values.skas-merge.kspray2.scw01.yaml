@@ -1,12 +1,12 @@
 # ------- Deployment of sk-merge only component
 #
 # kubectl create ns skas-system
-# helm -n skas-system upgrade -i --values ./values.skas-merge.kspray2.scw01.yaml --values ./values.user1.yaml skas-merge .
+# helm -n skas-system upgrade -i --values ./values.skas-merge.kspray2.scw01.yaml skas-merge .
 #
 # helm -n skas-system uninstall skas-merge
 
 # Debugging
-# helm -n skas-system template --debug  --values ./values.skas-merge.kspray2.scw01.yaml --values ./values.user1.yaml skas-merge . >/tmp/xx
+# helm -n skas-system template --debug  --values ./values.skas-merge.kspray2.scw01.yaml skas-merge . >/tmp/xx
 
 clusterIssuer: cluster-issuer1
 
@@ -17,6 +17,9 @@ rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUdTekNDQkRPZ0F3SUJBZ0lKQU4
 log:
   mode: dev
   level: info
+
+skAuth:
+  enabled: false
 
 
 generatedSecrets:
@@ -50,14 +53,20 @@ skMerge:
     services:
       login:
         clients:
+          - id: "auth"
+            secret: "${SKAS_SECRET}"
           - id: "backdoor"
             secret: "1234"
       userStatus:
         clients:
+          - id: "auth"
+            secret: "${SKAS_SECRET}"
           - id: "backdoor"
             secret: "1234"
       userDescribe:
         clients:
+          - id: "auth"
+            secret: "${SKAS_SECRET}"
           - id: "backdoor"
             secret: "1234"
 

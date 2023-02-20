@@ -60,6 +60,15 @@ Create the name of the deployment
 {{- default (printf "%s" (include "skas.fullname" .)) .Values.deploymentName }}
 {{- end }}
 
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "skas.serviceAccountName" -}}
+{{- default (printf "%s" (include "skas.fullname" .)) .Values.serviceAccountName }}
+{{- end }}
+
+
 {{/*
 Create list of config map for reloader.stakater.com
 */}}
@@ -69,5 +78,8 @@ Create list of config map for reloader.stakater.com
 {{- end }}
 {{- if .Values.skStatic.enabled }}
 {{- include "skStatic.configmapName" . }},{{ include "skStatic.usersDbName" . }},
+{{- end }}
+{{- if .Values.skAuth.enabled }}
+{{- include "skAuth.configmapName" . }},
 {{- end }}
 {{- end }}

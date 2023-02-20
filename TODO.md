@@ -35,9 +35,15 @@ DONE:
 - Refactor the provider configuration. To ease helm chart usage. (May be related to domain)
 - For certificates, provide a fallback when no cluster-issuer provided (cf topolvm)
 - Provide schema for helm chart values.
-- Change the way we handle SSL: Always keep an non-ssl port on localhost, and add another port with SSL when required. When done, can remove localhost from certificate
 - Add debug/trace on skhttp client.
  
+- Service refactoring
+  - Change the way we handle SSL: Always keep an non-ssl port on localhost, and add another port with SSL when required. When done, can remove localhost from certificate
+  - In helm chart, use the fact default services config is open by default (Simplify some configmap) OR change the logic and make default to close everything.
+    Default should be coherent: enabled and no check, or disabled and must set client * explicitly. (May be closed by default is better)
+  - Two port should be managed. Each with its own set of services configuration. One intended to be bound on localhost and opened, for inside pod access. 
+    And one intended to be accessed externally, with default config to be closed.
+
 ## sk-static
 
 - Make user file dynamic (cf dexgate or certwatcher)

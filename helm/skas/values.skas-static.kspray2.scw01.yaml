@@ -33,3 +33,6 @@ skStatic:
 
 skMerge:
   enabled: false
+
+skAuth:
+  enabled: false

@@ -11,6 +11,13 @@ nameOverride:
 # Will default to {{ include "skas.fullname" . }}
 deploymentName:
 
+
+# Will default to {{ include "skas.fullname" . }}
+deploymentName:
+
+# Will default to {{ include "skas.fullname" . }}
+serviceAccountName:
+
 # -- Annotations to be added to the pod
 podAnnotations: {}
 
@@ -125,13 +132,13 @@ skStatic:
     ingress:
       enabled: false
       host:
-    # Will default to {{ include "sk-static.fullname" . }}-cert
+    # Will default to {{ include "skas.fullname" . }}-static-cert
     certificateSecretName:
-    # Will default to {{ include "sk-static.fullname" . }}
+    # Will default to {{ include "skas.fullname" . }}-static
     certificateName:
-    # Will default to {{ include "sk-static.fullname" . }}
+    # Will default to {{{ include "skas.fullname" . }}-static
     serviceName:
-    # Will default to {{ include "sk-static.fullname" . }}
+    # Will default to {{ include "skas.fullname" . }}-static
     ingressName:
 
 
@@ -140,6 +147,9 @@ skStatic:
     users: []
     groupBindings: []
 
+skCrd:
+  enabled: false
+
 skMerge:
   enabled: true
 
@@ -147,7 +157,7 @@ skMerge:
     mode:
     level:
 
-  # Will default to {{ include "skas.fullname" . }}-static-config
+  # Will default to {{ include "skas.fullname" . }}-merge-config
   configmapName:
 
   # Additional arguments to be added to the executable's args list
@@ -214,13 +224,13 @@ skMerge:
     ingress:
       enabled: false
       host:
-    # Will default to {{ include "sk-merge.fullname" . }}-cert
+    # Will default to {{ include "skas.fullname" . }}-merge-cert
     certificateSecretName:
-    # Will default to {{ include "sk-merge.fullname" . }}
+    # Will default to {{ include "skas.fullname" . }}-merge
     certificateName:
-    # Will default to {{ include "sk-merge.fullname" . }}
+    # Will default to {{ include "skas.fullname" . }}-merge
     serviceName:
-    # Will default to {{ include "sk-merge.fullname" . }}
+    # Will default to {{ include "skas.fullname" . }}-merge
     ingressName:
 
     # Provided services
@@ -242,3 +252,115 @@ skMerge:
     #       secret: "1234"
 
 
+
+skAuth:
+  enabled: true
+
+  log:
+    mode:
+    level:
+
+  probe:
+    port: 8181
+    scheme: HTTP
+
+  metric:
+    port: 8080
+
+  # Will default to {{ include "skas.fullname" . }}-auth-config
+  configmapName:
+
+  # Will default to {{ include "skas.fullname" . }}-auth
+  roleName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+  #    If you want to specify resources, uncomment the following
+  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #    limits:
+  #      cpu: 100m
+  #      memory: 200Mi
+  #    requests:
+  #      cpu: 100m
+  #      memory: 100Mi
+
+  serverPort: 7014
+
+  # Provided services. All open by default
+  services:
+    token:
+      disabled: false
+      clients: []
+    k8sAuth:
+      disabled: false
+      clients: []
+    kubeconfig:
+      disabled: false
+      clients: []
+
+  tokenConfig:
+    # After this period without token validation, the session expire
+    inactivityTimeout: "30m"
+    # After this period, the session expire, in all case.
+    sessionMaxTTL: "12h"
+    # This is intended for the client CLI, for token caching
+    clientTokenTTL: "30s"
+    # 'memory' or 'crd'
+    storageType: crd
+    # When tokenStorage==crd, delay to store lastHit in CRD, when tokenStorage==crd. In %% (per mille) of inactivityTimeout
+    # Will be he max difference between reality and what is stored in API Server
+    # Aim is to avoid API server overloading
+    lastHitStep: "3"
+    # The namespace used as storage for token definition. Default to deployment namespace
+    namespace:
+
+  loginProvider:
+    url: http://localhost:7013
+  #  url: https://sk-static1.ingress.kspray1.project33.scw01
+  #  rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
+  #  insecureSkipVerify: false
+  #  clientAuth:
+  #    id: merger
+  #    secret: "1234"
+
+
+  # Parameters for client kubeconfig init. Not used if services.kubeconfig.disabled==true
+  kubeconfig:
+    context:
+      name: skas@cluster.local
+      namespace:                          # Default ""
+    cluster:
+      apiServerUrl:                       # Required
+      rootCaData:                         # Default from '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+      insecureSkipVerify: false
+    user:
+      authServerUrl:                      # Default will be taken from ingress.host. If ingress is not enabled, a value must be provided here
+      rootCaPath: /tmp/cert/server/ca.crt
+      rootCaData:                         # Default will be set from rootCaPath
+      insecureSkipVerify: false
+      clientAuth:
+        id:                               # Default ""
+        secret:                           # Default ""
+
+  exposure:
+    enabled: true
+    ssl: true
+    ingress:
+      enabled: true
+      host:
+    # Will default to {{{ include "skas.fullname" . }}-auth-cert
+    certificateSecretName:
+    # Will default to {{ include "skas.fullname" . }}-auth
+    certificateName:
+    # Will default to {{ include "skas.fullname" . }}-auth
+    serviceName:
+    # Will default to {{ include "skas.fullname" . }}-auth
+    ingressName:
