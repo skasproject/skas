@@ -1,53 +1,35 @@
-# ------- Deployment of all components in one pod
+# ------- Deployment of sk-static only component
 #
 # kubectl create ns skas-system
-# helm -n skas-system upgrade -i --values ./samples/kspray2/values.skas-all.scw01.yaml --values ./samples/values.user1.yaml skas-all .
+# helm -n skas-system upgrade -i --values ./samples/kspray2/values.skas-ldap.scw01.yaml skas-ldap .
 #
-# helm -n skas-system uninstall skas-all
+# helm -n skas-system uninstall skas-static
 
 # Debugging
-# helm -n skas-system template --debug  --values ./samples/kspray2/values.skas-all.scw01.yaml --values ./samples/values.user1.yaml skas-all . >./tmp/xx
-
+# helm -n skas-system template --debug  --values ./samples/kspray2/values.skas-ldap.scw01.yaml skas-ldap . >/tmp/xx
 
 clusterIssuer: cluster-issuer1
 
-
-skAuth:
-  enabled: true
-  exposure:
-    ingress:
-      host: skas-all-auth.ingress.kspray2.project33.scw01
-
-  kubeconfig:
-    context:
-      name: skas@kspray2.scw01
-    cluster:
-      apiServerUrl: https://10.33.0.99:6443
-
-
-skMerge:
-  providers:
-    - name: static
-      httpClient:
-        url: http://127.0.0.1:7010
-    - name: ldap
-      httpClient:
-        url: http://127.0.0.1:7011
-    - name: crd
-      httpClient:
-        url: http://127.0.0.1:7012
-
-
-
-skStatic:
-  enabled: true
-
-skCrd:
-  enabled: true
-
-
 skLdap:
   enabled: true
+
+  extraEnv:
+    - name: SKAS_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: skas-shared
+          key: secret
+
+  exposure:
+    enabled: true
+    ingress:
+      enabled: true
+      host:  skas-ldap.ingress.kspray2.project33.scw01
+    clients:
+      - id: "merge"
+        secret: "${SKAS_SECRET}"
+      - id: "backdoor"
+        secret: "1234"
 
   ldap:
     host: ldap.ops.scw01
@@ -71,3 +53,11 @@ skLdap:
       nameAttr: cn
       linkGroupAttr: memberUid
       linkUserAttr: uid
+
+
+
+skMerge:
+  enabled: false
+
+skAuth:
+  enabled: false

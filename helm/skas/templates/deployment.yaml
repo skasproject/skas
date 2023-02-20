@@ -38,6 +38,9 @@ spec:
         {{- if .Values.skStatic.enabled }}
         {{- include "container.skStatic" . | nindent 8 }}
         {{- end }}
+        {{- if .Values.skLdap.enabled }}
+        {{- include "container.skLdap" . | nindent 8 }}
+        {{- end }}
         {{- if .Values.skCrd.enabled }}
         {{- include "container.skCrd" . | nindent 8 }}
         {{- end }}
@@ -68,6 +71,9 @@ spec:
         {{- end }}
         {{- if .Values.skStatic.enabled }}
         {{- include "volumes.skStatic" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skLdap.enabled }}
+        {{- include "volumes.skLdap" . | nindent 8 }}
         {{- end }}
         {{- if .Values.skCrd.enabled }}
         {{- include "volumes.skCrd" . | nindent 8 }}

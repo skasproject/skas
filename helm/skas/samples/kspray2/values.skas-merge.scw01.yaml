@@ -44,6 +44,12 @@ skMerge:
         clientAuth:
           id: "merge"
           secret: ${SKAS_SECRET}
+    - name: ldap
+      httpClient:
+        url: https://skas-ldap-ldap:7011
+        clientAuth:
+          id: "merge"
+          secret: ${SKAS_SECRET}
     - name: crd
       httpClient:
         url: https://skas-crd-crd:7012

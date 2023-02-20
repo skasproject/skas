@@ -1,0 +1,41 @@
+{{ if .Values.skLdap.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "skLdap.configmapName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  config.yaml: |
+    log:
+      mode: {{ default .Values.log.mode .Values.skLdap.log.mode }}
+      level: {{ default .Values.log.level .Values.skLdap.log.level }}
+    server:
+      {{- if .Values.skLdap.exposure.enabled }}
+      ssl: {{ .Values.skLdap.exposure.ssl}}
+      bindAddr: ":{{ .Values.skLdap.serverPort}}"
+      {{- if .Values.skLdap.exposure.ssl }}
+      certDir: /tmp/cert/server
+      {{- end }}
+      {{- else }}
+      ssl: no
+      bindAddr: "127.0.0.1:{{ .Values.skLdap.serverPort}}"
+      {{- end }}
+    {{- if .Values.skLdap.exposure.enabled }}
+    clients:
+{{ .Values.skLdap.exposure.clients | toYaml | indent 6 }}
+    {{- else }}
+    clients:
+      - id: "*"
+        secret: "*"
+    {{- end }}
+    ldap:
+{{ .Values.skLdap.ldap | toYaml | indent 6 }}
+
+{{ end }}
+
