@@ -5,7 +5,7 @@
 apiVersion: userdb.skasproject.io/v1alpha1
 kind: GroupBinding
 metadata:
-  name: {{ .user }}-{{ .group }}
+  name: {{ (printf "%s-%s" .user .group) | replace ":" "-" }}
   namespace: {{ $.Release.Namespace }}
   labels:
       {{- include "skusers.labels" $ | nindent 4 }}

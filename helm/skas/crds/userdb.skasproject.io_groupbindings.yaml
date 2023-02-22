@@ -14,8 +14,12 @@ spec:
     plural: groupbindings
     shortNames:
     - gb
+    - gbs
     - skgroupbinding
+    - skgroupbindings
     - skgb
+    - skgbs
+    - skasgb
     - skasgb
     singular: groupbinding
   scope: Namespaced

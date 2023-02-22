@@ -58,7 +58,7 @@ type UserStatus struct {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-// +kubebuilder:resource:scope=Namespaced,shortName=skuser;skasuser
+// +kubebuilder:resource:scope=Namespaced,shortName=skuser;skasuser;skusers;skasusers
 // +kubebuilder:printcolumn:name="Common names",type=string,JSONPath=`.spec.commonNames`
 // +kubebuilder:printcolumn:name="Emails",type=string,JSONPath=`.spec.emails`
 // +kubebuilder:printcolumn:name="Uid",type=integer,JSONPath=`.spec.uid`

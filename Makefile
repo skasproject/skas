@@ -5,6 +5,17 @@ DOCKER_IMG := ghcr.io/skasproject/skas
 DOCKER_TAG := 0.1.0
 VERSION ?= 0.1.0
 
+# To authenticate for pushing in github repo:
+# echo $GITHUB_TOKEN | docker login ghcr.io -u $USER_NAME --password-stdin
+
+# To authenticate for using gh commands
+# gh auth login
+# ? What account do you want to log into? GitHub.com
+# ? What is your preferred protocol for Git operations? HTTPS
+# ? Authenticate Git with your GitHub credentials? Yes
+# ? How would you like to authenticate GitHub CLI? Login with a web browser
+
+
 BUILDX_CACHE=/tmp/docker_cache
 
 # You can switch between simple (faster) docker build or multiplatform one.
@@ -12,8 +23,6 @@ BUILDX_CACHE=/tmp/docker_cache
 #DOCKER_BUILD := docker buildx build --builder multiplatform --cache-to type=local,dest=$(BUILDX_CACHE),mode=max --cache-from type=local,src=$(BUILDX_CACHE) --platform linux/amd64,linux/arm64
 DOCKER_BUILD := docker build
 
-# To authenticate for pushing in github repo:
-# echo $GITHUB_TOKEN | docker login ghcr.io -u $USER_NAME --password-stdin
 
 # Comment this to just build locally
 DOCKER_PUSH := --push
@@ -37,6 +46,15 @@ version: ## Set version in binary
 .PHONY: docker
 docker: version ## Build and push skas image
 	$(DOCKER_BUILD) $(DOCKER_PUSH) -t $(DOCKER_IMG):$(DOCKER_TAG) -f Dockerfile .
+
+
+.PHONY: charts
+charts: ## Publish helm chart
+	cd helm && helm package -d ../dist skas
+	cd ../warehouse && gh release upload  --clobber 0.1.0 ../skas/dist/skas-0.1.0.tgz
+	cd helm && helm package -d ../dist skusers
+	cd ../warehouse && gh release upload  --clobber 0.1.0 ../skas/dist/skusers-0.1.0.tgz
+
 
 # ----------------------------------------------------------------------Docker local config
 

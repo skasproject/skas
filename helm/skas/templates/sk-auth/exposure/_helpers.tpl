@@ -17,7 +17,7 @@ Create the name of the secret hosting the server certificate
 Create the name of the service
 */}}
 {{- define "skAuth.serviceName" -}}
-{{- default (printf "%s-v" (include "skas.fullname" .)) .Values.skAuth.exposure.serviceName }}
+{{- default (printf "%s-auth" (include "skas.fullname" .)) .Values.skAuth.exposure.serviceName }}
 {{- end }}
 
 {{/*

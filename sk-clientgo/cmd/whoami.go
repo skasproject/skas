@@ -12,10 +12,10 @@ import (
 	"text/tabwriter"
 )
 
-var displayAll bool
+var all bool
 
 func init() {
-	WhoamiCmd.PersistentFlags().BoolVar(&displayAll, "displayAll", false, "Add 'technical' informations")
+	WhoamiCmd.PersistentFlags().BoolVar(&all, "all", false, "Add 'technical' informations")
 }
 
 var WhoamiCmd = &cobra.Command{
@@ -32,7 +32,7 @@ var WhoamiCmd = &cobra.Command{
 		if tokenBag != nil {
 			tw := new(tabwriter.Writer)
 			tw.Init(os.Stdout, 2, 4, 3, ' ', 0)
-			if displayAll {
+			if all {
 				_, _ = fmt.Fprintf(tw, "USER\tID\tGROUPS\tAUTH.\tTOKEN")
 				_, _ = fmt.Fprintf(tw, "\n%s\t%d\t%s\t%s\t%s", tokenBag.User.Login, tokenBag.User.Uid, strings.Join(tokenBag.User.Groups, ","), tokenBag.Authority, misc.ShortenString(tokenBag.Token))
 			} else {

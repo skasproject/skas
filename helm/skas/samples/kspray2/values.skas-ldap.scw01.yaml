@@ -3,7 +3,7 @@
 # kubectl create ns skas-system
 # helm -n skas-system upgrade -i --values ./samples/kspray2/values.skas-ldap.scw01.yaml skas-ldap .
 #
-# helm -n skas-system uninstall skas-static
+# helm -n skas-system uninstall skas-ldap
 
 # Debugging
 # helm -n skas-system template --debug  --values ./samples/kspray2/values.skas-ldap.scw01.yaml skas-ldap . >/tmp/xx

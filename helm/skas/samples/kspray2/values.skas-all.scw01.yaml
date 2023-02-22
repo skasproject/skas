@@ -4,7 +4,7 @@
 # helm -n skas-system upgrade -i --values ./samples/kspray2/values.skas-all.scw01.yaml --values ./samples/values.user1.yaml skas-all .
 #
 # helm -n skas-system uninstall skas-all
-
+#
 # Debugging
 # helm -n skas-system template --debug  --values ./samples/kspray2/values.skas-all.scw01.yaml --values ./samples/values.user1.yaml skas-all . >./tmp/xx
 
@@ -22,7 +22,7 @@ skAuth:
     context:
       name: skas@kspray2.scw01
     cluster:
-      apiServerUrl: https://10.33.0.99:6443
+      apiServerUrl: https://10.33.0.189:6443
 
 
 skMerge:
