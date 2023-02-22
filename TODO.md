@@ -1,8 +1,6 @@
 
 ## Features
 
-- Deployment in one pod
-- A role and an ezcluster plugin.
 - Dex connector
 - SkaGate
 - A front for user management.
