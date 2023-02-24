@@ -34,6 +34,8 @@ DONE:
 - For certificates, provide a fallback when no cluster-issuer provided (cf topolvm)
 - Provide schema for helm chart values.
 - Add debug/trace on skhttp client.
+- More info on version. cf dex
+- systematize global rootCaPath, rootCaData
  
 - Service refactoring
   - Change the way we handle SSL: Always keep an non-ssl port on localhost, and add another port with SSL when required. When done, can remove localhost from certificate
