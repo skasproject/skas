@@ -1,0 +1,78 @@
+
+{{/*
+Expand skAuth container
+*/}}
+{{- define "container.skAuth" -}}
+- name: sk-auth
+  command:
+    - /sk-auth
+  args:
+    - --configFile
+    - /config.yaml
+    {{-  range .Values.skAuth.additionalArgs }}
+    - {{ . }}
+    {{- end }}
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+  {{- if eq .Values.skAuth.tokenConfig.storageType "crd" }}
+  livenessProbe:
+    httpGet:
+      path: /readyz
+      port: {{ .Values.skAuth.probe.port }}
+      scheme: {{ .Values.skAuth.probe.scheme }}
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: {{ .Values.skAuth.probe.port }}
+      scheme: {{ .Values.skAuth.probe.scheme }}
+  {{- end }}
+  {{- with .Values.skAuth.extraEnv }}
+  env:
+    {{- toYaml . | nindent 12 }}
+  {{- end }}
+  {{- with .Values.skAuth.resources }}
+  resources:
+  {{- toYaml . | nindent 12 }}
+  {{ end }}
+  securityContext:
+    {{- toYaml .Values.commonContainerSecurityContext | nindent 12 }}
+    {{- with .Values.skAuth.securityContext }}
+    {{- toYaml . | nindent 12 }}
+    {{- end }}
+  ports:
+    - containerPort: {{ .Values.skAuth.serverPort }}
+      name: proto
+      protocol: TCP
+    {{- if eq .Values.skAuth.tokenConfig.storageType "crd" }}
+    - containerPort: {{ .Values.skAuth.metric.port }}
+      name: metrics
+      protocol: TCP
+    {{- end }}
+
+  volumeMounts:
+    - mountPath: /config.yaml
+      name: sk-auth-config
+      subPath: config.yaml
+    {{ if and .Values.skAuth.exposure.enabled .Values.skAuth.exposure.ssl }}
+    - mountPath: /tmp/cert/server
+      name: sk-auth-server-cert
+      readOnly: true
+    {{ end }}
+{{- end }}
+
+{{/*
+Expand skAuth volumes in pod
+*/}}
+{{- define "volumes.skAuth" -}}
+- name: sk-auth-config
+  configMap:
+    name: {{ include "skAuth.configmapName" . }}
+{{- if and .Values.skAuth.exposure.enabled .Values.skAuth.exposure.ssl }}
+- name: sk-auth-server-cert
+  secret:
+    defaultMode: 420
+    secretName: {{ include "skAuth.certificateSecretName" . }}
+{{- end }}
+
+{{- end }}

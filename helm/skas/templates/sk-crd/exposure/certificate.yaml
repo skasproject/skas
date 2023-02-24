@@ -1,0 +1,27 @@
+{{ if and .Values.skCrd.enabled .Values.skCrd.exposure.enabled }}
+{{ if and .Values.skCrd.exposure.ssl .Values.clusterIssuer }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "skCrd.certificateName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  dnsNames:
+    - {{ include "skCrd.serviceName" . }}
+    - {{ include "skCrd.serviceName" . }}.{{ .Release.Namespace }}.svc
+    - localhost
+  {{ if .Values.skCrd.exposure.ingress.enabled }}
+    - {{ .Values.skCrd.exposure.ingress.host }}
+  {{ end }}
+  secretName: {{ include "skCrd.certificateSecretName" . }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ .Values.clusterIssuer }}
+{{ end }}
+{{ end }}

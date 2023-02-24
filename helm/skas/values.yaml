@@ -1,0 +1,559 @@
+
+
+replicaCount: 1
+
+# Allow overriding base name of all resources
+fullNameOverride:
+
+# Allow chart name overriding
+nameOverride:
+
+# Will default to {{ include "skas.fullname" . }}
+deploymentName:
+
+
+# Will default to {{ include "skas.fullname" . }}
+deploymentName:
+
+# Will default to {{ include "skas.fullname" . }}
+serviceAccountName:
+
+# -- Annotations to be added to the pod
+podAnnotations: {}
+
+# -- Annotations to be added to all other resources
+commonAnnotations: {}
+
+
+image:
+  pullSecrets: []
+  repository: ghcr.io/skasproject/skas
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag:
+  pullPolicy: Always
+
+# Default value. Mau be overridden by component
+log:
+  mode: dev
+  level: info
+
+# Security Context for all containers
+commonContainerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - "ALL"
+
+# -- Security Context for the whole pod
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+# Nodeselector for the pod to be installed
+nodeSelector: {}
+
+# -- Tolerations for the pod to be installed
+tolerations: []
+
+# -- Affinity for the pod to be installed
+affinity: {}
+
+# Cert-manger cluster issuer
+clusterIssuer:
+# If not provided and <submodule>.exposure.server.ssl == true, then a certificate must be provided externally as a secret. Here is a sample layout:
+#
+#      apiVersion: v1
+#      kind: Secret
+#      metadata:
+#        name: <deployment>-<static|ldap|crd|merge|auth>-cert
+#        namespace: skas-system
+#      type: kubernetes.io/tls
+#      data:
+#        ca.crt: LS0tLS.......
+#        tls.crt: LS0tLS.....
+#        tls.key: LS0t......
+#
+# Refer to the documentation for more information about certificate creation
+
+ingressClass: nginx # Don't change, as only 'nginx' is supported for now.
+
+# Base 64 encoded certificate of Root CA. Used to validate all https communication between skas module
+rootCaData:
+
+# Kubernetes secrets can be generated automatically. These are intended to be shared between modules for client.id/secret.
+# NB: Generation require kubernetes-secret-generator (https://github.com/mittwald/kubernetes-secret-generator) to be deployed in the cluster
+generatedSecrets: []
+#  - secretName:
+#    fields:
+#      - name:
+#        encoding: base64  # Default: Base 64
+#        length: 15
+
+
+
+# --------------------------------------------------------------------------------------------------------- skAuth
+
+skAuth:
+  enabled: true
+
+  log:
+    mode:
+    level:
+
+  probe:
+    port: 8184
+    scheme: HTTP
+
+  metric:
+    port: 8084
+
+  # Will default to {{ include "skas.fullname" . }}-auth-config
+  configmapName:
+
+  # Will default to {{ include "skas.fullname" . }}-auth
+  roleName:
+
+  # Will default to {{ include "skas.fullname" . }}-auth-edit
+  editorRoleName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+  #    If you want to specify resources, uncomment the following
+  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #    limits:
+  #      cpu: 100m
+  #      memory: 200Mi
+  #    requests:
+  #      cpu: 100m
+  #      memory: 100Mi
+
+  serverPort: 7014
+
+  # Provided services. All open by default
+  services:
+    token:
+      disabled: false
+      clients: []
+    k8sAuth:
+      disabled: false
+      clients: []
+    kubeconfig:
+      disabled: false
+      clients: []
+
+  tokenConfig:
+    # After this period without token validation, the session expire
+    inactivityTimeout: "30m"
+    # After this period, the session expire, in all case.
+    sessionMaxTTL: "12h"
+    # This is intended for the client CLI, for token caching
+    clientTokenTTL: "30s"
+    # 'memory' or 'crd'
+    storageType: crd
+    # When tokenStorage==crd, delay to store lastHit in CRD, when tokenStorage==crd. In %% (per mille) of inactivityTimeout
+    # Will be he max difference between reality and what is stored in API Server
+    # Aim is to avoid API server overloading
+    lastHitStep: "3"
+    # The namespace used as storage for token definition. Default to deployment namespace
+    namespace:
+
+  loginProvider:
+    url: http://localhost:7013
+  #  url: https://sk-static1.ingress.kspray1.project33.scw01
+  #  rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
+  #  insecureSkipVerify: false
+  #  clientAuth:
+  #    id: merger
+  #    secret: "1234"
+
+
+  # Parameters for client kubeconfig init. Not used if services.kubeconfig.disabled==true
+  kubeconfig:
+    context:
+      name: skas@cluster.local
+      namespace:                          # Default ""
+    cluster:
+      apiServerUrl:                       # Required
+      rootCaData:                         # Default from '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+      insecureSkipVerify: false
+    user:
+      authServerUrl:                      # Default will be taken from ingress.host. If ingress is not enabled, a value must be provided here
+      rootCaPath: /tmp/cert/server/ca.crt
+      rootCaData:                         # Default will be set from rootCaPath
+      insecureSkipVerify: false
+      clientAuth:
+        id:                               # Default ""
+        secret:                           # Default ""
+
+  exposure:
+    enabled: true
+    ssl: true
+    ingress:
+      enabled: true
+      host:
+    # Will default to {{{ include "skas.fullname" . }}-auth-cert
+    certificateSecretName:
+    # Will default to {{ include "skas.fullname" . }}-auth
+    certificateName:
+    # Will default to {{ include "skas.fullname" . }}-auth
+    serviceName:
+    # Will default to {{ include "skas.fullname" . }}-auth
+    ingressName:
+
+
+# --------------------------------------------------------------------------------------------------------- skMerge
+
+skMerge:
+  enabled: true
+
+  log:
+    mode:
+    level:
+
+  # Will default to {{ include "skas.fullname" . }}-merge-config
+  configmapName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+  #    If you want to specify resources, uncomment the following
+  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #    limits:
+  #      cpu: 100m
+  #      memory: 200Mi
+  #    requests:
+  #      cpu: 100m
+  #      memory: 100Mi
+
+  serverPort: 7013
+
+  providers:
+  #  - name: static
+  #    enabled: true
+  #    httpClient:
+  #      url: https://sk-static1.ingress.kspray1.project33.scw01
+  #      rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
+  #      insecureSkipVerify: false
+  #      clientAuth:
+  #        id: merger
+  #        secret: "1234"
+  #    credentialAuthority: true
+  #    groupAuthority: true
+  #    critical: true
+  #    groupPattern: "%s"
+  #    uidOffset: 0
+
+  #  - name: ldap1
+  #    httpClient:
+  #      url: https://sk-ldap1.ingress.kspray1.project33.scw01
+  #      clientAuth:
+  #        id: merger
+  #        secret: "1234"
+  #    enabled: true
+  #    credentialAuthority: true
+  #    critical: true
+  #    groupPattern: "ldap_%s"
+  #    uidOffset: 10000
+
+  #  - name: crd
+  #    httpClient:
+  #      url: https://sk-crd1.ingress.kspray1.project33.scw01
+  #      clientAuth:
+  #        id: merger
+  #        secret: "1234"
+  #    credentialAuthority: true
+
+
+  exposure:
+    enabled: false
+    ssl: true
+    ingress:
+      enabled: false
+      host:
+    # Will default to {{ include "skas.fullname" . }}-merge-cert
+    certificateSecretName:
+    # Will default to {{ include "skas.fullname" . }}-merge
+    certificateName:
+    # Will default to {{ include "skas.fullname" . }}-merge
+    serviceName:
+    # Will default to {{ include "skas.fullname" . }}-merge
+    ingressName:
+
+    # Provided services
+    services:
+      login:
+        disabled: false
+      #   clients:
+      #     - id: "*"
+      #       secret: "1234"
+      userStatus:
+        disabled: false
+      #   clients:
+      #     - id: "*"
+      #       secret: "1234"
+      userDescribe:
+        disabled: false
+    #   clients:
+    #     - id: "*"
+    #       secret: "1234"
+
+
+
+# --------------------------------------------------------------------------------------------------------- skStatic
+
+skStatic:
+  enabled: false
+
+  log:
+    mode:
+    level:
+
+  # Will default to {{ include "skas.fullname" . }}-static-config
+  configmapName:
+
+  # ConfigMap hosting users and groupBinding. Will default to {{ include "skas.fullname" . }}-users
+  usersDbName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+  #    If you want to specify resources, uncomment the following
+  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #    limits:
+  #      cpu: 100m
+  #      memory: 200Mi
+  #    requests:
+  #      cpu: 100m
+  #      memory: 100Mi
+
+  serverPort: 7010
+
+  exposure:
+    enabled: false
+    clients: []
+    ssl: true
+    ingress:
+      enabled: false
+      host:
+    # Will default to {{ include "skas.fullname" . }}-static-cert
+    certificateSecretName:
+    # Will default to {{ include "skas.fullname" . }}-static
+    certificateName:
+    # Will default to {{{ include "skas.fullname" . }}-static
+    serviceName:
+    # Will default to {{ include "skas.fullname" . }}-static
+    ingressName:
+
+
+  # The users database
+  usersDb:
+    users: []
+    groupBindings: []
+
+
+
+# --------------------------------------------------------------------------------------------------------- skCrd
+
+skCrd:
+  enabled: false
+
+  log:
+    mode:
+    level:
+
+  probe:
+    port: 8182
+    scheme: HTTP
+
+  metric:
+    port: 8082
+
+  # Will default to {{ include "skas.fullname" . }}-crd-config
+  configmapName:
+
+  # Will default to {{ include "skas.fullname" . }}-crd
+  roleName:
+
+  # Will default to {{ include "skas.fullname" . }}-crd-edit
+  editorRoleName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+  #    If you want to specify resources, uncomment the following
+  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #    limits:
+  #      cpu: 100m
+  #      memory: 200Mi
+  #    requests:
+  #      cpu: 100m
+  #      memory: 100Mi
+
+  serverPort: 7012
+
+  exposure:
+    enabled: false
+    clients: []
+    ssl: true
+    ingress:
+      enabled: false
+      host:
+    # Will default to {{ include "skas.fullname" . }}-crd-cert
+    certificateSecretName:
+    # Will default to {{ include "skas.fullname" . }}-crd
+    certificateName:
+    # Will default to {{{ include "skas.fullname" . }}-crd
+    serviceName:
+    # Will default to {{ include "skas.fullname" . }}-crd
+    ingressName:
+
+
+# --------------------------------------------------------------------------------------------------------- skLdap
+
+
+skLdap:
+  enabled: false
+
+  log:
+    mode:
+    level:
+
+  # Will default to {{ include "skas.fullname" . }}-ldap-config
+  configmapName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+  #    If you want to specify resources, uncomment the following
+  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #    limits:
+  #      cpu: 100m
+  #      memory: 200Mi
+  #    requests:
+  #      cpu: 100m
+  #      memory: 100Mi
+
+  serverPort: 7011
+
+  exposure:
+    enabled: false
+    clients: []
+    ssl: true
+    ingress:
+      enabled: false
+      host:
+    # Will default to {{ include "skas.fullname" . }}-ldap-cert
+    certificateSecretName:
+    # Will default to {{ include "skas.fullname" . }}-ldap
+    certificateName:
+    # Will default to {{{ include "skas.fullname" . }}-ldap
+    serviceName:
+    # Will default to {{ include "skas.fullname" . }}-ldap
+    ingressName:
+
+
+  # --------------------------------- LDAP configuration
+  ldap:
+    # The host and port of the LDAP server.
+    # If port isn't supplied, it will be guessed based on the TLS configuration. 389 or 636.
+    host:
+    port:
+
+    # Timeout on connection to ldap server. Default to 10
+    timeoutSec: 10
+
+    # Required if LDAP host does not use TLS.
+    insecureNoSSL: false
+
+    # Don't verify the CA.
+    insecureSkipVerify: false
+
+    # Connect to the insecure port then issue a StartTLS command to negotiate a
+    # secure connection. If unsupplied secure connections will use the LDAPS protocol.
+    startTLS: false
+
+    # Path to a trusted root certificate file, or Base64 encoded PEM data containing root CAs.
+    rootCA:
+    rootCAData:
+
+    # If server require client authentication with certificate.
+    #  Path to a client cert file and a private key file
+    clientCert:
+    clientKey:
+
+    # BindDN and BindPW for an application service account. The connector uses these
+    # credentials to search for users and groups.
+    bindDN:
+    bindPW:
+
+    userSearch:
+      # BaseDN to start the search from. For example "cn=users,dc=example,dc=com"
+      baseDN:
+      # Optional filter to apply when searching the directory. For example "(objectClass=person)"
+      filter:
+      # Attribute to match against the login. This will be translated and combined
+      # with the other filter as "(<loginAttr>=<login>)".
+      loginAttr:
+      #  Can either be:
+      # * "sub" - search the whole sub tree (Default)
+      # * "one" - only search one level
+      scope: "sub"
+      # The attribute providing the numerical user ID
+      numericalIdAttr:
+      # The attribute providing the user's email
+      emailAttr:
+      # The attribute providing the user's common name
+      cnAttr:
+
+    groupSearch:
+      # BaseDN to start the search from. For example "cn=groups,dc=example,dc=com"
+      baseDN:
+      # Optional filter to apply when searching the directory. For example "(objectClass=posixGroup)"
+      filter: (objectClass=posixgroup)
+      # Defaults to "sub"
+      scope: "sub"
+      # The attribute of the group that represents its name.
+      nameAttr: cn
+      # The filter for group/user relationship will be: (<linkGroupAttr>=<Value of LinkUserAttr for the user>)
+      # If there is several value for LinkUserAttr, we will loop on.
+      linkGroupAttr:
+      linkUserAttr:
+

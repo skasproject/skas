@@ -1,0 +1,38 @@
+# ------- Deployment of sk-crd only component
+#
+# kubectl create ns skas-system
+# helm -n skas-system upgrade -i --values ./samples/kspray2/values.skas-crd.scw01.yaml skas-crd .
+#
+# helm -n skas-system uninstall skas-crd
+
+# Debugging
+# helm -n skas-system template --debug  --values ./samples/kspray2/values.skas-crd.scw01.yaml skas-crd . >/tmp/xx
+
+clusterIssuer: cluster-issuer1
+
+skCrd:
+  enabled: true
+
+  extraEnv:
+    - name: SKAS_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: skas-shared
+          key: secret
+
+  exposure:
+    enabled: true
+    ingress:
+      enabled: true
+      host:  skas-crd.ingress.kspray2.project33.scw01
+    clients:
+      - id: "merge"
+        secret: "${SKAS_SECRET}"
+      - id: "backdoor"
+        secret: "1234"
+
+skMerge:
+  enabled: false
+
+skAuth:
+  enabled: false

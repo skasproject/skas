@@ -90,15 +90,15 @@ var InitCmd = &cobra.Command{
 		// Test overwrite
 		_, exitingContext := rawConfig.Contexts[contextName]
 		if exitingContext && !force {
-			_, _ = fmt.Fprintf(os.Stderr, "ERROR: context '%s' already existing in this config file\n", contextName)
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: context '%s' already existing in this config file (%s)\n", contextName, kubeConfig.ConfigAccess().GetDefaultFilename())
 			os.Exit(15)
 		}
 		if _, ok := rawConfig.Clusters[clusterName]; ok && !force {
-			_, _ = fmt.Fprintf(os.Stderr, "ERROR: cluster '%s' already existing in this config file\n", clusterName)
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: cluster '%s' already existing in this config file (%s)\n", clusterName, kubeConfig.ConfigAccess().GetDefaultFilename())
 			os.Exit(15)
 		}
 		if _, ok := rawConfig.AuthInfos[userName]; ok && !force {
-			_, _ = fmt.Fprintf(os.Stderr, "ERROR: user '%s' already existing in this config file\n", userName)
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: user '%s' already existing in this config file (%s)\n", userName, kubeConfig.ConfigAccess().GetDefaultFilename())
 			os.Exit(15)
 		}
 		if exitingContext {

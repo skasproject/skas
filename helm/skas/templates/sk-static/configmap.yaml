@@ -1,0 +1,39 @@
+{{ if .Values.skStatic.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "skStatic.configmapName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  config.yaml: |
+    log:
+      mode: {{ default .Values.log.mode .Values.skStatic.log.mode }}
+      level: {{ default .Values.log.level .Values.skStatic.log.level }}
+    server:
+      {{- if .Values.skStatic.exposure.enabled }}
+      ssl: {{ .Values.skStatic.exposure.ssl}}
+      bindAddr: ":{{ .Values.skStatic.serverPort}}"
+      {{- if .Values.skStatic.exposure.ssl }}
+      certDir: /tmp/cert/server
+      {{- end }}
+      {{- else }}
+      ssl: no
+      bindAddr: "127.0.0.1:{{ .Values.skStatic.serverPort}}"
+      {{- end }}
+    {{- if .Values.skStatic.exposure.enabled }}
+    clients:
+{{ .Values.skStatic.exposure.clients | toYaml | indent 6 }}
+    {{- else }}
+    clients:
+      - id: "*"
+        secret: "*"
+    {{- end }}
+
+{{ end }}
+

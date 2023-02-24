@@ -1,0 +1,30 @@
+{{ if and .Values.skLdap.enabled .Values.skLdap.exposure.enabled }}
+{{ if  eq .Values.ingressClass "nginx" }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "skLdap.ingressName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  annotations:
+    # We want flow to be secured up to the end. (This option does not prevent plain HTTP if so configured).
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    {{- with .Values.commonAnnotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ required "ingress.host must be defined!" .Values.skLdap.exposure.ingress.host }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ include "skLdap.serviceName" . }}
+                port:
+                  number: {{ .Values.skLdap.serverPort }}
+            path: /
+            pathType: Prefix
+{{ end }}
+{{ end }}

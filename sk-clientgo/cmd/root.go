@@ -35,6 +35,7 @@ func init() {
 	RootCmd.AddCommand(LogoutCmd)
 	RootCmd.AddCommand(WhoamiCmd)
 	RootCmd.AddCommand(InitCmd)
+	RootCmd.AddCommand(HashCmd)
 
 	RootCmd.PersistentFlags().StringVar(&kubecontext.KubeContext, "context", "", "Allow Overriding of the context of kubeconfig file")
 	RootCmd.PersistentFlags().StringVar(&kubeconfigPath, "kubeconfig", "", "kubeconfig file path. Override default configuration.")
@@ -101,7 +102,7 @@ func init() {
 			}
 			checkConfig(config.Conf)
 		}
-		if cmd != versionCmd && cmd != InitCmd {
+		if cmd != versionCmd && cmd != InitCmd && cmd != HashCmd {
 			kubecontext.Initialize(kubeconfigPath)
 			config.Load()
 			if config.Conf == nil {

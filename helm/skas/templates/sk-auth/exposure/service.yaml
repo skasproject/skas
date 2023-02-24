@@ -1,0 +1,20 @@
+{{ if and .Values.skAuth.enabled .Values.skAuth.exposure.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "skAuth.serviceName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    {{- include "skas.selectorLabels" . | nindent 4 }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.skAuth.serverPort }}
+      targetPort: {{ .Values.skAuth.serverPort }}
+{{ end }}

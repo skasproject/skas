@@ -1,0 +1,38 @@
+# ------- Deployment of sk-static only component
+#
+# kubectl create ns skas-system
+# helm -n skas-system upgrade -i --values ./samples/kspray2/values.skas-static.scw01.yaml --values ./samples/values.user1.yaml skas-static .
+#
+# helm -n skas-system uninstall skas-static
+
+# Debugging
+# helm -n skas-system template --debug  --values ./samples/kspray2/values.skas-static.scw01.yaml --values ./samples/values.user1.yaml skas-static . >/tmp/xx
+
+clusterIssuer: cluster-issuer1
+
+skStatic:
+  enabled: true
+
+  extraEnv:
+    - name: SKAS_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: skas-shared
+          key: secret
+
+  exposure:
+    enabled: true
+    ingress:
+      enabled: true
+      host:  skas-static.ingress.kspray2.project33.scw01
+    clients:
+      - id: "merge"
+        secret: "${SKAS_SECRET}"
+      - id: "backdoor"
+        secret: "1234"
+
+skMerge:
+  enabled: false
+
+skAuth:
+  enabled: false

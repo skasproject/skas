@@ -1,0 +1,63 @@
+# ------- Deployment of all skas crd users
+#
+# kubectl create ns skas-system
+#
+# helm -n skas-system upgrade -i --values ./values.users1.yaml skusers1 .
+#
+# helm -n skas-system uninstall skusers1
+
+# Passwords are login values
+
+users:
+  - login: "raoul"
+    commonNames: ["Raoul Berard"]
+    emails: ["RaoulBerard@teleworm.us"]
+    passwordHash: "$2a$10$EgdJ.ONxSBZ/9CEsqZoCh.pIVox1xZ1/1qgZ8F1/3NlpcPyFSZmaK"
+    uid: 1001
+    comment: "62, Rue de Verdun, 93370 MONTFERMEIL"
+
+  - login: "sabine"
+    commonNames: ["Sabine Gauthier"]
+    emails: ["SabineGauthier@teleworm.us"]
+    passwordHash: "$2a$10$QslKhsx4pR2YYEPcbXQiPuv7qRO5nX87yN29bjmXE5yId.ckfLOqa"
+    uid: 1002
+    comment: "75, rue Victor Hugo, 60200 COMPIÈGNE"
+    disabled: false
+
+  - login: "liane"
+    commonNames: ["Liane Richer"]
+    emails: ["LianeRicher@jourrapide.com"]
+    passwordHash: "$2a$10$BE6QspLXxORo0y/Q993u3OuJm67EdMFh8bp3RbUhjtvBM8jKTVAZ6"
+    uid: 1003
+    comment: "58, Chemin Challet87100 LIMOGES"
+    disabled: true
+
+  - login: "noinfo"
+
+  - login: "noinfowp"
+    passwordHash: "$2a$10$8/7dBTVWa1chfUB1yo7EROdS1evXoBPDcd8/I64NsFMGv9IdhL1jO"
+
+  - login: "disabled"
+    disabled: true
+
+  - login: "disabledwp"
+    passwordHash: "$2a$10$ePQjmzbVK0Okf1ra2wRBceSrVzV0jnZtl9cSIuJxFpNeMdy.lBcFq"
+    disabled: true
+
+  - login: jt
+    commonNames: ["Jules TESTEUR"]
+    emails: [ "jt@broadsoftware.com" ]
+
+groupBindings:
+  - user: raoul
+    group: dev
+  - user: raoul
+    group: all
+  - user: liane
+    group: all
+  - user: liane
+    group: marketing
+  - user: alfred
+    group: lost
+  - user: disabled
+    group: lost

@@ -36,17 +36,14 @@ rootCaPath: ./ca-odp.crt
 
 services:
   userStatus:
-    enabled: true
     clients:
       - id: "*"
         secret: "*"
   userDescribe:
-    enabled: true
     clients:
       - id: "*"
         secret: "*"
   login:
-    enabled: true
     clients:
       - id: "*"
         secret: "*"

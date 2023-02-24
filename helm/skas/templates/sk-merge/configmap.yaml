@@ -1,0 +1,54 @@
+{{ if .Values.skMerge.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "skMerge.configmapName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  config.yaml: |
+    log:
+      mode: {{ default .Values.log.mode .Values.skMerge.log.mode }}
+      level: {{ default .Values.log.level .Values.skMerge.log.level }}
+    server:
+      {{- if .Values.skMerge.exposure.enabled }}
+      ssl: {{ .Values.skMerge.exposure.ssl}}
+      bindAddr: ":{{ .Values.skMerge.serverPort}}"
+      {{- if .Values.skMerge.exposure.ssl }}
+      certDir: /tmp/cert/server
+      {{- end }}
+      {{- else }}
+      ssl: no
+      bindAddr: "127.0.0.1:{{ .Values.skMerge.serverPort}}"
+      {{- end }}
+    {{ with .Values.rootCaData }}
+    rootCaData: {{ . }}
+    {{ end }}
+    {{- if .Values.skMerge.exposure.enabled }}
+    services:
+{{ .Values.skMerge.exposure.services | toYaml | indent 6 }}
+    {{- else }}
+    services:
+      login:
+        clients:
+          - id: "*"
+            secret: "*"
+      userStatus:
+        clients:
+          - id: "*"
+            secret: "*"
+      userDescribe:
+        clients:
+          - id: "*"
+            secret: "*"
+    {{- end }}
+    providers:
+{{ .Values.skMerge.providers | toYaml | indent 6 }}
+
+{{ end }}
+

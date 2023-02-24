@@ -1,0 +1,20 @@
+{{ if and .Values.skMerge.enabled .Values.skMerge.exposure.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "skMerge.serviceName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    {{- include "skas.selectorLabels" . | nindent 4 }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.skMerge.serverPort }}
+      targetPort: {{ .Values.skMerge.serverPort }}
+{{ end }}

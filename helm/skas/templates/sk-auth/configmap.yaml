@@ -1,0 +1,77 @@
+{{ if .Values.skAuth.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "skAuth.configmapName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  config.yaml: |
+    log:
+      mode: {{ default .Values.log.mode .Values.skAuth.log.mode }}
+      level: {{ default .Values.log.level .Values.skAuth.log.level }}
+    {{- if eq .Values.skAuth.tokenConfig.storageType "crd" }}
+    metricAddr: ":{{ .Values.skAuth.metric.port }}"
+    probeAddr: ":{{ .Values.skAuth.probe.port }}"
+    {{- end }}
+    server:
+      {{- if .Values.skAuth.exposure.enabled }}
+      ssl: {{ .Values.skAuth.exposure.ssl}}
+      bindAddr: ":{{ .Values.skAuth.serverPort}}"
+      {{- if .Values.skAuth.exposure.ssl }}
+      certDir: /tmp/cert/server
+      {{- end }}
+      {{- else }}
+      ssl: no
+      bindAddr: "127.0.0.1:{{ .Values.skAuth.serverPort}}"
+      {{- end }}
+    {{- if .Values.skAuth.exposure.enabled }}
+    services:
+{{ .Values.skAuth.services | toYaml | indent 6 }}
+    {{- else }}
+    services:
+      token:
+        disabled: false
+        clients: []
+      k8sAuth:
+        disabled: false
+        clients: []
+      kubeconfig:
+        disabled: false
+        clients: []
+    {{- end }}
+    loginProvider:
+{{ .Values.skAuth.loginProvider | toYaml | indent 6 }}
+    tokenConfig:
+      inactivityTimeout: {{ .Values.skAuth.tokenConfig.inactivityTimeout }}
+      sessionMaxTTL: {{ .Values.skAuth.tokenConfig.sessionMaxTTL }}
+      clientTokenTTL: {{ .Values.skAuth.tokenConfig.clientTokenTTL }}
+      storageType: {{ .Values.skAuth.tokenConfig.storageType }}
+      lastHitStep: {{ .Values.skAuth.tokenConfig.lastHitStep }}
+      namespace:
+    kubeconfig:
+      context:
+        name: "{{ .Values.skAuth.kubeconfig.context.name }}"
+        namespace: "{{ .Values.skAuth.kubeconfig.context.namespace }}"
+      cluster:
+        apiServerUrl: "{{ .Values.skAuth.kubeconfig.cluster.apiServerUrl }}"
+        rootCaData: "{{ .Values.skAuth.kubeconfig.cluster.rootCaData }}"
+        insecureSkipVerify: {{ default false .Values.skAuth.kubeconfig.cluster.insecureSkipVerify }}
+      user:
+        authServerUrl: {{ include "skAuth.kubeconfig.authServerUrl" . }}
+        rootCaData: "{{ .Values.skAuth.kubeconfig.user.rootCaData }}"
+        rootCaPath: "{{ .Values.skAuth.kubeconfig.user.rootCaPath }}"
+        insecureSkipVerify: {{ default false .Values.skAuth.kubeconfig.user.insecureSkipVerify }}
+        {{- with .Values.skAuth.kubeconfig.user.clientAuth }}
+        clientAuth:
+          id: "{{ .id }}"
+          secret: "{{ .secret }}"
+        {{- end }}
+
+{{ end }}
+

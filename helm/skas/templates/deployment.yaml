@@ -1,0 +1,85 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "skas.deploymentName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  annotations:
+    configmap.reloader.stakater.com/reload: "{{ include "skas.watchedConfigmap" . }}"
+  {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "skas.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "skas.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        {{ if .Values.skAuth.enabled }}
+        {{- include "container.skAuth" . | nindent 8 }}
+        {{ end }}
+        {{- if .Values.skMerge.enabled }}
+        {{- include "container.skMerge" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skStatic.enabled }}
+        {{- include "container.skStatic" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skLdap.enabled }}
+        {{- include "container.skLdap" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skCrd.enabled }}
+        {{- include "container.skCrd" . | nindent 8 }}
+        {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if or .Values.skAuth.enabled .Values.skCrd.enabled }}
+      serviceAccountName: {{ include "skas.serviceAccountName" . }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{- if .Values.skAuth.enabled }}
+        {{- include "volumes.skAuth" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skMerge.enabled }}
+        {{- include "volumes.skMerge" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skStatic.enabled }}
+        {{- include "volumes.skStatic" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skLdap.enabled }}
+        {{- include "volumes.skLdap" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skCrd.enabled }}
+        {{- include "volumes.skCrd" . | nindent 8 }}
+        {{- end }}
+
+
+
+
+
