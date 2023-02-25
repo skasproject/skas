@@ -13,9 +13,9 @@ import (
 	"time"
 )
 
-func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (handlers.StatusServerProvider, error) {
+func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (handlers.IdentityServerProvider, error) {
 
-	prvd := ldapStatusServerProvider{
+	prvd := ldapIdentityServerProvider{
 		Config: ldapConfig,
 	}
 	if prvd.Host == "" {

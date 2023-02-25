@@ -10,9 +10,9 @@ import (
 	"skas/sk-common/proto/v1/proto"
 )
 
-var _ http.Handler = &TokenGenerateHandler{}
+var _ http.Handler = &TokenCreateHandler{}
 
-type TokenGenerateHandler struct {
+type TokenCreateHandler struct {
 	// Server related stuff
 	commonHandlers.BaseHandler
 	ClientManager clientauth.Manager
@@ -21,8 +21,8 @@ type TokenGenerateHandler struct {
 	LoginClient skhttp.Client
 }
 
-func (t TokenGenerateHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
-	var requestPayload = proto.TokenGenerateRequest{}
+func (t TokenCreateHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+	var requestPayload = proto.TokenCreateRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		t.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
@@ -37,9 +37,9 @@ func (t TokenGenerateHandler) ServeHTTP(response http.ResponseWriter, request *h
 		t.HttpError(response, fmt.Sprintf("Error on downside login request: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
-	var responsePayload *proto.TokenGenerateResponse
+	var responsePayload *proto.TokenCreateResponse
 	if user == nil {
-		responsePayload = &proto.TokenGenerateResponse{
+		responsePayload = &proto.TokenCreateResponse{
 			Success: false,
 		}
 	} else {
@@ -48,7 +48,7 @@ func (t TokenGenerateHandler) ServeHTTP(response http.ResponseWriter, request *h
 			t.HttpError(response, fmt.Sprintf("Error on token creation for login '%s': %s", requestPayload.Login, err.Error()), http.StatusInternalServerError)
 			return
 		}
-		responsePayload = &proto.TokenGenerateResponse{
+		responsePayload = &proto.TokenCreateResponse{
 			Success:   true,
 			Token:     token,
 			User:      *user,
@@ -61,7 +61,7 @@ func (t TokenGenerateHandler) ServeHTTP(response http.ResponseWriter, request *h
 	t.ServeJSON(response, responsePayload)
 }
 
-func (t TokenGenerateHandler) login(login, password string) (*proto.User /*authority*/, string, error) {
+func (t TokenCreateHandler) login(login, password string) (*proto.User /*authority*/, string, error) {
 	lr := &proto.LoginRequest{
 		Login:      login,
 		Password:   password,

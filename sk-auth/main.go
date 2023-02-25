@@ -91,14 +91,14 @@ func main() {
 		config.Log.Error(err, "Error on client login creation")
 	}
 	if !config.Conf.Services.Token.Disabled {
-		s.Router.Handle(proto.TokenGenerateMeta.UrlPath, &handlers.TokenGenerateHandler{
+		s.Router.Handle(proto.TokenCreateMeta.UrlPath, &handlers.TokenCreateHandler{
 			BaseHandler: basehandlers.BaseHandler{
 				Logger: s.Log,
 			},
 			ClientManager: clientauth.New(config.Conf.Services.Token.Clients, false),
 			TokenStore:    tokenStore,
 			LoginClient:   loginClient,
-		}).Methods(proto.TokenGenerateMeta.Method)
+		}).Methods(proto.TokenCreateMeta.Method)
 		s.Router.Handle(proto.TokenRenewMeta.UrlPath, &handlers.TokenRenewHandler{
 			BaseHandler: basehandlers.BaseHandler{
 				Logger: s.Log,

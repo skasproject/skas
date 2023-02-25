@@ -7,18 +7,18 @@ import (
 	"skas/sk-common/proto/v1/proto"
 )
 
-type StatusServerProvider interface {
-	GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error)
+type IdentityServerProvider interface {
+	GetUserIdentity(request proto.UserIdentityRequest) (*proto.UserIdentityResponse, error)
 }
 
-type UserStatusHandler struct {
+type UserIdentityHandler struct {
 	BaseHandler
-	Provider      StatusServerProvider
+	Provider      IdentityServerProvider
 	ClientManager clientauth.Manager
 }
 
-func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
-	var requestPayload proto.UserStatusRequest
+func (h *UserIdentityHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+	var requestPayload proto.UserIdentityRequest
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		h.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
@@ -28,7 +28,7 @@ func (h *UserStatusHandler) ServeHTTP(response http.ResponseWriter, request *htt
 		h.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
-	responsePayload, err := h.Provider.GetUserStatus(requestPayload)
+	responsePayload, err := h.Provider.GetUserIdentity(requestPayload)
 	if err != nil {
 		h.HttpError(response, err.Error(), http.StatusInternalServerError)
 		return

@@ -11,9 +11,9 @@ import (
 	"strings"
 )
 
-var _ handlers.StatusServerProvider = &ldapStatusServerProvider{}
+var _ handlers.IdentityServerProvider = &ldapIdentityServerProvider{}
 
-type ldapStatusServerProvider struct {
+type ldapIdentityServerProvider struct {
 	*Config
 	hostPort         string
 	tlsConfig        *tls.Config
@@ -22,9 +22,9 @@ type ldapStatusServerProvider struct {
 	logger           logr.Logger
 }
 
-func (l *ldapStatusServerProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
+func (l *ldapIdentityServerProvider) GetUserIdentity(request proto.UserIdentityRequest) (*proto.UserIdentityResponse, error) {
 	// Set some default values
-	response := proto.UserStatusResponse{
+	response := proto.UserIdentityResponse{
 		UserStatus: proto.NotFound,
 		User: proto.User{
 			Login:       request.Login,
@@ -85,7 +85,7 @@ func (l *ldapStatusServerProvider) GetUserStatus(request proto.UserStatusRequest
 // do() initializes a connection to the LDAP directory and passes it to the
 // provided function. It then performs appropriate teardown or reuse before
 // returning.
-func (l *ldapStatusServerProvider) do(f func(c *ldap.Conn) error) error {
+func (l *ldapIdentityServerProvider) do(f func(c *ldap.Conn) error) error {
 	var (
 		conn *ldap.Conn
 		err  error
@@ -119,7 +119,7 @@ func (l *ldapStatusServerProvider) do(f func(c *ldap.Conn) error) error {
 	return f(conn)
 }
 
-func (l *ldapStatusServerProvider) lookupUser(conn *ldap.Conn, login string) (*ldap.Entry, error) {
+func (l *ldapIdentityServerProvider) lookupUser(conn *ldap.Conn, login string) (*ldap.Entry, error) {
 	filter := fmt.Sprintf("(%s=%s)", l.UserSearch.LoginAttr, ldap.EscapeFilter(login))
 	if l.UserSearch.Filter != "" {
 		filter = fmt.Sprintf("(&%s%s)", l.UserSearch.Filter, filter)
@@ -166,7 +166,7 @@ func (l *ldapStatusServerProvider) lookupUser(conn *ldap.Conn, login string) (*l
 	}
 }
 
-func (l *ldapStatusServerProvider) checkPassword(conn *ldap.Conn, user ldap.Entry, password string) (proto.UserStatus, error) {
+func (l *ldapIdentityServerProvider) checkPassword(conn *ldap.Conn, user ldap.Entry, password string) (proto.UserStatus, error) {
 	if password == "" {
 		return proto.PasswordFail, nil
 	}
@@ -191,7 +191,7 @@ func (l *ldapStatusServerProvider) checkPassword(conn *ldap.Conn, user ldap.Entr
 	return proto.PasswordChecked, nil
 }
 
-func (l *ldapStatusServerProvider) lookupGroups(conn *ldap.Conn, user ldap.Entry) ([]string, error) {
+func (l *ldapIdentityServerProvider) lookupGroups(conn *ldap.Conn, user ldap.Entry) ([]string, error) {
 	ldapGroups := make([]*ldap.Entry, 0, 2)
 	groups := make([]string, 0, 2)
 	for _, attr := range getAttrs(user, l.GroupSearch.LinkUserAttr) {

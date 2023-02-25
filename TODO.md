@@ -24,8 +24,6 @@ DONE:
 - Switch to logrus, to have more level (i.e WARNING)
 - Display client.id in relevant message (Modify LoggingHandler)
 - Rename sk-xxxx to skas-xxxxx ? or ska-xxxx
-- Rename userDescribe to userExplain
-- Rename userStatus to userIdentity
 - In config file, for http client url. Set full url, including the path OR define by scheme:, host: and port (Currently, it is ambiguous, as a partial) ?
 - liveliness, readiness probes on all modules
 - Generalize the concept of service in the config of all id provider.
@@ -51,6 +49,11 @@ DONE:
 DONE:
 
 - A sample helm chart to create a namespace, and an admin user and group.
+- Rename userDescribe to userExplain
+- Rename userStatus to userIdentity
+- Rename tokenget to tokenCreate
+- camelCase all url
+
 
 ## sk-static
 
@@ -69,7 +72,6 @@ DONE:
 
 - Manage rootCaPath in helm chart (Global and by provider)
 - On startup, perform a scan to check underlying providers (A flag to disable)
-- rename to sk-bind ?
 - Add an optional providerList, to modify order of provider. Needed when appending a new provider to list as 'extraProvider' in helm chart
 - Relay the changePassword service
 - Display the list of provider as info on boot

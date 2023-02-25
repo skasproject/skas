@@ -28,7 +28,7 @@ func (c clientProviderChain) Scan(login, password string) ([]ScanItem, error) {
 				// Build a fake ScanItem
 				item = ScanItem{
 					Provider: &c.providers[idx], // NOT &provider
-					UserStatusResponse: &proto.UserStatusResponse{
+					UserStatusResponse: &proto.UserIdentityResponse{
 						User: proto.User{
 							Login:       login,
 							CommonNames: []string{},

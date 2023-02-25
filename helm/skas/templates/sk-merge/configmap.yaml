@@ -38,11 +38,11 @@ data:
         clients:
           - id: "*"
             secret: "*"
-      userStatus:
+      userIdentity:
         clients:
           - id: "*"
             secret: "*"
-      userDescribe:
+      userExplain:
         clients:
           - id: "*"
             secret: "*"

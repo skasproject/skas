@@ -11,10 +11,6 @@ nameOverride:
 # Will default to {{ include "skas.fullname" . }}
 deploymentName:
 
-
-# Will default to {{ include "skas.fullname" . }}
-deploymentName:
-
 # Will default to {{ include "skas.fullname" . }}
 serviceAccountName:
 
@@ -303,12 +299,12 @@ skMerge:
       #   clients:
       #     - id: "*"
       #       secret: "1234"
-      userStatus:
+      userIdentity:
         disabled: false
       #   clients:
       #     - id: "*"
       #       secret: "1234"
-      userDescribe:
+      userExplain:
         disabled: false
     #   clients:
     #     - id: "*"

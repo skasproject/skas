@@ -9,14 +9,14 @@ import (
 
 // This is the API provided by all kind of Identity provider. Consumed by sk-merge
 
-var UserStatusMeta = &RequestMeta{
+var UserIdentityMeta = &RequestMeta{
 	Method:  "GET",
-	UrlPath: "/v1/userstatus",
+	UrlPath: "/v1/userIdentity",
 }
 
-var _ RequestPayload = &UserStatusRequest{}
+var _ RequestPayload = &UserIdentityRequest{}
 
-type UserStatusRequest struct {
+type UserIdentityRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`
 	Login      string     `json:"login"`
 	Password   string     `json:"password"`
@@ -33,25 +33,25 @@ const (
 	Undefined         = "undefined" // Used to mark a non-critical failing provider in userDescribe
 )
 
-var _ ResponsePayload = &UserStatusResponse{}
+var _ ResponsePayload = &UserIdentityResponse{}
 
-type UserStatusResponse struct {
+type UserIdentityResponse struct {
 	UserStatus UserStatus `json:"userStatus"`
 	User
 }
 
 // ---------------------------------------------------------------
 
-func (u *UserStatusRequest) String() string {
-	return fmt.Sprintf("UserStatusRequest(login=%s", u.Login)
+func (u *UserIdentityRequest) String() string {
+	return fmt.Sprintf("UserIdentityRequest(login=%s", u.Login)
 }
-func (u *UserStatusRequest) ToJson() ([]byte, error) {
+func (u *UserIdentityRequest) ToJson() ([]byte, error) {
 	return toJson(u)
 }
-func (u *UserStatusRequest) FromJson(r io.Reader) error {
+func (u *UserIdentityRequest) FromJson(r io.Reader) error {
 	return fromJson(r, u)
 }
 
-func (u *UserStatusResponse) FromJson(r io.Reader) error {
+func (u *UserIdentityResponse) FromJson(r io.Reader) error {
 	return fromJson(r, u)
 }

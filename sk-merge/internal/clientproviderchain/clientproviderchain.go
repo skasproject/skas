@@ -6,7 +6,7 @@ import (
 )
 
 type ScanItem struct {
-	UserStatusResponse *proto.UserStatusResponse
+	UserStatusResponse *proto.UserIdentityResponse
 	Provider           *clientprovider.ClientProvider
 	Translated         *proto.Translated
 }

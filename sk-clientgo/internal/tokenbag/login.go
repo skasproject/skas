@@ -20,14 +20,14 @@ func InteractiveLogin(login, password string) *TokenBag {
 	}
 	for i := 0; i < maxTry; i++ {
 		login, password = inputCredentials(login, password)
-		generateTokenResponse := generateToken(login, password)
-		if generateTokenResponse != nil && generateTokenResponse.Success {
+		createTokenResponse := createToken(login, password)
+		if createTokenResponse != nil && createTokenResponse.Success {
 			tokenBag := &TokenBag{
-				Token:      generateTokenResponse.Token,
-				ClientTTL:  generateTokenResponse.ClientTTL,
+				Token:      createTokenResponse.Token,
+				ClientTTL:  createTokenResponse.ClientTTL,
 				LastAccess: time.Now(),
-				User:       generateTokenResponse.User,
-				Authority:  generateTokenResponse.Authority,
+				User:       createTokenResponse.User,
+				Authority:  createTokenResponse.Authority,
 			}
 			save(tokenBag)
 			return tokenBag
@@ -74,14 +74,14 @@ func inputPassword(prompt string) string {
 	return strings.TrimSpace(string(bytePassword))
 }
 
-func generateToken(login, password string) *proto.TokenGenerateResponse {
-	tgr := &proto.TokenGenerateRequest{
+func createToken(login, password string) *proto.TokenCreateResponse {
+	tgr := &proto.TokenCreateRequest{
 		ClientAuth: config.SkhttpClient.GetClientAuth(),
 		Login:      login,
 		Password:   password,
 	}
-	tokenGenerateResponse := &proto.TokenGenerateResponse{}
-	err := config.SkhttpClient.Do(proto.TokenGenerateMeta, tgr, tokenGenerateResponse)
+	tokenGenerateResponse := &proto.TokenCreateResponse{}
+	err := config.SkhttpClient.Do(proto.TokenCreateMeta, tgr, tokenGenerateResponse)
 	if err != nil {
 		log.Log.Error(err, "error on getToken()")
 		return nil

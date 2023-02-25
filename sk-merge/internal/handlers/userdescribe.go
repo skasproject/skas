@@ -11,18 +11,18 @@ import (
 	"skas/sk-merge/internal/clientproviderchain"
 )
 
-var _ http.Handler = &UserDescribeHandler{}
+var _ http.Handler = &UserExplainHandler{}
 
-var _ httpserver.LoggingHandler = &UserDescribeHandler{}
+var _ httpserver.LoggingHandler = &UserExplainHandler{}
 
-type UserDescribeHandler struct {
+type UserExplainHandler struct {
 	commonHandlers.BaseHandler
 	Chain         clientproviderchain.ClientProviderChain
 	ClientManager clientauth.Manager
 }
 
-func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
-	var requestPayload proto.UserDescribeRequest
+func (u UserExplainHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+	var requestPayload proto.UserExplainRequest
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		u.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
@@ -39,15 +39,15 @@ func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 	}
 	merged, authority := clientproviderchain.Merge(requestPayload.Login, items)
 
-	responsePayload := &proto.UserDescribeResponse{
-		Items:     make([]proto.UserDescribeItem, 0, u.Chain.GetLength()),
+	responsePayload := &proto.UserExplainResponse{
+		Items:     make([]proto.UserExplainItem, 0, u.Chain.GetLength()),
 		Merged:    *merged,
 		Authority: authority,
 	}
 	for idx, _ := range items {
-		udi := &proto.UserDescribeItem{
-			UserStatusResponse: *items[idx].UserStatusResponse,
-			Translated:         *items[idx].Translated,
+		udi := &proto.UserExplainItem{
+			UserIdentityResponse: *items[idx].UserStatusResponse,
+			Translated:           *items[idx].Translated,
 		}
 		udi.Provider.Name = (*items[idx].Provider).GetName()
 		udi.Provider.CredentialAuthority = (*items[idx].Provider).IsCredentialAuthority()
@@ -61,6 +61,6 @@ func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 // Normally, we should not need to add this, as we embed commonHandlers.BaseHandler which have this function.
 // But if w don't, httpserver.LogHttp will not recognize us as a LoggingHandler. May be a compiler bug ?
 
-func (u UserDescribeHandler) GetLog() logr.Logger {
+func (u UserExplainHandler) GetLog() logr.Logger {
 	return u.Logger
 }

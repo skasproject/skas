@@ -11,22 +11,22 @@ import (
 
 // ------------------------------------------------------
 
-var TokenGenerateMeta = &RequestMeta{
+var TokenCreateMeta = &RequestMeta{
 	Method:  "POST",
-	UrlPath: "/v1/tokenget",
+	UrlPath: "/v1/tokenCreate",
 }
 
-var _ RequestPayload = &TokenGenerateRequest{}
+var _ RequestPayload = &TokenCreateRequest{}
 
-type TokenGenerateRequest struct {
+type TokenCreateRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`
 	Login      string     `json:"login"`
 	Password   string     `json:"password"`
 }
 
-var _ ResponsePayload = &TokenGenerateResponse{}
+var _ ResponsePayload = &TokenCreateResponse{}
 
-type TokenGenerateResponse struct {
+type TokenCreateResponse struct {
 	Success   bool          `json:"success"`
 	Token     string        `json:"token"`
 	User      User          `json:"user"`
@@ -38,7 +38,7 @@ type TokenGenerateResponse struct {
 
 var TokenRenewMeta = &RequestMeta{
 	Method:  "POST",
-	UrlPath: "/v1/tokenrenew",
+	UrlPath: "/v1/tokenRenew",
 }
 
 var _ RequestPayload = &TokenRenewRequest{}
@@ -57,17 +57,17 @@ type TokenRenewResponse struct {
 
 // ------------------------------------------------------
 
-func (t *TokenGenerateRequest) String() string {
+func (t *TokenCreateRequest) String() string {
 	return fmt.Sprintf("TokenRequest(login=%s)", t.Login)
 }
-func (t *TokenGenerateRequest) ToJson() ([]byte, error) {
+func (t *TokenCreateRequest) ToJson() ([]byte, error) {
 	return toJson(t)
 }
-func (t *TokenGenerateRequest) FromJson(r io.Reader) error {
+func (t *TokenCreateRequest) FromJson(r io.Reader) error {
 	return fromJson(r, t)
 }
 
-func (t *TokenGenerateResponse) FromJson(r io.Reader) error {
+func (t *TokenCreateResponse) FromJson(r io.Reader) error {
 	return fromJson(r, t)
 }
 

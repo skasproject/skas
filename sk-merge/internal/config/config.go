@@ -42,7 +42,7 @@ type Config struct {
 	RootCaData string `yaml:"rootCaData"` // Base64 encoded PEM data containing root CA
 	Services   struct {
 		Login        ServiceConfig `yaml:"login"`
-		UserStatus   ServiceConfig `yaml:"userStatus"`
-		UserDescribe ServiceConfig `yaml:"userDescribe"`
+		UserIdentity ServiceConfig `yaml:"userIdentity"`
+		UserExplain  ServiceConfig `yaml:"userExplain"`
 	} `yaml:"services"`
 }

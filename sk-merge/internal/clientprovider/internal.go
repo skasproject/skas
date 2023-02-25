@@ -30,14 +30,14 @@ func (c clientProvider) GetName() string {
 	return c.Name
 }
 
-func (c clientProvider) GetUserStatus(login, password string) (*proto.UserStatusResponse, *proto.Translated, error) {
-	usr := &proto.UserStatusRequest{
+func (c clientProvider) GetUserStatus(login, password string) (*proto.UserIdentityResponse, *proto.Translated, error) {
+	usr := &proto.UserIdentityRequest{
 		Login:      login,
 		Password:   password,
 		ClientAuth: c.httpClient.GetClientAuth(),
 	}
-	userStatusResponse := &proto.UserStatusResponse{}
-	err := c.httpClient.Do(proto.UserStatusMeta, usr, userStatusResponse)
+	userStatusResponse := &proto.UserIdentityResponse{}
+	err := c.httpClient.Do(proto.UserIdentityMeta, usr, userStatusResponse)
 	if err != nil {
 		return nil, nil, err // Do() return a documented message
 	}
