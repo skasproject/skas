@@ -36,6 +36,10 @@ DONE:
 - Add debug/trace on skhttp client.
 - More info on version. cf dex
 - systematize global rootCaPath, rootCaData
+- Setup a system to force password change
+- A utility to generate random password for a (new) user and display it one time.
+- Think about a system who can safely delegate group binding inside a namespace
+
  
 - Service refactoring
   - Change the way we handle SSL: Always keep an non-ssl port on localhost, and add another port with SSL when required. When done, can remove localhost from certificate
@@ -43,6 +47,10 @@ DONE:
     Default should be coherent: enabled and no check, or disabled and must set client * explicitly. (May be closed by default is better)
   - Two port should be managed. Each with its own set of services configuration. One intended to be bound on localhost and opened, for inside pod access. 
     And one intended to be accessed externally, with default config to be closed.
+
+DONE:
+
+- A sample helm chart to create a namespace, and an admin user and group.
 
 ## sk-static
 
@@ -73,13 +81,19 @@ DONE:
 - Allow several kubeconfig definitions (Selected by ../v1/kubeconfig/<id>) ?
 - Embed CLI binary with a download url
 - In config, rename tokenConfig to token
+- Ability to add default namespace in kubeconfig init url
+
+## sk-client
+
+- Bug: If I got context with same name in two different config file, the local token bag is shared. Solution would be 
+  to add a same checksum of config file path in the token bag name 
 
 DONE
 - kubeconfig configuration: Replace contextName and namespace by context.name and context.namespace
 
-## sk-filer
+## sk-filter
 
-- TODO
+- TODO ?
 - Modify login protocol to support some error indication. (Invalid login/password vs unallowed vs ....)
 
 ## Doc:

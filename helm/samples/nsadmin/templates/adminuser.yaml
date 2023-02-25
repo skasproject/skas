@@ -1,0 +1,25 @@
+---
+apiVersion: userdb.skasproject.io/v1alpha1
+kind: User
+metadata:
+  name: {{ include "nsadmin.adminName" .}}
+  namespace: {{ .Values.skasNamespace }}
+  labels:
+      {{- include "nsadmin.labels" . | nindent 4 }}
+spec:
+  commonNames: ["{{ .Release.Namespace }} administrator"]
+  passwordHash: {{ default "$2a$10$GzdXwy.rym5n4nMjehOqJug5P0nc./.E3bX2RvYT24X.8BFaUryky"  .Values.adminPasswordHash }} # changeme
+  disabled: false
+  uid: {{ .Values.adminUid }}
+
+---
+apiVersion: userdb.skasproject.io/v1alpha1
+kind: GroupBinding
+metadata:
+  name: {{ printf "%s-%s" (include "nsadmin.adminName" .)  "admins" }}
+  namespace: {{ .Values.skasNamespace }}
+  labels:
+      {{- include "nsadmin.labels" . | nindent 4 }}
+spec:
+  user: {{ include "nsadmin.adminName" . }}
+  group: admins

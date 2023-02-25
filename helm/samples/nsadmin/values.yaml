@@ -1,0 +1,9 @@
+
+skasNamespace: skas-system
+
+adminNameOverride:    # Default to <namespace>-admin
+
+adminPasswordHash:        # Default to the hash of 'changeme'
+
+adminUid: 2001
+
