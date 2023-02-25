@@ -21,8 +21,8 @@ func main() {
 	}
 	config.Log.Info("sk-merge start", "version", config.Version, "logLevel", config.Conf.Log.Level)
 	config.Log.Info("Login service", "enabled", !config.Conf.Services.Login.Disabled)
-	config.Log.Info("UserStatus service", "enabled", !config.Conf.Services.UserStatus.Disabled)
-	config.Log.Info("UserDescribe service", "enabled", !config.Conf.Services.UserDescribe.Disabled)
+	config.Log.Info("UserIdentity service", "enabled", !config.Conf.Services.UserIdentity.Disabled)
+	config.Log.Info("UserExplain service", "enabled", !config.Conf.Services.UserExplain.Disabled)
 
 	s := &httpserver.Server{
 		Name:   "merge",
@@ -40,15 +40,15 @@ func main() {
 		config.Log.Error(fmt.Errorf("no client provider defined"), "No client provider defined")
 		os.Exit(7)
 	}
-	// --------------------- UserDescribe handler
-	if !config.Conf.Services.UserDescribe.Disabled {
-		s.Router.Handle(proto.UserDescribeMeta.UrlPath, handlers.UserDescribeHandler{
+	// --------------------- UserExplain handler
+	if !config.Conf.Services.UserExplain.Disabled {
+		s.Router.Handle(proto.UserExplainMeta.UrlPath, handlers.UserExplainHandler{
 			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("userDescribe handler"),
 			},
 			Chain:         providerChain,
-			ClientManager: clientauth.New(config.Conf.Services.UserDescribe.Clients, true),
-		}).Methods(proto.UserDescribeMeta.Method)
+			ClientManager: clientauth.New(config.Conf.Services.UserExplain.Clients, true),
+		}).Methods(proto.UserExplainMeta.Method)
 	}
 	// --------------------- Login handler
 	if !config.Conf.Services.Login.Disabled {
@@ -60,20 +60,20 @@ func main() {
 			ClientManager: clientauth.New(config.Conf.Services.Login.Clients, true),
 		}).Methods(proto.LoginMeta.Method)
 	}
-	// --------------------- UserStatus handler
-	if !config.Conf.Services.UserStatus.Disabled {
-		statusServerProvider, err := serverproviders.NewStatusServerProvider(providerChain, config.Log)
+	// --------------------- UserIdentity handler
+	if !config.Conf.Services.UserIdentity.Disabled {
+		identityServerProvider, err := serverproviders.NewIdentityServerProvider(providerChain, config.Log)
 		if err != nil {
-			config.Log.Error(err, "Error on statusServerProvider creation")
+			config.Log.Error(err, "Error on identityServerProvider creation")
 			os.Exit(3)
 		}
-		s.Router.Handle(proto.UserStatusMeta.UrlPath, &commonHandlers.UserStatusHandler{
+		s.Router.Handle(proto.UserIdentityMeta.UrlPath, &commonHandlers.UserIdentityHandler{
 			BaseHandler: commonHandlers.BaseHandler{
-				Logger: s.Log.WithName("userStatus handler"),
+				Logger: s.Log.WithName("userIdentity handler"),
 			},
-			Provider:      statusServerProvider,
-			ClientManager: clientauth.New(config.Conf.Services.UserStatus.Clients, true),
-		}).Methods(proto.UserStatusMeta.Method)
+			Provider:      identityServerProvider,
+			ClientManager: clientauth.New(config.Conf.Services.UserIdentity.Clients, true),
+		}).Methods(proto.UserIdentityMeta.Method)
 	}
 
 	err = s.Start(context.Background())

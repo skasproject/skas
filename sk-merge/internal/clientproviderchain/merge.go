@@ -5,8 +5,8 @@ import (
 	"sort"
 )
 
-func Merge(login string, scanItems []ScanItem) (merged *proto.UserStatusResponse, credentialAuthorityProvider string) {
-	merged = &proto.UserStatusResponse{
+func Merge(login string, scanItems []ScanItem) (merged *proto.UserIdentityResponse, credentialAuthorityProvider string) {
+	merged = &proto.UserIdentityResponse{
 		User: proto.User{
 			Login:       login,
 			Uid:         0,

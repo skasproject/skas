@@ -7,21 +7,21 @@ import (
 	"skas/sk-merge/internal/clientproviderchain"
 )
 
-var _ handlers.StatusServerProvider = &statusServerProvider{}
+var _ handlers.IdentityServerProvider = &identityServerProvider{}
 
-type statusServerProvider struct {
+type identityServerProvider struct {
 	logger logr.Logger
 	chain  clientproviderchain.ClientProviderChain
 }
 
-func NewStatusServerProvider(chain clientproviderchain.ClientProviderChain, logger logr.Logger) (handlers.StatusServerProvider, error) {
-	return &statusServerProvider{
+func NewIdentityServerProvider(chain clientproviderchain.ClientProviderChain, logger logr.Logger) (handlers.IdentityServerProvider, error) {
+	return &identityServerProvider{
 		logger: logger,
 		chain:  chain,
 	}, nil
 }
 
-func (p statusServerProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
+func (p identityServerProvider) GetUserIdentity(request proto.UserIdentityRequest) (*proto.UserIdentityResponse, error) {
 	items, err := p.chain.Scan(request.Login, request.Password)
 	if err != nil {
 		return nil, err

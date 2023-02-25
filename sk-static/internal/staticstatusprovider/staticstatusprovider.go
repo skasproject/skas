@@ -8,20 +8,20 @@ import (
 	"skas/sk-static/internal/config"
 )
 
-var _ handlers.StatusServerProvider = &staticStatusProvider{}
+var _ handlers.IdentityServerProvider = &staticIdentityProvider{}
 
-type staticStatusProvider struct {
+type staticIdentityProvider struct {
 	logger logr.Logger
 }
 
-func New(logger logr.Logger) handlers.StatusServerProvider {
-	return &staticStatusProvider{
+func New(logger logr.Logger) handlers.IdentityServerProvider {
+	return &staticIdentityProvider{
 		logger: logger,
 	}
 }
 
-func (s staticStatusProvider) GetUserStatus(request proto.UserStatusRequest) (*proto.UserStatusResponse, error) {
-	responsePayload := &proto.UserStatusResponse{
+func (s staticIdentityProvider) GetUserIdentity(request proto.UserIdentityRequest) (*proto.UserIdentityResponse, error) {
+	responsePayload := &proto.UserIdentityResponse{
 		User: proto.User{
 			Login:       request.Login,
 			Uid:         0,

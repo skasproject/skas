@@ -5,7 +5,7 @@ import (
 )
 
 type ClientProvider interface {
-	GetUserStatus(login, password string) (*proto.UserStatusResponse, *proto.Translated, error)
+	GetUserStatus(login, password string) (*proto.UserIdentityResponse, *proto.Translated, error)
 	IsCritical() bool
 	GetName() string
 	IsCredentialAuthority() bool

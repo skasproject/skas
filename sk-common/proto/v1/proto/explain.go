@@ -10,26 +10,26 @@ import (
 // This is issued by sk-cli to sk-auth, which validate the token.
 // Then, it is forwarded to sk-merge, without Token but with ClientAuth
 
-var _ RequestPayload = &UserDescribeRequest{}
+var _ RequestPayload = &UserExplainRequest{}
 
-var UserDescribeMeta = &RequestMeta{
+var UserExplainMeta = &RequestMeta{
 	Method:  "GET",
-	UrlPath: "/v1/userdescribe",
+	UrlPath: "/v1/userExplain",
 }
 
-type UserDescribeRequest struct {
+type UserExplainRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`
 	Token      string     `json:"token"`
 	Login      string     `json:"login"`
 	Password   string     `json:"password"` // Optional
 }
 
-var _ ResponsePayload = &UserDescribeResponse{}
+var _ ResponsePayload = &UserExplainResponse{}
 
-type UserDescribeResponse struct {
-	Items     []UserDescribeItem `yaml:"items"`
-	Merged    UserStatusResponse `yaml:"merged"`
-	Authority string             `yaml:"authority"`
+type UserExplainResponse struct {
+	Items     []UserExplainItem    `yaml:"items"`
+	Merged    UserIdentityResponse `yaml:"merged"`
+	Authority string               `yaml:"authority"`
 }
 
 type Translated struct {
@@ -37,9 +37,9 @@ type Translated struct {
 	Uid    int64    `yaml:"uid"`
 }
 
-type UserDescribeItem struct {
-	UserStatusResponse UserStatusResponse `yaml:"userStatusResponse"`
-	Provider           struct {
+type UserExplainItem struct {
+	UserIdentityResponse UserIdentityResponse `yaml:"userIdentityResponse"`
+	Provider             struct {
 		Name                string `yaml:"name"`
 		CredentialAuthority bool   `yaml:"credentialAuthority"` // Is this provider Authority for authentication (password) for this user
 		GroupAuthority      bool   `yaml:"groupAuthority"`      // Should we take groups in account
@@ -49,16 +49,16 @@ type UserDescribeItem struct {
 
 // -------------------------------------------------------------------------
 
-func (u *UserDescribeRequest) String() string {
-	return fmt.Sprintf("UserDescribeRequest(login=%s)", u.Login)
+func (u *UserExplainRequest) String() string {
+	return fmt.Sprintf("UserExplainRequest(login=%s)", u.Login)
 }
-func (u *UserDescribeRequest) ToJson() ([]byte, error) {
+func (u *UserExplainRequest) ToJson() ([]byte, error) {
 	return toJson(u)
 }
-func (u *UserDescribeRequest) FromJson(r io.Reader) error {
+func (u *UserExplainRequest) FromJson(r io.Reader) error {
 	return fromJson(r, u)
 }
 
-func (u *UserDescribeResponse) FromJson(r io.Reader) error {
+func (u *UserExplainResponse) FromJson(r io.Reader) error {
 	return fromJson(r, u)
 }

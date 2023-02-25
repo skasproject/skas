@@ -15,7 +15,7 @@ import (
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-crd/internal/config"
-	"skas/sk-crd/internal/crdstatusprovider"
+	"skas/sk-crd/internal/crdidentityprovider"
 	userdbv1alpha1 "skas/sk-crd/k8sapis/userdb/v1alpha1"
 )
 
@@ -69,13 +69,13 @@ func main() {
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
-	s.Router.Handle(proto.UserStatusMeta.UrlPath, &handlers.UserStatusHandler{
+	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &handlers.UserIdentityHandler{
 		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
-		Provider:      crdstatusprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
+		Provider:      crdidentityprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
 		ClientManager: clientauth.New(config.Conf.Clients, true),
-	}).Methods(proto.UserStatusMeta.Method)
+	}).Methods(proto.UserIdentityMeta.Method)
 
 	err = mgr.Add(s)
 	if err != nil {
@@ -97,25 +97,5 @@ func main() {
 		config.Log.Error(err, "problem running manager")
 		os.Exit(1)
 	}
-
-	/*
-		s := &httpserver.Server{
-			Name:   "crd",
-			Log:    config.Log.WithName("crdServer"),
-			Config: &config.Conf.Server,
-		}
-		s.Groom()
-		s.Router.Handle(proto.UserStatusUrlPath, &handlers.UserStatusHandler{
-			BaseHandler: handlers.BaseHandler{
-				Logger: s.Log,
-			},
-			Provider: crdprovider.New(),
-		}).Methods("GET")
-		err := s.Start(context.Background())
-		if err != nil {
-			s.Log.Error(err, "Error on Start()")
-			os.Exit(5)
-		}
-	*/
 
 }

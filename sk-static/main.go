@@ -32,13 +32,13 @@ func main() {
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
-	s.Router.Handle(proto.UserStatusMeta.UrlPath, &handlers.UserStatusHandler{
+	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &handlers.UserIdentityHandler{
 		BaseHandler: handlers.BaseHandler{
 			Logger: s.Log,
 		},
 		Provider:      staticstatusprovider.New(config.Log.WithName("staticProvider")),
 		ClientManager: clientauth.New(config.Conf.Clients, true),
-	}).Methods(proto.UserStatusMeta.Method)
+	}).Methods(proto.UserIdentityMeta.Method)
 	err := s.Start(context.Background())
 	if err != nil {
 		s.Log.Error(err, "Error on Start()")
