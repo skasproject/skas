@@ -12,7 +12,7 @@ CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 CONTROLLER_TOOLS_VERSION ?= v0.11.1
 
 .PHONY: all
-all: generate	## Generate all dependencies (crd, zz_generated...)
+all: generate manifests  ## Generate all dependencies (crd, zz_generated...)
 
 
 # Setting SHELL to bash allows bash commands to be executed by recipes.
@@ -20,6 +20,11 @@ all: generate	## Generate all dependencies (crd, zz_generated...)
 # Options are set to exit when a recipe line exits non-zero or a piped command fails.
  SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
+
+
+.PHONY: manifests
+manifests: controller-gen ## Generate CustomResourceDefinition manifests.
+	$(CONTROLLER_GEN) crd paths="./..." output:crd:artifacts:config=../helm/skas/crds
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.

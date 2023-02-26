@@ -5,9 +5,9 @@ import (
 	"github.com/go-logr/logr"
 	"golang.org/x/crypto/bcrypt"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	userdbv1alpha1 "skas/sk-common/k8sapis/userdb/v1alpha1"
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto/v1/proto"
-	userdbv1alpha1 "skas/sk-crd/k8sapis/userdb/v1alpha1"
 )
 
 var _ handlers.IdentityServerProvider = &crdIdentityProvider{}
