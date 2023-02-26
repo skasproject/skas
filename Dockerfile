@@ -38,9 +38,9 @@ RUN cd sk-merge && go mod download
 
 COPY sk-common/pkg/ sk-common/pkg/
 COPY sk-common/proto/ sk-common/proto/
+COPY sk-common/k8sapis/ sk-common/k8sapis/
 
 COPY sk-crd/internal/ sk-crd/internal/
-COPY sk-crd/k8sapis/ sk-crd/k8sapis/
 COPY sk-crd/main.go sk-crd/main.go
 RUN cd sk-crd && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o sk-crd main.go
 
