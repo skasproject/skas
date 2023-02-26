@@ -10,13 +10,13 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	kubeclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
+	userdbv1alpha1 "skas/sk-common/k8sapis/userdb/v1alpha1"
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-crd/internal/config"
 	"skas/sk-crd/internal/crdidentityprovider"
-	userdbv1alpha1 "skas/sk-crd/k8sapis/userdb/v1alpha1"
 )
 
 var scheme = runtime.NewScheme()
