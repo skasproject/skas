@@ -11,7 +11,7 @@ import (
 )
 
 var HashCmd = &cobra.Command{
-	Use:   "hash",
+	Use:   "hash [password]",
 	Short: "Provided password hash, for use in config file",
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

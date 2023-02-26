@@ -1,7 +1,7 @@
 
 hash [password]
 init <url>
-login [user, [password]]        TODO
+login [user, [password]]   
 logout
 version
 whoa-mi
