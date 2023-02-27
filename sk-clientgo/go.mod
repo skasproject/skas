@@ -10,6 +10,7 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/client-go v0.26.1
+	sigs.k8s.io/controller-runtime v0.14.4
 	skas/sk-common v0.1.0
 )
 

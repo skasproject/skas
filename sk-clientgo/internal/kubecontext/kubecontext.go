@@ -3,12 +3,9 @@ package kubecontext
 import (
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
-	"skas/sk-clientgo/internal/log"
+	"skas/sk-clientgo/internal/global"
+	"sync"
 )
-
-// Exposed global variables
-
-var KubeContext string
 
 // From https://pkg.go.dev/k8s.io/client-go@v0.26.1/tools/clientcmd
 
@@ -25,13 +22,17 @@ func loadRawConfig(kubeconfig string) clientcmdapi.Config {
 	return rawConfig
 }
 
-func Initialize(kubeconfig string) {
-	if KubeContext == "" {
-		rawConfig := loadRawConfig(kubeconfig)
-		KubeContext = rawConfig.CurrentContext
-		if KubeContext == "" {
-			KubeContext = "default"
+var once sync.Once
+var kubeContext string
+
+func GetKubeContext() string {
+	once.Do(func() {
+		rawConfig := loadRawConfig(global.KubeconfigPath)
+		kubeContext = rawConfig.CurrentContext
+		if kubeContext == "" {
+			kubeContext = "default"
 		}
-	}
-	log.Log.V(1).Info("kubeContext.Initialize()", "kubeContext", KubeContext)
+		global.Log.V(1).Info("GetKubeContext()", "kubeContext", kubeContext)
+	})
+	return kubeContext
 }

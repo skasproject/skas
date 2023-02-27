@@ -11,6 +11,7 @@ import (
 type Client interface {
 	Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload) error
 	GetClientAuth() proto.ClientAuth
+	GetConfig() *Config
 }
 
 var _ Client = &client{}
@@ -18,6 +19,10 @@ var _ Client = &client{}
 type client struct {
 	Config
 	httpClient *http.Client
+}
+
+func (c client) GetConfig() *Config {
+	return &c.Config
 }
 
 func (c client) GetClientAuth() proto.ClientAuth {

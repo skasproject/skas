@@ -6,11 +6,11 @@ import (
 	"os"
 	osuser "os/user"
 	"path"
-	"skas/sk-clientgo/internal/config"
+	"skas/sk-clientgo/internal/global"
 	"skas/sk-clientgo/internal/kubecontext"
 	"skas/sk-clientgo/internal/loadsave"
-	"skas/sk-clientgo/internal/log"
 	"skas/sk-common/pkg/misc"
+	"skas/sk-common/pkg/skhttp"
 	"skas/sk-common/proto/v1/proto"
 	"time"
 )
@@ -26,7 +26,7 @@ type TokenBag struct {
 // Retrieve the tokenBag locally. If expired, validate again against the server. Return "" if there is no valid token
 // In case of error, return ""
 
-func Retrieve() *TokenBag {
+func Retrieve(client skhttp.Client) *TokenBag {
 	tokenBag := load()
 	if tokenBag != nil {
 		now := time.Now()
@@ -34,7 +34,7 @@ func Retrieve() *TokenBag {
 			// tokenBag still valid
 			return tokenBag
 		} else {
-			if validateToken(tokenBag.Token) {
+			if validateToken(client, tokenBag.Token) {
 				tokenBag.LastAccess = time.Now()
 				save(tokenBag)
 				return tokenBag
@@ -54,17 +54,17 @@ func load() *TokenBag {
 	if loadsave.LoadStuff(tokenBagPath, func(decoder *yaml.Decoder) error {
 		return decoder.Decode(&tokenBag)
 	}) {
-		log.Log.V(1).Info("LoadTokenBag()", "path", tokenBagPath, "token", misc.ShortenString(tokenBag.Token), "ClientTtl", tokenBag.ClientTTL.String(), "lastAccess", tokenBag.LastAccess)
+		global.Log.V(1).Info("LoadTokenBag()", "path", tokenBagPath, "token", misc.ShortenString(tokenBag.Token), "ClientTtl", tokenBag.ClientTTL.String(), "lastAccess", tokenBag.LastAccess)
 		return &tokenBag
 	} else {
-		log.Log.V(1).Info("LoadTokenBag() -> nil", "path", tokenBagPath)
+		global.Log.V(1).Info("LoadTokenBag() -> nil", "path", tokenBagPath)
 		return nil
 	}
 }
 
 func save(tokenBag *TokenBag) {
 	tokenBagPath := buildPath()
-	log.Log.V(1).Info("SaveTokenBag()", "path", tokenBagPath, "token", tokenBag.Token, "clientTTL", tokenBag.ClientTTL, "lastAccess", tokenBag.LastAccess)
+	global.Log.V(1).Info("SaveTokenBag()", "path", tokenBagPath, "token", tokenBag.Token, "clientTTL", tokenBag.ClientTTL, "lastAccess", tokenBag.LastAccess)
 	loadsave.SaveStuff(tokenBagPath, func(encoder *yaml.Encoder) error {
 		return encoder.Encode(tokenBag)
 	})
@@ -74,7 +74,7 @@ func save(tokenBag *TokenBag) {
 
 func DeleteTokenBag() {
 	tokenBagPath := buildPath()
-	log.Log.V(1).Info("DeleteTokenBag()", "path", tokenBagPath)
+	global.Log.V(1).Info("DeleteTokenBag()", "path", tokenBagPath)
 	_, err := os.Stat(tokenBagPath)
 	if !os.IsNotExist(err) {
 		err := os.Remove(tokenBagPath)
@@ -90,20 +90,20 @@ func buildPath() string {
 	if err != nil {
 		panic(err)
 	}
-	return path.Join(usr.HomeDir, fmt.Sprintf(".kube/cache/sas/%s/tokenbag.json", kubecontext.KubeContext))
+	return path.Join(usr.HomeDir, fmt.Sprintf(".kube/cache/sas/%s/tokenbag.json", kubecontext.GetKubeContext()))
 }
 
 // Return false in case of error, whatever error is.
 
-func validateToken(token string) bool {
+func validateToken(client skhttp.Client, token string) bool {
 	trr := &proto.TokenRenewRequest{
 		Token:      token,
-		ClientAuth: config.SkhttpClient.GetClientAuth(),
+		ClientAuth: client.GetClientAuth(),
 	}
 	tokenRenewResponse := &proto.TokenRenewResponse{}
-	err := config.SkhttpClient.Do(proto.TokenRenewMeta, trr, tokenRenewResponse)
+	err := client.Do(proto.TokenRenewMeta, trr, tokenRenewResponse)
 	if err != nil {
-		log.Log.Error(err, "error on ValidateToken()")
+		global.Log.Error(err, "error on ValidateToken()")
 		return false
 	}
 	return tokenRenewResponse.Valid
