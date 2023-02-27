@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"skas/sk-clientgo/internal/config"
-	"skas/sk-clientgo/internal/log"
+	"skas/sk-clientgo/httpClient"
+	"skas/sk-clientgo/internal/global"
 	"skas/sk-clientgo/internal/tokenbag"
 )
+
+func init() {
+	httpClient.AddFlags(LoginCmd)
+}
 
 var LoginCmd = &cobra.Command{
 	Use:   "login [user, [password]]",
@@ -22,13 +26,13 @@ var LoginCmd = &cobra.Command{
 				password = args[1]
 			}
 		}
-		err := config.InitHttpClient()
+		client, err := httpClient.New(false)
 		if err != nil {
-			log.Log.Error(err, "error on InitHttpClient()")
-			os.Exit(10)
+			global.Log.Error(err, "Error on http client init")
+			os.Exit(6)
 		}
 		tokenbag.DeleteTokenBag() // Logout first. Don't stay logged with old token if we are unable to login
-		tokenBag := tokenbag.InteractiveLogin(login, password)
+		tokenBag := tokenbag.InteractiveLogin(client, login, password)
 		if tokenBag == nil {
 			os.Exit(3)
 		} else {

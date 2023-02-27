@@ -7,8 +7,8 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 	"os"
-	"skas/sk-clientgo/internal/config"
-	"skas/sk-clientgo/internal/log"
+	"skas/sk-clientgo/httpClient"
+	"skas/sk-clientgo/internal/global"
 	"skas/sk-common/proto/v1/proto"
 	"strconv"
 )
@@ -29,6 +29,7 @@ func init() {
 	InitCmd.PersistentFlags().StringVar(&command, "command", "kubectl-skas", "The skas kubectl plugin executable")
 	InitCmd.PersistentFlags().BoolVar(&noContextSwitch, "noContextSwitch", false, "Do not set default context to the newly create one.")
 	InitCmd.PersistentFlags().BoolVar(&force, "force", false, "Override any already existing context")
+	httpClient.AddFlags(InitCmd)
 }
 
 var InitCmd = &cobra.Command{
@@ -37,21 +38,25 @@ var InitCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// WARNING: There is a special processing for this command in the root.go file.
-		err := config.InitHttpClient()
+		client, err := httpClient.New(true)
 		if err != nil {
-			log.Log.Error(err, "error on InitHttpClient()")
+			global.Log.Error(err, "error on InitHttpClient()")
 			os.Exit(10)
 		}
+		if len(args) >= 1 && client.GetConfig().Url != "" {
+			_, _ = fmt.Fprintf(os.Stderr, "--authServerUrl should not be set on the 'init' command\n")
+			os.Exit(2)
+		}
 		kr := &proto.KubeconfigRequest{
-			ClientAuth: config.SkhttpClient.GetClientAuth(),
+			ClientAuth: client.GetClientAuth(),
 		}
 		kubeConfigResponse := &proto.KubeconfigResponse{}
-		err = config.SkhttpClient.Do(proto.KubeconfigMeta, kr, kubeConfigResponse)
+		err = client.Do(proto.KubeconfigMeta, kr, kubeConfigResponse)
 		if err != nil {
-			log.Log.Error(err, "error on GET kubeconfig from remote server")
+			global.Log.Error(err, "error on GET kubeconfig from remote server")
 			os.Exit(4)
 		}
-		log.Log.V(1).Info("Fetched kubeconfig from remote", "contextName", kubeConfigResponse.Context.Name)
+		global.Log.V(1).Info("Fetched kubeconfig from remote", "contextName", kubeConfigResponse.Context.Name)
 		// ---------------------------------------------------- Override parameters
 		if contextNameOverride != "" {
 			kubeConfigResponse.Context.Name = contextNameOverride
@@ -102,9 +107,9 @@ var InitCmd = &cobra.Command{
 			os.Exit(15)
 		}
 		if exitingContext {
-			log.Log.V(0).Info("Update existing context", "context", contextName, "kubeconfig", kubeConfig.ConfigAccess().GetDefaultFilename())
+			global.Log.V(0).Info("Update existing context", "context", contextName, "kubeconfig", kubeConfig.ConfigAccess().GetDefaultFilename())
 		} else {
-			log.Log.V(0).Info("Setup new context", "context", contextName, "kubeconfig", kubeConfig.ConfigAccess().GetDefaultFilename())
+			global.Log.V(0).Info("Setup new context", "context", contextName, "kubeconfig", kubeConfig.ConfigAccess().GetDefaultFilename())
 		}
 
 		rootCaData, err := base64.StdEncoding.DecodeString(kubeConfigResponse.Cluster.RootCaData)

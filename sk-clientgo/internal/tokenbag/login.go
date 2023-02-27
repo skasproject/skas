@@ -5,22 +5,22 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
-	"skas/sk-clientgo/internal/config"
-	"skas/sk-clientgo/internal/log"
+	"skas/sk-clientgo/internal/global"
+	"skas/sk-common/pkg/skhttp"
 	"skas/sk-common/proto/v1/proto"
 	"strings"
 	"syscall"
 	"time"
 )
 
-func InteractiveLogin(login, password string) *TokenBag {
+func InteractiveLogin(client skhttp.Client, login, password string) *TokenBag {
 	maxTry := 3
 	if login != "" && password != "" {
 		maxTry = 1 // If all is provided on command line, do not prompt in case of failure
 	}
 	for i := 0; i < maxTry; i++ {
 		login, password = inputCredentials(login, password)
-		createTokenResponse := createToken(login, password)
+		createTokenResponse := createToken(client, login, password)
 		if createTokenResponse != nil && createTokenResponse.Success {
 			tokenBag := &TokenBag{
 				Token:      createTokenResponse.Token,
@@ -74,16 +74,16 @@ func inputPassword(prompt string) string {
 	return strings.TrimSpace(string(bytePassword))
 }
 
-func createToken(login, password string) *proto.TokenCreateResponse {
+func createToken(client skhttp.Client, login, password string) *proto.TokenCreateResponse {
 	tgr := &proto.TokenCreateRequest{
-		ClientAuth: config.SkhttpClient.GetClientAuth(),
+		ClientAuth: client.GetClientAuth(),
 		Login:      login,
 		Password:   password,
 	}
 	tokenGenerateResponse := &proto.TokenCreateResponse{}
-	err := config.SkhttpClient.Do(proto.TokenCreateMeta, tgr, tokenGenerateResponse)
+	err := client.Do(proto.TokenCreateMeta, tgr, tokenGenerateResponse)
 	if err != nil {
-		log.Log.Error(err, "error on getToken()")
+		global.Log.Error(err, "error on getToken()")
 		return nil
 	}
 	return tokenGenerateResponse

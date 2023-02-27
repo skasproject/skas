@@ -4,13 +4,17 @@ import (
 	"encoding/json"
 	"github.com/spf13/cobra"
 	"os"
-	"skas/sk-clientgo/internal/config"
-	"skas/sk-clientgo/internal/log"
+	"skas/sk-clientgo/httpClient"
+	"skas/sk-clientgo/internal/global"
 	"skas/sk-clientgo/internal/tokenbag"
 )
 
 // This is intended to be used as client-go exc plugin. It communicates by a json printed on stdout.
 // So, not other print to stdout should be performed. Use stderr to display messages to the user
+
+func init() {
+	httpClient.AddFlags(authCmd)
+}
 
 var authCmd = &cobra.Command{
 	Use:    "auth",
@@ -18,14 +22,14 @@ var authCmd = &cobra.Command{
 	Hidden: true,
 	Args:   cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := config.InitHttpClient()
+		client, err := httpClient.New(false)
 		if err != nil {
-			log.Log.Error(err, "error on InitHttpClient()")
+			global.Log.Error(err, "error on InitHttpClient()")
 			os.Exit(10)
 		}
-		tokenBag := tokenbag.Retrieve()
+		tokenBag := tokenbag.Retrieve(client)
 		if tokenBag == nil {
-			tokenBag = tokenbag.InteractiveLogin("", "")
+			tokenBag = tokenbag.InteractiveLogin(client, "", "")
 		}
 		ec := ExecCredential{
 			ApiVersion: "client.authentication.k8s.io/v1",
