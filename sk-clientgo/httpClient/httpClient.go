@@ -51,15 +51,21 @@ func groomFlags() {
 	}
 }
 
-func New(forInit bool) (skhttp.Client, error) {
+func New() (skhttp.Client, error) {
 	groomFlags()
-	var conf *skhttp.Config
-	if forInit {
-		conf = &flags.server
-		checkConfig(conf)
-	} else {
-		conf = loadUpdateConfig(kubecontext.GetKubeContext())
+	return skhttp.New(loadUpdateConfig(kubecontext.GetKubeContext()), "", "")
+}
+
+func NewForInit(serverUrl string) (skhttp.Client, error) {
+	conf := &flags.server
+	if serverUrl != "" {
+		if conf.Url != "" {
+			_, _ = fmt.Fprintf(os.Stderr, "--authServerUrl should not be set on the 'init' command\n")
+			os.Exit(2)
+		}
+		conf.Url = serverUrl
 	}
+	checkConfig(conf)
 	return skhttp.New(conf, "", "")
 }
 

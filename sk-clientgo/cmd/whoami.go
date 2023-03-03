@@ -23,7 +23,7 @@ var WhoamiCmd = &cobra.Command{
 	Short: "Display current logged user, if any",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		client, err := httpClient.New(false)
+		client, err := httpClient.New()
 		if err != nil {
 			global.Log.Error(err, "error on http client init")
 			os.Exit(10)

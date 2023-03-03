@@ -37,15 +37,10 @@ var InitCmd = &cobra.Command{
 	Short: "Add a new context in Kubeconfig file for skas access",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// WARNING: There is a special processing for this command in the root.go file.
-		client, err := httpClient.New(true)
+		client, err := httpClient.NewForInit(args[0])
 		if err != nil {
 			global.Log.Error(err, "error on InitHttpClient()")
 			os.Exit(10)
-		}
-		if len(args) >= 1 && client.GetConfig().Url != "" {
-			_, _ = fmt.Fprintf(os.Stderr, "--authServerUrl should not be set on the 'init' command\n")
-			os.Exit(2)
 		}
 		kr := &proto.KubeconfigRequest{
 			ClientAuth: client.GetClientAuth(),
