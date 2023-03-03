@@ -3,11 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/crypto/ssh/terminal"
-	"os"
-	"strings"
-	"syscall"
+	"skas/sk-clientgo/internal/utils"
 )
 
 var HashCmd = &cobra.Command{
@@ -20,30 +16,14 @@ var HashCmd = &cobra.Command{
 			passwd = args[0]
 		}
 		if passwd == "" {
-			passwd = inputPassword("Password:")
-			passwd2 := inputPassword("Confirm password:")
+			passwd = utils.InputPassword("Password:")
+			passwd2 := utils.InputPassword("Confirm password:")
 			if passwd != passwd2 {
 				fmt.Printf("Passwords did not match!\n")
 				return
 			}
 		}
-		hash, err := bcrypt.GenerateFromPassword([]byte(passwd), bcrypt.DefaultCost)
-		if err != nil {
-			panic(err)
-		}
+		hash := utils.Hash(passwd)
 		fmt.Printf("%s\n", string(hash))
 	},
-}
-
-func inputPassword(prompt string) string {
-	_, err := fmt.Fprint(os.Stdout, prompt)
-	if err != nil {
-		panic(err)
-	}
-	bytePassword, err2 := terminal.ReadPassword(int(syscall.Stdin))
-	if err2 != nil {
-		panic(err2)
-	}
-	_, _ = fmt.Fprintf(os.Stderr, "\n")
-	return strings.TrimSpace(string(bytePassword))
 }

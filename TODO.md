@@ -37,6 +37,7 @@ DONE:
 - Setup a system to force password change
 - A utility to generate random password for a (new) user and display it one time.
 - Think about a system who can safely delegate group binding inside a namespace
+- set uid as an int everywhere (In proto)
 
  
 - Service refactoring

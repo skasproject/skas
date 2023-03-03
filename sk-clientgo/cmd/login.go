@@ -26,7 +26,7 @@ var LoginCmd = &cobra.Command{
 				password = args[1]
 			}
 		}
-		client, err := httpClient.New(false)
+		client, err := httpClient.New()
 		if err != nil {
 			global.Log.Error(err, "Error on http client init")
 			os.Exit(6)

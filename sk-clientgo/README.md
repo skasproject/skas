@@ -4,11 +4,11 @@ init <url>
 login [user, [password]]   
 logout
 version
-whoa-mi
+whoami
 
 Admin func
 
-    user explain <user>
+    user describe <user> [--explain]
 
     user create <user> [--email <email>] [--commonName <commonName>] [--uid <uid>] [--state <enabled|disabled>] [--comment <comment>] 
         [--password <password>] [--passwordHash <passwordHash>] [--generatePassword] [--inputPassword]

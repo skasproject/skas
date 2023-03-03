@@ -22,7 +22,7 @@ var authCmd = &cobra.Command{
 	Hidden: true,
 	Args:   cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		client, err := httpClient.New(false)
+		client, err := httpClient.New()
 		if err != nil {
 			global.Log.Error(err, "error on InitHttpClient()")
 			os.Exit(10)
