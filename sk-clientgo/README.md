@@ -16,11 +16,12 @@ Admin func
     user patch <user> [--email <email>] [--commonName <commonName>] [--uid <uid>] [--state <enabled|disabled>] [--comment <comment>] 
         [--password <password>]  [--passwordHash <passwordHash>] [--generatePassword] [--inputPassword] [--create]
 
-    user bind <user> <group> [--noError]
+    user bind <user> <group> [--bindngName] [--strict] 
     
-    user unbind <user> <group> [--noError]
-    
-    user password <user>
+    user unbind <user> <group> [--bindngName] [--strict]
+
+
+Use user patch to change a user password 
 
 Following are redundant with kubectl. TODO ?
 user list 

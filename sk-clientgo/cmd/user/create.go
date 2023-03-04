@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	addFlags(CreateCmd)
+	addUserFlags(CreateCmd)
 }
 
 var CreateCmd = &cobra.Command{
@@ -46,10 +46,10 @@ var CreateCmd = &cobra.Command{
 				global.Log.Error(err, "Kubernetes error while creating the user: %s", err.Error())
 				os.Exit(3)
 			}
-			fmt.Printf("User '%s' created.\n", args[0])
+			fmt.Printf("User '%s' created in namespace '%s'.\n", args[0], kc.Namespace)
 			os.Exit(0)
 		} else {
-			fmt.Printf("ERROR: User '%s' allready exists. Unable to create\n", args[0])
+			fmt.Printf("ERROR: User '%s' allready exists in namespace '%s'. Unable to create\n", args[0], kc.Namespace)
 			os.Exit(2)
 		}
 	},
