@@ -64,7 +64,7 @@ func (p crdIdentityProvider) GetUserIdentity(request proto.UserIdentityRequest) 
 		return responsePayload, nil
 	}
 	if usr.Spec.Uid != nil {
-		responsePayload.Uid = int64(*usr.Spec.Uid)
+		responsePayload.Uid = *usr.Spec.Uid
 	}
 	if len(usr.Spec.CommonNames) > 0 { // Avoid copying a nil
 		responsePayload.CommonNames = usr.Spec.CommonNames

@@ -25,7 +25,7 @@ type RequestMeta struct {
 // +kubebuilder:object:generate:=true
 type User struct {
 	Login       string   `json:"login"`
-	Uid         int64    `json:"uid"`
+	Uid         int      `json:"uid"`
 	CommonNames []string `json:"commonNames"`
 	Emails      []string `json:"emails"`
 	Groups      []string `json:"groups"`
