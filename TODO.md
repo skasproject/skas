@@ -35,10 +35,8 @@ DONE:
 - More info on version. cf dex
 - systematize global rootCaPath, rootCaData
 - Setup a system to force password change
-- A utility to generate random password for a (new) user and display it one time.
 - Think about a system who can safely delegate group binding inside a namespace
 - set uid as an int everywhere (In proto)
-
  
 - Service refactoring
   - Change the way we handle SSL: Always keep an non-ssl port on localhost, and add another port with SSL when required. When done, can remove localhost from certificate

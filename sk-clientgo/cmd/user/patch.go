@@ -21,7 +21,7 @@ var patchFlagsVars struct {
 
 func init() {
 	PatchCmd.PersistentFlags().BoolVar(&patchFlagsVars.create, "create", false, "Create if not exists")
-	addFlags(PatchCmd)
+	addUserFlags(PatchCmd)
 }
 
 var PatchCmd = &cobra.Command{
@@ -56,10 +56,10 @@ var PatchCmd = &cobra.Command{
 					global.Log.Error(err, "Kubernetes error while creating the user: %s", err.Error())
 					os.Exit(3)
 				}
-				fmt.Printf("User '%s' created.\n", args[0])
+				fmt.Printf("User '%s' created in namespace '%s'.\n", args[0], kc.Namespace)
 				os.Exit(0)
 			} else {
-				fmt.Printf("ERROR: User '%s' not found.\nSet '--create' flag to allow creation.\n", args[0])
+				fmt.Printf("ERROR: User '%s' not found in namespace '%s'.\nSet '--create' flag to allow creation.\n", args[0], kc.Namespace)
 				os.Exit(1)
 			}
 		} else {
@@ -71,7 +71,7 @@ var PatchCmd = &cobra.Command{
 				global.Log.Error(err, "Kubernetes error while creating the user: %s", err.Error())
 				os.Exit(3)
 			}
-			fmt.Printf("User '%s' updated.\n", args[0])
+			fmt.Printf("User '%s' updated in namespace '%s'.\n", args[0], kc.Namespace)
 			os.Exit(0)
 		}
 	},

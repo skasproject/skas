@@ -15,7 +15,7 @@ var userFlagsVars struct {
 	state            string
 }
 
-func addFlags(c *cobra.Command) {
+func addUserFlags(c *cobra.Command) {
 	c.PersistentFlags().StringVarP(&userFlagsVars.namespace, "namespace", "n", "", "User's DB namespace")
 	c.PersistentFlags().StringVar(&userFlagsVars.email, "email", "", "User's email")
 	c.PersistentFlags().StringVar(&userFlagsVars.commonName, "commonName", "", "User's common name")
