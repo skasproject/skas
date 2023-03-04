@@ -34,7 +34,7 @@ type UserExplainResponse struct {
 
 type Translated struct {
 	Groups []string `yaml:"groups"`
-	Uid    int64    `yaml:"uid"`
+	Uid    int      `yaml:"uid"`
 }
 
 type UserExplainItem struct {

@@ -1,7 +1,6 @@
 
 ## Features
 
-- Dex connector
 - SkaGate
 - A front for user management.
 - Documentation
@@ -16,6 +15,7 @@
 
 DONE:
 - Automatic kubeconfig.context setup
+- Dex connector
 
 ## All
 
@@ -36,7 +36,7 @@ DONE:
 - systematize global rootCaPath, rootCaData
 - Setup a system to force password change
 - Think about a system who can safely delegate group binding inside a namespace
-- set uid as an int everywhere (In proto)
+- helm: in rbac, add a rolebinding to an admin group (skas_admin by default)
  
 - Service refactoring
   - Change the way we handle SSL: Always keep an non-ssl port on localhost, and add another port with SSL when required. When done, can remove localhost from certificate
@@ -52,6 +52,7 @@ DONE:
 - Rename userStatus to userIdentity
 - Rename tokenget to tokenCreate
 - camelCase all url
+- set uid as an int everywhere (In proto)
 
 
 ## sk-static
@@ -83,6 +84,7 @@ DONE:
 - Embed CLI binary with a download url
 - In config, rename tokenConfig to token
 - Ability to add default namespace in kubeconfig init url
+- Relay userExplain
 
 ## sk-client
 

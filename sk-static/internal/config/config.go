@@ -23,7 +23,7 @@ type Config struct {
 
 type StaticUser struct {
 	Login        string   `yaml:"login"`
-	Uid          *int64   `yaml:"uid,omitempty"`
+	Uid          *int     `yaml:"uid,omitempty"`
 	CommonNames  []string `yaml:"commonNames"`
 	Emails       []string `yaml:"emails"`
 	PasswordHash string   `yaml:"passwordHash"`

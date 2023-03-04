@@ -35,7 +35,7 @@ func (t *TokenReviewHandler) ServeHTTP(response http.ResponseWriter, request *ht
 			data.Status.Authenticated = true
 			data.Status.User = &proto.TokenReviewUser{
 				Username: user.Login,
-				Uid:      strconv.FormatInt(user.Uid, 10),
+				Uid:      strconv.Itoa(user.Uid),
 				Groups:   user.Groups,
 			}
 			t.Logger.Info(fmt.Sprintf("Token '%s' OK. user:'%s'  uid:%s, groups=%v", requestPayload.Spec.Token, data.Status.User.Username, data.Status.User.Uid, data.Status.User.Groups))
