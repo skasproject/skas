@@ -29,13 +29,15 @@ type ServiceConfig struct {
 }
 
 type Config struct {
-	Log           misc.LogConfig          `yaml:"log"`
-	Server        httpserver.ServerConfig `yaml:"server"`
-	TokenConfig   TokenConfig             `yaml:"tokenConfig"`
-	Kubeconfig    proto.KubeconfigConfig  `yaml:"kubeconfig"`
-	LoginProvider skhttp.Config           `yaml:"loginProvider"`
-	Services      struct {
+	Log         misc.LogConfig          `yaml:"log"`
+	Server      httpserver.ServerConfig `yaml:"server"`
+	TokenConfig TokenConfig             `yaml:"tokenConfig"`
+	Kubeconfig  proto.KubeconfigConfig  `yaml:"kubeconfig"`
+	Provider    skhttp.Config           `yaml:"provider"`
+	AdminGroup  string                  `yaml:"adminGroup"`
+	Services    struct {
 		Token      ServiceConfig `yaml:"token"`
+		Explain    ServiceConfig `yaml:"explain"`
 		K8sAuth    ServiceConfig `yaml:"k8sAuth"`
 		Kubeconfig ServiceConfig `yaml:"kubeconfig"`
 	} `yaml:"services"`

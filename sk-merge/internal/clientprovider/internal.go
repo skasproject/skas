@@ -30,23 +30,23 @@ func (c clientProvider) GetName() string {
 	return c.Name
 }
 
-func (c clientProvider) GetUserStatus(login, password string) (*proto.UserIdentityResponse, *proto.Translated, error) {
+func (c clientProvider) GetUserIdentity(login, password string) (*proto.UserIdentityResponse, *proto.Translated, error) {
 	usr := &proto.UserIdentityRequest{
 		Login:      login,
 		Password:   password,
 		ClientAuth: c.httpClient.GetClientAuth(),
 	}
-	userStatusResponse := &proto.UserIdentityResponse{}
-	err := c.httpClient.Do(proto.UserIdentityMeta, usr, userStatusResponse)
+	userIdentityResponse := &proto.UserIdentityResponse{}
+	err := c.httpClient.Do(proto.UserIdentityMeta, usr, userIdentityResponse, nil)
 	if err != nil {
 		return nil, nil, err // Do() return a documented message
 	}
 	translated := &proto.Translated{
-		Uid:    userStatusResponse.Uid + c.UidOffset,
-		Groups: make([]string, len(userStatusResponse.Groups)),
+		Uid:    userIdentityResponse.Uid + c.UidOffset,
+		Groups: make([]string, len(userIdentityResponse.Groups)),
 	}
-	for idx := range userStatusResponse.Groups {
-		translated.Groups[idx] = fmt.Sprintf(c.GroupPattern, userStatusResponse.Groups[idx])
+	for idx := range userIdentityResponse.Groups {
+		translated.Groups[idx] = fmt.Sprintf(c.GroupPattern, userIdentityResponse.Groups[idx])
 	}
-	return userStatusResponse, translated, nil
+	return userIdentityResponse, translated, nil
 }

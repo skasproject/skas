@@ -46,7 +46,7 @@ func (u UserExplainHandler) ServeHTTP(response http.ResponseWriter, request *htt
 	}
 	for idx, _ := range items {
 		udi := &proto.UserExplainItem{
-			UserIdentityResponse: *items[idx].UserStatusResponse,
+			UserIdentityResponse: *items[idx].UserIdentityResponse,
 			Translated:           *items[idx].Translated,
 		}
 		udi.Provider.Name = (*items[idx].Provider).GetName()

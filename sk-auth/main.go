@@ -41,6 +41,7 @@ func main() {
 	config.Log.Info("Token service", "enabled", !config.Conf.Services.Token.Disabled)
 	config.Log.Info("K8sAuth service", "enabled", !config.Conf.Services.K8sAuth.Disabled)
 	config.Log.Info("Kubeconfig service", "enabled", !config.Conf.Services.Kubeconfig.Disabled)
+	config.Log.Info("UserExplain service", "enabled", !config.Conf.Services.Explain.Disabled)
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager
@@ -86,7 +87,7 @@ func main() {
 	}
 	s.Groom()
 
-	loginClient, err := skhttp.New(&config.Conf.LoginProvider, "", "")
+	loginClient, err := skhttp.New(&config.Conf.Provider, "", "")
 	if err != nil {
 		config.Log.Error(err, "Error on client login creation")
 	}
@@ -115,7 +116,16 @@ func main() {
 			TokenStore: tokenStore,
 		}).Methods(proto.TokenReviewMeta.Method)
 	}
-
+	if !config.Conf.Services.Explain.Disabled {
+		s.Router.Handle(proto.UserExplainMeta.UrlPath, &handlers.UserExplainHandler{
+			BaseHandler: basehandlers.BaseHandler{
+				Logger: s.Log,
+			},
+			ClientManager: clientauth.New(config.Conf.Services.Token.Clients, false),
+			TokenStore:    tokenStore,
+			LoginClient:   loginClient,
+		}).Methods(proto.UserExplainMeta.Method)
+	}
 	if !config.Conf.Services.Kubeconfig.Disabled {
 		s.Router.Handle(proto.KubeconfigMeta.UrlPath, &handlers.KubeconfigHandler{
 			BaseHandler: basehandlers.BaseHandler{

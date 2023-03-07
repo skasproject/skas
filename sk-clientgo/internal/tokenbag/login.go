@@ -81,7 +81,7 @@ func createToken(client skhttp.Client, login, password string) *proto.TokenCreat
 		Password:   password,
 	}
 	tokenGenerateResponse := &proto.TokenCreateResponse{}
-	err := client.Do(proto.TokenCreateMeta, tgr, tokenGenerateResponse)
+	err := client.Do(proto.TokenCreateMeta, tgr, tokenGenerateResponse, nil)
 	if err != nil {
 		global.Log.Error(err, "error on getToken()")
 		return nil

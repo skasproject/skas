@@ -114,12 +114,20 @@ func (t *tokenStore) Get(token string) (*proto.User, error) {
 	if t.stillValid(crdToken, now) {
 		err := t.touch(crdToken, now)
 		if err != nil {
-			t.logger.Error(err, "token touch on Get() failed", "token", misc.ShortenString(token), "login", crdToken.Spec.User.Login)
-			return nil, err
+			t.logger.Error(err, "token touch on Get() failed. Will retry", "token", misc.ShortenString(token), "login", crdToken.Spec.User.Login)
+			//  the object has been modified; please apply your changes to the latest version and try again
+			crdToken, err := t.getToken(token)
+			if crdToken == nil {
+				return nil, err // two cases: err==nil => not found   err!=nil => real problem
+			}
+			err = t.touch(crdToken, now)
+			if err != nil {
+				t.logger.Error(err, "token touch on Get() failed a second time. Aborting", "token", misc.ShortenString(token), "login", crdToken.Spec.User.Login)
+				return nil, err
+			}
 		}
 		user := &proto.User{}
 		crdToken.Spec.User.DeepCopyInto(user)
-
 		return user, nil
 	} else {
 		err := t.delete(crdToken)
@@ -129,7 +137,6 @@ func (t *tokenStore) Get(token string) (*proto.User, error) {
 		t.logger.Info("Token has been cleaned on Get()", "token", misc.ShortenString(token), "login", crdToken.Spec.User.Login)
 		return nil, nil
 	}
-
 }
 
 func (t *tokenStore) delete(tkn *v1alpha1.Token) error {

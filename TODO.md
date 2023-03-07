@@ -37,6 +37,8 @@ DONE:
 - Setup a system to force password change
 - Think about a system who can safely delegate group binding inside a namespace
 - helm: in rbac, add a rolebinding to an admin group (skas_admin by default)
+- Rename back userExplain to userDescribe
+- 
  
 - Service refactoring
   - Change the way we handle SSL: Always keep an non-ssl port on localhost, and add another port with SSL when required. When done, can remove localhost from certificate
@@ -53,7 +55,6 @@ DONE:
 - Rename tokenget to tokenCreate
 - camelCase all url
 - set uid as an int everywhere (In proto)
-
 
 ## sk-static
 
@@ -76,6 +77,10 @@ DONE:
 - Relay the changePassword service
 - Display the list of provider as info on boot
 
+DONE:
+
+- There is still some UserStatus to change to UserIdentity
+
 ## sk-auth
 
 - If memory or another non-k8s storage is used in production, one may modify the runnable package (Start() instead of Run(), a standard logger, ...)
@@ -84,12 +89,16 @@ DONE:
 - Embed CLI binary with a download url
 - In config, rename tokenConfig to token
 - Ability to add default namespace in kubeconfig init url
+- Rename 'loginProvider' to 'downstreamProvider'
 - Relay userExplain
+- Use basic auth in complement to token auth on userDescribe
+
 
 ## sk-client
 
 - Bug: If I got context with same name in two different config file, the local token bag is shared. Solution would be 
   to add a same checksum of config file path in the token bag name 
+- kubeconfig auth certitficate is not handled.
 
 DONE
 - kubeconfig configuration: Replace contextName and namespace by context.name and context.namespace

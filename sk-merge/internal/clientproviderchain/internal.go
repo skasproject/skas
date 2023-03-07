@@ -18,7 +18,7 @@ func (c clientProviderChain) Scan(login, password string) ([]ScanItem, error) {
 	result := make([]ScanItem, 0, len(c.providers))
 	for idx, provider := range c.providers {
 		var item ScanItem
-		userStatusResponse, translated, err := provider.GetUserStatus(login, password)
+		userIdentityResponse, translated, err := provider.GetUserIdentity(login, password)
 		if err != nil {
 			if provider.IsCritical() {
 				c.logger.Error(err, "Provider error. aborting", "provider", provider.GetName())
@@ -28,7 +28,7 @@ func (c clientProviderChain) Scan(login, password string) ([]ScanItem, error) {
 				// Build a fake ScanItem
 				item = ScanItem{
 					Provider: &c.providers[idx], // NOT &provider
-					UserStatusResponse: &proto.UserIdentityResponse{
+					UserIdentityResponse: &proto.UserIdentityResponse{
 						User: proto.User{
 							Login:       login,
 							CommonNames: []string{},
@@ -45,9 +45,9 @@ func (c clientProviderChain) Scan(login, password string) ([]ScanItem, error) {
 			}
 		} else {
 			item = ScanItem{
-				Provider:           &c.providers[idx], // NOT &provider
-				UserStatusResponse: userStatusResponse,
-				Translated:         translated,
+				Provider:             &c.providers[idx], // NOT &provider
+				UserIdentityResponse: userIdentityResponse,
+				Translated:           translated,
 			}
 
 		}

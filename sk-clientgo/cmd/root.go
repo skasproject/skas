@@ -34,6 +34,7 @@ func init() {
 	UserCmd.AddCommand(usercmd.PatchCmd)
 	UserCmd.AddCommand(usercmd.BindCmd)
 	UserCmd.AddCommand(usercmd.UnbindCmd)
+	UserCmd.AddCommand(usercmd.DescribeCmd)
 
 	RootCmd.PersistentFlags().StringVar(&logConfig.Level, "logLevel", "INFO", "Log level")
 	RootCmd.PersistentFlags().StringVar(&logConfig.Mode, "logMode", "dev", "Log mode: 'dev' or 'json'")

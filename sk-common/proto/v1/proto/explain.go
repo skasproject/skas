@@ -19,7 +19,6 @@ var UserExplainMeta = &RequestMeta{
 
 type UserExplainRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`
-	Token      string     `json:"token"`
 	Login      string     `json:"login"`
 	Password   string     `json:"password"` // Optional
 }
