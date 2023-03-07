@@ -36,7 +36,7 @@ var authCmd = &cobra.Command{
 			Kind:       "ExecCredential",
 		}
 		if tokenBag == nil {
-			// No tokenBag
+			// No token
 		} else {
 			ec.Status.Token = tokenBag.Token
 		}

@@ -101,7 +101,7 @@ func validateToken(client skhttp.Client, token string) bool {
 		ClientAuth: client.GetClientAuth(),
 	}
 	tokenRenewResponse := &proto.TokenRenewResponse{}
-	err := client.Do(proto.TokenRenewMeta, trr, tokenRenewResponse)
+	err := client.Do(proto.TokenRenewMeta, trr, tokenRenewResponse, nil)
 	if err != nil {
 		global.Log.Error(err, "error on ValidateToken()")
 		return false

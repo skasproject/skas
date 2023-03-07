@@ -8,8 +8,14 @@ import (
 	"skas/sk-common/proto/v1/proto"
 )
 
+type HttpAuth struct {
+	Login    string
+	Password string
+	Token    string
+}
+
 type Client interface {
-	Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload) error
+	Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload, httpAuth *HttpAuth) error
 	GetClientAuth() proto.ClientAuth
 	GetConfig() *Config
 }
@@ -32,7 +38,13 @@ func (c client) GetClientAuth() proto.ClientAuth {
 	}
 }
 
-func (c client) Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload) error {
+type UnauthorizedError struct{}
+
+func (e *UnauthorizedError) Error() string {
+	return "Unauthorized"
+}
+
+func (c client) Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload, httpAuth *HttpAuth) error {
 	body, err := request.ToJson()
 	if err != nil {
 		return fmt.Errorf("unable to marshal %s: %w", request.String(), err)
@@ -45,9 +57,21 @@ func (c client) Do(meta *proto.RequestMeta, request proto.RequestPayload, respon
 	if err != nil {
 		return fmt.Errorf("unable to build request")
 	}
+	if httpAuth != nil {
+		if httpAuth.Login != "" {
+			req.SetBasicAuth(httpAuth.Login, httpAuth.Password)
+		}
+		if httpAuth.Token != "" {
+			req.Header.Set("Authorization", "Bearer "+httpAuth.Token)
+		}
+	}
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error on http connection: %w", err)
+	}
+	if resp.StatusCode == 401 {
+		// This is not a system error, but a user's one. So this special handling
+		return &UnauthorizedError{}
 	}
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("invalid status code: %d (%s)", resp.StatusCode, resp.Status)

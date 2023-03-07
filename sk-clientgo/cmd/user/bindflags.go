@@ -10,6 +10,6 @@ var bindFlagsVars struct {
 
 func addBindFlags(c *cobra.Command) {
 	c.PersistentFlags().BoolVar(&bindFlagsVars.strict, "strict", false, "Generate error if binding already exists")
-	c.PersistentFlags().StringVarP(&bindFlagsVars.namespace, "namespace", "n", "", "User's DB namespace")
+	c.PersistentFlags().StringVarP(&bindFlagsVars.namespace, "namespace", "n", "skas-system", "User's DB namespace")
 	c.PersistentFlags().StringVar(&bindFlagsVars.bindingName, "bindingName", "", "K8s binding Name. Default to <user>:<group>")
 }

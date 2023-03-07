@@ -32,7 +32,7 @@ func (t TokenCreateHandler) ServeHTTP(response http.ResponseWriter, request *htt
 		t.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
-	user, authority, err := t.login(requestPayload.Login, requestPayload.Password)
+	user, authority, err := doLogin(t.LoginClient, requestPayload.Login, requestPayload.Password)
 	if err != nil {
 		t.HttpError(response, fmt.Sprintf("Error on downside login request: %s", err.Error()), http.StatusInternalServerError)
 		return
@@ -59,22 +59,4 @@ func (t TokenCreateHandler) ServeHTTP(response http.ResponseWriter, request *htt
 	}
 	t.GetLog().Info("Token request", "login", requestPayload.Login, "success", responsePayload.Success, "groups", responsePayload.User.Groups)
 	t.ServeJSON(response, responsePayload)
-}
-
-func (t TokenCreateHandler) login(login, password string) (*proto.User /*authority*/, string, error) {
-	lr := &proto.LoginRequest{
-		Login:      login,
-		Password:   password,
-		ClientAuth: t.LoginClient.GetClientAuth(),
-	}
-	loginResponse := &proto.LoginResponse{}
-	err := t.LoginClient.Do(proto.LoginMeta, lr, loginResponse)
-	if err != nil {
-		return nil, "", fmt.Errorf("error on exchange on %s: %w", proto.LoginMeta.UrlPath, err) // Do() return a documented message
-	}
-	if loginResponse.Success {
-		return &loginResponse.User, loginResponse.Authority, nil
-	} else {
-		return nil, "", nil
-	}
 }

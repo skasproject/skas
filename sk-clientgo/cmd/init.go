@@ -46,7 +46,7 @@ var InitCmd = &cobra.Command{
 			ClientAuth: client.GetClientAuth(),
 		}
 		kubeConfigResponse := &proto.KubeconfigResponse{}
-		err = client.Do(proto.KubeconfigMeta, kr, kubeConfigResponse)
+		err = client.Do(proto.KubeconfigMeta, kr, kubeConfigResponse, nil)
 		if err != nil {
 			global.Log.Error(err, "error on GET kubeconfig from remote server")
 			os.Exit(4)

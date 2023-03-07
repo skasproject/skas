@@ -18,7 +18,7 @@ func Merge(login string, scanItems []ScanItem) (merged *proto.UserIdentityRespon
 	}
 
 	for _, item := range scanItems {
-		newUserStatus := item.UserStatusResponse.UserStatus
+		newUserStatus := item.UserIdentityResponse.UserStatus
 		if isUserFound(newUserStatus) {
 			if merged.UserStatus == proto.NotFound {
 				// User found. Must be at least 'PasswordUnchecked'
@@ -32,8 +32,8 @@ func Merge(login string, scanItems []ScanItem) (merged *proto.UserIdentityRespon
 					credentialAuthorityProvider = (*item.Provider).GetName()
 				}
 			}
-			merged.CommonNames = append(merged.CommonNames, item.UserStatusResponse.CommonNames...)
-			merged.Emails = append(merged.Emails, item.UserStatusResponse.Emails...)
+			merged.CommonNames = append(merged.CommonNames, item.UserIdentityResponse.CommonNames...)
+			merged.Emails = append(merged.Emails, item.UserIdentityResponse.Emails...)
 		}
 		// A provider can carry Groups information even for an non existing-user
 		if (*item.Provider).IsGroupAuthority() {
