@@ -19,6 +19,7 @@ data:
     metricAddr: ":{{ .Values.skAuth.metric.port }}"
     probeAddr: ":{{ .Values.skAuth.probe.port }}"
     {{- end }}
+    adminGroup: {{ .Values.skAuth.adminGroup }}
     server:
       {{- if .Values.skAuth.exposure.enabled }}
       ssl: {{ .Values.skAuth.exposure.ssl}}
@@ -45,8 +46,8 @@ data:
         disabled: false
         clients: []
     {{- end }}
-    loginProvider:
-{{ .Values.skAuth.loginProvider | toYaml | indent 6 }}
+    provider:
+{{ .Values.skAuth.provider | toYaml | indent 6 }}
     tokenConfig:
       inactivityTimeout: {{ .Values.skAuth.tokenConfig.inactivityTimeout }}
       sessionMaxTTL: {{ .Values.skAuth.tokenConfig.sessionMaxTTL }}

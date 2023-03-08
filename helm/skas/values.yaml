@@ -105,6 +105,8 @@ skAuth:
   metric:
     port: 8084
 
+  adminGroup: skas-admin
+
   # Will default to {{ include "skas.fullname" . }}-auth-config
   configmapName:
 
@@ -163,7 +165,7 @@ skAuth:
     # The namespace used as storage for token definition. Default to deployment namespace
     namespace:
 
-  loginProvider:
+  provider:
     url: http://localhost:7013
   #  url: https://sk-static1.ingress.kspray1.project33.scw01
   #  rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
