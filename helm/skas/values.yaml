@@ -148,6 +148,12 @@ skAuth:
     kubeconfig:
       disabled: false
       clients: []
+    explain:
+      disabled: false
+      clients: []
+    passwordChange:
+      disabled: false
+      clients: []
 
   tokenConfig:
     # After this period without token validation, the session expire
@@ -307,6 +313,11 @@ skMerge:
       #     - id: "*"
       #       secret: "1234"
       userExplain:
+        disabled: false
+    #   clients:
+    #     - id: "*"
+    #       secret: "1234"
+      passwordChange:
         disabled: false
     #   clients:
     #     - id: "*"

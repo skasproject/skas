@@ -44,6 +44,14 @@ func (e *UnauthorizedError) Error() string {
 	return "Unauthorized"
 }
 
+type NotFoundError struct {
+	url string
+}
+
+func (e *NotFoundError) Error() string {
+	return fmt.Sprintf("Resource '%s' not found", e.url)
+}
+
 func (c client) Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload, httpAuth *HttpAuth) error {
 	body, err := request.ToJson()
 	if err != nil {
@@ -72,6 +80,12 @@ func (c client) Do(meta *proto.RequestMeta, request proto.RequestPayload, respon
 	if resp.StatusCode == 401 {
 		// This is not a system error, but a user's one. So this special handling
 		return &UnauthorizedError{}
+	}
+	if resp.StatusCode == 404 {
+		// Some caller may need to handle this specifically
+		return &NotFoundError{
+			url: u,
+		}
 	}
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("invalid status code: %d (%s)", resp.StatusCode, resp.Status)

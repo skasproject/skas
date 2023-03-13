@@ -50,3 +50,20 @@ func (c clientProvider) GetUserIdentity(login, password string) (*proto.UserIden
 	}
 	return userIdentityResponse, translated, nil
 }
+
+func (c clientProvider) ChangePassword(request *proto.PasswordChangeRequest) (*proto.PasswordChangeResponse, error) {
+	// Forward the message 'as is', except out authentication
+	request.ClientAuth = c.httpClient.GetClientAuth()
+	passwordChangeResponse := &proto.PasswordChangeResponse{}
+	err := c.httpClient.Do(proto.PasswordChangeMeta, request, passwordChangeResponse, nil)
+	if err != nil {
+		if _, ok := err.(*skhttp.NotFoundError); ok {
+			passwordChangeResponse.Status = proto.Unsupported
+			passwordChangeResponse.Login = request.Login
+			return passwordChangeResponse, nil
+		} else {
+			return nil, err // Do() return a documented message
+		}
+	}
+	return passwordChangeResponse, nil
+}

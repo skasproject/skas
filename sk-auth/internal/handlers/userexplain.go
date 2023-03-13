@@ -20,7 +20,7 @@ type UserExplainHandler struct {
 	ClientManager clientauth.Manager
 	TokenStore    tokenstore.TokenStore
 	// Login client related stuff. Also
-	LoginClient skhttp.Client
+	Provider skhttp.Client
 }
 
 func getBearerToken(request *http.Request) string {
@@ -52,7 +52,7 @@ func userInGroup(user *proto.User, group string) bool {
 func (t UserExplainHandler) getAuthUser(request *http.Request) (*proto.User, error) {
 	login, password, ok := request.BasicAuth()
 	if ok {
-		user, _, err := doLogin(t.LoginClient, login, password)
+		user, _, err := doLogin(t.Provider, login, password)
 		if err != nil {
 			return nil, err
 		}
@@ -97,7 +97,7 @@ func (t UserExplainHandler) ServeHTTP(response http.ResponseWriter, request *htt
 		return
 	}
 	explainResponse := &proto.UserExplainResponse{}
-	err = t.LoginClient.Do(proto.UserExplainMeta, &requestPayload, explainResponse, nil)
+	err = t.Provider.Do(proto.UserExplainMeta, &requestPayload, explainResponse, nil)
 	if err != nil {
 		t.HttpError(response, fmt.Sprintf("Error on downside login request: %s", err.Error()), http.StatusInternalServerError)
 		return

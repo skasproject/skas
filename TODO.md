@@ -86,12 +86,16 @@ DONE:
 - If memory or another non-k8s storage is used in production, one may modify the runnable package (Start() instead of Run(), a standard logger, ...)
 - Relay with authentication the changePassword service
 - Allow several kubeconfig definitions (Selected by ../v1/kubeconfig/<id>) ?
-- Embed CLI binary with a download url
+- Embed CLI binary with a download url ?
 - In config, rename tokenConfig to token
 - Ability to add default namespace in kubeconfig init url
-- Rename 'loginProvider' to 'downstreamProvider'
+- Relay login protocol to allow non-exposition of sk-merge for dex or alike 
+- kubeconfig: Always have a clientId (Missing for sk-client)
+
+DONE:
 - Relay userExplain
 - Use basic auth in complement to token auth on userDescribe
+- Rename 'loginProvider' to 'downstreamProvider' (Or provider)
 
 
 ## sk-client
@@ -99,6 +103,7 @@ DONE:
 - Bug: If I got context with same name in two different config file, the local token bag is shared. Solution would be 
   to add a same checksum of config file path in the token bag name 
 - kubeconfig auth certitficate is not handled.
+- Check from a system which has not the CA registered 
 
 DONE
 - kubeconfig configuration: Replace contextName and namespace by context.name and context.namespace

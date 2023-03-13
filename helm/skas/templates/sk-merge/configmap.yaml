@@ -46,6 +46,10 @@ data:
         clients:
           - id: "*"
             secret: "*"
+      passwordChange:
+        clients:
+          - id: "*"
+            secret: "*"
     {{- end }}
     providers:
 {{ .Values.skMerge.providers | toYaml | indent 6 }}

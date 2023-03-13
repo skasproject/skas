@@ -34,7 +34,7 @@ func main() {
 	s.Groom()
 	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &handlers.UserIdentityHandler{
 		BaseHandler: handlers.BaseHandler{
-			Logger: s.Log,
+			Logger: s.Log.WithName("userIdentity handler"),
 		},
 		Provider:      staticstatusprovider.New(config.Log.WithName("staticProvider")),
 		ClientManager: clientauth.New(config.Conf.Clients, true),

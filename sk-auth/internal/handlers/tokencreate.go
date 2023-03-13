@@ -18,7 +18,7 @@ type TokenCreateHandler struct {
 	ClientManager clientauth.Manager
 	TokenStore    tokenstore.TokenStore
 	// Login client related stuff
-	LoginClient skhttp.Client
+	Provider skhttp.Client
 }
 
 func (t TokenCreateHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
@@ -32,7 +32,7 @@ func (t TokenCreateHandler) ServeHTTP(response http.ResponseWriter, request *htt
 		t.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
-	user, authority, err := doLogin(t.LoginClient, requestPayload.Login, requestPayload.Password)
+	user, authority, err := doLogin(t.Provider, requestPayload.Login, requestPayload.Password)
 	if err != nil {
 		t.HttpError(response, fmt.Sprintf("Error on downside login request: %s", err.Error()), http.StatusInternalServerError)
 		return

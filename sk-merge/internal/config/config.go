@@ -41,8 +41,9 @@ type Config struct {
 	RootCaPath string `yaml:"rootCaPath"` // Path to a trusted root CA file
 	RootCaData string `yaml:"rootCaData"` // Base64 encoded PEM data containing root CA
 	Services   struct {
-		Login        ServiceConfig `yaml:"login"`
-		UserIdentity ServiceConfig `yaml:"userIdentity"`
-		UserExplain  ServiceConfig `yaml:"userExplain"`
+		Login          ServiceConfig `yaml:"login"`
+		UserIdentity   ServiceConfig `yaml:"userIdentity"`
+		UserExplain    ServiceConfig `yaml:"userExplain"`
+		PasswordChange ServiceConfig `yaml:"passwordChange"`
 	} `yaml:"services"`
 }

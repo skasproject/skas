@@ -30,6 +30,7 @@ func init() {
 	RootCmd.AddCommand(InitCmd)
 	RootCmd.AddCommand(HashCmd)
 	RootCmd.AddCommand(UserCmd)
+	RootCmd.AddCommand(PasswordCmd)
 	UserCmd.AddCommand(usercmd.CreateCmd)
 	UserCmd.AddCommand(usercmd.PatchCmd)
 	UserCmd.AddCommand(usercmd.BindCmd)

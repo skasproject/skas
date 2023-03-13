@@ -63,3 +63,23 @@ func (c clientProviderChain) GetLength() int {
 func isUserFound(st proto.UserStatus) bool {
 	return st == proto.PasswordChecked || st == proto.PasswordUnchecked || st == proto.PasswordFail
 }
+
+func (c clientProviderChain) lookupProvider(name string) clientprovider.ClientProvider {
+	for idx, prvd := range c.providers {
+		if prvd.GetName() == name {
+			return c.providers[idx]
+		}
+	}
+	return nil
+}
+
+func (c clientProviderChain) ChangePassword(request *proto.PasswordChangeRequest) (*proto.PasswordChangeResponse, error) {
+	prvd := c.lookupProvider(request.Provider)
+	if prvd == nil {
+		return &proto.PasswordChangeResponse{
+			Login:  request.Login,
+			Status: proto.UnknownProvider,
+		}, nil
+	}
+	return prvd.ChangePassword(request)
+}
