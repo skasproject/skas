@@ -69,12 +69,12 @@ func NewForInit(serverUrl string) (skhttp.Client, error) {
 	return skhttp.New(conf, "", "")
 }
 
-func loadUpdateConfig(kubeContext string) *skhttp.Config {
-	conf := loadConfig(kubeContext)
+func loadUpdateConfig(kubeconfigFile string, kubeContext string) *skhttp.Config {
+	conf := loadConfig(kubeconfigFile, kubeContext)
 	if conf == nil {
 		conf = &flags.server
 		checkConfig(conf)
-		err := saveConfig(kubeContext, conf)
+		err := saveConfig(kubeconfigFile, kubeContext, conf)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "%s", err.Error())
 			os.Exit(3)
@@ -107,7 +107,7 @@ func loadUpdateConfig(kubeContext string) *skhttp.Config {
 		}
 		checkConfig(conf)
 		if dirtyConfig {
-			err := saveConfig(kubeContext, conf)
+			err := saveConfig(kubeconfigFile, kubeContext, conf)
 			if err != nil {
 				_, _ = fmt.Fprintf(os.Stderr, "%s", err.Error())
 				os.Exit(3)
@@ -137,9 +137,9 @@ func checkConfig(conf *skhttp.Config) {
 	//}
 }
 
-func loadConfig(kubeContext string) *skhttp.Config {
+func loadConfig(kubeconfigFile string, kubeContext string) *skhttp.Config {
 	conf := &skhttp.Config{}
-	configPath := buildPath(kubeContext)
+	configPath := buildPath(kubeconfigFile, kubeContext)
 	if loadsave.LoadStuff(configPath, func(decoder *yaml.Decoder) error {
 		return decoder.Decode(conf)
 	}) {
@@ -151,8 +151,8 @@ func loadConfig(kubeContext string) *skhttp.Config {
 	}
 }
 
-func saveConfig(kubeContext string, conf *skhttp.Config) error {
-	configPath := buildPath(kubeContext)
+func saveConfig(kubeconfigFile string, kubeContext string, conf *skhttp.Config) error {
+	configPath := buildPath(kubeconfigFile, kubeContext)
 	log.Log.V(1).Info("SaveConfig()", "configPath", configPath, "server", conf.Url, "rootCaPath", conf.RootCaPath, "rootCaData", misc.ShortenString(conf.RootCaData), "clientId", conf.ClientAuth.Id, "clientSecret", "*****", "insecureSkipVerify", conf.InsecureSkipVerify)
 	err := loadsave.SaveStuff(configPath, func(encoder *yaml.Encoder) error {
 		return encoder.Encode(conf)
@@ -163,10 +163,10 @@ func saveConfig(kubeContext string, conf *skhttp.Config) error {
 	return nil
 }
 
-func buildPath(context string) string {
+func buildPath(kubeconfigFile string, context string) string {
 	usr, err := osuser.Current()
 	if err != nil {
 		panic(err)
 	}
-	return path.Join(usr.HomeDir, fmt.Sprintf(".kube/cache/skas/%s/config.json", context))
+	return path.Join(usr.HomeDir, ".kube/cache/skas", kubeconfigFile, context, "config.json")
 }

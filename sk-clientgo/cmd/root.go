@@ -10,7 +10,7 @@ import (
 )
 
 var RootCmd = &cobra.Command{
-	Use:   "kubectl-skas",
+	Use:   "kubectl-sk",
 	Short: "A kubectl plugin for Kubernetes authentication",
 }
 

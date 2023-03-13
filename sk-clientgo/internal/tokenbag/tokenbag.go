@@ -1,7 +1,6 @@
 package tokenbag
 
 import (
-	"fmt"
 	"gopkg.in/yaml.v2"
 	"os"
 	osuser "os/user"
@@ -90,7 +89,8 @@ func buildPath() string {
 	if err != nil {
 		panic(err)
 	}
-	return path.Join(usr.HomeDir, fmt.Sprintf(".kube/cache/sas/%s/tokenbag.json", kubecontext.GetKubeContext()))
+	kubeconfigFile, contextName := kubecontext.GetKubeContext()
+	return path.Join(usr.HomeDir, ".kube/cache/skas", kubeconfigFile, contextName, "/tokenbag.json")
 }
 
 // Return false in case of error, whatever error is.

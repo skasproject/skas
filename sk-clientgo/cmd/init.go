@@ -26,7 +26,7 @@ func init() {
 	InitCmd.PersistentFlags().StringVar(&apiServerUrlOverride, "apiServerUrlOverride", "", "Override K8s API server URL")
 	InitCmd.PersistentFlags().StringVar(&authServerUrlOverride, "authServerUrlOverride", "", "Override skas auth server URL")
 	InitCmd.PersistentFlags().StringVar(&namespaceOverride, "namespaceOverride", "", "Override namespace")
-	InitCmd.PersistentFlags().StringVar(&command, "command", "kubectl-skas", "The skas kubectl plugin executable")
+	InitCmd.PersistentFlags().StringVar(&command, "command", "kubectl-sk", "The skas kubectl plugin executable")
 	InitCmd.PersistentFlags().BoolVar(&noContextSwitch, "noContextSwitch", false, "Do not set default context to the newly create one.")
 	InitCmd.PersistentFlags().BoolVar(&force, "force", false, "Override any already existing context")
 	httpClient.AddFlags(InitCmd)
@@ -68,6 +68,7 @@ var InitCmd = &cobra.Command{
 
 		loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 		loadingRules.ExplicitPath = kubeconfigPath // From the command line. Must take precedence
+		loadingRules.WarnIfAllMissing = false
 		configOverrides := &clientcmd.ConfigOverrides{}
 		kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 		rawConfig, err := kubeConfig.RawConfig()
@@ -90,21 +91,21 @@ var InitCmd = &cobra.Command{
 		// Test overwrite
 		_, exitingContext := rawConfig.Contexts[contextName]
 		if exitingContext && !force {
-			_, _ = fmt.Fprintf(os.Stderr, "ERROR: context '%s' already existing in this config file (%s)\n", contextName, kubeConfig.ConfigAccess().GetDefaultFilename())
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: context '%s' already existing in this config file (%s)\n", contextName, configAccess.GetDefaultFilename())
 			os.Exit(15)
 		}
 		if _, ok := rawConfig.Clusters[clusterName]; ok && !force {
-			_, _ = fmt.Fprintf(os.Stderr, "ERROR: cluster '%s' already existing in this config file (%s)\n", clusterName, kubeConfig.ConfigAccess().GetDefaultFilename())
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: cluster '%s' already existing in this config file (%s)\n", clusterName, configAccess.GetDefaultFilename())
 			os.Exit(15)
 		}
 		if _, ok := rawConfig.AuthInfos[userName]; ok && !force {
-			_, _ = fmt.Fprintf(os.Stderr, "ERROR: user '%s' already existing in this config file (%s)\n", userName, kubeConfig.ConfigAccess().GetDefaultFilename())
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: user '%s' already existing in this config file (%s)\n", userName, configAccess.GetDefaultFilename())
 			os.Exit(15)
 		}
 		if exitingContext {
-			global.Log.V(0).Info("Update existing context", "context", contextName, "kubeconfig", kubeConfig.ConfigAccess().GetDefaultFilename())
+			fmt.Printf("Update existing context '%s' in kubeconfig file '%s'\n", contextName, configAccess.GetDefaultFilename())
 		} else {
-			global.Log.V(0).Info("Setup new context", "context", contextName, "kubeconfig", kubeConfig.ConfigAccess().GetDefaultFilename())
+			fmt.Printf("Setup new context '%s' in kubeconfig file '%s'\n", contextName, configAccess.GetDefaultFilename())
 		}
 
 		rootCaData, err := base64.StdEncoding.DecodeString(kubeConfigResponse.Cluster.RootCaData)

@@ -20,7 +20,7 @@ func Hash(password string) string {
 }
 
 func InputPassword(prompt string) string {
-	_, err := fmt.Fprint(os.Stdout, prompt)
+	_, err := fmt.Fprint(os.Stderr, prompt)
 	if err != nil {
 		panic(err)
 	}

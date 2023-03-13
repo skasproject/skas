@@ -24,15 +24,24 @@ func loadRawConfig(kubeconfig string) clientcmdapi.Config {
 
 var once sync.Once
 var kubeContext string
+var kubeconfigFile string
 
-func GetKubeContext() string {
+func GetKubeContext() ( /*kubeconfigFile*/ string /*kubecontext*/, string) {
 	once.Do(func() {
-		rawConfig := loadRawConfig(global.KubeconfigPath)
+		loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+		loadingRules.ExplicitPath = global.KubeconfigPath // From the command line. Must take precedence
+		configOverrides := &clientcmd.ConfigOverrides{}
+		kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
+		kubeconfigFile = kubeConfig.ConfigAccess().GetDefaultFilename()
+		rawConfig, err := kubeConfig.RawConfig()
+		if err != nil {
+			panic(err)
+		}
 		kubeContext = rawConfig.CurrentContext
 		if kubeContext == "" {
 			kubeContext = "default"
 		}
-		global.Log.V(1).Info("GetKubeContext()", "kubeContext", kubeContext)
+		global.Log.V(1).Info("GetKubeContext()", "kubeContext", kubeContext, "kubeconfigFile", kubeconfigFile)
 	})
-	return kubeContext
+	return kubeconfigFile, kubeContext
 }
