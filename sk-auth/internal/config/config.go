@@ -36,10 +36,11 @@ type Config struct {
 	Provider    skhttp.Config           `yaml:"provider"`
 	AdminGroup  string                  `yaml:"adminGroup"`
 	Services    struct {
-		Token      ServiceConfig `yaml:"token"`
-		Explain    ServiceConfig `yaml:"explain"`
-		K8sAuth    ServiceConfig `yaml:"k8sAuth"`
-		Kubeconfig ServiceConfig `yaml:"kubeconfig"`
+		Token          ServiceConfig `yaml:"token"`
+		Explain        ServiceConfig `yaml:"explain"`
+		K8sAuth        ServiceConfig `yaml:"k8sAuth"`
+		PasswordChange ServiceConfig `yaml:"passwordChange"`
+		Kubeconfig     ServiceConfig `yaml:"kubeconfig"`
 	} `yaml:"services"`
 	MetricAddr string `yaml:"metricAddr"`
 	ProbeAddr  string `yaml:"probeAddr"`

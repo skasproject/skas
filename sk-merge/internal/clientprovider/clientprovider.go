@@ -10,4 +10,5 @@ type ClientProvider interface {
 	GetName() string
 	IsCredentialAuthority() bool
 	IsGroupAuthority() bool
+	ChangePassword(request *proto.PasswordChangeRequest) (*proto.PasswordChangeResponse, error)
 }

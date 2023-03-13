@@ -13,10 +13,11 @@ import (
 	userdbv1alpha1 "skas/sk-common/k8sapis/userdb/v1alpha1"
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/httpserver"
-	"skas/sk-common/pkg/httpserver/handlers"
+	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-crd/internal/config"
 	"skas/sk-crd/internal/crdidentityprovider"
+	"skas/sk-crd/internal/handlers"
 )
 
 var scheme = runtime.NewScheme()
@@ -69,13 +70,23 @@ func main() {
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
-	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &handlers.UserIdentityHandler{
-		BaseHandler: handlers.BaseHandler{
-			Logger: s.Log,
+
+	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &commonHandlers.UserIdentityHandler{
+		BaseHandler: commonHandlers.BaseHandler{
+			Logger: s.Log.WithName("userIdentity handler"),
 		},
 		Provider:      crdidentityprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
 		ClientManager: clientauth.New(config.Conf.Clients, true),
 	}).Methods(proto.UserIdentityMeta.Method)
+
+	s.Router.Handle(proto.PasswordChangeMeta.UrlPath, &handlers.PasswordChangeHandler{
+		BaseHandler: commonHandlers.BaseHandler{
+			Logger: s.Log.WithName("PasswordChange handler"),
+		},
+		ClientManager: clientauth.New(config.Conf.Clients, true),
+		KubeClient:    mgr.GetClient(),
+		Namespace:     config.Conf.Namespace,
+	}).Methods(proto.PasswordChangeMeta.Method)
 
 	err = mgr.Add(s)
 	if err != nil {

@@ -39,7 +39,7 @@ func main() {
 	}
 	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &handlers.UserIdentityHandler{
 		BaseHandler: handlers.BaseHandler{
-			Logger: s.Log,
+			Logger: s.Log.WithName("UserIdentity handler"),
 		},
 		Provider:      provider,
 		ClientManager: clientauth.New(config.Conf.Clients, true),

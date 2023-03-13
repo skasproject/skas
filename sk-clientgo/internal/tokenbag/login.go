@@ -3,13 +3,12 @@ package tokenbag
 import (
 	"bufio"
 	"fmt"
-	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"skas/sk-clientgo/internal/global"
+	"skas/sk-clientgo/internal/utils"
 	"skas/sk-common/pkg/skhttp"
 	"skas/sk-common/proto/v1/proto"
 	"strings"
-	"syscall"
 	"time"
 )
 
@@ -56,22 +55,9 @@ func inputCredentials(login, password string) (string, string) {
 		login = strings.TrimSpace(login)
 	}
 	if password == "" {
-		password = inputPassword("Password:")
+		password = utils.InputPassword("Password:")
 	}
 	return login, password
-}
-
-func inputPassword(prompt string) string {
-	_, err := fmt.Fprint(os.Stderr, prompt)
-	if err != nil {
-		panic(err)
-	}
-	bytePassword, err2 := terminal.ReadPassword(syscall.Stdin)
-	if err2 != nil {
-		panic(err2)
-	}
-	_, _ = fmt.Fprintf(os.Stderr, "\n")
-	return strings.TrimSpace(string(bytePassword))
 }
 
 func createToken(client skhttp.Client, login, password string) *proto.TokenCreateResponse {

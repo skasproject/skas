@@ -23,6 +23,7 @@ func main() {
 	config.Log.Info("Login service", "enabled", !config.Conf.Services.Login.Disabled)
 	config.Log.Info("UserIdentity service", "enabled", !config.Conf.Services.UserIdentity.Disabled)
 	config.Log.Info("UserExplain service", "enabled", !config.Conf.Services.UserExplain.Disabled)
+	config.Log.Info("PasswordChange service", "enabled", !config.Conf.Services.PasswordChange.Disabled)
 
 	s := &httpserver.Server{
 		Name:   "merge",
@@ -74,6 +75,16 @@ func main() {
 			Provider:      identityServerProvider,
 			ClientManager: clientauth.New(config.Conf.Services.UserIdentity.Clients, true),
 		}).Methods(proto.UserIdentityMeta.Method)
+	}
+	// --------------------- PasswordChange handler
+	if !config.Conf.Services.PasswordChange.Disabled {
+		s.Router.Handle(proto.PasswordChangeMeta.UrlPath, handlers.PasswordChangeHandler{
+			BaseHandler: commonHandlers.BaseHandler{
+				Logger: s.Log.WithName("passwordChange handler"),
+			},
+			Chain:         providerChain,
+			ClientManager: clientauth.New(config.Conf.Services.PasswordChange.Clients, true),
+		}).Methods(proto.PasswordChangeMeta.Method)
 	}
 
 	err = s.Start(context.Background())

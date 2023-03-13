@@ -3,6 +3,7 @@ package misc
 import (
 	"fmt"
 	"gopkg.in/yaml.v2"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -24,6 +25,10 @@ func LoadConfig(configFile string, conf interface{}) (absConfigFile string, err 
 	decoder := yaml.NewDecoder(strings.NewReader(content2))
 	decoder.SetStrict(true)
 	if err = decoder.Decode(conf); err != nil {
+		if err == io.EOF {
+			// Empty file is not an error
+			return absConfigFile, nil
+		}
 		return absConfigFile, fmt.Errorf("file '%s': %w", configFile, err)
 	}
 	return absConfigFile, nil
