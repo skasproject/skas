@@ -108,6 +108,11 @@ DONE
 - Bug: If I got context with same name in two different config file, the local token bag is shared. Solution would be
   to add a same checksum of config file path in the token bag name (Or full path). Same for config.json
 
+## packaging
+
+- role: Test sk-auth is running before patching api-server
+- Use go-releaser for the client
+
 ## sk-filter
 
 - TODO ?

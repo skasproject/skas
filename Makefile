@@ -55,9 +55,9 @@ docker: version ## Build and push skas image
 .PHONY: charts
 charts: ## Publish helm chart
 	cd helm && helm package -d ../dist skas
-	cd ../warehouse && gh release upload  --clobber 0.1.0 ../skas/dist/skas-0.1.0.tgz
+	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/dist/skas-$(VERSION).tgz
 	cd helm && helm package -d ../dist skusers
-	cd ../warehouse && gh release upload  --clobber 0.1.0 ../skas/dist/skusers-0.1.0.tgz
+	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/dist/skusers-$(VERSION).tgz
 
 
 .PHONY: manifests

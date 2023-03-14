@@ -1,0 +1,33 @@
+# Make sure to check the documentation at http://goreleaser.com
+before:
+  hooks:
+    - sh -c "cd sk-clientgo && go mod download"
+    - sh -c "cd helm && rm -r dist"
+    - sh -c "cd helm && helm package -d ./dist skas"
+    - sh -c "cd helm && helm package -d ./dist skusers"
+builds:
+  - id: sk-clientgo
+    binary: kubectl-sk
+    dir: sk-clientgo
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+release:
+  prerelease: true
+  extra_files:
+    - glob: helm/dist/*
+archives:
+  - format: binary
+    rlcp: true
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  skip: true
