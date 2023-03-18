@@ -2,7 +2,7 @@ module skas/sk-crd
 
 go 1.19
 
-replace skas/sk-common v0.1.0 => ../sk-common
+replace skas/sk-common v0.2.0 => ../sk-common
 
 require (
 	github.com/go-logr/logr v1.2.3
@@ -11,7 +11,7 @@ require (
 	k8s.io/apimachinery v0.26.1
 	k8s.io/client-go v0.26.1
 	sigs.k8s.io/controller-runtime v0.14.4
-	skas/sk-common v0.1.0
+	skas/sk-common v0.2.0
 )
 
 require (

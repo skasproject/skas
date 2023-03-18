@@ -2,8 +2,8 @@
 # Image URL to use all building/pushing image targets
 DOCKER_IMG := ghcr.io/skasproject/skas
 
-DOCKER_TAG := 0.1.0
-VERSION ?= 0.1.0
+DOCKER_TAG := 0.2.0
+VERSION ?= 0.2.0
 
 # To authenticate for pushing in github repo:
 # echo $GITHUB_TOKEN | docker login ghcr.io -u $USER_NAME --password-stdin
