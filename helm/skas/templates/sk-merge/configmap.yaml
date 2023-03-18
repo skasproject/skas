@@ -42,7 +42,7 @@ data:
         clients:
           - id: "*"
             secret: "*"
-      userExplain:
+      userDescribe:
         clients:
           - id: "*"
             secret: "*"

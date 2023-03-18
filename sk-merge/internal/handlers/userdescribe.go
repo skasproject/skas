@@ -11,18 +11,18 @@ import (
 	"skas/sk-merge/internal/clientproviderchain"
 )
 
-var _ http.Handler = &UserExplainHandler{}
+var _ http.Handler = &UserDescribeHandler{}
 
-var _ httpserver.LoggingHandler = &UserExplainHandler{}
+var _ httpserver.LoggingHandler = &UserDescribeHandler{}
 
-type UserExplainHandler struct {
+type UserDescribeHandler struct {
 	commonHandlers.BaseHandler
 	Chain         clientproviderchain.ClientProviderChain
 	ClientManager clientauth.Manager
 }
 
-func (u UserExplainHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
-	var requestPayload proto.UserExplainRequest
+func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+	var requestPayload proto.UserDescribeRequest
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		u.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
@@ -39,13 +39,13 @@ func (u UserExplainHandler) ServeHTTP(response http.ResponseWriter, request *htt
 	}
 	merged, authority := clientproviderchain.Merge(requestPayload.Login, items)
 
-	responsePayload := &proto.UserExplainResponse{
-		Items:     make([]proto.UserExplainItem, 0, u.Chain.GetLength()),
+	responsePayload := &proto.UserDescribeResponse{
+		Items:     make([]proto.UserDescribeItem, 0, u.Chain.GetLength()),
 		Merged:    *merged,
 		Authority: authority,
 	}
 	for idx, _ := range items {
-		udi := &proto.UserExplainItem{
+		udi := &proto.UserDescribeItem{
 			UserIdentityResponse: *items[idx].UserIdentityResponse,
 			Translated:           *items[idx].Translated,
 		}
@@ -61,6 +61,6 @@ func (u UserExplainHandler) ServeHTTP(response http.ResponseWriter, request *htt
 // Normally, we should not need to add this, as we embed commonHandlers.BaseHandler which have this function.
 // But if w don't, httpserver.LogHttp will not recognize us as a LoggingHandler. May be a compiler bug ?
 
-func (u UserExplainHandler) GetLog() logr.Logger {
+func (u UserDescribeHandler) GetLog() logr.Logger {
 	return u.Logger
 }

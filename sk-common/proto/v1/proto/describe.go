@@ -10,23 +10,23 @@ import (
 // This is issued by sk-cli to sk-auth, which validate the token.
 // Then, it is forwarded to sk-merge, without Token but with ClientAuth
 
-var _ RequestPayload = &UserExplainRequest{}
+var _ RequestPayload = &UserDescribeRequest{}
 
-var UserExplainMeta = &RequestMeta{
+var UserDescribeMeta = &RequestMeta{
 	Method:  "GET",
-	UrlPath: "/v1/userExplain",
+	UrlPath: "/v1/userDescribe",
 }
 
-type UserExplainRequest struct {
+type UserDescribeRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`
 	Login      string     `json:"login"`
 	Password   string     `json:"password"` // Optional
 }
 
-var _ ResponsePayload = &UserExplainResponse{}
+var _ ResponsePayload = &UserDescribeResponse{}
 
-type UserExplainResponse struct {
-	Items     []UserExplainItem    `yaml:"items"`
+type UserDescribeResponse struct {
+	Items     []UserDescribeItem    `yaml:"items"`
 	Merged    UserIdentityResponse `yaml:"merged"`
 	Authority string               `yaml:"authority"`
 }
@@ -36,7 +36,7 @@ type Translated struct {
 	Uid    int      `yaml:"uid"`
 }
 
-type UserExplainItem struct {
+type UserDescribeItem struct {
 	UserIdentityResponse UserIdentityResponse `yaml:"userIdentityResponse"`
 	Provider             struct {
 		Name                string `yaml:"name"`
@@ -48,16 +48,16 @@ type UserExplainItem struct {
 
 // -------------------------------------------------------------------------
 
-func (u *UserExplainRequest) String() string {
-	return fmt.Sprintf("UserExplainRequest(login=%s)", u.Login)
+func (u *UserDescribeRequest) String() string {
+	return fmt.Sprintf("UserDescribeRequest(login=%s)", u.Login)
 }
-func (u *UserExplainRequest) ToJson() ([]byte, error) {
+func (u *UserDescribeRequest) ToJson() ([]byte, error) {
 	return toJson(u)
 }
-func (u *UserExplainRequest) FromJson(r io.Reader) error {
+func (u *UserDescribeRequest) FromJson(r io.Reader) error {
 	return fromJson(r, u)
 }
 
-func (u *UserExplainResponse) FromJson(r io.Reader) error {
+func (u *UserDescribeResponse) FromJson(r io.Reader) error {
 	return fromJson(r, u)
 }

@@ -43,7 +43,7 @@ type Config struct {
 	Services   struct {
 		Login          ServiceConfig `yaml:"login"`
 		UserIdentity   ServiceConfig `yaml:"userIdentity"`
-		UserExplain    ServiceConfig `yaml:"userExplain"`
+		UserDescribe   ServiceConfig `yaml:"userDescribe"`
 		PasswordChange ServiceConfig `yaml:"passwordChange"`
 	} `yaml:"services"`
 }

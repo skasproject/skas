@@ -22,7 +22,7 @@ func main() {
 	config.Log.Info("sk-merge start", "version", config.Version, "logLevel", config.Conf.Log.Level)
 	config.Log.Info("Login service", "enabled", !config.Conf.Services.Login.Disabled)
 	config.Log.Info("UserIdentity service", "enabled", !config.Conf.Services.UserIdentity.Disabled)
-	config.Log.Info("UserExplain service", "enabled", !config.Conf.Services.UserExplain.Disabled)
+	config.Log.Info("UserDescribe service", "enabled", !config.Conf.Services.UserDescribe.Disabled)
 	config.Log.Info("PasswordChange service", "enabled", !config.Conf.Services.PasswordChange.Disabled)
 
 	s := &httpserver.Server{
@@ -41,15 +41,15 @@ func main() {
 		config.Log.Error(fmt.Errorf("no client provider defined"), "No client provider defined")
 		os.Exit(7)
 	}
-	// --------------------- UserExplain handler
-	if !config.Conf.Services.UserExplain.Disabled {
-		s.Router.Handle(proto.UserExplainMeta.UrlPath, handlers.UserExplainHandler{
+	// --------------------- UserDescribe handler
+	if !config.Conf.Services.UserDescribe.Disabled {
+		s.Router.Handle(proto.UserDescribeMeta.UrlPath, handlers.UserDescribeHandler{
 			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("userDescribe handler"),
 			},
 			Chain:         providerChain,
-			ClientManager: clientauth.New(config.Conf.Services.UserExplain.Clients, true),
-		}).Methods(proto.UserExplainMeta.Method)
+			ClientManager: clientauth.New(config.Conf.Services.UserDescribe.Clients, true),
+		}).Methods(proto.UserDescribeMeta.Method)
 	}
 	// --------------------- Login handler
 	if !config.Conf.Services.Login.Disabled {
