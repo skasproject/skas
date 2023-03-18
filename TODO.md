@@ -38,6 +38,7 @@ DONE:
 - Think about a system who can safely delegate group binding inside a namespace
 - helm: in rbac, add a rolebinding to an admin group (skas_admin by default)
 - Rename back userExplain to userDescribe
+- Set a version number in saved config and tokenbag file name
 - 
  
 - Service refactoring
@@ -102,6 +103,7 @@ DONE:
 
 - kubeconfig auth certitficate is not handled.
 - Check from a system which has not the CA registered 
+- Add "https://" on init if not present
 
 DONE
 - kubeconfig configuration: Replace contextName and namespace by context.name and context.namespace
