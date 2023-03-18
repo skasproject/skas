@@ -14,7 +14,7 @@ import (
 
 var _ http.Handler = &TokenRenewHandler{}
 
-type UserExplainHandler struct {
+type UserDescribeHandler struct {
 	// Server related stuff
 	commonHandlers.BaseHandler
 	ClientManager clientauth.Manager
@@ -49,7 +49,7 @@ func userInGroup(user *proto.User, group string) bool {
 	return false
 }
 
-func (t UserExplainHandler) getAuthUser(request *http.Request) (*proto.User, error) {
+func (t UserDescribeHandler) getAuthUser(request *http.Request) (*proto.User, error) {
 	login, password, ok := request.BasicAuth()
 	if ok {
 		user, _, err := doLogin(t.Provider, login, password)
@@ -71,8 +71,8 @@ func (t UserExplainHandler) getAuthUser(request *http.Request) (*proto.User, err
 	return nil, nil
 }
 
-func (t UserExplainHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
-	var requestPayload = proto.UserExplainRequest{}
+func (t UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+	var requestPayload = proto.UserDescribeRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		t.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
@@ -96,12 +96,12 @@ func (t UserExplainHandler) ServeHTTP(response http.ResponseWriter, request *htt
 		t.HttpError(response, "User has no admin rights", http.StatusUnauthorized)
 		return
 	}
-	explainResponse := &proto.UserExplainResponse{}
-	err = t.Provider.Do(proto.UserExplainMeta, &requestPayload, explainResponse, nil)
+	describeResponse := &proto.UserDescribeResponse{}
+	err = t.Provider.Do(proto.UserDescribeMeta, &requestPayload, describeResponse, nil)
 	if err != nil {
 		t.HttpError(response, fmt.Sprintf("Error on downside login request: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
-	t.GetLog().Info("User explain response", "user", explainResponse.Merged.User)
-	t.ServeJSON(response, explainResponse)
+	t.GetLog().Info("User describe response", "user", describeResponse.Merged.User)
+	t.ServeJSON(response, describeResponse)
 }

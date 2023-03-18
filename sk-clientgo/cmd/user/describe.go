@@ -45,20 +45,20 @@ var DescribeCmd = &cobra.Command{
 		if inputPassword {
 			password = utils.InputPassword(fmt.Sprintf("Password for user '%s':", args[0]))
 		}
-		uer := &proto.UserExplainRequest{
+		uer := &proto.UserDescribeRequest{
 			ClientAuth: client.GetClientAuth(),
 			Login:      args[0],
 			Password:   password,
 		}
-		resp := &proto.UserExplainResponse{}
-		err = client.Do(proto.UserExplainMeta, uer, resp, &skhttp.HttpAuth{Token: tokenBag.Token})
+		resp := &proto.UserDescribeResponse{}
+		err = client.Do(proto.UserDescribeMeta, uer, resp, &skhttp.HttpAuth{Token: tokenBag.Token})
 		if err != nil {
 			_, ok := err.(*skhttp.UnauthorizedError)
 			if ok {
 				_, _ = fmt.Fprintf(os.Stderr, "Unauthorized!\n")
 				os.Exit(2)
 			}
-			global.Log.Error(err, "error on UserExplainRequest()")
+			global.Log.Error(err, "error on UserDescribeRequest()")
 			os.Exit(4)
 		}
 		//fmt.Printf("%v", resp)

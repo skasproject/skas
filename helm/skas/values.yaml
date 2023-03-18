@@ -148,7 +148,7 @@ skAuth:
     kubeconfig:
       disabled: false
       clients: []
-    explain:
+    describe:
       disabled: false
       clients: []
     passwordChange:
@@ -312,7 +312,7 @@ skMerge:
       #   clients:
       #     - id: "*"
       #       secret: "1234"
-      userExplain:
+      userDescribe:
         disabled: false
     #   clients:
     #     - id: "*"

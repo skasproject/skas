@@ -39,7 +39,7 @@ func main() {
 
 	config.Log.Info("sk-auth start", "version", config.Version, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.TokenConfig.StorageType)
 	config.Log.Info("Token service", "enabled", !config.Conf.Services.Token.Disabled)
-	config.Log.Info("UserExplain service", "enabled", !config.Conf.Services.Explain.Disabled)
+	config.Log.Info("UserDescribe service", "enabled", !config.Conf.Services.Describe.Disabled)
 	config.Log.Info("K8sAuth service", "enabled", !config.Conf.Services.K8sAuth.Disabled)
 	config.Log.Info("Password Change service", "enabled", !config.Conf.Services.PasswordChange.Disabled)
 	config.Log.Info("Kubeconfig service", "enabled", !config.Conf.Services.Kubeconfig.Disabled)
@@ -119,16 +119,16 @@ func main() {
 			TokenStore: tokenStore,
 		}).Methods(proto.TokenReviewMeta.Method)
 	}
-	// ---------------------------------------------------- Explain service
-	if !config.Conf.Services.Explain.Disabled {
-		s.Router.Handle(proto.UserExplainMeta.UrlPath, &handlers.UserExplainHandler{
+	// ---------------------------------------------------- Describe service
+	if !config.Conf.Services.Describe.Disabled {
+		s.Router.Handle(proto.UserDescribeMeta.UrlPath, &handlers.UserDescribeHandler{
 			BaseHandler: basehandlers.BaseHandler{
-				Logger: s.Log.WithName("UserExplain handler"),
+				Logger: s.Log.WithName("UserDescribe handler"),
 			},
-			ClientManager: clientauth.New(config.Conf.Services.Explain.Clients, false),
+			ClientManager: clientauth.New(config.Conf.Services.Describe.Clients, false),
 			TokenStore:    tokenStore,
 			Provider:      provider,
-		}).Methods(proto.UserExplainMeta.Method)
+		}).Methods(proto.UserDescribeMeta.Method)
 	}
 	// ---------------------------------------------------- PasswordChange service
 	if !config.Conf.Services.PasswordChange.Disabled {

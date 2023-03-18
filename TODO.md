@@ -20,7 +20,6 @@ DONE:
 ## All
 
 - Ensure copyright message in all relevant location
-- Reference and normalize os.exit() code
 - Switch to logrus, to have more level (i.e WARNING)
 - Display client.id in relevant message (Modify LoggingHandler)
 - Rename sk-xxxx to skas-xxxxx ? or ska-xxxx
@@ -36,9 +35,6 @@ DONE:
 - systematize global rootCaPath, rootCaData
 - Setup a system to force password change
 - Think about a system who can safely delegate group binding inside a namespace
-- helm: in rbac, add a rolebinding to an admin group (skas_admin by default)
-- Rename back userExplain to userDescribe
-- Set a version number in saved config and tokenbag file name
 - 
  
 - Service refactoring
@@ -52,10 +48,12 @@ DONE:
 
 - A sample helm chart to create a namespace, and an admin user and group.
 - Rename userDescribe to userExplain
+- Rename back userExplain to userDescribe
 - Rename userStatus to userIdentity
 - Rename tokenget to tokenCreate
 - camelCase all url
 - set uid as an int everywhere (In proto)
+- helm: in rbac, add a rolebinding to an admin group (skas_admin by default)
 
 ## sk-static
 
@@ -93,7 +91,7 @@ DONE:
 - kubeconfig: Always have a clientId (Missing at least for sk-client)
 
 DONE:
-- Relay userExplain
+- Relay userDescribe
 - Use basic auth in complement to token auth on userDescribe
 - Rename 'loginProvider' to 'downstreamProvider' (Or provider)
 - Relay with authentication the changePassword service
@@ -104,6 +102,8 @@ DONE:
 - kubeconfig auth certitficate is not handled.
 - Check from a system which has not the CA registered 
 - Add "https://" on init if not present
+- Reference and normalize os.exit() code
+- Set a version number in saved config and tokenbag file name
 
 DONE
 - kubeconfig configuration: Replace contextName and namespace by context.name and context.namespace
