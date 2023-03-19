@@ -8,11 +8,9 @@ import (
 
 // ----------------------------Shared stuff
 
-// This structure is also used in configuration. So the yaml
-
 type ClientAuth struct {
-	Id     string `json:"id" yaml:"id"`
-	Secret string `json:"secret" yaml:"secret"`
+	Id     string `json:"id"`
+	Secret string `json:"secret"`
 }
 
 type RequestMeta struct {

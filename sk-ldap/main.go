@@ -32,7 +32,7 @@ func main() {
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
-	provider, err := serverprovider.New(&config.Conf.Ldap, config.Log, filepath.Dir(config.ConfigFile))
+	provider, err := serverprovider.New(&config.Conf.Ldap, config.Log, filepath.Dir(config.File))
 	if err != nil {
 		config.Log.Error(err, "ldap config")
 		os.Exit(3)

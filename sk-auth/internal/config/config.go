@@ -2,9 +2,9 @@ package config
 
 import (
 	"github.com/go-logr/logr"
+	cconfig "skas/sk-common/pkg/config"
 	"skas/sk-common/pkg/misc"
 	"skas/sk-common/pkg/skclient"
-	"skas/sk-common/pkg/skserver"
 	"skas/sk-common/proto/v1/proto"
 	"time"
 )
@@ -23,24 +23,19 @@ type TokenConfig struct {
 	LastHitStep       int            `yaml:"lastHitStep"`       // When tokenStorage==crd, the max difference between reality and what is stored in API Server. In per mille of InactivityTimeout. Aim is to avoid API server overloading
 }
 
-type ServiceConfig struct {
-	Disabled bool               `yaml:"disabled"`
-	Clients  []proto.ClientAuth `yaml:"clients"`
-}
-
 type Config struct {
 	Log         misc.LogConfig         `yaml:"log"`
-	Server      skserver.ServerConfig  `yaml:"server"`
+	Server      cconfig.SkServerConfig `yaml:"server"`
 	TokenConfig TokenConfig            `yaml:"tokenConfig"`
 	Kubeconfig  proto.KubeconfigConfig `yaml:"kubeconfig"`
 	Provider    skclient.Config        `yaml:"provider"`
 	AdminGroup  string                 `yaml:"adminGroup"`
 	Services    struct {
-		Token          ServiceConfig `yaml:"token"`
-		Describe       ServiceConfig `yaml:"describe"`
-		K8sAuth        ServiceConfig `yaml:"k8sAuth"`
-		PasswordChange ServiceConfig `yaml:"passwordChange"`
-		Kubeconfig     ServiceConfig `yaml:"kubeconfig"`
+		Token          cconfig.ServiceConfig `yaml:"token"`
+		Describe       cconfig.ServiceConfig `yaml:"describe"`
+		K8sAuth        cconfig.ServiceConfig `yaml:"k8sAuth"`
+		PasswordChange cconfig.ServiceConfig `yaml:"passwordChange"`
+		Kubeconfig     cconfig.ServiceConfig `yaml:"kubeconfig"`
 	} `yaml:"services"`
 	MetricAddr string `yaml:"metricAddr"`
 	ProbeAddr  string `yaml:"probeAddr"`

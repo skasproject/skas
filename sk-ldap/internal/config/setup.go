@@ -31,7 +31,7 @@ func Setup() error {
 	// ------------------------------------ Load config file
 
 	var err error
-	ConfigFile, err = misc.LoadConfig(configFile, &Conf)
+	File, err = misc.LoadConfig(configFile, &Conf)
 	if err != nil {
 		return err
 	}
