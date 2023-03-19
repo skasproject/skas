@@ -6,8 +6,8 @@ import (
 	"skas/sk-auth/internal/config"
 	"skas/sk-auth/internal/tokenstore"
 	"skas/sk-common/pkg/clientauth"
-	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"strings"
 )
@@ -20,7 +20,7 @@ type UserDescribeHandler struct {
 	ClientManager clientauth.Manager
 	TokenStore    tokenstore.TokenStore
 	// Login client related stuff. Also
-	Provider skhttp.Client
+	Provider skclient.SkClient
 }
 
 func getBearerToken(request *http.Request) string {

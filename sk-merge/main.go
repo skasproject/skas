@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 	"skas/sk-common/pkg/clientauth"
-	"skas/sk-common/pkg/httpserver"
-	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
+	"skas/sk-common/pkg/skserver"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/clientproviderchain"
 	"skas/sk-merge/internal/config"
@@ -25,7 +25,7 @@ func main() {
 	config.Log.Info("UserDescribe service", "enabled", !config.Conf.Services.UserDescribe.Disabled)
 	config.Log.Info("PasswordChange service", "enabled", !config.Conf.Services.PasswordChange.Disabled)
 
-	s := &httpserver.Server{
+	s := &skserver.SkServer{
 		Name:   "merge",
 		Log:    config.Log.WithName(fmt.Sprintf("%s", "mergeServer")),
 		Config: &config.Conf.Server,

@@ -11,12 +11,12 @@ import (
 	"skas/sk-clientgo/internal/kubecontext"
 	"skas/sk-clientgo/internal/loadsave"
 	"skas/sk-common/pkg/misc"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
 	"strconv"
 )
 
 var flags struct {
-	server             skhttp.Config
+	server             skclient.Config
 	reset              bool
 	insecureSkipVerify string
 }
@@ -51,12 +51,12 @@ func groomFlags() {
 	}
 }
 
-func New() (skhttp.Client, error) {
+func New() (skclient.SkClient, error) {
 	groomFlags()
-	return skhttp.New(loadUpdateConfig(kubecontext.GetKubeContext()), "", "")
+	return skclient.New(loadUpdateConfig(kubecontext.GetKubeContext()), "", "")
 }
 
-func NewForInit(serverUrl string) (skhttp.Client, error) {
+func NewForInit(serverUrl string) (skclient.SkClient, error) {
 	conf := &flags.server
 	if serverUrl != "" {
 		if conf.Url != "" {
@@ -66,10 +66,10 @@ func NewForInit(serverUrl string) (skhttp.Client, error) {
 		conf.Url = serverUrl
 	}
 	checkConfig(conf)
-	return skhttp.New(conf, "", "")
+	return skclient.New(conf, "", "")
 }
 
-func loadUpdateConfig(kubeconfigFile string, kubeContext string) *skhttp.Config {
+func loadUpdateConfig(kubeconfigFile string, kubeContext string) *skclient.Config {
 	conf := loadConfig(kubeconfigFile, kubeContext)
 	if conf == nil {
 		conf = &flags.server
@@ -118,7 +118,7 @@ func loadUpdateConfig(kubeconfigFile string, kubeContext string) *skhttp.Config 
 	return conf
 }
 
-func checkConfig(conf *skhttp.Config) {
+func checkConfig(conf *skclient.Config) {
 	if conf.Url == "" {
 		_, _ = fmt.Fprintf(os.Stderr, "\nERROR: Missing 'authServerUrl' parameter\n\n")
 		os.Exit(2)
@@ -137,8 +137,8 @@ func checkConfig(conf *skhttp.Config) {
 	//}
 }
 
-func loadConfig(kubeconfigFile string, kubeContext string) *skhttp.Config {
-	conf := &skhttp.Config{}
+func loadConfig(kubeconfigFile string, kubeContext string) *skclient.Config {
+	conf := &skclient.Config{}
 	configPath := buildPath(kubeconfigFile, kubeContext)
 	if loadsave.LoadStuff(configPath, func(decoder *yaml.Decoder) error {
 		return decoder.Decode(conf)
@@ -151,7 +151,7 @@ func loadConfig(kubeconfigFile string, kubeContext string) *skhttp.Config {
 	}
 }
 
-func saveConfig(kubeconfigFile string, kubeContext string, conf *skhttp.Config) error {
+func saveConfig(kubeconfigFile string, kubeContext string, conf *skclient.Config) error {
 	configPath := buildPath(kubeconfigFile, kubeContext)
 	log.Log.V(1).Info("SaveConfig()", "configPath", configPath, "server", conf.Url, "rootCaPath", conf.RootCaPath, "rootCaData", misc.ShortenString(conf.RootCaData), "clientId", conf.ClientAuth.Id, "clientSecret", "*****", "insecureSkipVerify", conf.InsecureSkipVerify)
 	err := loadsave.SaveStuff(configPath, func(encoder *yaml.Encoder) error {

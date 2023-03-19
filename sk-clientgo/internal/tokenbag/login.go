@@ -6,13 +6,13 @@ import (
 	"os"
 	"skas/sk-clientgo/internal/global"
 	"skas/sk-clientgo/internal/utils"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/proto/v1/proto"
 	"strings"
 	"time"
 )
 
-func InteractiveLogin(client skhttp.Client, login, password string) *TokenBag {
+func InteractiveLogin(client skclient.SkClient, login, password string) *TokenBag {
 	maxTry := 3
 	if login != "" && password != "" {
 		maxTry = 1 // If all is provided on command line, do not prompt in case of failure
@@ -60,7 +60,7 @@ func inputCredentials(login, password string) (string, string) {
 	return login, password
 }
 
-func createToken(client skhttp.Client, login, password string) *proto.TokenCreateResponse {
+func createToken(client skclient.SkClient, login, password string) *proto.TokenCreateResponse {
 	tgr := &proto.TokenCreateRequest{
 		ClientAuth: client.GetClientAuth(),
 		Login:      login,

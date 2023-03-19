@@ -2,7 +2,7 @@ package clientprovider
 
 import (
 	"fmt"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/config"
 )
@@ -11,7 +11,7 @@ var _ ClientProvider = &clientProvider{}
 
 type clientProvider struct {
 	config.ClientProviderConfig
-	httpClient skhttp.Client
+	httpClient skclient.SkClient
 }
 
 func (c clientProvider) IsGroupAuthority() bool {
@@ -57,7 +57,7 @@ func (c clientProvider) ChangePassword(request *proto.PasswordChangeRequest) (*p
 	passwordChangeResponse := &proto.PasswordChangeResponse{}
 	err := c.httpClient.Do(proto.PasswordChangeMeta, request, passwordChangeResponse, nil)
 	if err != nil {
-		if _, ok := err.(*skhttp.NotFoundError); ok {
+		if _, ok := err.(*skclient.NotFoundError); ok {
 			passwordChangeResponse.Status = proto.Unsupported
 			passwordChangeResponse.Login = request.Login
 			return passwordChangeResponse, nil

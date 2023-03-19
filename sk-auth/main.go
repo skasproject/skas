@@ -17,9 +17,9 @@ import (
 	"skas/sk-auth/internal/tokenstore/memory"
 	"skas/sk-auth/k8sapis/session/v1alpha1"
 	"skas/sk-common/pkg/clientauth"
-	"skas/sk-common/pkg/httpserver"
-	basehandlers "skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
+	"skas/sk-common/pkg/skserver"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"time"
 )
@@ -81,21 +81,21 @@ func main() {
 
 	// --------------------------------------------------------------- http server setup
 
-	s := &httpserver.Server{
+	s := &skserver.SkServer{
 		Name:   "auth",
 		Log:    config.Log.WithName("authServer"),
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
 
-	provider, err := skhttp.New(&config.Conf.Provider, "", "")
+	provider, err := skclient.New(&config.Conf.Provider, "", "")
 	if err != nil {
 		config.Log.Error(err, "Error on client login creation")
 	}
 	// ---------------------------------------------------- Token service
 	if !config.Conf.Services.Token.Disabled {
 		s.Router.Handle(proto.TokenCreateMeta.UrlPath, &handlers.TokenCreateHandler{
-			BaseHandler: basehandlers.BaseHandler{
+			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("Token handler"),
 			},
 			ClientManager: clientauth.New(config.Conf.Services.Token.Clients, false),
@@ -103,7 +103,7 @@ func main() {
 			Provider:      provider,
 		}).Methods(proto.TokenCreateMeta.Method)
 		s.Router.Handle(proto.TokenRenewMeta.UrlPath, &handlers.TokenRenewHandler{
-			BaseHandler: basehandlers.BaseHandler{
+			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("TokenHandler"),
 			},
 			ClientManager: clientauth.New(config.Conf.Services.Token.Clients, false),
@@ -113,7 +113,7 @@ func main() {
 	// ---------------------------------------------------- K8sAuth service
 	if !config.Conf.Services.K8sAuth.Disabled {
 		s.Router.Handle(proto.TokenReviewMeta.UrlPath, &handlers.TokenReviewHandler{
-			BaseHandler: basehandlers.BaseHandler{
+			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("k8sAuth Handler"),
 			},
 			TokenStore: tokenStore,
@@ -122,7 +122,7 @@ func main() {
 	// ---------------------------------------------------- Describe service
 	if !config.Conf.Services.Describe.Disabled {
 		s.Router.Handle(proto.UserDescribeMeta.UrlPath, &handlers.UserDescribeHandler{
-			BaseHandler: basehandlers.BaseHandler{
+			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("UserDescribe handler"),
 			},
 			ClientManager: clientauth.New(config.Conf.Services.Describe.Clients, false),
@@ -133,7 +133,7 @@ func main() {
 	// ---------------------------------------------------- PasswordChange service
 	if !config.Conf.Services.PasswordChange.Disabled {
 		s.Router.Handle(proto.PasswordChangeMeta.UrlPath, &handlers.PasswordChangeHandler{
-			BaseHandler: basehandlers.BaseHandler{
+			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("passwordChange handler"),
 			},
 			ClientManager: clientauth.New(config.Conf.Services.PasswordChange.Clients, false),
@@ -143,7 +143,7 @@ func main() {
 	// ---------------------------------------------------- Kubeconfig service
 	if !config.Conf.Services.Kubeconfig.Disabled {
 		s.Router.Handle(proto.KubeconfigMeta.UrlPath, &handlers.KubeconfigHandler{
-			BaseHandler: basehandlers.BaseHandler{
+			BaseHandler: commonHandlers.BaseHandler{
 				Logger: s.Log.WithName("kubeconfig handler"),
 			},
 			ClientManager: clientauth.New(config.Conf.Services.Kubeconfig.Clients, false),

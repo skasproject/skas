@@ -1,4 +1,4 @@
-package skhttp
+package skclient
 
 // json mapping added as this is embedded in dex skas connector
 

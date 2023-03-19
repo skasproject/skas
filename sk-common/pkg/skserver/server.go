@@ -1,4 +1,4 @@
-package httpserver
+package skserver
 
 import (
 	"context"
@@ -9,8 +9,8 @@ import (
 	"net"
 	"net/http"
 	"path/filepath"
-	"skas/sk-common/pkg/httpserver/certwatcher"
-	"skas/sk-common/pkg/httpserver/handlers"
+	"skas/sk-common/pkg/skserver/certwatcher"
+	"skas/sk-common/pkg/skserver/handlers"
 )
 
 type ServerConfig struct {
@@ -21,7 +21,7 @@ type ServerConfig struct {
 	KeyName  string `yaml:"keyName"`  // KeyName is the server key name. Defaults to tls.key.
 }
 
-type Server struct {
+type SkServer struct {
 	Name string
 
 	Log logr.Logger
@@ -31,7 +31,7 @@ type Server struct {
 	Router *mux.Router
 }
 
-func (server *Server) Groom() {
+func (server *SkServer) Groom() {
 	if server.Config.Ssl {
 		if server.Config.CertName == "" {
 			server.Config.CertName = "tls.crt"
@@ -53,12 +53,12 @@ func (server *Server) Groom() {
 	return
 }
 
-func (server *Server) Run(ctx context.Context) error {
+func (server *SkServer) Run(ctx context.Context) error {
 	return server.Start(ctx)
 }
 
-func (server *Server) Start(ctx context.Context) error {
-	server.Log.Info("Starting Server")
+func (server *SkServer) Start(ctx context.Context) error {
+	server.Log.Info("Starting SkServer")
 
 	var listener net.Listener
 	var err error
@@ -117,7 +117,7 @@ func (server *Server) Start(ctx context.Context) error {
 	if err != nil && err != http.ErrServerClosed {
 		return err
 	}
-	server.Log.Info("Server shutdown")
+	server.Log.Info("SkServer shutdown")
 	<-idleConnsClosed
 	return nil
 }

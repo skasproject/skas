@@ -5,8 +5,8 @@ import (
 	"github.com/go-logr/logr"
 	"net/http"
 	"skas/sk-common/pkg/clientauth"
-	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 )
 
@@ -15,7 +15,7 @@ var _ http.Handler = &PasswordChangeHandler{}
 type PasswordChangeHandler struct {
 	commonHandlers.BaseHandler
 	ClientManager clientauth.Manager
-	Provider      skhttp.Client
+	Provider      skclient.SkClient
 }
 
 func (p PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {

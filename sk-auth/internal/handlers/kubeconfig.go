@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"skas/sk-auth/internal/config"
 	"skas/sk-common/pkg/clientauth"
-	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 )
 

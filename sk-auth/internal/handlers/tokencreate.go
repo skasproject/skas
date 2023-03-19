@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"skas/sk-auth/internal/tokenstore"
 	"skas/sk-common/pkg/clientauth"
-	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 )
 
@@ -18,7 +18,7 @@ type TokenCreateHandler struct {
 	ClientManager clientauth.Manager
 	TokenStore    tokenstore.TokenStore
 	// Login client related stuff
-	Provider skhttp.Client
+	Provider skclient.SkClient
 }
 
 func (t TokenCreateHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {

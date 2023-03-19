@@ -5,15 +5,15 @@ import (
 	"github.com/go-logr/logr"
 	"net/http"
 	"skas/sk-common/pkg/clientauth"
-	"skas/sk-common/pkg/httpserver"
-	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
+	"skas/sk-common/pkg/skserver"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/clientproviderchain"
 )
 
 var _ http.Handler = &UserDescribeHandler{}
 
-var _ httpserver.LoggingHandler = &UserDescribeHandler{}
+var _ skserver.LoggingHandler = &UserDescribeHandler{}
 
 type UserDescribeHandler struct {
 	commonHandlers.BaseHandler

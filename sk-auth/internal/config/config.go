@@ -2,9 +2,9 @@ package config
 
 import (
 	"github.com/go-logr/logr"
-	"skas/sk-common/pkg/httpserver"
 	"skas/sk-common/pkg/misc"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
+	"skas/sk-common/pkg/skserver"
 	"skas/sk-common/proto/v1/proto"
 	"time"
 )
@@ -29,12 +29,12 @@ type ServiceConfig struct {
 }
 
 type Config struct {
-	Log         misc.LogConfig          `yaml:"log"`
-	Server      httpserver.ServerConfig `yaml:"server"`
-	TokenConfig TokenConfig             `yaml:"tokenConfig"`
-	Kubeconfig  proto.KubeconfigConfig  `yaml:"kubeconfig"`
-	Provider    skhttp.Config           `yaml:"provider"`
-	AdminGroup  string                  `yaml:"adminGroup"`
+	Log         misc.LogConfig         `yaml:"log"`
+	Server      skserver.ServerConfig  `yaml:"server"`
+	TokenConfig TokenConfig            `yaml:"tokenConfig"`
+	Kubeconfig  proto.KubeconfigConfig `yaml:"kubeconfig"`
+	Provider    skclient.Config        `yaml:"provider"`
+	AdminGroup  string                 `yaml:"adminGroup"`
 	Services    struct {
 		Token          ServiceConfig `yaml:"token"`
 		Describe       ServiceConfig `yaml:"describe"`

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"skas/sk-auth/internal/tokenstore"
-	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"strconv"
 )
