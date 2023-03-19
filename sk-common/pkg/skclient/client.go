@@ -1,4 +1,4 @@
-package skhttp
+package skclient
 
 import (
 	"bytes"
@@ -14,24 +14,24 @@ type HttpAuth struct {
 	Token    string
 }
 
-type Client interface {
+type SkClient interface {
 	Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload, httpAuth *HttpAuth) error
 	GetClientAuth() proto.ClientAuth
 	GetConfig() *Config
 }
 
-var _ Client = &client{}
+var _ SkClient = &skClient{}
 
-type client struct {
+type skClient struct {
 	Config
 	httpClient *http.Client
 }
 
-func (c client) GetConfig() *Config {
+func (c skClient) GetConfig() *Config {
 	return &c.Config
 }
 
-func (c client) GetClientAuth() proto.ClientAuth {
+func (c skClient) GetClientAuth() proto.ClientAuth {
 	return proto.ClientAuth{
 		Id:     c.ClientAuth.Id,
 		Secret: c.ClientAuth.Secret,
@@ -52,7 +52,7 @@ func (e *NotFoundError) Error() string {
 	return fmt.Sprintf("Resource '%s' not found", e.url)
 }
 
-func (c client) Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload, httpAuth *HttpAuth) error {
+func (c skClient) Do(meta *proto.RequestMeta, request proto.RequestPayload, response proto.ResponsePayload, httpAuth *HttpAuth) error {
 	body, err := request.ToJson()
 	if err != nil {
 		return fmt.Errorf("unable to marshal %s: %w", request.String(), err)

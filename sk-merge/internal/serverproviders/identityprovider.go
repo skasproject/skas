@@ -2,7 +2,7 @@ package serverproviders
 
 import (
 	"github.com/go-logr/logr"
-	"skas/sk-common/pkg/httpserver/handlers"
+	"skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/clientproviderchain"
 )

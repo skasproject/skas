@@ -9,11 +9,11 @@ import (
 	"gopkg.in/ldap.v2"
 	"os"
 	"path/filepath"
-	"skas/sk-common/pkg/httpserver/handlers"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"time"
 )
 
-func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (handlers.IdentityServerProvider, error) {
+func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (commonHandlers.IdentityServerProvider, error) {
 
 	prvd := ldapIdentityServerProvider{
 		Config: ldapConfig,

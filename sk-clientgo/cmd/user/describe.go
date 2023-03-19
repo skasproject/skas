@@ -8,7 +8,7 @@ import (
 	"skas/sk-clientgo/internal/global"
 	"skas/sk-clientgo/internal/tokenbag"
 	"skas/sk-clientgo/internal/utils"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/proto/v1/proto"
 	"strings"
 	"text/tabwriter"
@@ -51,9 +51,9 @@ var DescribeCmd = &cobra.Command{
 			Password:   password,
 		}
 		resp := &proto.UserDescribeResponse{}
-		err = client.Do(proto.UserDescribeMeta, uer, resp, &skhttp.HttpAuth{Token: tokenBag.Token})
+		err = client.Do(proto.UserDescribeMeta, uer, resp, &skclient.HttpAuth{Token: tokenBag.Token})
 		if err != nil {
-			_, ok := err.(*skhttp.UnauthorizedError)
+			_, ok := err.(*skclient.UnauthorizedError)
 			if ok {
 				_, _ = fmt.Fprintf(os.Stderr, "Unauthorized!\n")
 				os.Exit(2)

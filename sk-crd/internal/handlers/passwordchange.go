@@ -8,7 +8,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	userdbv1alpha1 "skas/sk-common/k8sapis/userdb/v1alpha1"
 	"skas/sk-common/pkg/clientauth"
-	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 )
 

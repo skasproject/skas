@@ -1,4 +1,4 @@
-package skhttp
+package skclient
 
 import (
 	"crypto/tls"
@@ -16,7 +16,7 @@ import (
 
 // Inspired from oauth.go connector.
 
-func New(conf *Config, altRootCAPaths string, altRootCaDatas string) (Client, error) {
+func New(conf *Config, altRootCAPaths string, altRootCaDatas string) (SkClient, error) {
 	// Just a test for validity. Not used in this function
 	u, err := url.Parse(conf.Url)
 	if err != nil {
@@ -68,7 +68,7 @@ func New(conf *Config, altRootCAPaths string, altRootCaDatas string) (Client, er
 			ExpectContinueTimeout: 1 * time.Second,
 		},
 	}
-	return &client{
+	return &skClient{
 		Config:     *conf,
 		httpClient: httpclient,
 	}, nil

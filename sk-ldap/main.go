@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"skas/sk-common/pkg/clientauth"
-	"skas/sk-common/pkg/httpserver"
-	"skas/sk-common/pkg/httpserver/handlers"
+	"skas/sk-common/pkg/skserver"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-ldap/internal/config"
 	"skas/sk-ldap/internal/serverprovider"
@@ -26,7 +26,7 @@ func main() {
 	//config.Log.Error(errors.New("there is a problem"), "Test ERROR")
 
 	name := fmt.Sprintf("ldap[%s]", config.Conf.Ldap.Host)
-	s := &httpserver.Server{
+	s := &skserver.SkServer{
 		Name:   name,
 		Log:    config.Log.WithName(fmt.Sprintf("%sServer", name)),
 		Config: &config.Conf.Server,
@@ -37,8 +37,8 @@ func main() {
 		config.Log.Error(err, "ldap config")
 		os.Exit(3)
 	}
-	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &handlers.UserIdentityHandler{
-		BaseHandler: handlers.BaseHandler{
+	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &commonHandlers.UserIdentityHandler{
+		BaseHandler: commonHandlers.BaseHandler{
 			Logger: s.Log.WithName("UserIdentity handler"),
 		},
 		Provider:      provider,

@@ -12,8 +12,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	userdbv1alpha1 "skas/sk-common/k8sapis/userdb/v1alpha1"
 	"skas/sk-common/pkg/clientauth"
-	"skas/sk-common/pkg/httpserver"
-	commonHandlers "skas/sk-common/pkg/httpserver/handlers"
+	"skas/sk-common/pkg/skserver"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-crd/internal/config"
 	"skas/sk-crd/internal/crdidentityprovider"
@@ -64,7 +64,7 @@ func main() {
 		config.Log.Error(err, "unable to set up ready check")
 		os.Exit(1)
 	}
-	s := &httpserver.Server{
+	s := &skserver.SkServer{
 		Name:   "crd",
 		Log:    config.Log.WithName("crdServer"),
 		Config: &config.Conf.Server,

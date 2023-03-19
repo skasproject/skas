@@ -9,7 +9,7 @@ import (
 	"skas/sk-clientgo/internal/kubecontext"
 	"skas/sk-clientgo/internal/loadsave"
 	"skas/sk-common/pkg/misc"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/proto/v1/proto"
 	"time"
 )
@@ -25,7 +25,7 @@ type TokenBag struct {
 // Retrieve the tokenBag locally. If expired, validate again against the server. Return "" if there is no valid token
 // In case of error, return ""
 
-func Retrieve(client skhttp.Client) *TokenBag {
+func Retrieve(client skclient.SkClient) *TokenBag {
 	tokenBag := load()
 	if tokenBag != nil {
 		now := time.Now()
@@ -95,7 +95,7 @@ func buildPath() string {
 
 // Return false in case of error, whatever error is.
 
-func validateToken(client skhttp.Client, token string) bool {
+func validateToken(client skclient.SkClient, token string) bool {
 	trr := &proto.TokenRenewRequest{
 		Token:      token,
 		ClientAuth: client.GetClientAuth(),

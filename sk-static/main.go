@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 	"skas/sk-common/pkg/clientauth"
-	"skas/sk-common/pkg/httpserver"
-	"skas/sk-common/pkg/httpserver/handlers"
+	"skas/sk-common/pkg/skserver"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-static/internal/config"
 	"skas/sk-static/internal/staticstatusprovider"
@@ -26,14 +26,14 @@ func main() {
 	//config.Config.Log.Error(errors.New("there is a problem"), "Test ERROR")
 	//fmt.Printf("Users:\n%+v\n", config.Config.UserByLogin)
 
-	s := &httpserver.Server{
+	s := &skserver.SkServer{
 		Name:   "static",
 		Log:    config.Log.WithName("staticServer"),
 		Config: &config.Conf.Server,
 	}
 	s.Groom()
-	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &handlers.UserIdentityHandler{
-		BaseHandler: handlers.BaseHandler{
+	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &commonHandlers.UserIdentityHandler{
+		BaseHandler: commonHandlers.BaseHandler{
 			Logger: s.Log.WithName("userIdentity handler"),
 		},
 		Provider:      staticstatusprovider.New(config.Log.WithName("staticProvider")),

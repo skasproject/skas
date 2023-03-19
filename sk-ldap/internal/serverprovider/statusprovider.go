@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"github.com/go-logr/logr"
 	"gopkg.in/ldap.v2"
-	"skas/sk-common/pkg/httpserver/handlers"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"strconv"
 	"strings"
 )
 
-var _ handlers.IdentityServerProvider = &ldapIdentityServerProvider{}
+var _ commonHandlers.IdentityServerProvider = &ldapIdentityServerProvider{}
 
 type ldapIdentityServerProvider struct {
 	*Config

@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"skas/sk-common/pkg/skhttp"
+	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/proto/v1/proto"
 )
 
-func doLogin(loginProvider skhttp.Client, login, password string) (*proto.User /*authority*/, string, error) {
+func doLogin(loginProvider skclient.SkClient, login, password string) (*proto.User /*authority*/, string, error) {
 	lr := &proto.LoginRequest{
 		Login:      login,
 		Password:   password,

@@ -3,18 +3,18 @@ package staticstatusprovider
 import (
 	"github.com/go-logr/logr"
 	"golang.org/x/crypto/bcrypt"
-	"skas/sk-common/pkg/httpserver/handlers"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-static/internal/config"
 )
 
-var _ handlers.IdentityServerProvider = &staticIdentityProvider{}
+var _ commonHandlers.IdentityServerProvider = &staticIdentityProvider{}
 
 type staticIdentityProvider struct {
 	logger logr.Logger
 }
 
-func New(logger logr.Logger) handlers.IdentityServerProvider {
+func New(logger logr.Logger) commonHandlers.IdentityServerProvider {
 	return &staticIdentityProvider{
 		logger: logger,
 	}
