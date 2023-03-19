@@ -1,6 +1,7 @@
 package clientauth
 
 import (
+	cconfig "skas/sk-common/pkg/config"
 	"skas/sk-common/proto/v1/proto"
 )
 
@@ -14,7 +15,7 @@ type manager struct {
 	secretById map[string]string
 }
 
-func New(configs []proto.ClientAuth, requireClientAuth bool) Manager {
+func New(configs []cconfig.ServiceClient, requireClientAuth bool) Manager {
 	if (configs == nil || len(configs) == 0) && !requireClientAuth {
 		return &manager{
 			secretById: nil,

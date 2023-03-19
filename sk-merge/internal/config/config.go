@@ -2,10 +2,9 @@ package config
 
 import (
 	"github.com/go-logr/logr"
+	cconfig "skas/sk-common/pkg/config"
 	"skas/sk-common/pkg/misc"
 	"skas/sk-common/pkg/skclient"
-	"skas/sk-common/pkg/skserver"
-	"skas/sk-common/proto/v1/proto"
 )
 
 // Exported vars
@@ -28,22 +27,17 @@ type ClientProviderConfig struct {
 	UidOffset           int             `yaml:"uidOffset"`           // Will be added to the returned Uid. Default to 0
 }
 
-type ServiceConfig struct {
-	Disabled bool               `yaml:"disabled"`
-	Clients  []proto.ClientAuth `yaml:"clients"`
-}
-
 type Config struct {
 	Log       misc.LogConfig         `yaml:"log"`
-	Server    skserver.ServerConfig  `yaml:"server"`
+	Server    cconfig.SkServerConfig `yaml:"server"`
 	Providers []ClientProviderConfig `yaml:"providers"`
 	// values added to above Providers
 	RootCaPath string `yaml:"rootCaPath"` // Path to a trusted root CA file
 	RootCaData string `yaml:"rootCaData"` // Base64 encoded PEM data containing root CA
 	Services   struct {
-		Login          ServiceConfig `yaml:"login"`
-		UserIdentity   ServiceConfig `yaml:"userIdentity"`
-		UserDescribe   ServiceConfig `yaml:"userDescribe"`
-		PasswordChange ServiceConfig `yaml:"passwordChange"`
+		Login          cconfig.ServiceConfig `yaml:"login"`
+		UserIdentity   cconfig.ServiceConfig `yaml:"userIdentity"`
+		UserDescribe   cconfig.ServiceConfig `yaml:"userDescribe"`
+		PasswordChange cconfig.ServiceConfig `yaml:"passwordChange"`
 	} `yaml:"services"`
 }

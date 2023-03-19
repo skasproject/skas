@@ -2,23 +2,22 @@ package config
 
 import (
 	"github.com/go-logr/logr"
+	cconfig "skas/sk-common/pkg/config"
 	"skas/sk-common/pkg/misc"
-	"skas/sk-common/pkg/skserver"
-	"skas/sk-common/proto/v1/proto"
 	"skas/sk-ldap/internal/serverprovider"
 )
 
 // Exported vars
 
 var (
-	Conf       Config
-	Log        logr.Logger
-	ConfigFile string
+	Conf Config
+	Log  logr.Logger
+	File string
 )
 
 type Config struct {
-	Log     misc.LogConfig        `yaml:"log"`
-	Server  skserver.ServerConfig `yaml:"server"`
-	Clients []proto.ClientAuth    `yaml:"clients"`
-	Ldap    serverprovider.Config `yaml:"ldap"`
+	Log     misc.LogConfig          `yaml:"log"`
+	Server  cconfig.SkServerConfig  `yaml:"server"`
+	Clients []cconfig.ServiceClient `yaml:"clients"`
+	Ldap    serverprovider.Config   `yaml:"ldap"`
 }
