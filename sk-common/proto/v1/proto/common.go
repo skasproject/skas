@@ -14,6 +14,7 @@ type ClientAuth struct {
 }
 
 type RequestMeta struct {
+	Name    string // For debug and message
 	Method  string
 	UrlPath string
 }

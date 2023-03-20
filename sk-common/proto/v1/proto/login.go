@@ -12,6 +12,7 @@ import (
 // One important difference between Login and UserStatus API, is Login does not provide user info if password is not validated.
 
 var LoginMeta = &RequestMeta{
+	Name:    "login",
 	Method:  "GET",
 	UrlPath: "/v1/login",
 }

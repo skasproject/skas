@@ -13,6 +13,7 @@ import (
 var _ RequestPayload = &UserDescribeRequest{}
 
 var UserDescribeMeta = &RequestMeta{
+	Name:    "userDescribe",
 	Method:  "GET",
 	UrlPath: "/v1/userDescribe",
 }
@@ -26,7 +27,7 @@ type UserDescribeRequest struct {
 var _ ResponsePayload = &UserDescribeResponse{}
 
 type UserDescribeResponse struct {
-	Items     []UserDescribeItem    `yaml:"items"`
+	Items     []UserDescribeItem   `yaml:"items"`
 	Merged    UserIdentityResponse `yaml:"merged"`
 	Authority string               `yaml:"authority"`
 }

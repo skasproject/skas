@@ -4,6 +4,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-logr/logr"
 	"net/http"
 	"skas/sk-auth/internal/tokenstore"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
@@ -46,4 +47,12 @@ func (t *TokenReviewHandler) ServeHTTP(response http.ResponseWriter, request *ht
 		}
 		t.ServeJSON(response, data)
 	}
+}
+
+func (t *TokenReviewHandler) GetLog() logr.Logger {
+	return t.Logger
+}
+
+func (t *TokenReviewHandler) SetLog(logger logr.Logger) {
+	t.Logger = logger
 }

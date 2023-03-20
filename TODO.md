@@ -35,6 +35,7 @@ DONE:
 - systematize global rootCaPath, rootCaData
 - Setup a system to force password change
 - Think about a system who can safely delegate group binding inside a namespace
+- Sur un describe, distinguer la cause d'un password unchecked (Non fourni, ou non present dans le provider). Ceci pour pouvoir déterminer l'authoritée sans fournir le password.
 - 
  
 - Service refactoring

@@ -26,22 +26,16 @@ func main() {
 	//config.Config.Log.Error(errors.New("there is a problem"), "Test ERROR")
 	//fmt.Printf("Users:\n%+v\n", config.Config.UserByLogin)
 
-	s := &skserver.SkServer{
-		Name:   "static",
-		Log:    config.Log.WithName("staticServer"),
-		Config: &config.Conf.Server,
-	}
-	s.Groom()
-	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &commonHandlers.UserIdentityHandler{
-		BaseHandler: commonHandlers.BaseHandler{
-			Logger: s.Log.WithName("userIdentity handler"),
-		},
+	server := skserver.New("staticServer", &config.Conf.Server, config.Log.WithName("staticServer"))
+
+	hdl := &commonHandlers.UserIdentityHandler{
 		Provider:      staticstatusprovider.New(config.Log.WithName("staticProvider")),
 		ClientManager: clientauth.New(config.Conf.Clients, true),
-	}).Methods(proto.UserIdentityMeta.Method)
-	err := s.Start(context.Background())
+	}
+	server.AddHandler(proto.UserIdentityMeta, hdl)
+	err := server.Start(context.Background())
 	if err != nil {
-		s.Log.Error(err, "Error on Start()")
+		server.GetLog().Error(err, "Error on Start()")
 		os.Exit(5)
 	}
 }

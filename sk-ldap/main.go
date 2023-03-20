@@ -20,34 +20,22 @@ func main() {
 	}
 	config.Log.Info("sk-ldap start", "ldapServer", config.Conf.Ldap.Host, "version", config.Version, "logLevel", config.Conf.Log.Level)
 
-	//config.Log.V(0).Info("Log V0")
-	//config.Log.V(1).Info("Log V1")
-	//config.Log.V(2).Info("Log V2")
-	//config.Log.Error(errors.New("there is a problem"), "Test ERROR")
+	server := skserver.New("ldapServer", &config.Conf.Server, config.Log.WithName("ldapServer"))
 
-	name := fmt.Sprintf("ldap[%s]", config.Conf.Ldap.Host)
-	s := &skserver.SkServer{
-		Name:   name,
-		Log:    config.Log.WithName(fmt.Sprintf("%sServer", name)),
-		Config: &config.Conf.Server,
-	}
-	s.Groom()
 	provider, err := serverprovider.New(&config.Conf.Ldap, config.Log, filepath.Dir(config.File))
 	if err != nil {
 		config.Log.Error(err, "ldap config")
 		os.Exit(3)
 	}
-	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &commonHandlers.UserIdentityHandler{
-		BaseHandler: commonHandlers.BaseHandler{
-			Logger: s.Log.WithName("UserIdentity handler"),
-		},
+	hdl := &commonHandlers.UserIdentityHandler{
 		Provider:      provider,
 		ClientManager: clientauth.New(config.Conf.Clients, true),
-	}).Methods(proto.UserIdentityMeta.Method)
-	err = s.Start(context.Background())
+	}
+	server.AddHandler(proto.UserIdentityMeta, hdl)
+
+	err = server.Start(context.Background())
 	if err != nil {
-		s.Log.Error(err, "Error on Start()")
+		server.GetLog().Error(err, "Error on Start()")
 		os.Exit(5)
 	}
-
 }

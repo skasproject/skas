@@ -19,7 +19,6 @@ import (
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/pkg/skserver"
-	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"time"
 )
@@ -38,11 +37,6 @@ func main() {
 	}
 
 	config.Log.Info("sk-auth start", "version", config.Version, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.TokenConfig.StorageType)
-	config.Log.Info("Token service", "enabled", !config.Conf.Services.Token.Disabled)
-	config.Log.Info("UserDescribe service", "enabled", !config.Conf.Services.Describe.Disabled)
-	config.Log.Info("K8sAuth service", "enabled", !config.Conf.Services.K8sAuth.Disabled)
-	config.Log.Info("Password Change service", "enabled", !config.Conf.Services.PasswordChange.Disabled)
-	config.Log.Info("Kubeconfig service", "enabled", !config.Conf.Services.Kubeconfig.Disabled)
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager
@@ -81,12 +75,7 @@ func main() {
 
 	// --------------------------------------------------------------- http server setup
 
-	s := &skserver.SkServer{
-		Name:   "auth",
-		Log:    config.Log.WithName("authServer"),
-		Config: &config.Conf.Server,
-	}
-	s.Groom()
+	server := skserver.New("auth", &config.Conf.Server, config.Log.WithName("authServer"))
 
 	provider, err := skclient.New(&config.Conf.Provider, "", "")
 	if err != nil {
@@ -94,67 +83,65 @@ func main() {
 	}
 	// ---------------------------------------------------- Token service
 	if !config.Conf.Services.Token.Disabled {
-		s.Router.Handle(proto.TokenCreateMeta.UrlPath, &handlers.TokenCreateHandler{
-			BaseHandler: commonHandlers.BaseHandler{
-				Logger: s.Log.WithName("Token handler"),
-			},
+		hdlTc := &handlers.TokenCreateHandler{
 			ClientManager: clientauth.New(config.Conf.Services.Token.Clients, false),
 			TokenStore:    tokenStore,
 			Provider:      provider,
-		}).Methods(proto.TokenCreateMeta.Method)
-		s.Router.Handle(proto.TokenRenewMeta.UrlPath, &handlers.TokenRenewHandler{
-			BaseHandler: commonHandlers.BaseHandler{
-				Logger: s.Log.WithName("TokenHandler"),
-			},
+		}
+		server.AddHandler(proto.TokenCreateMeta, hdlTc)
+		hdlTr := &handlers.TokenRenewHandler{
 			ClientManager: clientauth.New(config.Conf.Services.Token.Clients, false),
 			TokenStore:    tokenStore,
-		}).Methods(proto.TokenRenewMeta.Method)
+		}
+		server.AddHandler(proto.TokenRenewMeta, hdlTr)
+	} else {
+		config.Log.Info("token service disabled")
 	}
 	// ---------------------------------------------------- K8sAuth service
 	if !config.Conf.Services.K8sAuth.Disabled {
-		s.Router.Handle(proto.TokenReviewMeta.UrlPath, &handlers.TokenReviewHandler{
-			BaseHandler: commonHandlers.BaseHandler{
-				Logger: s.Log.WithName("k8sAuth Handler"),
-			},
+		hdl := &handlers.TokenReviewHandler{
 			TokenStore: tokenStore,
-		}).Methods(proto.TokenReviewMeta.Method)
+		}
+		server.AddHandler(proto.TokenReviewMeta, hdl)
+	} else {
+		config.Log.Info("tokenReview service disabled")
 	}
 	// ---------------------------------------------------- Describe service
 	if !config.Conf.Services.Describe.Disabled {
-		s.Router.Handle(proto.UserDescribeMeta.UrlPath, &handlers.UserDescribeHandler{
-			BaseHandler: commonHandlers.BaseHandler{
-				Logger: s.Log.WithName("UserDescribe handler"),
-			},
+		hdl := &handlers.UserDescribeHandler{
 			ClientManager: clientauth.New(config.Conf.Services.Describe.Clients, false),
 			TokenStore:    tokenStore,
 			Provider:      provider,
-		}).Methods(proto.UserDescribeMeta.Method)
+		}
+		server.AddHandler(proto.UserDescribeMeta, hdl)
+	} else {
+		config.Log.Info("userDescribe service disabled")
 	}
 	// ---------------------------------------------------- PasswordChange service
 	if !config.Conf.Services.PasswordChange.Disabled {
-		s.Router.Handle(proto.PasswordChangeMeta.UrlPath, &handlers.PasswordChangeHandler{
-			BaseHandler: commonHandlers.BaseHandler{
-				Logger: s.Log.WithName("passwordChange handler"),
-			},
+		hdl := &handlers.PasswordChangeHandler{
 			ClientManager: clientauth.New(config.Conf.Services.PasswordChange.Clients, false),
 			Provider:      provider,
-		}).Methods(proto.PasswordChangeMeta.Method)
+		}
+		server.AddHandler(proto.PasswordChangeMeta, hdl)
+	} else {
+		config.Log.Info("passwordChange service disabled")
 	}
 	// ---------------------------------------------------- Kubeconfig service
 	if !config.Conf.Services.Kubeconfig.Disabled {
-		s.Router.Handle(proto.KubeconfigMeta.UrlPath, &handlers.KubeconfigHandler{
-			BaseHandler: commonHandlers.BaseHandler{
-				Logger: s.Log.WithName("kubeconfig handler"),
-			},
+		hdl := &handlers.KubeconfigHandler{
 			ClientManager: clientauth.New(config.Conf.Services.Kubeconfig.Clients, false),
-		}).Methods(proto.KubeconfigMeta.Method)
+		}
+		server.AddHandler(proto.KubeconfigMeta, hdl)
+	} else {
+		config.Log.Info("kubeconfig service disabled")
 	}
 
 	// ---------------------------------------------------------- End init and launch
 
 	if config.Conf.TokenConfig.StorageType == "memory" {
 		runnableMgr := runnable.NewManager()
-		runnableMgr.Add(s)
+		runnableMgr.Add(server)
 		runnableMgr.Add(&tokenstore.Cleaner{
 			Period:     60 * time.Second,
 			TokenStore: tokenStore,
@@ -166,7 +153,7 @@ func main() {
 		//	os.Exit(5)
 		//}
 	} else {
-		err = mgr.Add(s)
+		err = mgr.Add(server)
 		if err != nil {
 			config.Log.Error(err, "problem adding http server to the manager")
 			os.Exit(1)
@@ -185,5 +172,4 @@ func main() {
 			os.Exit(1)
 		}
 	}
-
 }

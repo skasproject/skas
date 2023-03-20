@@ -12,19 +12,50 @@ import (
 	"skas/sk-common/pkg/config"
 	"skas/sk-common/pkg/skserver/certwatcher"
 	"skas/sk-common/pkg/skserver/handlers"
+	"skas/sk-common/proto/v1/proto"
 )
 
-type SkServer struct {
-	Name string
+type SkServer interface {
+	Run(ctx context.Context) error
+	Start(ctx context.Context) error
+	AddHandler(meta *proto.RequestMeta, handler http.Handler)
+	GetLog() logr.Logger
+}
 
-	Log logr.Logger
+var _ SkServer = &skServer{}
 
+type skServer struct {
+	Name   string
+	Log    logr.Logger
 	Config *config.SkServerConfig
-
 	Router *mux.Router
 }
 
-func (server *SkServer) Groom() {
+func (server *skServer) AddHandler(meta *proto.RequestMeta, handler http.Handler) {
+	lh, ok := handler.(LoggingHandler)
+	if ok {
+		lh.SetLog(server.Log.WithName(fmt.Sprintf("%s handler", meta.Name)))
+		if lh.GetLog().GetSink() == nil {
+			panic(fmt.Sprintf("Handler '%s' does not implements correctly LoggingHandler interface", meta.Name))
+		}
+		lh.GetLog().Info(fmt.Sprintf("%s service ENABLED", meta.Name))
+	} else {
+		// All our handlers should implements LogginHandler interface
+		panic(fmt.Sprintf("Handler '%s' does not implements LoggingHandler interface", meta.Name))
+	}
+	server.Router.Handle(meta.UrlPath, handler).Methods(meta.Method)
+}
+
+func (server *skServer) GetLog() logr.Logger {
+	return server.Log
+}
+
+func New(name string, conf *config.SkServerConfig, log logr.Logger) SkServer {
+	server := &skServer{
+		Name:   name,
+		Log:    log,
+		Config: conf,
+	}
 	if server.Config.Ssl {
 		if server.Config.CertName == "" {
 			server.Config.CertName = "tls.crt"
@@ -43,15 +74,15 @@ func (server *SkServer) Groom() {
 			Logger: server.Log,
 		}
 	}
-	return
+	return server
 }
 
-func (server *SkServer) Run(ctx context.Context) error {
+func (server *skServer) Run(ctx context.Context) error {
 	return server.Start(ctx)
 }
 
-func (server *SkServer) Start(ctx context.Context) error {
-	server.Log.Info("Starting SkServer")
+func (server *skServer) Start(ctx context.Context) error {
+	server.Log.Info("Starting skServer")
 
 	var listener net.Listener
 	var err error
@@ -110,7 +141,7 @@ func (server *SkServer) Start(ctx context.Context) error {
 	if err != nil && err != http.ErrServerClosed {
 		return err
 	}
-	server.Log.Info("SkServer shutdown")
+	server.Log.Info("skServer shutdown")
 	<-idleConnsClosed
 	return nil
 }
