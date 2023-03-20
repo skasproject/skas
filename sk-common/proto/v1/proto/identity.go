@@ -10,6 +10,7 @@ import (
 // This is the API provided by all kind of Identity provider. Consumed by sk-merge
 
 var UserIdentityMeta = &RequestMeta{
+	Name:    "userIdentity",
 	Method:  "GET",
 	UrlPath: "/v1/userIdentity",
 }

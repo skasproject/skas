@@ -64,31 +64,23 @@ func main() {
 		config.Log.Error(err, "unable to set up ready check")
 		os.Exit(1)
 	}
-	s := &skserver.SkServer{
-		Name:   "crd",
-		Log:    config.Log.WithName("crdServer"),
-		Config: &config.Conf.Server,
-	}
-	s.Groom()
 
-	s.Router.Handle(proto.UserIdentityMeta.UrlPath, &commonHandlers.UserIdentityHandler{
-		BaseHandler: commonHandlers.BaseHandler{
-			Logger: s.Log.WithName("userIdentity handler"),
-		},
+	server := skserver.New("crdServer", &config.Conf.Server, config.Log.WithName("crdServer"))
+
+	hdlUi := &commonHandlers.UserIdentityHandler{
 		Provider:      crdidentityprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
 		ClientManager: clientauth.New(config.Conf.Clients, true),
-	}).Methods(proto.UserIdentityMeta.Method)
+	}
+	server.AddHandler(proto.UserIdentityMeta, hdlUi)
 
-	s.Router.Handle(proto.PasswordChangeMeta.UrlPath, &handlers.PasswordChangeHandler{
-		BaseHandler: commonHandlers.BaseHandler{
-			Logger: s.Log.WithName("PasswordChange handler"),
-		},
+	hdlCp := &handlers.PasswordChangeHandler{
 		ClientManager: clientauth.New(config.Conf.Clients, true),
 		KubeClient:    mgr.GetClient(),
 		Namespace:     config.Conf.Namespace,
-	}).Methods(proto.PasswordChangeMeta.Method)
+	}
+	server.AddHandler(proto.PasswordChangeMeta, hdlCp)
 
-	err = mgr.Add(s)
+	err = mgr.Add(server)
 	if err != nil {
 		config.Log.Error(err, "problem adding http server to the manager")
 		os.Exit(1)

@@ -6,6 +6,7 @@ import (
 )
 
 var KubeconfigMeta = &RequestMeta{
+	Name:    "kubeconfig",
 	Method:  "GET",
 	UrlPath: "/v1/kubeconfig",
 }

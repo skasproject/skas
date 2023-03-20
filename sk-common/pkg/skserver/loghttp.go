@@ -11,6 +11,7 @@ import (
 type LoggingHandler interface {
 	http.Handler
 	GetLog() logr.Logger
+	SetLog(logger logr.Logger)
 }
 
 func LogHttp(h http.Handler) http.Handler {

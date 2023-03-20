@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"github.com/go-logr/logr"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -21,7 +22,7 @@ type PasswordChangeHandler struct {
 	Namespace     string
 }
 
-func (p PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
 	var requestPayload = proto.PasswordChangeRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
@@ -79,4 +80,15 @@ func (p PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request *
 	responsePayload.Status = proto.Done
 	p.ServeJSON(response, responsePayload)
 	return
+}
+
+// Normally, we should not need to add this, as we embed commonHandlers.BaseHandler which have this function.
+// But if we don't, httpserver.LogHttp will not recognize us as a LoggingHandler. May be a compiler bug ?
+
+func (p *PasswordChangeHandler) GetLog() logr.Logger {
+	return p.Logger
+}
+
+func (p *PasswordChangeHandler) SetLog(logger logr.Logger) {
+	p.Logger = logger
 }

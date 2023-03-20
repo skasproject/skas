@@ -12,6 +12,7 @@ import (
 // ------------------------------------------------------
 
 var TokenCreateMeta = &RequestMeta{
+	Name:    "tokenCreate",
 	Method:  "POST",
 	UrlPath: "/v1/tokenCreate",
 }
@@ -37,6 +38,7 @@ type TokenCreateResponse struct {
 // ------------------------------------------------------
 
 var TokenRenewMeta = &RequestMeta{
+	Name:    "tokenRenew",
 	Method:  "POST",
 	UrlPath: "/v1/tokenRenew",
 }

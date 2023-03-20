@@ -21,7 +21,7 @@ type UserDescribeHandler struct {
 	ClientManager clientauth.Manager
 }
 
-func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+func (u *UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
 	var requestPayload proto.UserDescribeRequest
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
@@ -61,6 +61,10 @@ func (u UserDescribeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 // Normally, we should not need to add this, as we embed commonHandlers.BaseHandler which have this function.
 // But if w don't, httpserver.LogHttp will not recognize us as a LoggingHandler. May be a compiler bug ?
 
-func (u UserDescribeHandler) GetLog() logr.Logger {
+func (u *UserDescribeHandler) GetLog() logr.Logger {
 	return u.Logger
+}
+
+func (u *UserDescribeHandler) SetLog(logger logr.Logger) {
+	u.Logger = logger
 }

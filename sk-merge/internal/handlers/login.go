@@ -21,7 +21,7 @@ type LoginHandler struct {
 	ClientManager clientauth.Manager
 }
 
-func (l LoginHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+func (l *LoginHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
 	var requestPayload proto.LoginRequest
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
@@ -70,8 +70,12 @@ func (l LoginHandler) ServeHTTP(response http.ResponseWriter, request *http.Requ
 }
 
 // Normally, we should not need to add this, as we embed commonHandlers.BaseHandler which have this function.
-// But if w don't, httpserver.LogHttp will not recognize us as a LoggingHandler. May be a compiler bug ?
+// But if we don't, httpserver.LogHttp will not recognize us as a LoggingHandler. May be a compiler bug ?
 
-func (l LoginHandler) GetLog() logr.Logger {
+func (l *LoginHandler) GetLog() logr.Logger {
 	return l.Logger
+}
+
+func (l *LoginHandler) SetLog(logger logr.Logger) {
+	l.Logger = logger
 }

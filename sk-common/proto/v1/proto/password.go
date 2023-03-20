@@ -8,6 +8,7 @@ import (
 // ----------------------------------- PasswordChange interface
 
 var PasswordChangeMeta = &RequestMeta{
+	Name:    "passwordChange",
 	Method:  "POST",
 	UrlPath: "/v1/passwordChange",
 }

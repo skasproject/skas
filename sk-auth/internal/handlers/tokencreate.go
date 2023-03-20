@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/go-logr/logr"
 	"net/http"
 	"skas/sk-auth/internal/tokenstore"
 	"skas/sk-common/pkg/clientauth"
@@ -21,7 +22,7 @@ type TokenCreateHandler struct {
 	Provider skclient.SkClient
 }
 
-func (t TokenCreateHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+func (t *TokenCreateHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
 	var requestPayload = proto.TokenCreateRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
@@ -59,4 +60,15 @@ func (t TokenCreateHandler) ServeHTTP(response http.ResponseWriter, request *htt
 	}
 	t.GetLog().Info("Token request", "login", requestPayload.Login, "success", responsePayload.Success, "groups", responsePayload.User.Groups)
 	t.ServeJSON(response, responsePayload)
+}
+
+// Normally, we should not need to add this, as we embed commonHandlers.BaseHandler which have this function.
+// But if we don't, httpserver.LogHttp will not recognize us as a LoggingHandler. May be a compiler bug ?
+
+func (t *TokenCreateHandler) GetLog() logr.Logger {
+	return t.Logger
+}
+
+func (t *TokenCreateHandler) SetLog(logger logr.Logger) {
+	t.Logger = logger
 }

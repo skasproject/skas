@@ -7,7 +7,8 @@ import "io"
 // Request is issued by Kubernetes API Server authentication webhook to validate a token
 // Protocol is defined by Kubernetes
 
-var TokenReviewMeta = RequestMeta{
+var TokenReviewMeta = &RequestMeta{
+	Name:    "tokenReview",
 	Method:  "POST",
 	UrlPath: "/v1/tokenReview",
 }

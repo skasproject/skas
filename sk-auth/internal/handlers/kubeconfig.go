@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/go-logr/logr"
 	"net/http"
 	"skas/sk-auth/internal/config"
 	"skas/sk-common/pkg/clientauth"
@@ -16,7 +17,7 @@ type KubeconfigHandler struct {
 	ClientManager clientauth.Manager
 }
 
-func (k KubeconfigHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+func (k *KubeconfigHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
 	var requestPayload = proto.KubeconfigRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
@@ -32,4 +33,15 @@ func (k KubeconfigHandler) ServeHTTP(response http.ResponseWriter, request *http
 	}
 	k.GetLog().Info("Kubeconfig request")
 	k.ServeJSON(response, responsePayload)
+}
+
+// Normally, we should not need to add this, as we embed commonHandlers.BaseHandler which have this function.
+// But if w don't, httpserver.LogHttp will not recognize us as a LoggingHandler. May be a compiler bug ?
+
+func (k *KubeconfigHandler) GetLog() logr.Logger {
+	return k.Logger
+}
+
+func (k *KubeconfigHandler) SetLog(logger logr.Logger) {
+	k.Logger = logger
 }

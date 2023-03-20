@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/go-logr/logr"
 	"net/http"
 	"skas/sk-auth/internal/tokenstore"
 	"skas/sk-common/pkg/clientauth"
@@ -19,7 +20,7 @@ type TokenRenewHandler struct {
 	TokenStore    tokenstore.TokenStore
 }
 
-func (t TokenRenewHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
+func (t *TokenRenewHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
 	var requestPayload = proto.TokenRenewRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
@@ -42,4 +43,15 @@ func (t TokenRenewHandler) ServeHTTP(response http.ResponseWriter, request *http
 	}
 	t.GetLog().Info("Token renew", "token", misc.ShortenString(requestPayload.Token), "valid", responsePayload.Valid)
 	t.ServeJSON(response, responsePayload)
+}
+
+// Normally, we should not need to add this, as we embed commonHandlers.BaseHandler which have this function.
+// But if we don't, httpserver.LogHttp will not recognize us as a LoggingHandler. May be a compiler bug ?
+
+func (t *TokenRenewHandler) GetLog() logr.Logger {
+	return t.Logger
+}
+
+func (t *TokenRenewHandler) SetLog(logger logr.Logger) {
+	t.Logger = logger
 }

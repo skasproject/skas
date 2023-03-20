@@ -50,8 +50,12 @@ func (h *BaseHandler) HttpClose(response http.ResponseWriter, message string, ht
 	}
 }
 
-func (h *BaseHandler) GetLog() logr.Logger {
+func (h BaseHandler) GetLog() logr.Logger {
 	return h.Logger
+}
+
+func (h BaseHandler) SetLog(logger logr.Logger) {
+	h.Logger = logger
 }
 
 func json2String(data interface{}) string {
