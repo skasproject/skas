@@ -1,5 +1,5 @@
 
-## API Server configuration (Authentication webhok)
+## API Server configuration (Authentication webhook)
 
 The Authentication Webhook of the API server should be configured to reach our authentication module.
 
