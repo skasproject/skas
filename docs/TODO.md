@@ -105,6 +105,7 @@ DONE:
 - Add "https://" on init if not present
 - Reference and normalize os.exit() code
 - Set a version number in saved config and tokenbag file name
+- Optionally, request the client to provide id/secret on init (kubeconfig)
 
 DONE
 - kubeconfig configuration: Replace contextName and namespace by context.name and context.namespace
