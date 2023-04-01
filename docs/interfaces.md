@@ -1,27 +1,17 @@
 
 
-
-
 # API type
 
-
-
-## userIdentity
+## identity
 
 - Given a login without password, retrieve user's attributes (groups, emails, uid, commonNames, is there a password)
 - Given a login and password, add password status to information above (checked/failed)
+- If a flag 'explain' is set, provide a list of result of each underlying providers
 
-## userDescribe
-
-- Given a login, provide user information for each identity provider an a consolidated version, in the form of userIdentity.
-- Given a login and password, add password status to information above (checked/failed)
-
-This interface is intended to 'explain' to an administrator how the userIdentity is build
-
-## userLogin
+## login
 
 - Given a login and a password, retrieve user's attributes.
-  The difference with `userIdentity` is it does not provide any information without valid password. 
+  The difference with `identity` is it does not provide any information without valid password. 
   Thus it can be more safely exposed to outside world.
 
 ## changePassword
@@ -67,7 +57,9 @@ Each module is implemented by a container.
 
 ## sk-crd, sk-ldap, sk-static
 
-These modules support the `userIdentity`.
+These modules support the `Identity` API.
+
+The 'detailed' flag is meaningless in this context, so generate an 'Invalid request' HTTP error
 
 The sk-crd module also support the `changePassword` interface
 
@@ -76,12 +68,12 @@ it can be exposed on another port, using SSL and protected by a client ID/Secret
 
 ## sk-merge
 
-This modules support `userDescribe` and `changePassword` APIs.
+This modules support `identity` and `changePassword` APIs.
 
 By default, these interfaces are exposed on a port bound on 'localhost' in clear text, without authentication. Optionally,
 it can be exposed on another port, using SSL and protected by a client ID/Secret.
 
-The `userDescribe` response is built by requesting the `userIdentity` to underlying provider and by aggregating the responses.
+The `identity` response is built by requesting the `identity` to underlying provider and by aggregating the responses. The 'detailed' flag is supported
 
 The `changePassword` is forwarded to the appropriate identity provider
 
@@ -93,7 +85,9 @@ All API are encrypted using SSL.
 
 By default, the localhost listener is turned off, as unused.
 
-This module expose a set of API to kubernetes and external worlds, by adding a service and an ingress.
+This module expose a set of API to kubernetes using a service.
+
+Some are also exposed to external worlds, by adding an ingress.
 
 ### tokenCreate, tokenRenew, changePassword
 
@@ -109,11 +103,11 @@ This interface is encrypted but not protected, as it should be accessible from t
 
 This API is intended to be accessed by the skas client, eventually protected by a client Id/Secret
 
-### userDescribe
+### identity
 
-This API is intended to be accessed by the skas client. As its usage should be reserved to system admins, it require the request to be authenticated with a skas token or an http Basic authentication.
+This API is intended to be accessed by the skas client. As its usage must be reserved to system admins, it require the request to be authenticated with a skas token or an http Basic authentication.
 
-### userLogin
+### login
 
 This API is intended to be accessed by some others application to validate a login/password. This will allow support of OIDC authentication using a DEX module. It should be protected by a client ID/Secret
 

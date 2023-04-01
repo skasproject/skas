@@ -27,7 +27,7 @@ func (h *BaseHandler) ServeJSON(response http.ResponseWriter, payload proto.Resp
 	}
 }
 
-func (h *BaseHandler) HttpError(response http.ResponseWriter, message string, httpCode int) {
+func (h *BaseHandler) HttpSendError(response http.ResponseWriter, message string, httpCode int) {
 	if h.Logger.V(1).Enabled() {
 		h.Logger.V(1).Info("<----- httpError", "message", message, "httpCode", httpCode)
 	} else {
@@ -50,11 +50,11 @@ func (h *BaseHandler) HttpClose(response http.ResponseWriter, message string, ht
 	}
 }
 
-func (h BaseHandler) GetLog() logr.Logger {
+func (h *BaseHandler) GetLog() logr.Logger {
 	return h.Logger
 }
 
-func (h BaseHandler) SetLog(logger logr.Logger) {
+func (h *BaseHandler) SetLog(logger logr.Logger) {
 	h.Logger = logger
 }
 

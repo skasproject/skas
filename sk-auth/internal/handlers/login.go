@@ -8,7 +8,6 @@ import (
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
-	"skas/sk-merge/internal/clientproviderchain"
 )
 
 var _ http.Handler = &LoginHandler{}
@@ -17,52 +16,38 @@ var _ skserver.LoggingHandler = &LoginHandler{}
 
 type LoginHandler struct {
 	commonHandlers.BaseHandler
-	Chain         clientproviderchain.ClientProviderChain
-	ClientManager clientauth.Manager
+	ClientManager  clientauth.Manager
+	IdentityGetter commonHandlers.IdentityGetter
 }
 
 func (l *LoginHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
 	var requestPayload proto.LoginRequest
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
-		l.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
+		l.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
 	if !l.ClientManager.Validate(&requestPayload.ClientAuth) {
-		l.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
+		l.HttpSendError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
-	items, err := l.Chain.Scan(requestPayload.Login, requestPayload.Password)
+	user, _, err := doLogin(l.IdentityGetter, requestPayload.Login, requestPayload.Password)
 	if err != nil {
-		l.HttpError(response, fmt.Sprintf("Providers scan: %v", err), http.StatusInternalServerError)
+		l.HttpSendError(response, fmt.Sprintf("Error on downside login request: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
-	merged, authority := clientproviderchain.Merge(requestPayload.Login, items)
 
 	var responsePayload *proto.LoginResponse
-	if merged.UserStatus == proto.PasswordChecked {
-		responsePayload = &proto.LoginResponse{
-			Success: true,
-			User: proto.User{
-				Login:       merged.Login,
-				Uid:         merged.Uid,
-				CommonNames: merged.CommonNames,
-				Emails:      merged.Emails,
-				Groups:      merged.Groups,
-			},
-			Authority: authority,
-		}
-	} else {
+	if user == nil {
 		responsePayload = &proto.LoginResponse{
 			Success: false,
-			User: proto.User{
-				Login:       merged.Login,
-				Uid:         0,
-				CommonNames: []string{},
-				Emails:      []string{},
-				Groups:      []string{},
-			},
-			Authority: "",
+			User:    proto.InitUser(requestPayload.Login),
+		}
+
+	} else {
+		responsePayload = &proto.LoginResponse{
+			Success: true,
+			User:    *user,
 		}
 	}
 	l.GetLog().Info("User login", "login", requestPayload.Login, "success", responsePayload.Success, "groups", responsePayload.Groups)

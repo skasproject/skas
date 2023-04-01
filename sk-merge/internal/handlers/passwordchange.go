@@ -7,14 +7,14 @@ import (
 	"skas/sk-common/pkg/clientauth"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
-	"skas/sk-merge/internal/clientproviderchain"
+	"skas/sk-merge/internal/providerchain"
 )
 
 var _ http.Handler = &PasswordChangeHandler{}
 
 type PasswordChangeHandler struct {
 	commonHandlers.BaseHandler
-	Chain         clientproviderchain.ClientProviderChain
+	Chain         providerchain.ProviderChain
 	ClientManager clientauth.Manager
 }
 
@@ -22,18 +22,17 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 	var requestPayload = proto.PasswordChangeRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
-		p.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
+		p.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
 	if !p.ClientManager.Validate(&requestPayload.ClientAuth) {
-		p.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
+		p.HttpSendError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
-	changePasswordResponse, err := p.Chain.ChangePassword(&requestPayload)
+	changePasswordResponse, err := p.Chain.ChangePassword(requestPayload)
 	if err != nil {
-		p.HttpError(response, fmt.Sprintf("Providers change password: %v", err), http.StatusInternalServerError)
+		p.HttpSendError(response, fmt.Sprintf("Providers change password: %v", err), http.StatusBadGateway)
 		return
-
 	}
 	p.ServeJSON(response, changePasswordResponse)
 	return

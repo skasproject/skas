@@ -40,33 +40,3 @@ var LoginCmd = &cobra.Command{
 		}
 	},
 }
-
-//
-//
-//func(c *cobra.Command) error {
-//	c.mergePersistentFlags()
-//	err := tmpl(c.OutOrStderr(), c.UsageTemplate(), c)
-//	if err != nil {
-//		c.PrintErrln(err)
-//	}
-//	return err
-//}
-
-//// UsageFunc returns either the function set by SetUsageFunc for this command
-//// or a parent, or it returns a default usage function.
-//func (c *Command) UsageFunc() (f func(*Command) error) {
-//	if c.usageFunc != nil {
-//		return c.usageFunc
-//	}
-//	if c.HasParent() {
-//		return c.Parent().UsageFunc()
-//	}
-//	return func(c *Command) error {
-//		c.mergePersistentFlags()
-//		err := tmpl(c.OutOrStderr(), c.UsageTemplate(), c)
-//		if err != nil {
-//			c.PrintErrln(err)
-//		}
-//		return err
-//	}
-//}

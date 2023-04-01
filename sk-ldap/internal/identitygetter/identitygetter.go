@@ -1,19 +1,21 @@
-package serverprovider
+package identitygetter
 
 import (
 	"crypto/tls"
 	"fmt"
 	"github.com/go-logr/logr"
 	"gopkg.in/ldap.v2"
+	"net/http"
+	"skas/sk-common/pkg/misc"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"strconv"
 	"strings"
 )
 
-var _ commonHandlers.IdentityServerProvider = &ldapIdentityServerProvider{}
+var _ commonHandlers.IdentityGetter = &ldapIdentityGetter{}
 
-type ldapIdentityServerProvider struct {
+type ldapIdentityGetter struct {
 	*Config
 	hostPort         string
 	tlsConfig        *tls.Config
@@ -22,17 +24,16 @@ type ldapIdentityServerProvider struct {
 	logger           logr.Logger
 }
 
-func (l *ldapIdentityServerProvider) GetUserIdentity(request proto.UserIdentityRequest) (*proto.UserIdentityResponse, error) {
+func (l *ldapIdentityGetter) GetIdentity(request proto.IdentityRequest) (*proto.IdentityResponse, misc.HttpError) {
+	if request.Detailed {
+		return nil, misc.NewHttpError("Can't handle detailed request", http.StatusBadRequest)
+	}
 	// Set some default values
-	response := proto.UserIdentityResponse{
-		UserStatus: proto.NotFound,
-		User: proto.User{
-			Login:       request.Login,
-			Uid:         0,
-			CommonNames: []string{},
-			Emails:      []string{},
-			Groups:      []string{},
-		},
+	response := proto.IdentityResponse{
+		Status:    proto.NotFound,
+		User:      proto.InitUser(request.Login),
+		Details:   []proto.UserDetail{},
+		Authority: "",
 	}
 	var ldapUser *ldap.Entry
 	err := l.do(func(conn *ldap.Conn) error {
@@ -48,11 +49,11 @@ func (l *ldapIdentityServerProvider) GetUserIdentity(request proto.UserIdentityR
 		}
 		if ldapUser != nil {
 			if request.Password != "" {
-				if response.UserStatus, err = l.checkPassword(conn, *ldapUser, request.Password); err != nil {
+				if response.Status, err = l.checkPassword(conn, *ldapUser, request.Password); err != nil {
 					return err
 				}
 			} else {
-				response.UserStatus = proto.PasswordUnchecked
+				response.Status = proto.PasswordUnchecked
 			}
 			// We need to bind again, as password check was performed on user
 			bindDesc := fmt.Sprintf("conn.Bind(%s, %s)", l.BindDN, "xxxxxxxx")
@@ -67,7 +68,7 @@ func (l *ldapIdentityServerProvider) GetUserIdentity(request proto.UserIdentityR
 		return nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, misc.NewHttpError(err.Error(), http.StatusInternalServerError)
 	}
 	if ldapUser != nil {
 		l.logger.V(2).Info(fmt.Sprint("Will fetch Attributes"))
@@ -85,7 +86,7 @@ func (l *ldapIdentityServerProvider) GetUserIdentity(request proto.UserIdentityR
 // do() initializes a connection to the LDAP directory and passes it to the
 // provided function. It then performs appropriate teardown or reuse before
 // returning.
-func (l *ldapIdentityServerProvider) do(f func(c *ldap.Conn) error) error {
+func (l *ldapIdentityGetter) do(f func(c *ldap.Conn) error) error {
 	var (
 		conn *ldap.Conn
 		err  error
@@ -119,7 +120,7 @@ func (l *ldapIdentityServerProvider) do(f func(c *ldap.Conn) error) error {
 	return f(conn)
 }
 
-func (l *ldapIdentityServerProvider) lookupUser(conn *ldap.Conn, login string) (*ldap.Entry, error) {
+func (l *ldapIdentityGetter) lookupUser(conn *ldap.Conn, login string) (*ldap.Entry, error) {
 	filter := fmt.Sprintf("(%s=%s)", l.UserSearch.LoginAttr, ldap.EscapeFilter(login))
 	if l.UserSearch.Filter != "" {
 		filter = fmt.Sprintf("(&%s%s)", l.UserSearch.Filter, filter)
@@ -166,7 +167,7 @@ func (l *ldapIdentityServerProvider) lookupUser(conn *ldap.Conn, login string) (
 	}
 }
 
-func (l *ldapIdentityServerProvider) checkPassword(conn *ldap.Conn, user ldap.Entry, password string) (proto.UserStatus, error) {
+func (l *ldapIdentityGetter) checkPassword(conn *ldap.Conn, user ldap.Entry, password string) (proto.Status, error) {
 	if password == "" {
 		return proto.PasswordFail, nil
 	}
@@ -191,7 +192,7 @@ func (l *ldapIdentityServerProvider) checkPassword(conn *ldap.Conn, user ldap.En
 	return proto.PasswordChecked, nil
 }
 
-func (l *ldapIdentityServerProvider) lookupGroups(conn *ldap.Conn, user ldap.Entry) ([]string, error) {
+func (l *ldapIdentityGetter) lookupGroups(conn *ldap.Conn, user ldap.Entry) ([]string, error) {
 	ldapGroups := make([]*ldap.Entry, 0, 2)
 	groups := make([]string, 0, 2)
 	for _, attr := range getAttrs(user, l.GroupSearch.LinkUserAttr) {

@@ -10,7 +10,7 @@ import (
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-ldap/internal/config"
-	"skas/sk-ldap/internal/serverprovider"
+	"skas/sk-ldap/internal/identitygetter"
 )
 
 func main() {
@@ -22,16 +22,16 @@ func main() {
 
 	server := skserver.New("ldapServer", &config.Conf.Server, config.Log.WithName("ldapServer"))
 
-	provider, err := serverprovider.New(&config.Conf.Ldap, config.Log, filepath.Dir(config.File))
+	identityGetter, err := identitygetter.New(&config.Conf.Ldap, config.Log, filepath.Dir(config.File))
 	if err != nil {
 		config.Log.Error(err, "ldap config")
 		os.Exit(3)
 	}
-	hdl := &commonHandlers.UserIdentityHandler{
-		Provider:      provider,
-		ClientManager: clientauth.New(config.Conf.Clients, true),
+	hdl := &commonHandlers.IdentityHandler{
+		IdentityGetter: identityGetter,
+		ClientManager:  clientauth.New(config.Conf.Clients, true),
 	}
-	server.AddHandler(proto.UserIdentityMeta, hdl)
+	server.AddHandler(proto.IdentityMeta, hdl)
 
 	err = server.Start(context.Background())
 	if err != nil {

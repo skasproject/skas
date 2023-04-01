@@ -5,54 +5,60 @@ import (
 	"io"
 )
 
-// ------------------------- Provider API
-
-// This is the API provided by all kind of Identity provider. Consumed by sk-merge
-
-var UserIdentityMeta = &RequestMeta{
-	Name:    "userIdentity",
+var IdentityMeta = &RequestMeta{
+	Name:    "identity",
 	Method:  "GET",
-	UrlPath: "/v1/userIdentity",
+	UrlPath: "/v1/identity",
 }
 
-var _ RequestPayload = &UserIdentityRequest{}
+type Translated struct {
+	Groups []string `yaml:"groups"`
+	Uid    int      `yaml:"uid"`
+}
 
-type UserIdentityRequest struct {
+type ProviderSpec struct {
+	Name                string `json:"name"`
+	CredentialAuthority bool   `json:"credentialAuthority"` // Is this provider Authority for authentication (password) for this user
+	GroupAuthority      bool   `json:"groupAuthority"`      // Should we take groups in account
+}
+
+type UserDetail struct {
+	User
+	Status       Status       `json:"status"`
+	ProviderSpec ProviderSpec `json:"providerSpec"`
+	Translated   Translated   `json:"translated"`
+}
+
+var _ RequestPayload = &IdentityRequest{}
+
+type IdentityRequest struct {
 	ClientAuth ClientAuth `json:"clientAuth"`
 	Login      string     `json:"login"`
 	Password   string     `json:"password"`
+	Detailed   bool       `json:"detailed"`
 }
 
-type UserStatus string
+var _ ResponsePayload = &IdentityResponse{}
 
-const (
-	NotFound          = "notFound"
-	Disabled          = "disabled"
-	PasswordChecked   = "passwordChecked"
-	PasswordFail      = "passwordFail"
-	PasswordUnchecked = "passwordUnchecked"
-	Undefined         = "undefined" // Used to mark a non-critical failing provider in userDescribe
-)
-
-var _ ResponsePayload = &UserIdentityResponse{}
-
-type UserIdentityResponse struct {
-	UserStatus UserStatus `json:"userStatus"`
+type IdentityResponse struct {
 	User
+	Status    Status       `json:"status"`
+	Details   []UserDetail `json:"details"`   // Empty is IdentityRequest.Detail == False
+	Authority string       `json:"authority"` // "" if from an identity provider
 }
 
-// ---------------------------------------------------------------
+// ----------------------------------------------------------------------
 
-func (u *UserIdentityRequest) String() string {
-	return fmt.Sprintf("UserIdentityRequest(login=%s", u.Login)
+func (u *IdentityRequest) String() string {
+	return fmt.Sprintf("IdentityRequest(login=%s", u.Login)
 }
-func (u *UserIdentityRequest) ToJson() ([]byte, error) {
+func (u *IdentityRequest) ToJson() ([]byte, error) {
 	return toJson(u)
 }
-func (u *UserIdentityRequest) FromJson(r io.Reader) error {
+func (u *IdentityRequest) FromJson(r io.Reader) error {
 	return fromJson(r, u)
 }
 
-func (u *UserIdentityResponse) FromJson(r io.Reader) error {
+func (u *IdentityResponse) FromJson(r io.Reader) error {
 	return fromJson(r, u)
 }

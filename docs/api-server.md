@@ -3,7 +3,7 @@
 
 The Authentication Webhook of the API server should be configured to reach our authentication module.
 
-Depending of your installation, the directory mentioned below may differs.
+Depending of your installation, the directory mentioned below may differs[coding-rules.md](coding-rules.md).
 Also, this procedure assume the API Server is managed by the Kubelet, as a static Pod. If your API Server is managed by another system (i.e. systemd), you should adapt accordingly.
 
 **The following operations must be performed on all nodes hosting an instance of the Kubernetes API server**. Typically, all nodes of the control plane.

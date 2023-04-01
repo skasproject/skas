@@ -26,7 +26,6 @@ type LoginRequest struct {
 type LoginResponse struct {
 	Success bool `json:"success"`
 	User
-	Authority string `json:"authority"`
 }
 
 // -----------------------------------------------------

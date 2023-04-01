@@ -55,7 +55,7 @@ func Setup() error {
 	return nil
 }
 
-func (c *ClientProviderConfig) Init() {
+func (c *ProviderConfig) Init() {
 	// Set default values
 	yes := true
 	if c.Enabled == nil {

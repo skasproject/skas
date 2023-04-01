@@ -20,9 +20,9 @@ DONE:
 ## All
 
 - Ensure copyright message in all relevant location
-- Switch to logrus, to have more level (i.e WARNING)
+- Switch to logrus, to have more level (i.e WARNING) ?
 - Display client.id in relevant message (Modify LoggingHandler)
-- Rename sk-xxxx to skas-xxxxx ? or ska-xxxx
+- Rename sk-xxxx to skas-xxxxx ? or ska-xxxx  ?
 - In config file, for http client url. Set full url, including the path OR define by scheme:, host: and port (Currently, it is ambiguous, as a partial) ?
 - liveliness, readiness probes on all modules
 - Generalize the concept of service in the config of all id provider.
@@ -35,7 +35,6 @@ DONE:
 - systematize global rootCaPath, rootCaData
 - Setup a system to force password change
 - Think about a system who can safely delegate group binding inside a namespace
-- Sur un describe, distinguer la cause d'un password unchecked (Non fourni, ou non present dans le provider). Ceci pour pouvoir déterminer l'authoritée sans fournir le password.
 - 
  
 - Service refactoring
@@ -55,6 +54,7 @@ DONE:
 - camelCase all url
 - set uid as an int everywhere (In proto)
 - helm: in rbac, add a rolebinding to an admin group (skas_admin by default)
+- Sur un describe, distinguer la cause d'un password unchecked (Non fourni, ou non present dans le provider). Ceci pour pouvoir déterminer l'authoritée sans fournir le password.
 
 ## sk-static
 
@@ -67,6 +67,8 @@ DONE:
 
 ## sk-crd
 
+DONE
+- 
 - Add a service to change password
 
 ## sk-merge
@@ -74,21 +76,20 @@ DONE:
 - Manage rootCaPath in helm chart (Global and by provider)
 - On startup, perform a scan to check underlying providers (A flag to disable)
 - Add an optional providerList, to modify order of provider. Needed when appending a new provider to list as 'extraProvider' in helm chart
-- Relay the changePassword service
-- Display the list of provider as info on boot
 
 DONE:
 
 - There is still some UserStatus to change to UserIdentity
+- Relay the changePassword service
+- Display the list of provider as info on boot
 
 ## sk-auth
 
-- If memory or another non-k8s storage is used in production, one may modify the runnable package (Start() instead of Run(), a standard logger, ...)
-- Allow several kubeconfig definitions (Selected by ../v1/kubeconfig/<id>) ?
-- Embed CLI binary with a download url ?
+- ? If memory or another non-k8s storage is used in production, one may modify the runnable package (Start() instead of Run(), a standard logger, ...) 
+- ? Allow several kubeconfig definitions (Selected by ../v1/kubeconfig/<id>) ?
+- ? Embed CLI binary with a download url ?
 - In config, rename tokenConfig to token
 - Ability to add default namespace in kubeconfig init url
-- Relay login protocol to allow non-exposition of sk-merge for dex or alike 
 - kubeconfig: Always have a clientId (Missing at least for sk-client)
 
 DONE:
@@ -96,6 +97,7 @@ DONE:
 - Use basic auth in complement to token auth on userDescribe
 - Rename 'loginProvider' to 'downstreamProvider' (Or provider)
 - Relay with authentication the changePassword service
+- Relay login protocol to allow non-exposition of sk-merge for dex or alike
 
 
 ## sk-client

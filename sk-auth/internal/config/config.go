@@ -32,7 +32,8 @@ type Config struct {
 	AdminGroup  string                 `yaml:"adminGroup"`
 	Services    struct {
 		Token          cconfig.ServiceConfig `yaml:"token"`
-		Describe       cconfig.ServiceConfig `yaml:"describe"`
+		Identity       cconfig.ServiceConfig `yaml:"identity"`
+		Login          cconfig.ServiceConfig `yaml:"login"`
 		K8sAuth        cconfig.ServiceConfig `yaml:"k8sAuth"`
 		PasswordChange cconfig.ServiceConfig `yaml:"passwordChange"`
 		Kubeconfig     cconfig.ServiceConfig `yaml:"kubeconfig"`

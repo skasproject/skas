@@ -21,11 +21,11 @@ func (k *KubeconfigHandler) ServeHTTP(response http.ResponseWriter, request *htt
 	var requestPayload = proto.KubeconfigRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
-		k.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
+		k.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
 	if !k.ClientManager.Validate(&requestPayload.ClientAuth) {
-		k.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
+		k.HttpSendError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
 	var responsePayload = &proto.KubeconfigResponse{

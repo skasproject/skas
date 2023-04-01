@@ -16,8 +16,8 @@ import (
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-crd/internal/config"
-	"skas/sk-crd/internal/crdidentityprovider"
 	"skas/sk-crd/internal/handlers"
+	"skas/sk-crd/internal/identitygetterr"
 )
 
 var scheme = runtime.NewScheme()
@@ -67,18 +67,18 @@ func main() {
 
 	server := skserver.New("crdServer", &config.Conf.Server, config.Log.WithName("crdServer"))
 
-	hdlUi := &commonHandlers.UserIdentityHandler{
-		Provider:      crdidentityprovider.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdprovider")),
-		ClientManager: clientauth.New(config.Conf.Clients, true),
+	hdlId := &commonHandlers.IdentityHandler{
+		IdentityGetter: identitygetterr.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdProvider")),
+		ClientManager:  clientauth.New(config.Conf.Clients, true),
 	}
-	server.AddHandler(proto.UserIdentityMeta, hdlUi)
+	server.AddHandler(proto.IdentityMeta, hdlId)
 
-	hdlCp := &handlers.PasswordChangeHandler{
+	hdlPc := &handlers.PasswordChangeHandler{
 		ClientManager: clientauth.New(config.Conf.Clients, true),
 		KubeClient:    mgr.GetClient(),
 		Namespace:     config.Conf.Namespace,
 	}
-	server.AddHandler(proto.PasswordChangeMeta, hdlCp)
+	server.AddHandler(proto.PasswordChangeMeta, hdlPc)
 
 	err = mgr.Add(server)
 	if err != nil {

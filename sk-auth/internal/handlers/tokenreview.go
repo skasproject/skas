@@ -12,6 +12,8 @@ import (
 	"strconv"
 )
 
+var _ http.Handler = &TokenReviewHandler{}
+
 type TokenReviewHandler struct {
 	commonHandlers.BaseHandler
 	TokenStore tokenstore.TokenStore
@@ -21,7 +23,7 @@ func (t *TokenReviewHandler) ServeHTTP(response http.ResponseWriter, request *ht
 	var requestPayload proto.TokenReviewRequest
 	err := json.NewDecoder(request.Body).Decode(&requestPayload)
 	if err != nil {
-		t.HttpError(response, err.Error(), http.StatusBadRequest)
+		t.HttpSendError(response, err.Error(), http.StatusBadRequest)
 	} else {
 		data := &proto.TokenReviewResponse{
 			ApiVersion: requestPayload.ApiVersion,
@@ -29,7 +31,7 @@ func (t *TokenReviewHandler) ServeHTTP(response http.ResponseWriter, request *ht
 		}
 		user, err := t.TokenStore.Get(requestPayload.Spec.Token)
 		if err != nil {
-			t.HttpError(response, "Server error. Check server logs", http.StatusInternalServerError)
+			t.HttpSendError(response, "Server error. Check server logs", http.StatusInternalServerError)
 			return
 		}
 		if user != nil {

@@ -19,6 +19,19 @@ type RequestMeta struct {
 	UrlPath string
 }
 
+type Status string
+
+// If password is not provided in the request and there is no password in the user definition, status should be 'passwordMissing' (Not 'passwordUnchecked')
+const (
+	NotFound          = "notFound"
+	Disabled          = "disabled"
+	PasswordChecked   = "passwordChecked"
+	PasswordFail      = "passwordFail"
+	PasswordUnchecked = "passwordUnchecked" // Because password was not provided in the request
+	PasswordMissing   = "passwordMissing"   // Because this provider does not store a password for this user
+	Undefined         = "undefined"         // Used to mark a non-critical failing provider in userDescribe
+)
+
 // This object is also used in Token K8s api in sk-auth
 
 // +kubebuilder:object:generate:=true
@@ -28,6 +41,16 @@ type User struct {
 	CommonNames []string `json:"commonNames"`
 	Emails      []string `json:"emails"`
 	Groups      []string `json:"groups"`
+}
+
+func InitUser(login string) User {
+	return User{
+		Login:       login,
+		Uid:         0,
+		CommonNames: []string{},
+		Emails:      []string{},
+		Groups:      []string{},
+	}
 }
 
 type RequestPayload interface {
