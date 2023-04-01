@@ -1,25 +1,23 @@
 package handlers
 
 import (
-	"fmt"
-	"skas/sk-common/pkg/skclient"
+	"skas/sk-common/pkg/misc"
+	"skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 )
 
-func doLogin(loginProvider skclient.SkClient, login, password string) (*proto.User /*authority*/, string, error) {
-	lr := &proto.LoginRequest{
-		Login:      login,
-		Password:   password,
-		ClientAuth: loginProvider.GetClientAuth(),
-	}
-	loginResponse := &proto.LoginResponse{}
-	err := loginProvider.Do(proto.LoginMeta, lr, loginResponse, nil)
+func doLogin(identityGetter handlers.IdentityGetter, login, password string) (*proto.User /*authority*/, string, misc.HttpError) {
+	response, err := identityGetter.GetIdentity(proto.IdentityRequest{
+		Login:    login,
+		Password: password,
+		Detailed: false,
+		// ClientAuth will be provided by called
+	})
 	if err != nil {
-		return nil, "", fmt.Errorf("error on exchange on %s: %w", proto.LoginMeta.UrlPath, err) // Do() return a documented message
+		return nil, "", err
 	}
-	if loginResponse.Success {
-		return &loginResponse.User, loginResponse.Authority, nil
-	} else {
+	if response.Status != proto.PasswordChecked {
 		return nil, "", nil
 	}
+	return &response.User, response.Authority, nil
 }

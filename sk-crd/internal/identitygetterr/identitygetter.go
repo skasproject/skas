@@ -1,47 +1,48 @@
-package crdidentityprovider
+package identitygetterr
 
 import (
 	"context"
 	"github.com/go-logr/logr"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	userdbv1alpha1 "skas/sk-common/k8sapis/userdb/v1alpha1"
+	"skas/sk-common/pkg/misc"
 	"skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 )
 
-var _ handlers.IdentityServerProvider = &crdIdentityProvider{}
+var _ handlers.IdentityGetter = &crdIdentityGetter{}
 
-type crdIdentityProvider struct {
+type crdIdentityGetter struct {
 	kubeClient client.Client
 	namespace  string
 	logger     logr.Logger
 }
 
-func New(kubeClient client.Client, namespace string, logger logr.Logger) handlers.IdentityServerProvider {
-	return &crdIdentityProvider{
+func New(kubeClient client.Client, namespace string, logger logr.Logger) handlers.IdentityGetter {
+	return &crdIdentityGetter{
 		kubeClient: kubeClient,
 		namespace:  namespace,
 		logger:     logger,
 	}
 }
 
-func (p crdIdentityProvider) GetUserIdentity(request proto.UserIdentityRequest) (*proto.UserIdentityResponse, error) {
-	responsePayload := &proto.UserIdentityResponse{
-		UserStatus: proto.NotFound,
-		User: proto.User{
-			Login:       request.Login,
-			Uid:         0,
-			Emails:      []string{},
-			CommonNames: []string{},
-			Groups:      []string{},
-		},
+func (p crdIdentityGetter) GetIdentity(request proto.IdentityRequest) (*proto.IdentityResponse, misc.HttpError) {
+	if request.Detailed {
+		return nil, misc.NewHttpError("Can't handle detailed request", http.StatusBadRequest)
+	}
+	responsePayload := &proto.IdentityResponse{
+		Status:    proto.NotFound,
+		User:      proto.InitUser(request.Login),
+		Details:   []proto.UserDetail{},
+		Authority: "",
 	}
 	// ------------------- Handle groups (Even if notFound)
 	list := userdbv1alpha1.GroupBindingList{}
 	err := p.kubeClient.List(context.TODO(), &list, client.MatchingFields{"userkey": request.Login}, client.InNamespace(p.namespace))
 	if err != nil {
-		return responsePayload, err
+		return responsePayload, misc.NewHttpError(err.Error(), http.StatusInternalServerError)
 	}
 	if len(list.Items) > 0 {
 		responsePayload.Groups = make([]string, 0, len(list.Items))
@@ -56,11 +57,11 @@ func (p crdIdentityProvider) GetUserIdentity(request proto.UserIdentityRequest) 
 		Name:      request.Login,
 	}, &usr)
 	if client.IgnoreNotFound(err) != nil {
-		return responsePayload, err
+		return responsePayload, misc.NewHttpError(err.Error(), http.StatusInternalServerError)
 	}
 	if err != nil {
 		p.logger.V(1).Info("User not found", "user", request.Login)
-		responsePayload.UserStatus = proto.NotFound
+		responsePayload.Status = proto.NotFound
 		return responsePayload, nil
 	}
 	if usr.Spec.Uid != nil {
@@ -74,19 +75,22 @@ func (p crdIdentityProvider) GetUserIdentity(request proto.UserIdentityRequest) 
 	}
 	if usr.Spec.Disabled != nil && *usr.Spec.Disabled {
 		p.logger.V(1).Info("User found but disabled", "user", request.Login)
-		responsePayload.UserStatus = proto.Disabled
+		responsePayload.Status = proto.Disabled
 	} else {
-		if request.Password != "" && usr.Spec.PasswordHash != "" {
+
+		if usr.Spec.PasswordHash == "" {
+			responsePayload.Status = proto.PasswordMissing
+		} else if request.Password == "" {
+			responsePayload.Status = proto.PasswordUnchecked
+		} else {
 			err := bcrypt.CompareHashAndPassword([]byte(usr.Spec.PasswordHash), []byte(request.Password))
 			if err == nil {
-				responsePayload.UserStatus = proto.PasswordChecked
+				responsePayload.Status = proto.PasswordChecked
 			} else {
-				responsePayload.UserStatus = proto.PasswordFail
+				responsePayload.Status = proto.PasswordFail
 			}
-		} else {
-			responsePayload.UserStatus = proto.PasswordUnchecked
 		}
-		p.logger.V(1).Info("User found", "user", responsePayload.Login, "status", responsePayload.UserStatus)
+		p.logger.V(1).Info("User found", "user", responsePayload.Login, "status", responsePayload.Status)
 	}
 	return responsePayload, nil
 }

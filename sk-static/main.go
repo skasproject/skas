@@ -9,7 +9,7 @@ import (
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-static/internal/config"
-	"skas/sk-static/internal/staticstatusprovider"
+	"skas/sk-static/internal/identitygetter"
 )
 
 func main() {
@@ -20,19 +20,13 @@ func main() {
 
 	config.Log.Info("sk-static start", "version", config.Version, "nbUsers", len(config.UserByLogin), "nbrGroupBindings", config.GroupBindingCount, "logLevel", config.Conf.Log.Level)
 
-	//config.Config.Log.V(0).Info("Log V0")
-	//config.Config.Log.V(1).Info("Log V1")
-	//config.Config.Log.V(2).Info("Log V2")
-	//config.Config.Log.Error(errors.New("there is a problem"), "Test ERROR")
-	//fmt.Printf("Users:\n%+v\n", config.Config.UserByLogin)
-
 	server := skserver.New("staticServer", &config.Conf.Server, config.Log.WithName("staticServer"))
 
-	hdl := &commonHandlers.UserIdentityHandler{
-		Provider:      staticstatusprovider.New(config.Log.WithName("staticProvider")),
-		ClientManager: clientauth.New(config.Conf.Clients, true),
+	hdl := &commonHandlers.IdentityHandler{
+		IdentityGetter: identitygetter.New(config.Log.WithName("staticProvider")),
+		ClientManager:  clientauth.New(config.Conf.Clients, true),
 	}
-	server.AddHandler(proto.UserIdentityMeta, hdl)
+	server.AddHandler(proto.IdentityMeta, hdl)
 	err := server.Start(context.Background())
 	if err != nil {
 		server.GetLog().Error(err, "Error on Start()")

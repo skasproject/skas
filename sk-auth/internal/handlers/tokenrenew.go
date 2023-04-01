@@ -24,17 +24,17 @@ func (t *TokenRenewHandler) ServeHTTP(response http.ResponseWriter, request *htt
 	var requestPayload = proto.TokenRenewRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
-		t.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
+		t.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
 	if !t.ClientManager.Validate(&requestPayload.ClientAuth) {
-		t.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
+		t.HttpSendError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
 
 	user, err := t.TokenStore.Get(requestPayload.Token)
 	if err != nil {
-		t.HttpError(response, fmt.Sprintf("Error while retreiving token in the store: %v", err.Error()), http.StatusUnauthorized)
+		t.HttpSendError(response, fmt.Sprintf("Error while retreiving token in the store: %v", err.Error()), http.StatusUnauthorized)
 		return
 	}
 	responsePayload := &proto.TokenRenewResponse{

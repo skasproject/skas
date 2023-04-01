@@ -1,4 +1,4 @@
-package serverprovider
+package identitygetter
 
 // NB: These values are strongly inspired from dex configuration (https://github.com/dexidp/dex)
 

@@ -13,7 +13,7 @@ type NotFoundHandler struct {
 }
 
 func (h *NotFoundHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	h.Logger.V(1).Info("Url not found", "uri", request.RequestURI)
+	h.Logger.V(0).Info("WARNING: Url not found", "uri", request.RequestURI)
 	http.Error(writer, "", http.StatusNotFound)
 }
 
@@ -22,6 +22,6 @@ type MethodNotAllowedHandler struct {
 }
 
 func (h MethodNotAllowedHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	h.Logger.V(1).Info("Method not allowes", "method", request.Method)
+	h.Logger.V(0).Info("WARNING: Method not allowed", "method", request.Method)
 	http.Error(writer, "", http.StatusMethodNotAllowed)
 }

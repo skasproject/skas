@@ -12,6 +12,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"skas/sk-auth/internal/config"
 	"skas/sk-auth/internal/handlers"
+	"skas/sk-auth/internal/identitygetter"
 	"skas/sk-auth/internal/tokenstore"
 	"skas/sk-auth/internal/tokenstore/crd"
 	"skas/sk-auth/internal/tokenstore/memory"
@@ -19,6 +20,7 @@ import (
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/pkg/skserver"
+	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"time"
 )
@@ -81,12 +83,14 @@ func main() {
 	if err != nil {
 		config.Log.Error(err, "Error on client login creation")
 	}
+	theIdentityGetter := identitygetter.New(provider)
+
 	// ---------------------------------------------------- Token service
 	if !config.Conf.Services.Token.Disabled {
 		hdlTc := &handlers.TokenCreateHandler{
-			ClientManager: clientauth.New(config.Conf.Services.Token.Clients, false),
-			TokenStore:    tokenStore,
-			Provider:      provider,
+			ClientManager:  clientauth.New(config.Conf.Services.Token.Clients, false),
+			TokenStore:     tokenStore,
+			IdentityGetter: theIdentityGetter,
 		}
 		server.AddHandler(proto.TokenCreateMeta, hdlTc)
 		hdlTr := &handlers.TokenRenewHandler{
@@ -106,17 +110,6 @@ func main() {
 	} else {
 		config.Log.Info("tokenReview service disabled")
 	}
-	// ---------------------------------------------------- Describe service
-	if !config.Conf.Services.Describe.Disabled {
-		hdl := &handlers.UserDescribeHandler{
-			ClientManager: clientauth.New(config.Conf.Services.Describe.Clients, false),
-			TokenStore:    tokenStore,
-			Provider:      provider,
-		}
-		server.AddHandler(proto.UserDescribeMeta, hdl)
-	} else {
-		config.Log.Info("userDescribe service disabled")
-	}
 	// ---------------------------------------------------- PasswordChange service
 	if !config.Conf.Services.PasswordChange.Disabled {
 		hdl := &handlers.PasswordChangeHandler{
@@ -135,6 +128,30 @@ func main() {
 		server.AddHandler(proto.KubeconfigMeta, hdl)
 	} else {
 		config.Log.Info("kubeconfig service disabled")
+	}
+	// ---------------------------------------------------- Login service
+	if !config.Conf.Services.Login.Disabled {
+		hdl := &handlers.LoginHandler{
+			ClientManager:  clientauth.New(config.Conf.Services.Kubeconfig.Clients, false),
+			IdentityGetter: theIdentityGetter,
+		}
+		server.AddHandler(proto.LoginMeta, hdl)
+	} else {
+		config.Log.Info("login service disabled")
+	}
+	// ---------------------------------------------------- Identity service
+	if !config.Conf.Services.Identity.Disabled {
+		hdl := &commonHandlers.IdentityHandler{
+			IdentityGetter: theIdentityGetter,
+			ClientManager:  clientauth.New(config.Conf.Services.Identity.Clients, false),
+			HttpRequestValidator: &handlers.AdminHttpRequestValidator{
+				TokenStore:     tokenStore,
+				IdentityGetter: theIdentityGetter,
+			},
+		}
+		server.AddHandler(proto.IdentityMeta, hdl)
+	} else {
+		config.Log.Info("identity service disabled")
 	}
 
 	// ---------------------------------------------------------- End init and launch

@@ -26,11 +26,11 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 	var requestPayload = proto.PasswordChangeRequest{}
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
-		p.HttpError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
+		p.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
 	if !p.ClientManager.Validate(&requestPayload.ClientAuth) {
-		p.HttpError(response, "Client authentication failed", http.StatusUnauthorized)
+		p.HttpSendError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
 	responsePayload := &proto.PasswordChangeResponse{
@@ -43,7 +43,7 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 		Name:      requestPayload.Login,
 	}, usr)
 	if client.IgnoreNotFound(err) != nil {
-		p.HttpError(response, err.Error(), http.StatusInternalServerError)
+		p.HttpSendError(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if err != nil {
@@ -68,13 +68,13 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 	// Create new password
 	hash, err := bcrypt.GenerateFromPassword([]byte(requestPayload.NewPassword), bcrypt.DefaultCost)
 	if err != nil {
-		p.HttpError(response, err.Error(), http.StatusInternalServerError)
+		p.HttpSendError(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	usr.Spec.PasswordHash = string(hash)
 	err = p.KubeClient.Update(context.Background(), usr)
 	if err != nil {
-		p.HttpError(response, err.Error(), http.StatusInternalServerError)
+		p.HttpSendError(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	responsePayload.Status = proto.Done
