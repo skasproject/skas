@@ -42,11 +42,12 @@ func main() {
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager
-
+	var runnableMgr runnable.AppManager
 	// -----------------------------------------------------------------First step of setup
 
 	if config.Conf.TokenConfig.StorageType == "memory" {
 		tokenStore = memory.New(config.Conf.TokenConfig, config.Log.WithName("tokenstore"))
+		runnableMgr = runnable.NewManager()
 	} else {
 		ctrl.SetLogger(config.Log.WithName("controller-runtime"))
 		var err error
@@ -77,104 +78,103 @@ func main() {
 
 	// --------------------------------------------------------------- http server setup
 
-	server := skserver.New("auth", &config.Conf.Server, config.Log.WithName("authServer"))
-
 	provider, err := skclient.New(&config.Conf.Provider, "", "")
 	if err != nil {
 		config.Log.Error(err, "Error on client login creation")
 	}
-	theIdentityGetter := identitygetter.New(provider)
+	identityGetter := identitygetter.New(provider)
 
-	// ---------------------------------------------------- Token service
-	if !config.Conf.Services.Token.Disabled {
-		hdlTc := &handlers.TokenCreateHandler{
-			ClientManager:  clientauth.New(config.Conf.Services.Token.Clients, false),
-			TokenStore:     tokenStore,
-			IdentityGetter: theIdentityGetter,
-		}
-		server.AddHandler(proto.TokenCreateMeta, hdlTc)
-		hdlTr := &handlers.TokenRenewHandler{
-			ClientManager: clientauth.New(config.Conf.Services.Token.Clients, false),
-			TokenStore:    tokenStore,
-		}
-		server.AddHandler(proto.TokenRenewMeta, hdlTr)
-	} else {
-		config.Log.Info("token service disabled")
+	identityRequestValidator := &handlers.AdminHttpRequestValidator{
+		TokenStore:     tokenStore,
+		IdentityGetter: identityGetter,
 	}
-	// ---------------------------------------------------- K8sAuth service
-	if !config.Conf.Services.K8sAuth.Disabled {
-		hdl := &handlers.TokenReviewHandler{
-			TokenStore: tokenStore,
-		}
-		server.AddHandler(proto.TokenReviewMeta, hdl)
-	} else {
-		config.Log.Info("tokenReview service disabled")
-	}
-	// ---------------------------------------------------- PasswordChange service
-	if !config.Conf.Services.PasswordChange.Disabled {
-		hdl := &handlers.PasswordChangeHandler{
-			ClientManager: clientauth.New(config.Conf.Services.PasswordChange.Clients, false),
-			Provider:      provider,
-		}
-		server.AddHandler(proto.PasswordChangeMeta, hdl)
-	} else {
-		config.Log.Info("passwordChange service disabled")
-	}
-	// ---------------------------------------------------- Kubeconfig service
-	if !config.Conf.Services.Kubeconfig.Disabled {
-		hdl := &handlers.KubeconfigHandler{
-			ClientManager: clientauth.New(config.Conf.Services.Kubeconfig.Clients, false),
-		}
-		server.AddHandler(proto.KubeconfigMeta, hdl)
-	} else {
-		config.Log.Info("kubeconfig service disabled")
-	}
-	// ---------------------------------------------------- Login service
-	if !config.Conf.Services.Login.Disabled {
-		hdl := &handlers.LoginHandler{
-			ClientManager:  clientauth.New(config.Conf.Services.Kubeconfig.Clients, false),
-			IdentityGetter: theIdentityGetter,
-		}
-		server.AddHandler(proto.LoginMeta, hdl)
-	} else {
-		config.Log.Info("login service disabled")
-	}
-	// ---------------------------------------------------- Identity service
-	if !config.Conf.Services.Identity.Disabled {
-		hdl := &commonHandlers.IdentityHandler{
-			IdentityGetter: theIdentityGetter,
-			ClientManager:  clientauth.New(config.Conf.Services.Identity.Clients, false),
-			HttpRequestValidator: &handlers.AdminHttpRequestValidator{
+	for idx, serverConfig := range config.Conf.Servers {
+		server := skserver.New(fmt.Sprintf("server[%d]", idx), &config.Conf.Servers[idx].SkServerConfig, config.Log.WithName(fmt.Sprintf("authServer[%d]", idx)))
+
+		// ---------------------------------------------------- Token service
+		if !serverConfig.Services.Token.Disabled {
+			hdlTc := &handlers.TokenCreateHandler{
+				ClientManager:  clientauth.New(serverConfig.Services.Token.Clients, false),
 				TokenStore:     tokenStore,
-				IdentityGetter: theIdentityGetter,
-			},
+				IdentityGetter: identityGetter,
+			}
+			server.AddHandler(proto.TokenCreateMeta, hdlTc)
+			hdlTr := &handlers.TokenRenewHandler{
+				ClientManager: clientauth.New(serverConfig.Services.Token.Clients, false),
+				TokenStore:    tokenStore,
+			}
+			server.AddHandler(proto.TokenRenewMeta, hdlTr)
+		} else {
+			config.Log.Info("'token' service disabled")
 		}
-		server.AddHandler(proto.IdentityMeta, hdl)
-	} else {
-		config.Log.Info("identity service disabled")
+		// ---------------------------------------------------- K8sAuth service
+		if !serverConfig.Services.K8sAuth.Disabled {
+			hdl := &handlers.TokenReviewHandler{
+				TokenStore: tokenStore,
+			}
+			server.AddHandler(proto.TokenReviewMeta, hdl)
+		} else {
+			config.Log.Info("'tokenReview' service disabled")
+		}
+		// ---------------------------------------------------- PasswordChange service
+		if !serverConfig.Services.PasswordChange.Disabled {
+			hdl := &handlers.PasswordChangeHandler{
+				ClientManager: clientauth.New(serverConfig.Services.PasswordChange.Clients, false),
+				Provider:      provider,
+			}
+			server.AddHandler(proto.PasswordChangeMeta, hdl)
+		} else {
+			config.Log.Info("'passwordChange' service disabled")
+		}
+		// ---------------------------------------------------- Kubeconfig service
+		if !serverConfig.Services.Kubeconfig.Disabled {
+			hdl := &handlers.KubeconfigHandler{
+				ClientManager: clientauth.New(serverConfig.Services.Kubeconfig.Clients, false),
+			}
+			server.AddHandler(proto.KubeconfigMeta, hdl)
+		} else {
+			config.Log.Info("'kubeconfig' service disabled")
+		}
+		// ---------------------------------------------------- Login service
+		if !serverConfig.Services.Login.Disabled {
+			hdl := &handlers.LoginHandler{
+				ClientManager:  clientauth.New(serverConfig.Services.Kubeconfig.Clients, false),
+				IdentityGetter: identityGetter,
+			}
+			server.AddHandler(proto.LoginMeta, hdl)
+		} else {
+			config.Log.Info("'login' service disabled")
+		}
+		// ---------------------------------------------------- Identity service
+		if !serverConfig.Services.Identity.Disabled {
+			hdl := &commonHandlers.IdentityHandler{
+				IdentityGetter:       identityGetter,
+				ClientManager:        clientauth.New(serverConfig.Services.Identity.Clients, false),
+				HttpRequestValidator: identityRequestValidator,
+			}
+			server.AddHandler(proto.IdentityMeta, hdl)
+		} else {
+			config.Log.Info("'identity' service disabled")
+		}
+		if config.Conf.TokenConfig.StorageType == "memory" {
+			runnableMgr.Add(server)
+		} else {
+			err = mgr.Add(server)
+			if err != nil {
+				config.Log.Error(err, "problem adding http server to the manager")
+				os.Exit(1)
+			}
+		}
 	}
-
 	// ---------------------------------------------------------- End init and launch
 
 	if config.Conf.TokenConfig.StorageType == "memory" {
-		runnableMgr := runnable.NewManager()
-		runnableMgr.Add(server)
 		runnableMgr.Add(&tokenstore.Cleaner{
 			Period:     60 * time.Second,
 			TokenStore: tokenStore,
 		})
 		runnable.Run(runnableMgr.Build())
-		//err := s.Start(context.Background())
-		//if err != nil {
-		//	s.Log.Error(err, "Error on Start()")
-		//	os.Exit(5)
-		//}
 	} else {
-		err = mgr.Add(server)
-		if err != nil {
-			config.Log.Error(err, "problem adding http server to the manager")
-			os.Exit(1)
-		}
 		err := mgr.Add(&tokenstore.Cleaner{
 			Period:     60 * time.Second,
 			TokenStore: tokenStore,

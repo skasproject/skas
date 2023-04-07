@@ -27,15 +27,19 @@ type ProviderConfig struct {
 	UidOffset           int             `yaml:"uidOffset"`           // Will be added to the returned Uid. Default to 0
 }
 
-type Config struct {
-	Log       misc.LogConfig         `yaml:"log"`
-	Server    cconfig.SkServerConfig `yaml:"server"`
-	Providers []ProviderConfig       `yaml:"providers"`
-	// values added to above Providers
-	RootCaPath string `yaml:"rootCaPath"` // Path to a trusted root CA file
-	RootCaData string `yaml:"rootCaData"` // Base64 encoded PEM data containing root CA
-	Services   struct {
+type MergeServerConfig struct {
+	cconfig.SkServerConfig `yaml:",inline"`
+	Services               struct {
 		Identity       cconfig.ServiceConfig `yaml:"identity"`
 		PasswordChange cconfig.ServiceConfig `yaml:"passwordChange"`
 	} `yaml:"services"`
+}
+
+type Config struct {
+	Log       misc.LogConfig      `yaml:"log"`
+	Servers   []MergeServerConfig `yaml:"servers"`
+	Providers []ProviderConfig    `yaml:"providers"`
+	// values added to above Providers
+	RootCaPath string `yaml:"rootCaPath"` // Path to a trusted root CA file
+	RootCaData string `yaml:"rootCaData"` // Base64 encoded PEM data containing root CA
 }

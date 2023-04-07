@@ -38,7 +38,7 @@ func (server *skServer) AddHandler(meta *proto.RequestMeta, handler http.Handler
 		if lh.GetLog().GetSink() == nil {
 			panic(fmt.Sprintf("Handler '%s' does not implements correctly LoggingHandler interface", meta.Name))
 		}
-		lh.GetLog().Info(fmt.Sprintf("%s service ENABLED", meta.Name))
+		lh.GetLog().Info(fmt.Sprintf("'%s' service ENABLED", meta.Name))
 	} else {
 		// All our handlers should implements LogginHandler interface
 		panic(fmt.Sprintf("Handler '%s' does not implements LoggingHandler interface", meta.Name))
@@ -56,7 +56,7 @@ func New(name string, conf *config.SkServerConfig, log logr.Logger) SkServer {
 		Log:    log,
 		Config: conf,
 	}
-	if server.Config.Ssl {
+	if *server.Config.Ssl {
 		if server.Config.CertName == "" {
 			server.Config.CertName = "tls.crt"
 		}
@@ -84,22 +84,24 @@ func (server *skServer) Run(ctx context.Context) error {
 func (server *skServer) Start(ctx context.Context) error {
 	server.Log.Info("Starting skServer")
 
+	bindAddr := fmt.Sprintf("%s:%d", server.Config.Interface, server.Config.Port)
+
 	var listener net.Listener
 	var err error
-	if !server.Config.Ssl {
-		listener, err = net.Listen("tcp", server.Config.BindAddr)
+	if !*server.Config.Ssl {
+		listener, err = net.Listen("tcp", bindAddr)
 		if err != nil {
-			return err
+			return fmt.Errorf("%s: Error on net.Listen(): %w", server.Name, err)
 		}
 	} else {
 		if server.Config.CertDir == "" {
-			return fmt.Errorf("CertDir is not defined while NoSsl is false")
+			return fmt.Errorf("%s: CertDir is not defined while 'ssl'' is true", server.Name)
 		}
 		certPath := filepath.Join(server.Config.CertDir, server.Config.CertName)
 		keyPath := filepath.Join(server.Config.CertDir, server.Config.KeyName)
 		certWatcher, err := certwatcher.New(server.Name, certPath, keyPath, server.Log)
 		if err != nil {
-			return err
+			return fmt.Errorf("%s: Error on certwatcher.New(): %w", server.Name, err)
 		}
 		go func() {
 			if err := certWatcher.Start(ctx); err != nil {
@@ -112,13 +114,13 @@ func (server *skServer) Start(ctx context.Context) error {
 			GetCertificate: certWatcher.GetCertificate,
 		}
 
-		listener, err = tls.Listen("tcp", server.Config.BindAddr, cfg)
+		listener, err = tls.Listen("tcp", bindAddr, cfg)
 		if err != nil {
-			return err
+			return fmt.Errorf("%s: Error on tls.Listen(): %w", server.Name, err)
 		}
 	}
 
-	server.Log.Info("Listening", "bindAddr", server.Config.BindAddr, "ssl", server.Config.Ssl)
+	server.Log.Info("Listening", "bindAddr", bindAddr, "ssl", server.Config.Ssl)
 
 	srv := &http.Server{
 		Handler: server.Router,
@@ -139,7 +141,7 @@ func (server *skServer) Start(ctx context.Context) error {
 
 	err = srv.Serve(listener)
 	if err != nil && err != http.ErrServerClosed {
-		return err
+		return fmt.Errorf("%s: Error on srv.Serve(): %w", server.Name, err)
 	}
 	server.Log.Info("skServer shutdown")
 	<-idleConnsClosed

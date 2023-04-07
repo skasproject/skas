@@ -28,9 +28,16 @@ Expand skStatic container
     {{- toYaml . | nindent 12 }}
     {{- end }}
   ports:
-    - containerPort: {{ .Values.skStatic.serverPort }}
-      name: proto
+    {{- if .Values.skStatic.exposure.internal.enabled }}
+    - containerPort: {{ .Values.skStatic.exposure.internal.port }}
+      name: internal
       protocol: TCP
+    {{- end }}
+    {{- if .Values.skStatic.exposure.external.enabled }}
+    - containerPort: {{ .Values.skStatic.exposure.external.port }}
+      name: external
+      protocol: TCP
+    {{- end }}
   volumeMounts:
     - mountPath: /config.yaml
       name: sk-static-config
@@ -38,7 +45,7 @@ Expand skStatic container
     - mountPath: /users.yaml
       name: sk-static-users
       subPath: users.yaml
-    {{ if and .Values.skStatic.exposure.enabled .Values.skStatic.exposure.ssl }}
+    {{ if and .Values.skStatic.exposure.external.enabled .Values.skStatic.exposure.external.ssl }}
     - mountPath: /tmp/cert/server
       name: sk-static-server-cert
       readOnly: true
@@ -55,7 +62,7 @@ Expand skStatic volumes in pod
 - name: sk-static-users
   configMap:
     name: {{ include "skStatic.usersDbName" . }}
-{{- if and .Values.skStatic.exposure.enabled .Values.skStatic.exposure.ssl }}
+{{- if and .Values.skStatic.exposure.external.enabled .Values.skStatic.exposure.external.ssl }}
 - name: sk-static-server-cert
   secret:
     defaultMode: 420

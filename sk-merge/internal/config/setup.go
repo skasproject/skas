@@ -8,18 +8,19 @@ import (
 	"skas/sk-common/pkg/misc"
 )
 
+var yes = true
+var no = false
+
 func Setup() error {
 	var configFile string
 	var version bool
 	var logLevel string
 	var logMode string
-	var bindAddr string
 
 	pflag.StringVar(&configFile, "configFile", "config.yaml", "Configuration file")
 	pflag.BoolVar(&version, "version", false, "Display version info")
 	pflag.StringVar(&logLevel, "logLevel", "INFO", "Log level (PANIC|FATAL|ERROR|WARN|INFO|DEBUG|TRACE)")
 	pflag.StringVar(&logMode, "logMode", "json", "Log mode: 'dev' or 'json'")
-	pflag.StringVar(&bindAddr, "bindAddr", "127.0.0.1:7013", "Server bind address <host>:<port>")
 
 	pflag.Parse()
 
@@ -36,7 +37,6 @@ func Setup() error {
 	}
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Mode, "logMode")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Level, "logLevel")
-	misc.AdjustConfigString(pflag.CommandLine, &Conf.Server.BindAddr, "bindAddr")
 
 	// ----------------------------------- Adjust path from config file path
 	base := filepath.Dir(configFile)
@@ -49,15 +49,23 @@ func Setup() error {
 	if err != nil {
 		return err
 	}
+	// ------------------------------------ Handle providers config
 	for idx, _ := range Conf.Providers {
 		Conf.Providers[idx].Init()
+	}
+	// ------------------------------------- Handle servers config
+	// If the server list is empty, a first and only one is added.
+	if Conf.Servers == nil || len(Conf.Servers) == 0 {
+		Conf.Servers = []MergeServerConfig{MergeServerConfig{}}
+	}
+	for idx, _ := range Conf.Servers {
+		Conf.Servers[idx].Default(7013 + (idx * 100))
 	}
 	return nil
 }
 
 func (c *ProviderConfig) Init() {
 	// Set default values
-	yes := true
 	if c.Enabled == nil {
 		c.Enabled = &yes
 	}

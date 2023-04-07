@@ -13,7 +13,6 @@ func Setup() error {
 	var logLevel string
 	var logMode string
 	var adminGroup string
-	var bindAddr string
 	var metricAddr string
 	var probeAddr string
 
@@ -29,7 +28,6 @@ func Setup() error {
 	pflag.StringVar(&logLevel, "logLevel", "INFO", "Log level (PANIC|FATAL|ERROR|WARN|INFO|DEBUG|TRACE)")
 	pflag.StringVar(&logMode, "logMode", "json", "Log mode: 'dev' or 'json'")
 	pflag.StringVar(&adminGroup, "adminGroup", "skas-admin", "SKAS administrator group")
-	pflag.StringVar(&bindAddr, "bindAddr", "127.0.0.1:7014", "Server bind address <host>:<port>")
 	pflag.StringVar(&metricAddr, "metricAddr", ":8080", "Metrics bind address (\"0\" to disable)")
 	pflag.StringVar(&probeAddr, "probeAddr", ":8181", "Probe bind address (\"0\" to disable)\"")
 
@@ -58,7 +56,6 @@ func Setup() error {
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Mode, "logMode")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Level, "logLevel")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.AdminGroup, "adminGroup")
-	misc.AdjustConfigString(pflag.CommandLine, &Conf.Server.BindAddr, "bindAddr")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.MetricAddr, "metricAddr")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.ProbeAddr, "probeAddr")
 
@@ -75,13 +72,30 @@ func Setup() error {
 		return err
 	}
 
-	// Handle some defaults
-	if !Conf.Services.Kubeconfig.Disabled {
+	// ------------------------------------- Handle servers config
+	if Conf.Servers == nil || len(Conf.Servers) == 0 {
+		return fmt.Errorf("at least one 'server' must be defined")
+	}
+	serverWithKubeconfigCount := 0
+	for idx, srv := range Conf.Servers {
+		if srv.Interface == "" {
+			return fmt.Errorf("server[%d]: 'interface' must be defined", idx)
+		}
+		if srv.Port == 0 {
+			return fmt.Errorf("server[%d]: 'port' must be defined", idx)
+		}
+		if srv.Ssl == nil {
+			return fmt.Errorf("server[%d]: 'ssl' must be set to 'true' or 'false'", idx)
+		}
+		if !srv.Services.Kubeconfig.Disabled {
+			serverWithKubeconfigCount++
+		}
+	}
+	if serverWithKubeconfigCount > 0 {
 		err = initKubeconfig(&Conf.Kubeconfig)
 		if err != nil {
 			return fmt.Errorf("error in Kubeconfig section: %w", err)
 		}
 	}
-
 	return nil
 }

@@ -15,9 +15,15 @@ var (
 	File string
 )
 
+type LdapServerConfig struct {
+	cconfig.SkServerConfig `yaml:",inline"`
+	Services               struct {
+		Identity cconfig.ServiceConfig `yaml:"identity"`
+	} `yaml:"services"`
+}
+
 type Config struct {
-	Log     misc.LogConfig          `yaml:"log"`
-	Server  cconfig.SkServerConfig  `yaml:"server"`
-	Clients []cconfig.ServiceClient `yaml:"clients"`
-	Ldap    identitygetter.Config   `yaml:"ldap"`
+	Log     misc.LogConfig        `yaml:"log"`
+	Servers []LdapServerConfig    `yaml:"servers"`
+	Ldap    identitygetter.Config `yaml:"ldap"`
 }

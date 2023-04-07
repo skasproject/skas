@@ -1,4 +1,4 @@
-{{ if and .Values.skStatic.enabled .Values.skStatic.exposure.enabled }}
+{{ if and .Values.skStatic.enabled .Values.skStatic.exposure.external.enabled .Values.skStatic.exposure.external.ingress.enabled }}
 {{ if  eq .Values.ingressClass "nginx" }}
 ---
 apiVersion: networking.k8s.io/v1
@@ -16,14 +16,14 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: {{ required "ingress.host must be defined!" .Values.skStatic.exposure.ingress.host }}
+    - host: {{ required "ingress.host must be defined!" .Values.skStatic.exposure.external.ingress.host }}
       http:
         paths:
           - backend:
               service:
                 name: {{ include "skStatic.serviceName" . }}
                 port:
-                  number: {{ .Values.skStatic.serverPort }}
+                  number: {{ ternary 443 80 .Values.skStatic.exposure.external.ssl }}
             path: /
             pathType: Prefix
 {{ end }}

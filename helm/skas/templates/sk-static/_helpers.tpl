@@ -13,6 +13,6 @@ Create the name of the configuration configmap
 Create the name of the usersDb configmap
 */}}
 {{- define "skStatic.usersDbName" -}}
-{{- default (printf "%s-users" (include "skas.fullname" .)) .Values.skStatic.usersDbName }}
+{{- default (printf "%s-static-users" (include "skas.fullname" .)) .Values.skStatic.usersDbName }}
 {{- end }}
 
