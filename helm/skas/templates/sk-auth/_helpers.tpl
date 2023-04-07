@@ -28,8 +28,8 @@ Create the name of the token editor role
 Compute the serverUrl for the kubeconfig.User.AuthServerUrl (Automatic client configuration)
 */}}
 {{- define "skAuth.kubeconfig.authServerUrl" -}}
-{{- if .Values.skAuth.exposure.ingress.enabled }}
-{{- default (printf "https://%s" .Values.skAuth.exposure.ingress.host) .Values.skAuth.kubeconfig.user.authServerUrl }}
+{{- if .Values.skAuth.exposure.external.ingress.enabled }}
+{{- default (printf "https://%s" .Values.skAuth.exposure.external.ingress.host) .Values.skAuth.kubeconfig.user.authServerUrl }}
 {{- else }}
 {{- .Values.skAuth.kubeconfig.user.authServerUrl }}
 {{- end }}

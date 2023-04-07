@@ -14,11 +14,19 @@ var (
 	GroupBindingCount int
 )
 
-type Config struct {
-	Log     misc.LogConfig          `yaml:"log"`
-	Server  cconfig.SkServerConfig  `yaml:"server"`
-	Clients []cconfig.ServiceClient `yaml:"clients"`
+type StaticServerConfig struct {
+	cconfig.SkServerConfig `yaml:",inline"`
+	Services               struct {
+		Identity cconfig.ServiceConfig `yaml:"identity"`
+	} `yaml:"services"`
 }
+
+type Config struct {
+	Log     misc.LogConfig       `yaml:"log"`
+	Servers []StaticServerConfig `yaml:"servers"`
+}
+
+// -----------------------------------------------------
 
 type StaticUser struct {
 	Login        string   `yaml:"login"`

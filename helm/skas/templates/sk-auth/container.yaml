@@ -41,20 +41,26 @@ Expand skAuth container
     {{- toYaml . | nindent 12 }}
     {{- end }}
   ports:
-    - containerPort: {{ .Values.skAuth.serverPort }}
-      name: proto
+    {{- if .Values.skAuth.exposure.internal.enabled }}
+    - containerPort: {{ .Values.skAuth.exposure.internal.port }}
+      name: internal
       protocol: TCP
+    {{- end }}
+    {{- if .Values.skAuth.exposure.external.enabled }}
+    - containerPort: {{ .Values.skAuth.exposure.external.port }}
+      name: external
+      protocol: TCP
+    {{- end }}
     {{- if eq .Values.skAuth.tokenConfig.storageType "crd" }}
     - containerPort: {{ .Values.skAuth.metric.port }}
       name: metrics
       protocol: TCP
     {{- end }}
-
   volumeMounts:
     - mountPath: /config.yaml
       name: sk-auth-config
       subPath: config.yaml
-    {{ if and .Values.skAuth.exposure.enabled .Values.skAuth.exposure.ssl }}
+    {{ if and .Values.skAuth.exposure.external.enabled .Values.skAuth.exposure.external.ssl }}
     - mountPath: /tmp/cert/server
       name: sk-auth-server-cert
       readOnly: true
@@ -68,7 +74,7 @@ Expand skAuth volumes in pod
 - name: sk-auth-config
   configMap:
     name: {{ include "skAuth.configmapName" . }}
-{{- if and .Values.skAuth.exposure.enabled .Values.skAuth.exposure.ssl }}
+{{- if and .Values.skAuth.exposure.external.enabled .Values.skAuth.exposure.external.ssl }}
 - name: sk-auth-server-cert
   secret:
     defaultMode: 420

@@ -20,12 +20,11 @@ DONE:
 ## All
 
 - Ensure copyright message in all relevant location
-- Switch to logrus, to have more level (i.e WARNING) ?
+- ? Switch to logrus, to have more level (i.e WARNING) ?
 - Display client.id in relevant message (Modify LoggingHandler)
-- Rename sk-xxxx to skas-xxxxx ? or ska-xxxx  ?
-- In config file, for http client url. Set full url, including the path OR define by scheme:, host: and port (Currently, it is ambiguous, as a partial) ?
+- ? Rename sk-xxxx to skas-xxxxx ? or ska-xxxx  ?
+- ? In config file, for http client url. Set full url, including the path OR define by scheme:, host: and port (Currently, it is ambiguous, as a partial) ?
 - liveliness, readiness probes on all modules
-- Generalize the concept of service in the config of all id provider.
 - Think about concept of domain. May be corresponding to a list of providers. Check login@domain through DEX
 - Refactor the provider configuration. To ease helm chart usage. (May be related to domain)
 - For certificates, provide a fallback when no cluster-issuer provided (cf topolvm)
@@ -35,14 +34,8 @@ DONE:
 - systematize global rootCaPath, rootCaData
 - Setup a system to force password change
 - Think about a system who can safely delegate group binding inside a namespace
-- 
- 
-- Service refactoring
-  - Change the way we handle SSL: Always keep an non-ssl port on localhost, and add another port with SSL when required. When done, can remove localhost from certificate
-  - In helm chart, use the fact default services config is open by default (Simplify some configmap) OR change the logic and make default to close everything.
-    Default should be coherent: enabled and no check, or disabled and must set client * explicitly. (May be closed by default is better)
-  - Two port should be managed. Each with its own set of services configuration. One intended to be bound on localhost and opened, for inside pod access. 
-    And one intended to be accessed externally, with default config to be closed.
+- Display client[].id on startup (Modify baseHandler by adding ClientManager ?)
+- Rename Identity.UserDetail.ProviderSpec to Identity.UserDetail.Provider
 
 DONE:
 
@@ -55,6 +48,14 @@ DONE:
 - set uid as an int everywhere (In proto)
 - helm: in rbac, add a rolebinding to an admin group (skas_admin by default)
 - Sur un describe, distinguer la cause d'un password unchecked (Non fourni, ou non present dans le provider). Ceci pour pouvoir déterminer l'authoritée sans fournir le password.
+- Generalize the concept of service in the config of all id provider.
+- Service refactoring
+  - Change the way we handle SSL: Always keep an non-ssl port on localhost, and add another port with SSL when required. When done, can remove localhost from certificate
+  - In helm chart, use the fact default services config is open by default (Simplify some configmap) OR change the logic and make default to close everything.
+    Default should be coherent: enabled and no check, or disabled and must set client * explicitly. (May be closed by default is better)
+  - Two port should be managed. Each with its own set of services configuration. One intended to be bound on localhost and opened, for inside pod access.
+    And one intended to be accessed externally, with default config to be closed.
+
 
 ## sk-static
 
@@ -68,7 +69,7 @@ DONE:
 ## sk-crd
 
 DONE
-- 
+ 
 - Add a service to change password
 
 ## sk-merge

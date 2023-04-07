@@ -15,42 +15,37 @@ data:
     log:
       mode: {{ default .Values.log.mode .Values.skMerge.log.mode }}
       level: {{ default .Values.log.level .Values.skMerge.log.level }}
-    server:
-      {{- if .Values.skMerge.exposure.enabled }}
-      ssl: {{ .Values.skMerge.exposure.ssl}}
-      bindAddr: ":{{ .Values.skMerge.serverPort}}"
-      {{- if .Values.skMerge.exposure.ssl }}
-      certDir: /tmp/cert/server
-      {{- end }}
-      {{- else }}
-      ssl: no
-      bindAddr: "127.0.0.1:{{ .Values.skMerge.serverPort}}"
-      {{- end }}
     {{ with .Values.rootCaData }}
     rootCaData: {{ . }}
     {{ end }}
-    {{- if .Values.skMerge.exposure.enabled }}
-    services:
-{{ .Values.skMerge.exposure.services | toYaml | indent 6 }}
-    {{- else }}
-    services:
-      login:
-        clients:
-          - id: "*"
-            secret: "*"
-      userIdentity:
-        clients:
-          - id: "*"
-            secret: "*"
-      userDescribe:
-        clients:
-          - id: "*"
-            secret: "*"
-      passwordChange:
-        clients:
-          - id: "*"
-            secret: "*"
-    {{- end }}
+    servers:
+      {{- if .Values.skMerge.exposure.internal.enabled}}
+      - port: {{ .Values.skMerge.exposure.internal.port }}
+        interface: "127.0.0.1"
+        ssl: false
+        services:
+          identity:
+            disabled: {{ .Values.skMerge.exposure.internal.services.identity.disabled }}
+            clients: {{ .Values.skMerge.exposure.internal.services.identity.clients | toJson }}
+          passwordChange:
+            disabled: {{ .Values.skMerge.exposure.internal.services.passwordChange.disabled }}
+            clients: {{ .Values.skMerge.exposure.internal.services.passwordChange.clients | toJson }}
+      {{- end }}
+      {{- if .Values.skMerge.exposure.external.enabled}}
+      - port: {{ .Values.skMerge.exposure.external.port }}
+        interface: "0.0.0.0"
+        ssl: {{ .Values.skMerge.exposure.external.ssl }}
+        {{- if .Values.skMerge.exposure.external.ssl }}
+        certDir: /tmp/cert/server
+        {{- end }}
+        services:
+          identity:
+            disabled: {{ .Values.skMerge.exposure.external.services.identity.disabled }}
+            clients: {{ .Values.skMerge.exposure.external.services.identity.clients  | toJson }}
+          passwordChange:
+            disabled: {{ .Values.skMerge.exposure.external.services.passwordChange.disabled }}
+            clients: {{ .Values.skMerge.exposure.external.services.passwordChange.clients  | toJson }}
+      {{- end }}
     providers:
 {{ .Values.skMerge.providers | toYaml | indent 6 }}
 

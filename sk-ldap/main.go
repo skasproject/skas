@@ -1,8 +1,8 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	"github.com/pior/runnable"
 	"os"
 	"path/filepath"
 	"skas/sk-common/pkg/clientauth"
@@ -20,22 +20,27 @@ func main() {
 	}
 	config.Log.Info("sk-ldap start", "ldapServer", config.Conf.Ldap.Host, "version", config.Version, "logLevel", config.Conf.Log.Level)
 
-	server := skserver.New("ldapServer", &config.Conf.Server, config.Log.WithName("ldapServer"))
+	runnableMgr := runnable.NewManager()
 
-	identityGetter, err := identitygetter.New(&config.Conf.Ldap, config.Log, filepath.Dir(config.File))
-	if err != nil {
-		config.Log.Error(err, "ldap config")
-		os.Exit(3)
+	for idx, serverConfig := range config.Conf.Servers {
+		server := skserver.New(fmt.Sprintf("server[%d]", idx), &config.Conf.Servers[idx].SkServerConfig, config.Log.WithName(fmt.Sprintf("ldapServer[%d]", idx)))
+		// --------------------- Identity handler
+		if !serverConfig.Services.Identity.Disabled {
+			// We re-instantiate one identityGetter per process, as not sure ldap client is thread safe (https://github.com/go-ldap/ldap/issues/130)
+			identityGetter, err := identitygetter.New(&config.Conf.Ldap, config.Log, filepath.Dir(config.File))
+			if err != nil {
+				config.Log.Error(err, "ldap config")
+				os.Exit(3)
+			}
+			hdl := &commonHandlers.IdentityHandler{
+				IdentityGetter: identityGetter,
+				ClientManager:  clientauth.New(serverConfig.Services.Identity.Clients, serverConfig.Interface != "127.0.0.1"),
+			}
+			server.AddHandler(proto.IdentityMeta, hdl)
+		} else {
+			server.GetLog().Info("'identity' service disabled")
+		}
+		runnableMgr.Add(server)
 	}
-	hdl := &commonHandlers.IdentityHandler{
-		IdentityGetter: identityGetter,
-		ClientManager:  clientauth.New(config.Conf.Clients, true),
-	}
-	server.AddHandler(proto.IdentityMeta, hdl)
-
-	err = server.Start(context.Background())
-	if err != nil {
-		server.GetLog().Error(err, "Error on Start()")
-		os.Exit(5)
-	}
+	runnable.Run(runnableMgr.Build())
 }

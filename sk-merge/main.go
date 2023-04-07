@@ -1,8 +1,8 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	"github.com/pior/runnable"
 	"os"
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/skserver"
@@ -21,37 +21,40 @@ func main() {
 	}
 	config.Log.Info("sk-merge start", "version", config.Version, "logLevel", config.Conf.Log.Level)
 
-	server := skserver.New("merge", &config.Conf.Server, config.Log.WithName(fmt.Sprintf("%s", "mergeServer")))
-
+	// providerChain is based on http.client, which is thread safe. So, can be shared by all servers
 	providerChain, err := providerchain.New(config.Log.WithName("providerChain"))
 	if err != nil {
 		config.Log.Error(err, "Error on clientProviderChain creation")
 		os.Exit(6)
 	}
-	// --------------------- Identity handler
-	if !config.Conf.Services.Identity.Disabled {
-		hdl := &commonHandlers.IdentityHandler{
-			IdentityGetter: identitygetter.New(providerChain, config.Log),
-			ClientManager:  clientauth.New(config.Conf.Services.Identity.Clients, true),
-		}
-		server.AddHandler(proto.IdentityMeta, hdl)
-	} else {
-		config.Log.Info("userIdentity service disabled")
-	}
-	// --------------------- PasswordChange handler
-	if !config.Conf.Services.PasswordChange.Disabled {
-		hdl := &handlers.PasswordChangeHandler{
-			Chain:         providerChain,
-			ClientManager: clientauth.New(config.Conf.Services.PasswordChange.Clients, true),
-		}
-		server.AddHandler(proto.PasswordChangeMeta, hdl)
-	} else {
-		config.Log.Info("passwordChange service disabled")
-	}
+	// identityGetter is based on http.client, which is thread safe. So, can be shared by all servers
+	identityGetter := identitygetter.New(providerChain, config.Log)
+	runnableMgr := runnable.NewManager()
 
-	err = server.Start(context.Background())
-	if err != nil {
-		server.GetLog().Error(err, "Error on Start()")
-		os.Exit(5)
+	for idx, serverConfig := range config.Conf.Servers {
+		server := skserver.New(fmt.Sprintf("server[%d]", idx), &config.Conf.Servers[idx].SkServerConfig, config.Log.WithName(fmt.Sprintf("mergeServer[%d]", idx)))
+		// --------------------- Identity handler
+		if !serverConfig.Services.Identity.Disabled {
+			hdl := &commonHandlers.IdentityHandler{
+				IdentityGetter: identityGetter,
+				ClientManager:  clientauth.New(serverConfig.Services.Identity.Clients, serverConfig.Interface != "127.0.0.1"),
+			}
+			server.AddHandler(proto.IdentityMeta, hdl)
+		} else {
+			server.GetLog().Info("'identity' service disabled")
+		}
+		// --------------------- PasswordChange handler
+		if !serverConfig.Services.PasswordChange.Disabled {
+			hdl := &handlers.PasswordChangeHandler{
+				Chain:         providerChain,
+				ClientManager: clientauth.New(serverConfig.Services.PasswordChange.Clients, serverConfig.Interface != "127.0.0.1"),
+			}
+			server.AddHandler(proto.PasswordChangeMeta, hdl)
+		} else {
+			server.GetLog().Info("'passwordChange' service disabled")
+		}
+		runnableMgr.Add(server)
 	}
+	runnable.Run(runnableMgr.Build())
+
 }

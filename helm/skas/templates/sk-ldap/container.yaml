@@ -28,14 +28,21 @@ Expand skLdap container
     {{- toYaml . | nindent 12 }}
     {{- end }}
   ports:
-    - containerPort: {{ .Values.skLdap.serverPort }}
-      name: proto
+    {{- if .Values.skLdap.exposure.internal.enabled }}
+    - containerPort: {{ .Values.skLdap.exposure.internal.port }}
+      name: internal
       protocol: TCP
+    {{- end }}
+    {{- if .Values.skLdap.exposure.external.enabled }}
+    - containerPort: {{ .Values.skLdap.exposure.external.port }}
+      name: external
+      protocol: TCP
+    {{- end }}
   volumeMounts:
     - mountPath: /config.yaml
       name: sk-ldap-config
       subPath: config.yaml
-    {{ if and .Values.skLdap.exposure.enabled .Values.skLdap.exposure.ssl }}
+    {{ if and .Values.skLdap.exposure.external.enabled .Values.skLdap.exposure.external.ssl }}
     - mountPath: /tmp/cert/server
       name: sk-ldap-server-cert
       readOnly: true
@@ -49,7 +56,7 @@ Expand skLdap volumes in pod
 - name: sk-ldap-config
   configMap:
     name: {{ include "skLdap.configmapName" . }}
-{{- if and .Values.skLdap.exposure.enabled .Values.skLdap.exposure.ssl }}
+{{- if and .Values.skLdap.exposure.external.enabled .Values.skLdap.exposure.external.ssl }}
 - name: sk-ldap-server-cert
   secret:
     defaultMode: 420

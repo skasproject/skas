@@ -39,18 +39,24 @@ Expand skCrd container
     {{- toYaml . | nindent 12 }}
     {{- end }}
   ports:
-    - containerPort: {{ .Values.skCrd.serverPort }}
-      name: proto
+    {{- if .Values.skCrd.exposure.internal.enabled }}
+    - containerPort: {{ .Values.skCrd.exposure.internal.port }}
+      name: internal
       protocol: TCP
+    {{- end }}
+    {{- if .Values.skCrd.exposure.external.enabled }}
+    - containerPort: {{ .Values.skCrd.exposure.external.port }}
+      name: external
+      protocol: TCP
+    {{- end }}
     - containerPort: {{ .Values.skCrd.metric.port }}
       name: metrics
       protocol: TCP
-
   volumeMounts:
     - mountPath: /config.yaml
       name: sk-crd-config
       subPath: config.yaml
-    {{ if and .Values.skCrd.exposure.enabled .Values.skCrd.exposure.ssl }}
+    {{ if and .Values.skCrd.exposure.external.enabled .Values.skCrd.exposure.external.ssl }}
     - mountPath: /tmp/cert/server
       name: sk-crd-server-cert
       readOnly: true
@@ -64,7 +70,7 @@ Expand skCrd volumes in pod
 - name: sk-crd-config
   configMap:
     name: {{ include "skCrd.configmapName" . }}
-{{- if and .Values.skCrd.exposure.enabled .Values.skCrd.exposure.ssl }}
+{{- if and .Values.skCrd.exposure.external.enabled .Values.skCrd.exposure.external.ssl }}
 - name: sk-crd-server-cert
   secret:
     defaultMode: 420

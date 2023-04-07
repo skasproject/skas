@@ -1,5 +1,5 @@
-{{ if and .Values.skMerge.enabled .Values.skMerge.exposure.enabled }}
-{{ if and .Values.skMerge.exposure.ssl .Values.clusterIssuer }}
+{{ if and .Values.skMerge.enabled .Values.skMerge.exposure.external.enabled }}
+{{ if and .Values.skMerge.exposure.external.ssl .Values.clusterIssuer }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -16,8 +16,8 @@ spec:
     - {{ include "skMerge.serviceName" . }}
     - {{ include "skMerge.serviceName" . }}.{{ .Release.Namespace }}.svc
     - localhost
-  {{ if .Values.skMerge.exposure.ingress.enabled }}
-    - {{ .Values.skMerge.exposure.ingress.host }}
+  {{ if .Values.skMerge.exposure.external.ingress.enabled }}
+    - {{ .Values.skMerge.exposure.external.ingress.host }}
   {{ end }}
   secretName: {{ include "skMerge.certificateSecretName" . }}
   issuerRef:

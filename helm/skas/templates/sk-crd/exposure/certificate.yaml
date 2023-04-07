@@ -1,5 +1,5 @@
-{{ if and .Values.skCrd.enabled .Values.skCrd.exposure.enabled }}
-{{ if and .Values.skCrd.exposure.ssl .Values.clusterIssuer }}
+{{ if and .Values.skCrd.enabled .Values.skCrd.exposure.external.enabled }}
+{{ if and .Values.skCrd.exposure.external.ssl .Values.clusterIssuer }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -16,8 +16,8 @@ spec:
     - {{ include "skCrd.serviceName" . }}
     - {{ include "skCrd.serviceName" . }}.{{ .Release.Namespace }}.svc
     - localhost
-  {{ if .Values.skCrd.exposure.ingress.enabled }}
-    - {{ .Values.skCrd.exposure.ingress.host }}
+  {{ if .Values.skCrd.exposure.external.ingress.enabled }}
+    - {{ .Values.skCrd.exposure.external.ingress.host }}
   {{ end }}
   secretName: {{ include "skCrd.certificateSecretName" . }}
   issuerRef:

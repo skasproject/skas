@@ -15,25 +15,28 @@ data:
     log:
       mode: {{ default .Values.log.mode .Values.skStatic.log.mode }}
       level: {{ default .Values.log.level .Values.skStatic.log.level }}
-    server:
-      {{- if .Values.skStatic.exposure.enabled }}
-      ssl: {{ .Values.skStatic.exposure.ssl}}
-      bindAddr: ":{{ .Values.skStatic.serverPort}}"
-      {{- if .Values.skStatic.exposure.ssl }}
-      certDir: /tmp/cert/server
+    servers:
+      {{- if .Values.skStatic.exposure.internal.enabled}}
+      - port: {{ .Values.skStatic.exposure.internal.port }}
+        interface: "127.0.0.1"
+        ssl: false
+        services:
+          identity:
+            disabled: {{ .Values.skStatic.exposure.internal.services.identity.disabled }}
+            clients: {{ .Values.skStatic.exposure.internal.services.identity.clients | toJson }}
       {{- end }}
-      {{- else }}
-      ssl: no
-      bindAddr: "127.0.0.1:{{ .Values.skStatic.serverPort}}"
+      {{- if .Values.skStatic.exposure.external.enabled}}
+      - port: {{ .Values.skStatic.exposure.external.port }}
+        interface: "0.0.0.0"
+        ssl: {{ .Values.skStatic.exposure.external.ssl }}
+        {{- if .Values.skStatic.exposure.external.ssl }}
+        certDir: /tmp/cert/server
+        {{- end }}
+        services:
+          identity:
+            disabled: {{ .Values.skStatic.exposure.external.services.identity.disabled }}
+            clients: {{ .Values.skStatic.exposure.external.services.identity.clients  | toJson }}
       {{- end }}
-    {{- if .Values.skStatic.exposure.enabled }}
-    clients:
-{{ .Values.skStatic.exposure.clients | toYaml | indent 6 }}
-    {{- else }}
-    clients:
-      - id: "*"
-        secret: "*"
-    {{- end }}
 
 {{ end }}
 

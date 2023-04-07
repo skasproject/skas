@@ -1,8 +1,8 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	"github.com/pior/runnable"
 	"os"
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/skserver"
@@ -20,16 +20,22 @@ func main() {
 
 	config.Log.Info("sk-static start", "version", config.Version, "nbUsers", len(config.UserByLogin), "nbrGroupBindings", config.GroupBindingCount, "logLevel", config.Conf.Log.Level)
 
-	server := skserver.New("staticServer", &config.Conf.Server, config.Log.WithName("staticServer"))
+	runnableMgr := runnable.NewManager()
+	identityGetter := identitygetter.New(config.Log.WithName("staticProvider"))
 
-	hdl := &commonHandlers.IdentityHandler{
-		IdentityGetter: identitygetter.New(config.Log.WithName("staticProvider")),
-		ClientManager:  clientauth.New(config.Conf.Clients, true),
+	for idx, serverConfig := range config.Conf.Servers {
+		server := skserver.New(fmt.Sprintf("server[%d]", idx), &config.Conf.Servers[idx].SkServerConfig, config.Log.WithName(fmt.Sprintf("staticServer[%d]", idx)))
+		if !serverConfig.Services.Identity.Disabled {
+			// --------------------- Identity handler
+			hdl := &commonHandlers.IdentityHandler{
+				IdentityGetter: identityGetter,
+				ClientManager:  clientauth.New(serverConfig.Services.Identity.Clients, serverConfig.Interface != "127.0.0.1"),
+			}
+			server.AddHandler(proto.IdentityMeta, hdl)
+		} else {
+			server.GetLog().Info("'identity' service disabled")
+		}
+		runnableMgr.Add(server)
 	}
-	server.AddHandler(proto.IdentityMeta, hdl)
-	err := server.Start(context.Background())
-	if err != nil {
-		server.GetLog().Error(err, "Error on Start()")
-		os.Exit(5)
-	}
+	runnable.Run(runnableMgr.Build())
 }

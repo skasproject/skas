@@ -15,25 +15,28 @@ data:
     log:
       mode: {{ default .Values.log.mode .Values.skLdap.log.mode }}
       level: {{ default .Values.log.level .Values.skLdap.log.level }}
-    server:
-      {{- if .Values.skLdap.exposure.enabled }}
-      ssl: {{ .Values.skLdap.exposure.ssl}}
-      bindAddr: ":{{ .Values.skLdap.serverPort}}"
-      {{- if .Values.skLdap.exposure.ssl }}
-      certDir: /tmp/cert/server
+    servers:
+      {{- if .Values.skLdap.exposure.internal.enabled}}
+      - port: {{ .Values.skLdap.exposure.internal.port }}
+        interface: "127.0.0.1"
+        ssl: false
+        services:
+          identity:
+            disabled: {{ .Values.skLdap.exposure.internal.services.identity.disabled }}
+            clients: {{ .Values.skLdap.exposure.internal.services.identity.clients | toJson }}
       {{- end }}
-      {{- else }}
-      ssl: no
-      bindAddr: "127.0.0.1:{{ .Values.skLdap.serverPort}}"
+      {{- if .Values.skLdap.exposure.external.enabled}}
+      - port: {{ .Values.skLdap.exposure.external.port }}
+        interface: "0.0.0.0"
+        ssl: {{ .Values.skLdap.exposure.external.ssl }}
+        {{- if .Values.skLdap.exposure.external.ssl }}
+        certDir: /tmp/cert/server
+        {{- end }}
+        services:
+          identity:
+            disabled: {{ .Values.skLdap.exposure.external.services.identity.disabled }}
+            clients: {{ .Values.skLdap.exposure.external.services.identity.clients  | toJson }}
       {{- end }}
-    {{- if .Values.skLdap.exposure.enabled }}
-    clients:
-{{ .Values.skLdap.exposure.clients | toYaml | indent 6 }}
-    {{- else }}
-    clients:
-      - id: "*"
-        secret: "*"
-    {{- end }}
     ldap:
 {{ .Values.skLdap.ldap | toYaml | indent 6 }}
 

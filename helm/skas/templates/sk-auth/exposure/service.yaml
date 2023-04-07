@@ -1,4 +1,4 @@
-{{ if and .Values.skAuth.enabled .Values.skAuth.exposure.enabled }}
+{{ if and .Values.skAuth.enabled .Values.skAuth.exposure.external.enabled }}
 ---
 apiVersion: v1
 kind: Service
@@ -15,6 +15,6 @@ spec:
     {{- include "skas.selectorLabels" . | nindent 4 }}
   ports:
     - protocol: TCP
-      port: {{ .Values.skAuth.serverPort }}
-      targetPort: {{ .Values.skAuth.serverPort }}
+      port: {{ ternary 443 80 .Values.skAuth.exposure.external.ssl }}
+      targetPort: {{ .Values.skAuth.exposure.external.port }}
 {{ end }}

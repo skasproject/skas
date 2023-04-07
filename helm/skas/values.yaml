@@ -58,7 +58,8 @@ affinity: {}
 
 # Cert-manger cluster issuer
 clusterIssuer:
-# If not provided and <submodule>.exposure.server.ssl == true, then a certificate must be provided externally as a secret. Here is a sample layout:
+# If not provided and <submodule>.exposure.server.ssl == true, then a certificate must be provided externally as a secret for each exposed services.
+# Here is a sample layout:
 #
 #      apiVersion: v1
 #      kind: Secret
@@ -76,10 +77,12 @@ clusterIssuer:
 ingressClass: nginx # Don't change, as only 'nginx' is supported for now.
 
 # Base 64 encoded certificate of Root CA. Used to validate all https communication between skas module
+# Not needed if all modules are in the same POD.
 rootCaData:
 
 # Kubernetes secrets can be generated automatically. These are intended to be shared between modules for client.id/secret.
 # NB: Generation require kubernetes-secret-generator (https://github.com/mittwald/kubernetes-secret-generator) to be deployed in the cluster
+# Not needed if all modules are in the same POD.
 generatedSecrets: []
 #  - secretName:
 #    fields:
@@ -135,25 +138,63 @@ skAuth:
   #      cpu: 100m
   #      memory: 100Mi
 
-  serverPort: 7014
 
-  # Provided services. All open by default
-  services:
-    token:
-      disabled: false
-      clients: []
-    k8sAuth:
-      disabled: false
-      clients: []
-    kubeconfig:
-      disabled: false
-      clients: []
-    describe:
-      disabled: false
-      clients: []
-    passwordChange:
-      disabled: false
-      clients: []
+  exposure:
+    internal:
+      enabled: false
+      port: 7014
+      services:
+        token:
+          disabled: true
+          clients: [] # Fill to secure
+        identity:
+          disabled: true
+          clients: [] # Fill to secure
+        login:
+          disabled: true
+          clients: [] # Fill to secure
+        passwordChange:
+          disabled: true
+          clients: [] # Fill to secure
+        kubeconfig:
+          disabled: true
+          clients: [] # Fill to secure
+        k8sAuth:
+          disabled: true
+    external:
+      enabled: true
+      port: 7114
+      ssl: true
+      services:
+        token:
+          disabled: false
+          clients: [] # Fill to secure
+        identity:
+          disabled: false
+          clients: [] # Fill to secure
+        login:
+          disabled: false
+          clients: [] # Fill to secure
+        passwordChange:
+          disabled: false
+          clients: [] # Fill to secure
+        kubeconfig:
+          disabled: false
+          clients: [] # Fill to secure
+        k8sAuth:
+          disabled: false
+      ingress:
+        enabled: true
+        host:
+      # Will default to {{ include "skas.fullname" . }}-static-cert
+      certificateSecretName:
+      # Will default to {{ include "skas.fullname" . }}-static
+      certificateName:
+      # Will default to {{{ include "skas.fullname" . }}-static
+      serviceName:
+      # Will default to {{ include "skas.fullname" . }}-static
+      ingressName:
+
 
   tokenConfig:
     # After this period without token validation, the session expire
@@ -199,20 +240,6 @@ skAuth:
         id:                               # Default ""
         secret:                           # Default ""
 
-  exposure:
-    enabled: true
-    ssl: true
-    ingress:
-      enabled: true
-      host:
-    # Will default to {{{ include "skas.fullname" . }}-auth-cert
-    certificateSecretName:
-    # Will default to {{ include "skas.fullname" . }}-auth
-    certificateName:
-    # Will default to {{ include "skas.fullname" . }}-auth
-    serviceName:
-    # Will default to {{ include "skas.fullname" . }}-auth
-    ingressName:
 
 
 # --------------------------------------------------------------------------------------------------------- skMerge
@@ -246,9 +273,20 @@ skMerge:
   #      cpu: 100m
   #      memory: 100Mi
 
-  serverPort: 7013
-
   providers:
+    - name: static
+      enabled: false
+      httpClient:
+        url: http://localhost:7010
+    - name: ldap
+      enabled: false
+      httpClient:
+        url: http://localhost:7011
+    - name: crd
+      enabled: true
+      httpClient:
+        url: http://localhost:7012
+
   #  - name: static
   #    enabled: true
   #    httpClient:
@@ -285,43 +323,42 @@ skMerge:
   #    credentialAuthority: true
 
 
+  # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+  # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+  # In such case, a Client list must be provided to control access. And ssl: true is strongly recommended.
   exposure:
-    enabled: false
-    ssl: true
-    ingress:
+    internal:
+      enabled: true
+      port: 7013
+      services:
+        identity:
+          disabled: false
+          clients: []
+        passwordChange:
+          disabled: false
+          clients: []
+    external:
       enabled: false
-      host:
-    # Will default to {{ include "skas.fullname" . }}-merge-cert
-    certificateSecretName:
-    # Will default to {{ include "skas.fullname" . }}-merge
-    certificateName:
-    # Will default to {{ include "skas.fullname" . }}-merge
-    serviceName:
-    # Will default to {{ include "skas.fullname" . }}-merge
-    ingressName:
-
-    # Provided services
-    services:
-      login:
-        disabled: false
-      #   clients:
-      #     - id: "*"
-      #       secret: "1234"
-      userIdentity:
-        disabled: false
-      #   clients:
-      #     - id: "*"
-      #       secret: "1234"
-      userDescribe:
-        disabled: false
-    #   clients:
-    #     - id: "*"
-    #       secret: "1234"
-      passwordChange:
-        disabled: false
-    #   clients:
-    #     - id: "*"
-    #       secret: "1234"
+      port: 7113
+      ssl: true
+      services:
+        identity:
+          disabled: false
+          clients: [] # Must be completed
+        passwordChange:
+          disabled: false
+          clients: [] # Must be completed
+      ingress:
+        enabled: false
+        host:
+      # Will default to {{ include "skas.fullname" . }}-static-cert
+      certificateSecretName:
+      # Will default to {{ include "skas.fullname" . }}-static
+      certificateName:
+      # Will default to {{{ include "skas.fullname" . }}-static
+      serviceName:
+      # Will default to {{ include "skas.fullname" . }}-static
+      ingressName:
 
 
 
@@ -359,94 +396,43 @@ skStatic:
   #      cpu: 100m
   #      memory: 100Mi
 
-  serverPort: 7010
 
+  # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+  # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+  # In such case, a Client list must be provided to control access. And ssl: true is strongly recommended.
   exposure:
-    enabled: false
-    clients: []
-    ssl: true
-    ingress:
+    internal:
+      port: 7010
+      enabled: true
+      services:
+        identity:
+          disabled: false
+          clients: []
+    external:
       enabled: false
-      host:
-    # Will default to {{ include "skas.fullname" . }}-static-cert
-    certificateSecretName:
-    # Will default to {{ include "skas.fullname" . }}-static
-    certificateName:
-    # Will default to {{{ include "skas.fullname" . }}-static
-    serviceName:
-    # Will default to {{ include "skas.fullname" . }}-static
-    ingressName:
+      port: 7110
+      ssl: true
+      services:
+        identity:
+          disabled: false
+          clients: [] # Must be completed
+      ingress:
+        enabled: false
+        host:
+      # Will default to {{ include "skas.fullname" . }}-static-cert
+      certificateSecretName:
+      # Will default to {{ include "skas.fullname" . }}-static
+      certificateName:
+      # Will default to {{{ include "skas.fullname" . }}-static
+      serviceName:
+      # Will default to {{ include "skas.fullname" . }}-static
+      ingressName:
 
 
   # The users database
   usersDb:
     users: []
     groupBindings: []
-
-
-
-# --------------------------------------------------------------------------------------------------------- skCrd
-
-skCrd:
-  enabled: false
-
-  log:
-    mode:
-    level:
-
-  probe:
-    port: 8182
-    scheme: HTTP
-
-  metric:
-    port: 8082
-
-  # Will default to {{ include "skas.fullname" . }}-crd-config
-  configmapName:
-
-  # Will default to {{ include "skas.fullname" . }}-crd
-  roleName:
-
-  # Will default to {{ include "skas.fullname" . }}-crd-edit
-  editorRoleName:
-
-  # Additional arguments to be added to the executable's args list
-  additionalArgs: {}
-
-  # Additional env variable definition
-  extraEnv: {}
-
-  # Container specific securityContext
-  securityContext:
-
-  resources: {}
-  #    If you want to specify resources, uncomment the following
-  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  #    limits:
-  #      cpu: 100m
-  #      memory: 200Mi
-  #    requests:
-  #      cpu: 100m
-  #      memory: 100Mi
-
-  serverPort: 7012
-
-  exposure:
-    enabled: false
-    clients: []
-    ssl: true
-    ingress:
-      enabled: false
-      host:
-    # Will default to {{ include "skas.fullname" . }}-crd-cert
-    certificateSecretName:
-    # Will default to {{ include "skas.fullname" . }}-crd
-    certificateName:
-    # Will default to {{{ include "skas.fullname" . }}-crd
-    serviceName:
-    # Will default to {{ include "skas.fullname" . }}-crd
-    ingressName:
-
 
 # --------------------------------------------------------------------------------------------------------- skLdap
 
@@ -480,24 +466,37 @@ skLdap:
   #      cpu: 100m
   #      memory: 100Mi
 
-  serverPort: 7011
 
+  # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+  # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+  # In such case, a Client list must be provided to control access. And ssl: true is strongly recommended.
   exposure:
-    enabled: false
-    clients: []
-    ssl: true
-    ingress:
+    internal:
+      port: 7011
+      enabled: true
+      services:
+        identity:
+          disabled: false
+          clients: []
+    external:
       enabled: false
-      host:
-    # Will default to {{ include "skas.fullname" . }}-ldap-cert
-    certificateSecretName:
-    # Will default to {{ include "skas.fullname" . }}-ldap
-    certificateName:
-    # Will default to {{{ include "skas.fullname" . }}-ldap
-    serviceName:
-    # Will default to {{ include "skas.fullname" . }}-ldap
-    ingressName:
-
+      port: 7111
+      ssl: true
+      services:
+        identity:
+          disabled: false
+          clients: [] # Must be completed
+      ingress:
+        enabled: false
+        host:
+      # Will default to {{ include "skas.fullname" . }}-static-cert
+      certificateSecretName:
+      # Will default to {{ include "skas.fullname" . }}-static
+      certificateName:
+      # Will default to {{{ include "skas.fullname" . }}-static
+      serviceName:
+      # Will default to {{ include "skas.fullname" . }}-static
+      ingressName:
 
   # --------------------------------- LDAP configuration
   ldap:
@@ -565,4 +564,88 @@ skLdap:
       # If there is several value for LinkUserAttr, we will loop on.
       linkGroupAttr:
       linkUserAttr:
+
+
+
+# --------------------------------------------------------------------------------------------------------- skCrd
+
+skCrd:
+  enabled: false
+
+  log:
+    mode:
+    level:
+
+  probe:
+    port: 8182
+    scheme: HTTP
+
+  metric:
+    port: 8082
+
+  # Will default to {{ include "skas.fullname" . }}-crd-config
+  configmapName:
+
+  # Will default to {{ include "skas.fullname" . }}-crd
+  roleName:
+
+  # Will default to {{ include "skas.fullname" . }}-crd-edit
+  editorRoleName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+  #    If you want to specify resources, uncomment the following
+  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #    limits:
+  #      cpu: 100m
+  #      memory: 200Mi
+  #    requests:
+  #      cpu: 100m
+  #      memory: 100Mi
+
+  # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+  # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+  # In such case, a Client list must be provided to control access. And ssl: true is strongly recommended.
+  exposure:
+    internal:
+      enabled: true
+      port: 7012
+      services:
+        identity:
+          disabled: false
+          clients: []
+        passwordChange:
+          disabled: false
+          clients: []
+    external:
+      enabled: false
+      port: 7112
+      ssl: true
+      services:
+        identity:
+          disabled: false
+          clients: [] # Must be completed
+        passwordChange:
+          disabled: false
+          clients: [] # Must be completed
+      ingress:
+        enabled: false
+        host:
+      # Will default to {{ include "skas.fullname" . }}-static-cert
+      certificateSecretName:
+      # Will default to {{ include "skas.fullname" . }}-static
+      certificateName:
+      # Will default to {{{ include "skas.fullname" . }}-static
+      serviceName:
+      # Will default to {{ include "skas.fullname" . }}-static
+      ingressName:
+
 

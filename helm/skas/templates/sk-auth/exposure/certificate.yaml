@@ -1,5 +1,5 @@
-{{ if and .Values.skAuth.enabled .Values.skAuth.exposure.enabled }}
-{{ if and .Values.skAuth.exposure.ssl .Values.clusterIssuer }}
+{{ if and .Values.skAuth.enabled .Values.skAuth.exposure.external.enabled }}
+{{ if and .Values.skAuth.exposure.external.ssl .Values.clusterIssuer }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -16,8 +16,8 @@ spec:
     - {{ include "skAuth.serviceName" . }}
     - {{ include "skAuth.serviceName" . }}.{{ .Release.Namespace }}.svc
     - localhost
-  {{ if .Values.skAuth.exposure.ingress.enabled }}
-    - {{ .Values.skAuth.exposure.ingress.host }}
+  {{ if .Values.skAuth.exposure.external.ingress.enabled }}
+    - {{ .Values.skAuth.exposure.external.ingress.host }}
   {{ end }}
   secretName: {{ include "skAuth.certificateSecretName" . }}
   issuerRef:

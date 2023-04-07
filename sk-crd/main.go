@@ -64,28 +64,39 @@ func main() {
 		config.Log.Error(err, "unable to set up ready check")
 		os.Exit(1)
 	}
+	// identityGetter is based on controller-runtime client, which is thread safe. So, can be shared by all servers
+	identityGetter := identitygetterr.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdProvider"))
 
-	server := skserver.New("crdServer", &config.Conf.Server, config.Log.WithName("crdServer"))
-
-	hdlId := &commonHandlers.IdentityHandler{
-		IdentityGetter: identitygetterr.New(mgr.GetClient(), config.Conf.Namespace, config.Log.WithName("crdProvider")),
-		ClientManager:  clientauth.New(config.Conf.Clients, true),
+	for idx, serverConfig := range config.Conf.Servers {
+		server := skserver.New(fmt.Sprintf("server[%d]", idx), &config.Conf.Servers[idx].SkServerConfig, config.Log.WithName(fmt.Sprintf("crdServer[%d]", idx)))
+		// --------------------- Identity handler
+		if !serverConfig.Services.Identity.Disabled {
+			hdl := &commonHandlers.IdentityHandler{
+				IdentityGetter: identityGetter,
+				ClientManager:  clientauth.New(serverConfig.Services.Identity.Clients, serverConfig.Interface != "127.0.0.1"),
+			}
+			server.AddHandler(proto.IdentityMeta, hdl)
+		} else {
+			server.GetLog().Info("'identity' service disabled")
+		}
+		// --------------------- PasswordChange handler
+		if !serverConfig.Services.PasswordChange.Disabled {
+			hdl := &handlers.PasswordChangeHandler{
+				KubeClient:    mgr.GetClient(),
+				Namespace:     config.Conf.Namespace,
+				ClientManager: clientauth.New(serverConfig.Services.PasswordChange.Clients, serverConfig.Interface != "127.0.0.1"),
+			}
+			server.AddHandler(proto.PasswordChangeMeta, hdl)
+		} else {
+			server.GetLog().Info("'passwordChange' service disabled")
+		}
+		err = mgr.Add(server)
+		if err != nil {
+			config.Log.Error(err, "problem adding http server to the manager")
+			os.Exit(1)
+		}
 	}
-	server.AddHandler(proto.IdentityMeta, hdlId)
-
-	hdlPc := &handlers.PasswordChangeHandler{
-		ClientManager: clientauth.New(config.Conf.Clients, true),
-		KubeClient:    mgr.GetClient(),
-		Namespace:     config.Conf.Namespace,
-	}
-	server.AddHandler(proto.PasswordChangeMeta, hdlPc)
-
-	err = mgr.Add(server)
-	if err != nil {
-		config.Log.Error(err, "problem adding http server to the manager")
-		os.Exit(1)
-	}
-
+	//---------------------------------------------------------------------------
 	err = mgr.GetFieldIndexer().IndexField(context.TODO(), &userdbv1alpha1.GroupBinding{}, "userkey", func(rawObj kubeclient.Object) []string {
 		ugb := rawObj.(*userdbv1alpha1.GroupBinding)
 		return []string{ugb.Spec.User}

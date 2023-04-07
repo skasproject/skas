@@ -45,13 +45,14 @@ var DescribeCmd = &cobra.Command{
 		if inputPassword {
 			password = utils.InputPassword(fmt.Sprintf("Password for user '%s':", args[0]))
 		}
-		uer := &proto.UserDescribeRequest{
+		uer := &proto.IdentityRequest{
 			ClientAuth: client.GetClientAuth(),
 			Login:      args[0],
 			Password:   password,
+			Detailed:   true,
 		}
-		resp := &proto.UserDescribeResponse{}
-		err = client.Do(proto.UserDescribeMeta, uer, resp, &skclient.HttpAuth{Token: tokenBag.Token})
+		resp := &proto.IdentityResponse{}
+		err = client.Do(proto.IdentityMeta, uer, resp, &skclient.HttpAuth{Token: tokenBag.Token})
 		if err != nil {
 			_, ok := err.(*skclient.UnauthorizedError)
 			if ok {
@@ -66,12 +67,12 @@ var DescribeCmd = &cobra.Command{
 		tw := new(tabwriter.Writer)
 		tw.Init(os.Stdout, 2, 4, 3, ' ', 0)
 		twb := newTabwriterBuffer()
-		twb.add("USER", "%s", resp.Merged.Login)
-		twb.add("STATUS", "%s", resp.Merged.UserStatus)
-		twb.add("UID", "%d", resp.Merged.User.Uid)
-		twb.add("GROUPS", "%s", strings.Join(resp.Merged.Groups, ","))
-		twb.add("EMAILS", "%s", strings.Join(resp.Merged.Emails, ","))
-		twb.add("COMMON NAMES", "%s", strings.Join(resp.Merged.CommonNames, ","))
+		twb.add("USER", "%s", resp.Login)
+		twb.add("STATUS", "%s", resp.Status)
+		twb.add("UID", "%d", resp.Uid)
+		twb.add("GROUPS", "%s", strings.Join(resp.Groups, ","))
+		twb.add("EMAILS", "%s", strings.Join(resp.Emails, ","))
+		twb.add("COMMON NAMES", "%s", strings.Join(resp.CommonNames, ","))
 		twb.add("AUTH", "%s", resp.Authority)
 		twb.endOfLine(tw)
 		_ = tw.Flush()
@@ -80,13 +81,13 @@ var DescribeCmd = &cobra.Command{
 			tw := new(tabwriter.Writer)
 			tw.Init(os.Stdout, 2, 4, 3, ' ', 0)
 			twb := newTabwriterBuffer()
-			for _, item := range resp.Items {
-				twb.add("PROVIDER", "%s", item.Provider.Name)
-				twb.add("STATUS", "%s", item.UserIdentityResponse.UserStatus)
-				twb.add("UID", "%d", item.UserIdentityResponse.Uid)
-				twb.add("GROUPS", "%s", strings.Join(item.UserIdentityResponse.Groups, ","))
-				twb.add("EMAILS", "%s", strings.Join(item.UserIdentityResponse.Emails, ","))
-				twb.add("COMMON NAMES", "%s", strings.Join(item.UserIdentityResponse.CommonNames, ","))
+			for _, item := range resp.Details {
+				twb.add("PROVIDER", "%s", item.ProviderSpec.Name)
+				twb.add("STATUS", "%s", item.Status)
+				twb.add("UID", "%d", item.Uid)
+				twb.add("GROUPS", "%s", strings.Join(item.Groups, ","))
+				twb.add("EMAILS", "%s", strings.Join(item.Emails, ","))
+				twb.add("COMMON NAMES", "%s", strings.Join(item.CommonNames, ","))
 				twb.endOfLine(tw)
 			}
 			_ = tw.Flush()

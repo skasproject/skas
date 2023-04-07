@@ -1,4 +1,4 @@
-{{ if and .Values.skCrd.enabled .Values.skCrd.exposure.enabled }}
+{{ if and .Values.skCrd.enabled .Values.skCrd.exposure.external.enabled }}
 ---
 apiVersion: v1
 kind: Service
@@ -15,6 +15,6 @@ spec:
     {{- include "skas.selectorLabels" . | nindent 4 }}
   ports:
     - protocol: TCP
-      port: {{ .Values.skCrd.serverPort }}
-      targetPort: {{ .Values.skCrd.serverPort }}
+      port: {{ ternary 443 80 .Values.skCrd.exposure.external.ssl }}
+      targetPort: {{ .Values.skCrd.exposure.external.port }}
 {{ end }}

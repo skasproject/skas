@@ -17,25 +17,33 @@ data:
       level: {{ default .Values.log.level .Values.skCrd.log.level }}
     metricAddr: ":{{ .Values.skCrd.metric.port }}"
     probeAddr: ":{{ .Values.skCrd.probe.port }}"
-    server:
-      {{- if .Values.skCrd.exposure.enabled }}
-      ssl: {{ .Values.skCrd.exposure.ssl}}
-      bindAddr: ":{{ .Values.skCrd.serverPort}}"
-      {{- if .Values.skCrd.exposure.ssl }}
-      certDir: /tmp/cert/server
+    servers:
+      {{- if .Values.skCrd.exposure.internal.enabled }}
+      - port: {{ .Values.skCrd.exposure.internal.port }}
+        interface: "127.0.0.1"
+        ssl: false
+        services:
+          identity:
+            disabled: {{ .Values.skCrd.exposure.internal.services.identity.disabled }}
+            clients: {{ .Values.skCrd.exposure.internal.services.identity.clients | toJson }}
+          passwordChange:
+            disabled: {{ .Values.skCrd.exposure.internal.services.passwordChange.disabled}}
+            clients: {{ .Values.skCrd.exposure.internal.services.passwordChange.clients | toJson }}
       {{- end }}
-      {{- else }}
-      ssl: no
-      bindAddr: "127.0.0.1:{{ .Values.skCrd.serverPort}}"
+      {{- if .Values.skCrd.exposure.external.enabled}}
+      - port: {{ .Values.skCrd.exposure.external.port }}
+        interface: "0.0.0.0"
+        ssl: {{ .Values.skCrd.exposure.external.ssl }}
+        {{- if .Values.skCrd.exposure.external.ssl }}
+        certDir: /tmp/cert/server
+        {{- end }}
+        services:
+          identity:
+            disabled: {{ .Values.skCrd.exposure.external.services.identity.disabled }}
+            clients: {{ .Values.skCrd.exposure.external.services.identity.clients  | toJson }}
+          passwordChange:
+            disabled: {{ .Values.skCrd.exposure.external.services.passwordChange.disabled }}
+            clients: {{ .Values.skCrd.exposure.external.services.passwordChange.clients  | toJson }}
       {{- end }}
-    {{- if .Values.skCrd.exposure.enabled }}
-    clients:
-{{ .Values.skCrd.exposure.clients | toYaml | indent 6 }}
-    {{- else }}
-    clients:
-      - id: "*"
-        secret: "*"
-    {{- end }}
-
 {{ end }}
 

@@ -1,4 +1,4 @@
-{{ if and .Values.skMerge.enabled .Values.skMerge.exposure.enabled }}
+{{ if and .Values.skMerge.enabled .Values.skMerge.exposure.external.enabled }}
 ---
 apiVersion: v1
 kind: Service
@@ -15,6 +15,6 @@ spec:
     {{- include "skas.selectorLabels" . | nindent 4 }}
   ports:
     - protocol: TCP
-      port: {{ .Values.skMerge.serverPort }}
-      targetPort: {{ .Values.skMerge.serverPort }}
+      port: {{ ternary 443 80 .Values.skMerge.exposure.external.ssl }}
+      targetPort: {{ .Values.skMerge.exposure.external.port }}
 {{ end }}

@@ -1,4 +1,4 @@
-{{ if and .Values.skMerge.enabled .Values.skMerge.exposure.enabled }}
+{{ if and .Values.skMerge.enabled .Values.skMerge.exposure.external.enabled .Values.skMerge.exposure.external.ingress.enabled }}
 {{ if  eq .Values.ingressClass "nginx" }}
 ---
 apiVersion: networking.k8s.io/v1
@@ -16,14 +16,14 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: {{ required "ingress.host must be defined!" .Values.skMerge.exposure.ingress.host }}
+    - host: {{ required "ingress.host must be defined!" .Values.skMerge.exposure.external.ingress.host }}
       http:
         paths:
           - backend:
               service:
                 name: {{ include "skMerge.serviceName" . }}
                 port:
-                  number: {{ .Values.skMerge.serverPort }}
+                  number: {{ ternary 443 80 .Values.skMerge.exposure.external.ssl }}
             path: /
             pathType: Prefix
 {{ end }}
