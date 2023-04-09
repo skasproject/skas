@@ -82,7 +82,7 @@ var DescribeCmd = &cobra.Command{
 			tw.Init(os.Stdout, 2, 4, 3, ' ', 0)
 			twb := newTabwriterBuffer()
 			for _, item := range resp.Details {
-				twb.add("PROVIDER", "%s", item.ProviderSpec.Name)
+				twb.add("PROVIDER", "%s", item.Provider.Name)
 				twb.add("STATUS", "%s", item.Status)
 				twb.add("UID", "%d", item.Uid)
 				twb.add("GROUPS", "%s", strings.Join(item.Groups, ","))

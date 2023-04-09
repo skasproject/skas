@@ -24,9 +24,9 @@ type ProviderSpec struct {
 
 type UserDetail struct {
 	User
-	Status       Status       `json:"status"`
-	ProviderSpec ProviderSpec `json:"providerSpec"`
-	Translated   Translated   `json:"translated"`
+	Status     Status       `json:"status"`
+	Provider   ProviderSpec `json:"provider"`
+	Translated Translated   `json:"translated"`
 }
 
 var _ RequestPayload = &IdentityRequest{}
