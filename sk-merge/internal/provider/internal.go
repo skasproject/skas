@@ -35,9 +35,9 @@ func (p *provider) GetUserDetail(login, password string) (*proto.UserDetail, err
 		} else {
 			p.logger.Error(err, "Provider error. Skipping")
 			return &proto.UserDetail{
-				User:         proto.InitUser(login),
-				Status:       proto.Undefined,
-				ProviderSpec: p.getSpec(),
+				User:     proto.InitUser(login),
+				Status:   proto.Undefined,
+				Provider: p.getSpec(),
 				Translated: proto.Translated{
 					Uid:    0,
 					Groups: []string{},
@@ -46,9 +46,9 @@ func (p *provider) GetUserDetail(login, password string) (*proto.UserDetail, err
 		}
 	}
 	userDetail := &proto.UserDetail{
-		User:         identityResponse.User,
-		Status:       identityResponse.Status,
-		ProviderSpec: p.getSpec(),
+		User:     identityResponse.User,
+		Status:   identityResponse.Status,
+		Provider: p.getSpec(),
 		Translated: proto.Translated{
 			Uid:    identityResponse.Uid + p.UidOffset,
 			Groups: make([]string, len(identityResponse.Groups)),

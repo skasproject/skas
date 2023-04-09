@@ -24,17 +24,17 @@ var _ tokenstore.TokenStore = &tokenStore{}
 
 type tokenStore struct {
 	sync.RWMutex
-	config.TokenConfig
+	config.Token
 	kubeClient  client.Client
 	lastHitStep time.Duration
 	logger      logr.Logger
 }
 
-func New(conf config.TokenConfig, kubeClient client.Client, logger logr.Logger) tokenstore.TokenStore {
+func New(conf config.Token, kubeClient client.Client, logger logr.Logger) tokenstore.TokenStore {
 	// Convert lastHitStep from % to Duration
 	lhStep := (*conf.InactivityTimeout / time.Duration(1000)) * time.Duration(conf.LastHitStep)
 	return &tokenStore{
-		TokenConfig: conf,
+		Token:       conf,
 		kubeClient:  kubeClient,
 		lastHitStep: lhStep,
 		logger:      logger,

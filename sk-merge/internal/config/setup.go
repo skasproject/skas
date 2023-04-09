@@ -41,8 +41,8 @@ func Setup() error {
 	// ----------------------------------- Adjust path from config file path
 	base := filepath.Dir(configFile)
 	Conf.RootCaPath = misc.AdjustPath(base, Conf.RootCaPath)
-	for idx, _ := range Conf.Providers {
-		Conf.Providers[idx].HttpClient.RootCaPath = misc.AdjustPath(base, Conf.Providers[idx].HttpClient.RootCaPath)
+	for k := range Conf.ProviderInfo {
+		Conf.ProviderInfo[k].RootCaPath = misc.AdjustPath(base, Conf.ProviderInfo[k].RootCaPath)
 	}
 	// ----------------------------------- Handle logging  stuff
 	Log, err = misc.HandleLog(&Conf.Log)
@@ -50,7 +50,10 @@ func Setup() error {
 		return err
 	}
 	// ------------------------------------ Handle providers config
-	for idx, _ := range Conf.Providers {
+	for idx, prvd := range Conf.Providers {
+		if _, ok := Conf.ProviderInfo[prvd.Name]; !ok {
+			return fmt.Errorf("provider '%s' (#%d) has no info definition", prvd.Name, idx)
+		}
 		Conf.Providers[idx].Init()
 	}
 	// ------------------------------------- Handle servers config
@@ -66,9 +69,6 @@ func Setup() error {
 
 func (c *ProviderConfig) Init() {
 	// Set default values
-	if c.Enabled == nil {
-		c.Enabled = &yes
-	}
 	if c.CredentialAuthority == nil {
 		c.CredentialAuthority = &yes
 	}

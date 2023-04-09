@@ -59,12 +59,12 @@ func Setup() error {
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.MetricAddr, "metricAddr")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.ProbeAddr, "probeAddr")
 
-	misc.AdjustConfigDuration(pflag.CommandLine, &Conf.TokenConfig.InactivityTimeout, "inactivityTimeout")
-	misc.AdjustConfigDuration(pflag.CommandLine, &Conf.TokenConfig.SessionMaxTTL, "sessionMaxTTL")
-	misc.AdjustConfigDuration(pflag.CommandLine, &Conf.TokenConfig.ClientTokenTTL, "clientTokenTTL")
-	misc.AdjustConfigString(pflag.CommandLine, &Conf.TokenConfig.StorageType, "tokenStorageType")
-	misc.AdjustConfigString(pflag.CommandLine, &Conf.TokenConfig.Namespace, "tokenNamespace")
-	misc.AdjustConfigInt(pflag.CommandLine, &Conf.TokenConfig.LastHitStep, "lastHitStep")
+	misc.AdjustConfigDuration(pflag.CommandLine, &Conf.Token.InactivityTimeout, "inactivityTimeout")
+	misc.AdjustConfigDuration(pflag.CommandLine, &Conf.Token.SessionMaxTTL, "sessionMaxTTL")
+	misc.AdjustConfigDuration(pflag.CommandLine, &Conf.Token.ClientTokenTTL, "clientTokenTTL")
+	misc.AdjustConfigString(pflag.CommandLine, &Conf.Token.StorageType, "tokenStorageType")
+	misc.AdjustConfigString(pflag.CommandLine, &Conf.Token.Namespace, "tokenNamespace")
+	misc.AdjustConfigInt(pflag.CommandLine, &Conf.Token.LastHitStep, "lastHitStep")
 
 	// -----------------------------------Handle logging  stuff
 	Log, err = misc.HandleLog(&Conf.Log)
