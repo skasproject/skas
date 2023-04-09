@@ -14,7 +14,7 @@ var (
 	Log  logr.Logger
 )
 
-type TokenConfig struct {
+type Token struct {
 	InactivityTimeout *time.Duration `yaml:"inactivityTimeout"` // After this period without token validation, the session expire
 	SessionMaxTTL     *time.Duration `yaml:"sessionMaxTTL"`     // After this period, the session expire, in all case.
 	ClientTokenTTL    *time.Duration `yaml:"clientTokenTTL"`    // This is intended for the client CLI, for token caching
@@ -36,12 +36,12 @@ type AuthServerConfig struct {
 }
 
 type Config struct {
-	Log         misc.LogConfig         `yaml:"log"`
-	Servers     []AuthServerConfig     `yaml:"servers"`
-	TokenConfig TokenConfig            `yaml:"tokenConfig"`
-	Kubeconfig  proto.KubeconfigConfig `yaml:"kubeconfig"`
-	Provider    skclient.Config        `yaml:"provider"`
-	AdminGroup  string                 `yaml:"adminGroup"`
-	MetricAddr  string                 `yaml:"metricAddr"`
-	ProbeAddr   string                 `yaml:"probeAddr"`
+	Log        misc.LogConfig         `yaml:"log"`
+	Servers    []AuthServerConfig     `yaml:"servers"`
+	Token      Token                  `yaml:"token"`
+	Kubeconfig proto.KubeconfigConfig `yaml:"kubeconfig"`
+	Provider   skclient.Config        `yaml:"provider"`
+	AdminGroup string                 `yaml:"adminGroup"`
+	MetricAddr string                 `yaml:"metricAddr"`
+	ProbeAddr  string                 `yaml:"probeAddr"`
 }

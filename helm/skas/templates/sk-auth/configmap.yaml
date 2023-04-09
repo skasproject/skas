@@ -72,7 +72,7 @@ data:
       {{- end }}
     provider:
 {{ .Values.skAuth.provider | toYaml | indent 6 }}
-    tokenConfig:
+    token:
       inactivityTimeout: {{ .Values.skAuth.tokenConfig.inactivityTimeout }}
       sessionMaxTTL: {{ .Values.skAuth.tokenConfig.sessionMaxTTL }}
       clientTokenTTL: {{ .Values.skAuth.tokenConfig.clientTokenTTL }}

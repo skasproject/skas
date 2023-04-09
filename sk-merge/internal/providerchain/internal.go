@@ -42,7 +42,7 @@ func (pc *providerChain) GetIdentity(login, password string, detailed bool) (*pr
 			// Error logging and formatting has been performed by caller
 			return nil, err
 		}
-		if !userDetail.ProviderSpec.CredentialAuthority && priority(userDetail.Status) > priority(proto.PasswordMissing) {
+		if !userDetail.Provider.CredentialAuthority && priority(userDetail.Status) > priority(proto.PasswordMissing) {
 			// A non-authority provider can't check a password or disable a user
 			userDetail.Status = proto.PasswordMissing
 		}
@@ -56,7 +56,7 @@ func (pc *providerChain) GetIdentity(login, password string, detailed bool) (*pr
 		}
 		if userDetail.Status != proto.Undefined {
 			// A provider can carry Groups information even for an non existing-user
-			if userDetail.ProviderSpec.GroupAuthority {
+			if userDetail.Provider.GroupAuthority {
 				response.User.Groups = append(response.User.Groups, userDetail.Translated.Groups...)
 			}
 		}

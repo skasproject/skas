@@ -46,6 +46,8 @@ data:
             disabled: {{ .Values.skMerge.exposure.external.services.passwordChange.disabled }}
             clients: {{ .Values.skMerge.exposure.external.services.passwordChange.clients  | toJson }}
       {{- end }}
+    providerInfo:
+{{ .Values.skMerge.providerInfo | toYaml | indent 6 }}
     providers:
 {{ .Values.skMerge.providers | toYaml | indent 6 }}
 

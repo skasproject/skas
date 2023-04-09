@@ -38,15 +38,15 @@ func main() {
 		os.Exit(2)
 	}
 
-	config.Log.Info("sk-auth start", "version", config.Version, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.TokenConfig.StorageType)
+	config.Log.Info("sk-auth start", "version", config.Version, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.Token.StorageType)
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager
 	var runnableMgr runnable.AppManager
 	// -----------------------------------------------------------------First step of setup
 
-	if config.Conf.TokenConfig.StorageType == "memory" {
-		tokenStore = memory.New(config.Conf.TokenConfig, config.Log.WithName("tokenstore"))
+	if config.Conf.Token.StorageType == "memory" {
+		tokenStore = memory.New(config.Conf.Token, config.Log.WithName("tokenstore"))
 		runnableMgr = runnable.NewManager()
 	} else {
 		ctrl.SetLogger(config.Log.WithName("controller-runtime"))
@@ -57,7 +57,7 @@ func main() {
 			HealthProbeBindAddress: config.Conf.ProbeAddr,
 			LeaderElection:         false,
 			Logger:                 config.Log.WithName("manager"),
-			Namespace:              config.Conf.TokenConfig.Namespace,
+			Namespace:              config.Conf.Token.Namespace,
 		})
 		time.Sleep(time.Second)
 		if err != nil {
@@ -73,7 +73,7 @@ func main() {
 			config.Log.Error(err, "unable to set up ready check")
 			os.Exit(4)
 		}
-		tokenStore = crd.New(config.Conf.TokenConfig, mgr.GetClient(), config.Log.WithName("tokenstore"))
+		tokenStore = crd.New(config.Conf.Token, mgr.GetClient(), config.Log.WithName("tokenstore"))
 	}
 
 	// --------------------------------------------------------------- http server setup
@@ -156,7 +156,7 @@ func main() {
 		} else {
 			config.Log.Info("'identity' service disabled")
 		}
-		if config.Conf.TokenConfig.StorageType == "memory" {
+		if config.Conf.Token.StorageType == "memory" {
 			runnableMgr.Add(server)
 		} else {
 			err = mgr.Add(server)
@@ -168,7 +168,7 @@ func main() {
 	}
 	// ---------------------------------------------------------- End init and launch
 
-	if config.Conf.TokenConfig.StorageType == "memory" {
+	if config.Conf.Token.StorageType == "memory" {
 		runnableMgr.Add(&tokenstore.Cleaner{
 			Period:     60 * time.Second,
 			TokenStore: tokenStore,

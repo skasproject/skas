@@ -273,54 +273,35 @@ skMerge:
   #      cpu: 100m
   #      memory: 100Mi
 
+
+  providerInfo:
+    static:
+      url: http://localhost:7010
+    ldap:
+      url: http://localhost:7011
+    crd:
+      url: http://localhost:7012
+
+
   providers:
-    - name: static
-      enabled: false
-      httpClient:
-        url: http://localhost:7010
-    - name: ldap
-      enabled: false
-      httpClient:
-        url: http://localhost:7011
+#    - name: static
+#      credentialAuthority: true
+#      groupAuthority: true
+#      critical: true
+#      groupPattern: "%s"
+#      uidOffset: 0
+#    - name: ldap
+#      credentialAuthority: true
+#      groupAuthority: true
+#      critical: true
+#      groupPattern: "%s"
+#      uidOffset: 0
     - name: crd
-      enabled: true
-      httpClient:
-        url: http://localhost:7012
-
-  #  - name: static
-  #    enabled: true
-  #    httpClient:
-  #      url: https://sk-static1.ingress.kspray1.project33.scw01
-  #      rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
-  #      insecureSkipVerify: false
-  #      clientAuth:
-  #        id: merger
-  #        secret: "1234"
-  #    credentialAuthority: true
-  #    groupAuthority: true
-  #    critical: true
-  #    groupPattern: "%s"
-  #    uidOffset: 0
-
-  #  - name: ldap1
-  #    httpClient:
-  #      url: https://sk-ldap1.ingress.kspray1.project33.scw01
-  #      clientAuth:
-  #        id: merger
-  #        secret: "1234"
-  #    enabled: true
-  #    credentialAuthority: true
-  #    critical: true
-  #    groupPattern: "ldap_%s"
-  #    uidOffset: 10000
-
-  #  - name: crd
-  #    httpClient:
-  #      url: https://sk-crd1.ingress.kspray1.project33.scw01
-  #      clientAuth:
-  #        id: merger
-  #        secret: "1234"
-  #    credentialAuthority: true
+      credentialAuthority: true
+      groupAuthority: true
+      critical: true
+      groupPattern: "%s"
+      uidOffset: 0
 
 
   # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
@@ -570,7 +551,7 @@ skLdap:
 # --------------------------------------------------------------------------------------------------------- skCrd
 
 skCrd:
-  enabled: false
+  enabled: true
 
   log:
     mode:
@@ -647,5 +628,6 @@ skCrd:
       serviceName:
       # Will default to {{ include "skas.fullname" . }}-static
       ingressName:
+
 
 

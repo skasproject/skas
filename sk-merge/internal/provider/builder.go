@@ -8,11 +8,16 @@ import (
 )
 
 func New(conf config.ProviderConfig, logger logr.Logger) (Provider, error) {
-	httpClient, err := skclient.New(&conf.HttpClient, config.Conf.RootCaPath, config.Conf.RootCaData)
+	link, ok := config.Conf.ProviderInfo[conf.Name]
+	if !ok {
+		// This error should never occurs. Such case has been tested during config validation
+		return nil, fmt.Errorf("provider '%s' has no info definition", conf.Name)
+	}
+	httpClient, err := skclient.New(link, config.Conf.RootCaPath, config.Conf.RootCaData)
 	if err != nil {
 		return nil, err
 	}
-	logger.Info(fmt.Sprintf("Provider '%s' configured", conf.Name), "authority", conf.CredentialAuthority, "critical", conf.Critical, "url", conf.HttpClient.Url)
+	logger.Info(fmt.Sprintf("Provider '%s' configured", conf.Name), "authority", conf.CredentialAuthority, "critical", conf.Critical, "url", link.Url)
 	return &provider{
 		ProviderConfig: conf,
 		httpClient:     httpClient,

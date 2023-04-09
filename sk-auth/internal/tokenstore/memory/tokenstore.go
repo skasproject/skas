@@ -29,14 +29,14 @@ type tokenBag struct {
 
 type tokenStore struct {
 	sync.RWMutex
-	config.TokenConfig
+	config.Token
 	tokenBagByToken map[string]*tokenBag
 	logger          logr.Logger
 }
 
-func New(conf config.TokenConfig, logger logr.Logger) tokenstore.TokenStore {
+func New(conf config.Token, logger logr.Logger) tokenstore.TokenStore {
 	return &tokenStore{
-		TokenConfig:     conf,
+		Token:           conf,
 		tokenBagByToken: make(map[string]*tokenBag),
 		logger:          logger,
 	}

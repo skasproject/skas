@@ -20,19 +20,19 @@ func ParseDurationOrPanic(d string) *time.Duration {
 	return &duration
 }
 
-var config2s = config.TokenConfig{
+var config2s = config.Token{
 	InactivityTimeout: ParseDurationOrPanic("2s"),
 	SessionMaxTTL:     ParseDurationOrPanic("24h"),
 	ClientTokenTTL:    ParseDurationOrPanic("10s"),
 }
 
-var config3s = config.TokenConfig{
+var config3s = config.Token{
 	InactivityTimeout: ParseDurationOrPanic("3s"),
 	SessionMaxTTL:     ParseDurationOrPanic("24h"),
 	ClientTokenTTL:    ParseDurationOrPanic("10s"),
 }
 
-var configMaxTtl = config.TokenConfig{
+var configMaxTtl = config.Token{
 	InactivityTimeout: ParseDurationOrPanic("1h"),
 	SessionMaxTTL:     ParseDurationOrPanic("3s"),
 	ClientTokenTTL:    ParseDurationOrPanic("10s"),
