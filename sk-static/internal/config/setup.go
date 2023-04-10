@@ -50,7 +50,7 @@ func Setup() error {
 		Conf.Servers = []StaticServerConfig{StaticServerConfig{}}
 	}
 	for idx, _ := range Conf.Servers {
-		Conf.Servers[idx].Default(7010 + (100 * idx))
+		Conf.Servers[idx].Default(7014 + (100 * idx))
 	}
 
 	// --------------------------------------- Load users file

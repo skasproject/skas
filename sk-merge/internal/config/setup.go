@@ -62,7 +62,7 @@ func Setup() error {
 		Conf.Servers = []MergeServerConfig{MergeServerConfig{}}
 	}
 	for idx, _ := range Conf.Servers {
-		Conf.Servers[idx].Default(7013 + (idx * 100))
+		Conf.Servers[idx].Default(7011 + (idx * 100))
 	}
 	return nil
 }

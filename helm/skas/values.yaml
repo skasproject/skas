@@ -91,7 +91,6 @@ generatedSecrets: []
 #        length: 15
 
 
-
 # --------------------------------------------------------------------------------------------------------- skAuth
 
 skAuth:
@@ -142,7 +141,7 @@ skAuth:
   exposure:
     internal:
       enabled: false
-      port: 7014
+      port: 7010
       services:
         token:
           disabled: true
@@ -163,7 +162,7 @@ skAuth:
           disabled: true
     external:
       enabled: true
-      port: 7114
+      port: 7110
       ssl: true
       services:
         token:
@@ -213,7 +212,7 @@ skAuth:
     namespace:
 
   provider:
-    url: http://localhost:7013
+    url: http://localhost:7011
   #  url: https://sk-static1.ingress.kspray1.project33.scw01
   #  rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
   #  insecureSkipVerify: false
@@ -239,7 +238,6 @@ skAuth:
       clientAuth:
         id:                               # Default ""
         secret:                           # Default ""
-
 
 
 # --------------------------------------------------------------------------------------------------------- skMerge
@@ -275,33 +273,33 @@ skMerge:
 
 
   providerInfo:
-    static:
-      url: http://localhost:7010
-    ldap:
-      url: http://localhost:7011
     crd:
       url: http://localhost:7012
+    ldap:
+      url: http://localhost:7013
+    static:
+      url: http://localhost:7014
 
 
   providers:
-#    - name: static
-#      credentialAuthority: true
-#      groupAuthority: true
-#      critical: true
-#      groupPattern: "%s"
-#      uidOffset: 0
-#    - name: ldap
-#      credentialAuthority: true
-#      groupAuthority: true
-#      critical: true
-#      groupPattern: "%s"
-#      uidOffset: 0
     - name: crd
       credentialAuthority: true
       groupAuthority: true
       critical: true
       groupPattern: "%s"
       uidOffset: 0
+  #    - name: ldap
+  #      credentialAuthority: true
+  #      groupAuthority: true
+  #      critical: true
+  #      groupPattern: "%s"
+  #      uidOffset: 0
+  #    - name: static
+  #      credentialAuthority: true
+  #      groupAuthority: true
+  #      critical: true
+  #      groupPattern: "%s"
+  #      uidOffset: 0
 
 
   # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
@@ -310,7 +308,7 @@ skMerge:
   exposure:
     internal:
       enabled: true
-      port: 7013
+      port: 7011
       services:
         identity:
           disabled: false
@@ -320,7 +318,7 @@ skMerge:
           clients: []
     external:
       enabled: false
-      port: 7113
+      port: 7111
       ssl: true
       services:
         identity:
@@ -342,21 +340,30 @@ skMerge:
       ingressName:
 
 
+# --------------------------------------------------------------------------------------------------------- skCrd
 
-# --------------------------------------------------------------------------------------------------------- skStatic
-
-skStatic:
-  enabled: false
+skCrd:
+  enabled: true
 
   log:
     mode:
     level:
 
-  # Will default to {{ include "skas.fullname" . }}-static-config
+  probe:
+    port: 8182
+    scheme: HTTP
+
+  metric:
+    port: 8082
+
+  # Will default to {{ include "skas.fullname" . }}-crd-config
   configmapName:
 
-  # ConfigMap hosting users and groupBinding. Will default to {{ include "skas.fullname" . }}-users
-  usersDbName:
+  # Will default to {{ include "skas.fullname" . }}-crd
+  roleName:
+
+  # Will default to {{ include "skas.fullname" . }}-crd-edit
+  editorRoleName:
 
   # Additional arguments to be added to the executable's args list
   additionalArgs: {}
@@ -377,24 +384,29 @@ skStatic:
   #      cpu: 100m
   #      memory: 100Mi
 
-
   # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
   # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
   # In such case, a Client list must be provided to control access. And ssl: true is strongly recommended.
   exposure:
     internal:
-      port: 7010
       enabled: true
+      port: 7012
       services:
         identity:
           disabled: false
           clients: []
+        passwordChange:
+          disabled: false
+          clients: []
     external:
       enabled: false
-      port: 7110
+      port: 7112
       ssl: true
       services:
         identity:
+          disabled: false
+          clients: [] # Must be completed
+        passwordChange:
           disabled: false
           clients: [] # Must be completed
       ingress:
@@ -410,13 +422,7 @@ skStatic:
       ingressName:
 
 
-  # The users database
-  usersDb:
-    users: []
-    groupBindings: []
-
 # --------------------------------------------------------------------------------------------------------- skLdap
-
 
 skLdap:
   enabled: false
@@ -453,7 +459,7 @@ skLdap:
   # In such case, a Client list must be provided to control access. And ssl: true is strongly recommended.
   exposure:
     internal:
-      port: 7011
+      port: 7013
       enabled: true
       services:
         identity:
@@ -461,7 +467,7 @@ skLdap:
           clients: []
     external:
       enabled: false
-      port: 7111
+      port: 7113
       ssl: true
       services:
         identity:
@@ -547,31 +553,20 @@ skLdap:
       linkUserAttr:
 
 
+# --------------------------------------------------------------------------------------------------------- skStatic
 
-# --------------------------------------------------------------------------------------------------------- skCrd
-
-skCrd:
-  enabled: true
+skStatic:
+  enabled: false
 
   log:
     mode:
     level:
 
-  probe:
-    port: 8182
-    scheme: HTTP
-
-  metric:
-    port: 8082
-
-  # Will default to {{ include "skas.fullname" . }}-crd-config
+  # Will default to {{ include "skas.fullname" . }}-static-config
   configmapName:
 
-  # Will default to {{ include "skas.fullname" . }}-crd
-  roleName:
-
-  # Will default to {{ include "skas.fullname" . }}-crd-edit
-  editorRoleName:
+  # ConfigMap hosting users and groupBinding. Will default to {{ include "skas.fullname" . }}-users
+  usersDbName:
 
   # Additional arguments to be added to the executable's args list
   additionalArgs: {}
@@ -592,29 +587,24 @@ skCrd:
   #      cpu: 100m
   #      memory: 100Mi
 
+
   # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
   # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
   # In such case, a Client list must be provided to control access. And ssl: true is strongly recommended.
   exposure:
     internal:
+      port: 7014
       enabled: true
-      port: 7012
       services:
         identity:
-          disabled: false
-          clients: []
-        passwordChange:
           disabled: false
           clients: []
     external:
       enabled: false
-      port: 7112
+      port: 7114
       ssl: true
       services:
         identity:
-          disabled: false
-          clients: [] # Must be completed
-        passwordChange:
           disabled: false
           clients: [] # Must be completed
       ingress:
@@ -628,6 +618,13 @@ skCrd:
       serviceName:
       # Will default to {{ include "skas.fullname" . }}-static
       ingressName:
+
+
+  # The users database
+  usersDb:
+    users: []
+    groupBindings: []
+
 
 
 
