@@ -11,7 +11,7 @@ server:
 providers:
   - name: static
     httpClient:
-      url: http://127.0.0.1:7010
+      url: http://127.0.0.1:7014
 #      clientAuth:
 #        id: merger
 #        secret: 1234

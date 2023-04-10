@@ -49,7 +49,7 @@ func Setup() error {
 		Conf.Servers = []LdapServerConfig{LdapServerConfig{}}
 	}
 	for idx, _ := range Conf.Servers {
-		Conf.Servers[idx].Default(7011 + (100 * idx))
+		Conf.Servers[idx].Default(7013 + (100 * idx))
 	}
 
 	return nil
