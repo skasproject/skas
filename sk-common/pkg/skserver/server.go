@@ -77,9 +77,13 @@ func New(name string, conf *config.SkServerConfig, log logr.Logger) SkServer {
 	return server
 }
 
+// This function for the runnable package
+
 func (server *skServer) Run(ctx context.Context) error {
 	return server.Start(ctx)
 }
+
+// This function for the kubebuilder manager
 
 func (server *skServer) Start(ctx context.Context) error {
 	server.Log.Info("Starting skServer")

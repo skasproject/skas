@@ -2,8 +2,6 @@ package users
 
 import (
 	"gopkg.in/yaml.v2"
-	"os"
-	"path/filepath"
 )
 
 // -----------------------------------------------------
@@ -38,19 +36,10 @@ type Content struct {
 	GroupBindingCount int
 }
 
-func Parse(fileName string) (interface{}, error) {
-	fn, err := filepath.Abs(fileName)
-	if err != nil {
-		return nil, err
-	}
-	file, err := os.Open(fn)
-	if err != nil {
-		return nil, err
-	}
-	decoder := yaml.NewDecoder(file)
-	decoder.SetStrict(true)
+func Parse(data string) (interface{}, error) {
 	staticUsers := StaticUsers{}
-	if err = decoder.Decode(&staticUsers); err != nil {
+	err := yaml.UnmarshalStrict([]byte(data), &staticUsers)
+	if err != nil {
 		return nil, err
 	}
 	content := &Content{

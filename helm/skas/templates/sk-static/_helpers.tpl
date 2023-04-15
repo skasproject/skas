@@ -16,3 +16,10 @@ Create the name of the usersDb configmap
 {{- default (printf "%s-static-users" (include "skas.fullname" .)) .Values.skStatic.usersDbName }}
 {{- end }}
 
+
+{{/*
+Create the name of the role
+*/}}
+{{- define "skStatic.roleName" -}}
+{{- default (printf "%s-static" (include "skas.fullname" .)) .Values.skStatic.roleName }}
+{{- end }}
