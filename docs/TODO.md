@@ -62,6 +62,8 @@ DONE:
 
 ## sk-static
 
+DONE
+
 - Make user file dynamic (cf dexgate or certwatcher)
 
 ## sk-ldap

@@ -4,24 +4,24 @@ import (
 	"github.com/go-logr/logr"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"skas/sk-common/pkg/datawatcher"
 	"skas/sk-common/pkg/misc"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-static/internal/users"
-	"skas/sk-static/pkg/filewatcher"
 )
 
 var _ commonHandlers.IdentityGetter = &staticIdentityGetter{}
 
 type staticIdentityGetter struct {
 	logger      logr.Logger
-	fileWatcher filewatcher.FileWatcher
+	dataWatcher datawatcher.DataWatcher
 }
 
-func New(fileWatcher filewatcher.FileWatcher, logger logr.Logger) commonHandlers.IdentityGetter {
+func New(dataWatcher datawatcher.DataWatcher, logger logr.Logger) commonHandlers.IdentityGetter {
 	return &staticIdentityGetter{
 		logger:      logger,
-		fileWatcher: fileWatcher,
+		dataWatcher: dataWatcher,
 	}
 }
 
@@ -35,8 +35,8 @@ func (s staticIdentityGetter) GetIdentity(request proto.IdentityRequest) (*proto
 		Details:   []proto.UserDetail{},
 		Authority: "",
 	}
-	// Handle groups, even if not found
-	content := s.fileWatcher.GetContent().(*users.Content)
+	// Handle groups, even if user is not found
+	content := s.dataWatcher.Get().(*users.Content)
 	groups, ok := content.GroupsByUser[request.Login]
 	if ok {
 		responsePayload.Groups = groups

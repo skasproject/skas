@@ -11,11 +11,13 @@ func Setup() error {
 	var configFile string
 	var version bool
 	var usersFile string
+	var usersConfigMap string
 	var logLevel string
 	var logMode string
 
 	pflag.StringVar(&configFile, "configFile", "config.yaml", "Configuration file")
-	pflag.StringVar(&usersFile, "usersFile", "users.yaml", "Users file")
+	pflag.StringVar(&usersFile, "usersFile", "", "Users file")
+	pflag.StringVar(&usersConfigMap, "usersConfigMap", "", "Users configMap")
 	pflag.BoolVar(&version, "version", false, "Display version info")
 	pflag.StringVar(&logLevel, "logLevel", "INFO", "Log level (PANIC|FATAL|ERROR|WARN|INFO|DEBUG|TRACE)")
 	pflag.StringVar(&logMode, "logMode", "json", "Log mode: 'dev' or 'json'")
@@ -36,6 +38,8 @@ func Setup() error {
 
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Mode, "logMode")
 	misc.AdjustConfigString(pflag.CommandLine, &Conf.Log.Level, "logLevel")
+	misc.AdjustConfigString(pflag.CommandLine, &Conf.UsersFile, "usersFile")
+	misc.AdjustConfigString(pflag.CommandLine, &Conf.UsersConfigMap, "usersConfigMap")
 
 	// -----------------------------------Handle logging  stuff
 	Log, err = misc.HandleLog(&Conf.Log)
@@ -51,8 +55,10 @@ func Setup() error {
 		Conf.Servers[idx].Default(7014 + (100 * idx))
 	}
 
-	// ------------------------------------- setup users file
-	misc.AdjustConfigString(pflag.CommandLine, &Conf.UsersFile, "usersFile")
+	// ------------------------------------- check users file
+	if (Conf.UsersFile == "") == (Conf.UsersConfigMap == "") {
+		return fmt.Errorf("one and only one of usersFile or usersConfigMap must be defined in configuration")
+	}
 
 	// --------------------------------------- Load users file
 	//if err = loadUsers(usersFile); err != nil {

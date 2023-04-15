@@ -15,6 +15,7 @@ data:
     log:
       mode: {{ default .Values.log.mode .Values.skStatic.log.mode }}
       level: {{ default .Values.log.level .Values.skStatic.log.level }}
+    usersConfigMap: {{ include "skStatic.usersDbName" . }}
     servers:
       {{- if .Values.skStatic.exposure.internal.enabled}}
       - port: {{ .Values.skStatic.exposure.internal.port }}

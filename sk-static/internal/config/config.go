@@ -10,9 +10,8 @@ import (
 //var GroupsByUser      map[string][]string
 
 var (
-	Conf              Config
-	Log               logr.Logger
-	GroupBindingCount int
+	Conf Config
+	Log  logr.Logger
 )
 
 type StaticServerConfig struct {
@@ -23,7 +22,12 @@ type StaticServerConfig struct {
 }
 
 type Config struct {
-	Log       misc.LogConfig       `yaml:"log"`
-	Servers   []StaticServerConfig `yaml:"servers"`
-	UsersFile string               `yaml:"usersFile"`
+	Log            misc.LogConfig       `yaml:"log"`
+	Servers        []StaticServerConfig `yaml:"servers"`
+	UsersFile      string               `yaml:"usersFile"`      // Exclusive from UsersConfigMap
+	UsersConfigMap string               `yaml:"usersConfigMap"` // Exclusive from UsersFile
+	CmLocation     struct {             // Used only in out-of-cluster context
+		Namespace  string `yaml:"namespace"`  // If empty lookup current namespace.
+		Kubeconfig string `yaml:"kubeconfig"` // If empty, lookup in cluster config
+	} `yaml:"cmLocation"`
 }

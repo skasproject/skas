@@ -54,7 +54,6 @@ COPY sk-ldap/main.go sk-ldap/main.go
 RUN cd sk-ldap && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o sk-ldap main.go
 
 COPY sk-static/internal/ sk-static/internal/
-COPY sk-static/pkg/ sk-static/pkg/
 COPY sk-static/main.go sk-static/main.go
 RUN cd sk-static && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o sk-static main.go
 

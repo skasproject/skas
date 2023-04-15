@@ -5,19 +5,24 @@ import (
 	"fmt"
 	"github.com/go-logr/logr"
 	"gopkg.in/fsnotify.v1"
+	"os"
+	"skas/sk-common/pkg/datawatcher"
 	"sync"
 )
 
-type FileWatcher interface {
-	GetContent() interface{}
-	Run(ctx context.Context) error // Blocking function
+var _ datawatcher.DataWatcher = &fileWatcher{}
+
+type fileWatcher struct {
+	sync.Mutex
+	logger logr.Logger
+
+	fileName string
+	parser   datawatcher.ParserFunc
+	watcher  *fsnotify.Watcher
+	content  interface{}
 }
 
-type Parser func(fileName string) (interface{}, error)
-
-var _ FileWatcher = &fileWatcher{}
-
-func New(fileName string, parser Parser, logger logr.Logger) (FileWatcher, error) {
+func New(fileName string, parser datawatcher.ParserFunc, logger logr.Logger) (datawatcher.DataWatcher, error) {
 	fw := &fileWatcher{
 		fileName: fileName,
 		logger:   logger,
@@ -29,43 +34,25 @@ func New(fileName string, parser Parser, logger logr.Logger) (FileWatcher, error
 		return nil, err
 	}
 	// Make a first data upload. This to have a coherent dataset even before starting as daemon and to check initial user fila coherency
-	fw.content, err = fw.parser(fw.fileName)
+	err = fw.readFile()
 	if err != nil {
 		return nil, err
 	}
 	return fw, nil
 }
 
-type fileWatcher struct {
-	sync.Mutex
-	logger logr.Logger
-
-	fileName string
-	parser   Parser
-	watcher  *fsnotify.Watcher
-	content  interface{}
-}
-
-func (fw *fileWatcher) GetContentSync() (interface{}, error) {
-	fw.Lock()
-	defer fw.Unlock()
-	return fw.parser(fw.fileName)
-}
-
-func (fw *fileWatcher) GetContent() interface{} {
+func (fw *fileWatcher) Get() interface{} {
 	fw.Lock()
 	defer fw.Unlock()
 	return fw.content
 }
 
 func (fw *fileWatcher) Run(ctx context.Context) error {
-	// Initial Reading and parsing file
-	content, err := fw.parser(fw.fileName)
-	if err != nil {
-		return err
-	}
-	fw.content = content
-	err = fw.watcher.Add(fw.fileName)
+	return fw.Start(ctx)
+}
+
+func (fw *fileWatcher) Start(ctx context.Context) error {
+	err := fw.watcher.Add(fw.fileName)
 	if err != nil {
 		return err
 	}
@@ -98,7 +85,6 @@ func (fw *fileWatcher) watch() {
 			fw.logger.Error(err, fmt.Sprintf("FileWatcher(%s) error", fw.fileName))
 		}
 	}
-
 }
 
 func (fw *fileWatcher) handleEvent(event fsnotify.Event) {
@@ -119,12 +105,15 @@ func (fw *fileWatcher) handleEvent(event fsnotify.Event) {
 	if err := fw.readFile(); err != nil {
 		fw.logger.Error(err, "error re-reading file")
 	}
-
 }
 
 func (fw *fileWatcher) readFile() error {
-	fw.logger.Info("Reload file", "file", fw.fileName)
-	content, err := fw.parser(fw.fileName)
+	fw.logger.Info("Reload users file", "file", fw.fileName)
+	data, err := os.ReadFile(fw.fileName)
+	if err != nil {
+		return err
+	}
+	content, err := fw.parser(string(data))
 	if err != nil {
 		return err
 	}

@@ -6,13 +6,15 @@ import (
 	"github.com/pior/runnable"
 	"os"
 	"skas/sk-common/pkg/clientauth"
+	"skas/sk-common/pkg/datawatcher"
+	"skas/sk-common/pkg/datawatcher/cmwatcher"
+	"skas/sk-common/pkg/datawatcher/filewatcher"
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-static/internal/config"
 	"skas/sk-static/internal/identitygetter"
 	"skas/sk-static/internal/users"
-	"skas/sk-static/pkg/filewatcher"
 )
 
 func main() {
@@ -20,23 +22,31 @@ func main() {
 		_, _ = fmt.Fprintf(os.Stderr, "Unable to load configuration: %v\n", err)
 		os.Exit(2)
 	}
+	runnableMgr := runnable.NewManager()
 
-	usersWatcher, err := filewatcher.New(config.Conf.UsersFile, users.Parse, config.Log.WithName("usersFile watcher"))
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Unable to load users file: %v\n", err)
+	var watcher datawatcher.DataWatcher
+	var err error
+	if config.Conf.UsersFile != "" {
+		watcher, err = filewatcher.New(config.Conf.UsersFile, users.Parse, config.Log.WithName("fileWatcher"))
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Unable to start users file watcher: %v\n", err)
+			os.Exit(2)
+		}
+	} else if config.Conf.UsersConfigMap != "" {
+		watcher, err = cmwatcher.New(context.Background(), config.Conf.UsersConfigMap, "users.yaml", users.Parse, config.Log.WithName("cmWatcher"), config.Conf.CmLocation.Namespace, config.Conf.CmLocation.Kubeconfig)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Unable to start users configMap watcher: %v\n", err)
+			os.Exit(2)
+		}
+	} else {
+		_, _ = fmt.Fprintf(os.Stderr, "Netheir usersFile or usersConfifMap was defined \n")
 		os.Exit(2)
 	}
-	content := usersWatcher.GetContent().(*users.Content)
+	runnableMgr.Add(watcher)
+	content := watcher.Get().(*users.Content)
 	config.Log.Info("sk-static start", "version", config.Version, "nbUsers", len(content.UserByLogin), "nbrGroupBindings", content.GroupBindingCount, "logLevel", config.Conf.Log.Level)
 
-	go func() {
-		if err := usersWatcher.Run(context.Background()); err != nil {
-			config.Log.Error(err, "users file watcher error")
-		}
-	}()
-
-	runnableMgr := runnable.NewManager()
-	identityGetter := identitygetter.New(usersWatcher, config.Log.WithName("staticProvider"))
+	identityGetter := identitygetter.New(watcher, config.Log.WithName("staticProvider"))
 
 	for idx, serverConfig := range config.Conf.Servers {
 		server := skserver.New(fmt.Sprintf("server[%d]", idx), &config.Conf.Servers[idx].SkServerConfig, config.Log.WithName(fmt.Sprintf("staticServer[%d]", idx)))
