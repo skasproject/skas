@@ -3,9 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/pflag"
-	"gopkg.in/yaml.v2"
 	"os"
-	"path/filepath"
 	"skas/sk-common/pkg/misc"
 )
 
@@ -53,43 +51,47 @@ func Setup() error {
 		Conf.Servers[idx].Default(7014 + (100 * idx))
 	}
 
+	// ------------------------------------- setup users file
+	misc.AdjustConfigString(pflag.CommandLine, &Conf.UsersFile, "usersFile")
+
 	// --------------------------------------- Load users file
-	if err = loadUsers(usersFile); err != nil {
-		return fmt.Errorf("file '%s': %w", usersFile, err)
-	}
+	//if err = loadUsers(usersFile); err != nil {
+	//	return fmt.Errorf("file '%s': %w", usersFile, err)
+	//}
 	return nil
 }
 
-func loadUsers(fileName string) error {
-	fn, err := filepath.Abs(fileName)
-	if err != nil {
-		return err
-	}
-	file, err := os.Open(fn)
-	if err != nil {
-		return err
-	}
-	decoder := yaml.NewDecoder(file)
-	decoder.SetStrict(true)
-	staticUsers := StaticUsers{}
-	if err = decoder.Decode(&staticUsers); err != nil {
-		return err
-	}
-	UserByLogin = make(map[string]StaticUser)
-	for idx, _ := range staticUsers.Users {
-		UserByLogin[staticUsers.Users[idx].Login] = staticUsers.Users[idx]
-	}
-	GroupsByUser = make(map[string][]string)
-	for _, gb := range staticUsers.GroupBindings {
-		u := gb.User
-		g := gb.Group
-		groups, ok := GroupsByUser[u]
-		if ok {
-			GroupsByUser[u] = append(groups, g)
-		} else {
-			GroupsByUser[u] = []string{g}
-		}
-	}
-	GroupBindingCount = len(staticUsers.GroupBindings)
-	return nil
-}
+//
+//func loadUsers(fileName string) error {
+//	fn, err := filepath.Abs(fileName)
+//	if err != nil {
+//		return err
+//	}
+//	file, err := os.Open(fn)
+//	if err != nil {
+//		return err
+//	}
+//	decoder := yaml.NewDecoder(file)
+//	decoder.SetStrict(true)
+//	staticUsers := StaticUsers{}
+//	if err = decoder.Decode(&staticUsers); err != nil {
+//		return err
+//	}
+//	UserByLogin = make(map[string]StaticUser)
+//	for idx, _ := range staticUsers.Users {
+//		UserByLogin[staticUsers.Users[idx].Login] = staticUsers.Users[idx]
+//	}
+//	GroupsByUser = make(map[string][]string)
+//	for _, gb := range staticUsers.GroupBindings {
+//		u := gb.User
+//		g := gb.Group
+//		groups, ok := GroupsByUser[u]
+//		if ok {
+//			GroupsByUser[u] = append(groups, g)
+//		} else {
+//			GroupsByUser[u] = []string{g}
+//		}
+//	}
+//	GroupBindingCount = len(staticUsers.GroupBindings)
+//	return nil
+//}

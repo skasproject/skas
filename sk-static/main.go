@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/pior/runnable"
 	"os"
@@ -10,6 +11,8 @@ import (
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-static/internal/config"
 	"skas/sk-static/internal/identitygetter"
+	"skas/sk-static/internal/users"
+	"skas/sk-static/pkg/filewatcher"
 )
 
 func main() {
@@ -18,10 +21,22 @@ func main() {
 		os.Exit(2)
 	}
 
-	config.Log.Info("sk-static start", "version", config.Version, "nbUsers", len(config.UserByLogin), "nbrGroupBindings", config.GroupBindingCount, "logLevel", config.Conf.Log.Level)
+	usersWatcher, err := filewatcher.New(config.Conf.UsersFile, users.Parse, config.Log.WithName("usersFile watcher"))
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "Unable to load users file: %v\n", err)
+		os.Exit(2)
+	}
+	content := usersWatcher.GetContent().(*users.Content)
+	config.Log.Info("sk-static start", "version", config.Version, "nbUsers", len(content.UserByLogin), "nbrGroupBindings", content.GroupBindingCount, "logLevel", config.Conf.Log.Level)
+
+	go func() {
+		if err := usersWatcher.Run(context.Background()); err != nil {
+			config.Log.Error(err, "users file watcher error")
+		}
+	}()
 
 	runnableMgr := runnable.NewManager()
-	identityGetter := identitygetter.New(config.Log.WithName("staticProvider"))
+	identityGetter := identitygetter.New(usersWatcher, config.Log.WithName("staticProvider"))
 
 	for idx, serverConfig := range config.Conf.Servers {
 		server := skserver.New(fmt.Sprintf("server[%d]", idx), &config.Conf.Servers[idx].SkServerConfig, config.Log.WithName(fmt.Sprintf("staticServer[%d]", idx)))

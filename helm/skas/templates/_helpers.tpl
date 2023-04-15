@@ -77,7 +77,7 @@ Create list of config map for reloader.stakater.com
 {{- include "skMerge.configmapName" . }},
 {{- end }}
 {{- if .Values.skStatic.enabled }}
-{{- include "skStatic.configmapName" . }},{{ include "skStatic.usersDbName" . }},
+{{- include "skStatic.configmapName" . }},
 {{- end }}
 {{- if .Values.skAuth.enabled }}
 {{- include "skAuth.configmapName" . }},
