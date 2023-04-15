@@ -34,6 +34,9 @@ DONE:
 - Setup a system to force password change
 - Think about a system who can safely delegate group binding inside a namespace
 - Display client[].id on startup (Modify baseHandler by adding ClientManager ?)
+- Add a protection against Brut force Attack 
+- Check http handlers timeout (cf https://betterprogramming.pub/changes-in-go-1-20-b0a82d4b6c44, issue 6 )
+- Tracing (open telemetry ?)
 
 DONE:
 

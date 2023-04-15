@@ -7,18 +7,21 @@ import (
 	"skas/sk-common/pkg/misc"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/proto/v1/proto"
-	"skas/sk-static/internal/config"
+	"skas/sk-static/internal/users"
+	"skas/sk-static/pkg/filewatcher"
 )
 
 var _ commonHandlers.IdentityGetter = &staticIdentityGetter{}
 
 type staticIdentityGetter struct {
-	logger logr.Logger
+	logger      logr.Logger
+	fileWatcher filewatcher.FileWatcher
 }
 
-func New(logger logr.Logger) commonHandlers.IdentityGetter {
+func New(fileWatcher filewatcher.FileWatcher, logger logr.Logger) commonHandlers.IdentityGetter {
 	return &staticIdentityGetter{
-		logger: logger,
+		logger:      logger,
+		fileWatcher: fileWatcher,
 	}
 }
 
@@ -33,12 +36,13 @@ func (s staticIdentityGetter) GetIdentity(request proto.IdentityRequest) (*proto
 		Authority: "",
 	}
 	// Handle groups, even if not found
-	groups, ok := config.GroupsByUser[request.Login]
+	content := s.fileWatcher.GetContent().(*users.Content)
+	groups, ok := content.GroupsByUser[request.Login]
 	if ok {
 		responsePayload.Groups = groups
 	}
 
-	user, ok := config.UserByLogin[request.Login]
+	user, ok := content.UserByLogin[request.Login]
 	if !ok {
 		s.logger.V(1).Info("User not found", "user", request.Login)
 		responsePayload.Status = proto.NotFound
