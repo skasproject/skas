@@ -16,7 +16,6 @@ import (
 	"skas/sk-static/internal/config"
 	"skas/sk-static/internal/identitygetter"
 	"skas/sk-static/internal/users"
-	"time"
 )
 
 func main() {
@@ -57,7 +56,7 @@ func main() {
 			hdl := &commonHandlers.IdentityHandler{
 				IdentityGetter: identityGetter,
 				ClientManager:  clientauth.New(serverConfig.Services.Identity.Clients, serverConfig.Interface != "127.0.0.1"),
-				Protector:      protector.New(context.Background(), config.Log.WithName("protector"), protector.WithCleanDelay(30*time.Second), protector.WithMaxPenalty(5*time.Second)),
+				Protector:      protector.New(context.Background(), config.Log.WithName("protector")),
 			}
 			server.AddHandler(proto.IdentityMeta, hdl)
 		} else {
