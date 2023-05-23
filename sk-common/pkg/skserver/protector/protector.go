@@ -5,6 +5,7 @@ import (
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -14,29 +15,28 @@ import (
 //
 
 type Protector interface {
-	Entry(login string) (id int64, locked bool)
-	Success(id int64, login string)
-	Failure(id int64, login string)
-	Exit(id int64, login string)
+	Entry(login string) (locked bool)
+	Failure(login string)
 }
 
 var _ Protector = &protector{}
 
 type loginState struct {
-	lastFailure  time.Time
-	nbrOfFailure int64
+	lastFailure     time.Time
+	nbrOfFailure    int64
+	pendingFailures atomic.Int64 // Access is NOT protected by some mutex
 }
 
 type protector struct {
-	mu               sync.Mutex
-	id               int64
-	logger           logr.Logger
-	stateByLogin     map[string]*loginState
-	cleanerPeriod    time.Duration
-	cleanDelay       time.Duration
-	freeFailure      int64 // No delay introduced up to this value
-	maxPenalty       time.Duration
-	penaltyByFailure time.Duration
+	mu                sync.Mutex
+	logger            logr.Logger
+	stateByLogin      map[string]*loginState
+	cleanerPeriod     time.Duration
+	cleanDelay        time.Duration
+	freeFailure       int64 // No delay introduced up to this value
+	maxPenalty        time.Duration
+	penaltyByFailure  time.Duration
+	maxPendingFailure int64
 }
 
 type Option func(*protector)
@@ -76,15 +76,22 @@ func WithPenaltyByFailure(pbf time.Duration) Option {
 	}
 }
 
+func WithMaxPendingFailure(mpf int64) Option {
+	return func(p *protector) {
+		p.maxPendingFailure = mpf
+	}
+}
+
 func New(ctx context.Context, logger logr.Logger, opts ...Option) Protector {
 	p := &protector{
-		logger:           logger,
-		stateByLogin:     make(map[string]*loginState),
-		cleanerPeriod:    60 * time.Second,
-		cleanDelay:       30 * time.Minute,
-		freeFailure:      2,
-		maxPenalty:       15 * time.Second,
-		penaltyByFailure: 1 * time.Second,
+		logger:            logger,
+		stateByLogin:      make(map[string]*loginState),
+		cleanerPeriod:     60 * time.Second,
+		cleanDelay:        30 * time.Minute,
+		freeFailure:       2,
+		maxPenalty:        15 * time.Second,
+		penaltyByFailure:  1 * time.Second,
+		maxPendingFailure: 20,
 	}
 	for _, opt := range opts {
 		opt(p)
@@ -96,22 +103,20 @@ func New(ctx context.Context, logger logr.Logger, opts ...Option) Protector {
 	return p
 }
 
-func (p *protector) Entry(login string) (id int64, locked bool) {
+func (p *protector) Entry(login string) bool /*locked*/ {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	p.id++
-	p.logger.V(2).Info("protector.Entry()", "login", login, "id", id)
-	return id, false
+	state, ok := p.stateByLogin[login]
+	if ok && state.pendingFailures.Load() > p.maxPendingFailure {
+		p.logger.V(0).Info("*******WARNING: Too many pending failing request. May be an attack ", "login", login)
+		return true
+	}
+	p.logger.V(2).Info("protector.Entry()", "login", login)
+	return false
 }
 
-func (p *protector) Success(id int64, login string) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	p.logger.V(2).Info("protector.Success()", "login", login, "id", id)
-}
-
-func (p *protector) Failure(id int64, login string) {
-	p.logger.V(2).Info("protector.Failure(1/2)", "login", login, "id", id)
+func (p *protector) Failure(login string) {
+	p.logger.V(2).Info("protector.Failure(1/2)", "login", login)
 	p.mu.Lock()
 	state, ok := p.stateByLogin[login]
 	if !ok {
@@ -123,15 +128,11 @@ func (p *protector) Failure(id int64, login string) {
 	nbrOfFailure := state.nbrOfFailure
 	p.mu.Unlock()
 	delay := p.delayFromFailureCount(nbrOfFailure)
-	p.logger.V(0).Info("protector.failure", "login", login, "failureCount", nbrOfFailure, "delay", delay.String())
+	p.logger.V(0).Info("protector.failure", "login", login, "failureCount", nbrOfFailure, "delay", delay.String(), "pendingFailure", state.pendingFailures.Load())
+	state.pendingFailures.Add(1)
 	time.Sleep(delay)
-	p.logger.V(2).Info("protector.Failure(2/2)", "login", login, "id", id)
-}
-
-func (p *protector) Exit(id int64, login string) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	p.logger.V(2).Info("protector.Exit()", "login", login, "id", id)
+	state.pendingFailures.Add(-1)
+	p.logger.V(2).Info("protector.Failure(2/2)", "login", login)
 }
 
 func (p *protector) clean() {
