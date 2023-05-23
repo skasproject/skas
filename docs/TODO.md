@@ -3,6 +3,7 @@
 
 - SkaGate
 - A front for user management.
+- Ldap server
 - Documentation
   - Installation
   - Usage
@@ -37,6 +38,7 @@ DONE:
 - Add a protection against Brut force Attack 
 - Check http handlers timeout (cf https://betterprogramming.pub/changes-in-go-1-20-b0a82d4b6c44, issue 6 )
 - Tracing (open telemetry ?)
+- Harden http server (https://adam-p.ca/blog/2022/01/golang-http-server-timeouts/, https://blog.cloudflare.com/exposing-go-on-the-internet/#timeouts)
 
 DONE:
 
@@ -135,5 +137,8 @@ DONE
 Refer to topolvm docs for the following:
 - Manually create a secret
 
+## Ldap server
 
+https://www.libhunt.com/l/go/topic/ldap-server
 
+https://github.com/vjeantet/ldapserver

@@ -25,7 +25,6 @@ func New(configs []cconfig.ServiceClient, requireClientAuth bool) Manager {
 			secretById: make(map[string]string),
 		}
 		for _, cc := range configs {
-
 			cm.secretById[cc.Id] = cc.Secret
 		}
 		return cm

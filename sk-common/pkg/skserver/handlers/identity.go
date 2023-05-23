@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/misc"
+	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
 )
 
@@ -23,6 +24,7 @@ type IdentityHandler struct {
 	IdentityGetter       IdentityGetter
 	ClientManager        clientauth.Manager
 	HttpRequestValidator HttpRequestValidator
+	Protector            protector.Protector
 }
 
 func (h *IdentityHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
@@ -30,6 +32,12 @@ func (h *IdentityHandler) ServeHTTP(response http.ResponseWriter, request *http.
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		h.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
+		return
+	}
+	id, locked := h.Protector.Entry(requestPayload.Login)
+	defer h.Protector.Exit(id, requestPayload.Login)
+	if locked {
+		h.HttpSendError(response, "??", http.StatusServiceUnavailable)
 		return
 	}
 	if !h.ClientManager.Validate(&requestPayload.ClientAuth) {
@@ -47,6 +55,14 @@ func (h *IdentityHandler) ServeHTTP(response http.ResponseWriter, request *http.
 	if httpError != nil {
 		h.HttpSendError(response, httpError.Error(), httpError.GetStatusCode())
 		return
+	}
+	// Failure cases are:
+	// - PasswordFail if password is provided on request
+	// - NotFound in all cases
+	if (requestPayload.Password != "" && responsePayload.Status == proto.PasswordFail) || (responsePayload.Status == proto.NotFound) {
+		h.Protector.Failure(id, responsePayload.Login)
+	} else {
+		h.Protector.Success(id, responsePayload.Login)
 	}
 	h.GetLog().Info("User status", "login", requestPayload.Login, "status", responsePayload.Status)
 	h.ServeJSON(response, responsePayload)
