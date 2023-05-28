@@ -9,8 +9,9 @@ type ServiceClient struct {
 }
 
 type ServiceConfig struct {
-	Disabled bool            `yaml:"disabled"`
-	Clients  []ServiceClient `yaml:"clients"`
+	Disabled  bool            `yaml:"disabled"`
+	Protected bool            `yaml:"protected"`
+	Clients   []ServiceClient `yaml:"clients"`
 }
 
 type SkServerConfig struct {

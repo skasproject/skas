@@ -82,7 +82,14 @@ func WithMaxPendingFailure(mpf int64) Option {
 	}
 }
 
-func New(ctx context.Context, logger logr.Logger, opts ...Option) Protector {
+// New build a new protector against Brut Force Attack.
+// Return nil if !activated. It is up to the caller to test at run time
+func New(activated bool, ctx context.Context, logger logr.Logger, opts ...Option) Protector {
+	if !activated {
+		logger.V(1).Info("Protection NOT activated")
+		return &empty{}
+	}
+	logger.Info("Protection activated")
 	p := &protector{
 		logger:            logger,
 		stateByLogin:      make(map[string]*loginState),

@@ -14,6 +14,7 @@ import (
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
+	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-crd/internal/config"
 	"skas/sk-crd/internal/handlers"
@@ -74,6 +75,7 @@ func main() {
 			hdl := &commonHandlers.IdentityHandler{
 				IdentityGetter: identityGetter,
 				ClientManager:  clientauth.New(serverConfig.Services.Identity.Clients, serverConfig.Interface != "127.0.0.1"),
+				Protector:      protector.New(serverConfig.Services.Identity.Protected, context.Background(), config.Log.WithName("sk-crd.identity.protector")),
 			}
 			server.AddHandler(proto.IdentityMeta, hdl)
 		} else {
@@ -85,6 +87,7 @@ func main() {
 				KubeClient:    mgr.GetClient(),
 				Namespace:     config.Conf.Namespace,
 				ClientManager: clientauth.New(serverConfig.Services.PasswordChange.Clients, serverConfig.Interface != "127.0.0.1"),
+				Protector:     protector.New(serverConfig.Services.PasswordChange.Protected, context.Background(), config.Log.WithName("sk-crd.passwordChange.protector")),
 			}
 			server.AddHandler(proto.PasswordChangeMeta, hdl)
 		} else {

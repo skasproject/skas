@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/pior/runnable"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -21,6 +22,7 @@ import (
 	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
+	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
 	"time"
 )
@@ -121,6 +123,7 @@ func main() {
 			hdl := &handlers.PasswordChangeHandler{
 				ClientManager: clientauth.New(serverConfig.Services.PasswordChange.Clients, false),
 				Provider:      provider,
+				Protector:     protector.New(serverConfig.Services.PasswordChange.Protected, context.Background(), config.Log.WithName("sk-auth.passwordChange.protector")),
 			}
 			server.AddHandler(proto.PasswordChangeMeta, hdl)
 		} else {
@@ -151,6 +154,7 @@ func main() {
 				IdentityGetter:       identityGetter,
 				ClientManager:        clientauth.New(serverConfig.Services.Identity.Clients, false),
 				HttpRequestValidator: identityRequestValidator,
+				Protector:            protector.New(serverConfig.Services.Identity.Protected, context.Background(), config.Log.WithName("sk-auth.identity.protector")),
 			}
 			server.AddHandler(proto.IdentityMeta, hdl)
 		} else {

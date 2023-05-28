@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/pior/runnable"
 	"os"
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
+	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/config"
 	"skas/sk-merge/internal/handlers"
@@ -38,6 +40,7 @@ func main() {
 			hdl := &commonHandlers.IdentityHandler{
 				IdentityGetter: identityGetter,
 				ClientManager:  clientauth.New(serverConfig.Services.Identity.Clients, serverConfig.Interface != "127.0.0.1"),
+				Protector:      protector.New(serverConfig.Services.Identity.Protected, context.Background(), config.Log.WithName("sk-merge.identity.protector")),
 			}
 			server.AddHandler(proto.IdentityMeta, hdl)
 		} else {
@@ -48,6 +51,7 @@ func main() {
 			hdl := &handlers.PasswordChangeHandler{
 				Chain:         providerChain,
 				ClientManager: clientauth.New(serverConfig.Services.PasswordChange.Clients, serverConfig.Interface != "127.0.0.1"),
+				Protector:     protector.New(serverConfig.Services.PasswordChange.Protected, context.Background(), config.Log.WithName("sk-merge.passwordChange.protector")),
 			}
 			server.AddHandler(proto.PasswordChangeMeta, hdl)
 		} else {

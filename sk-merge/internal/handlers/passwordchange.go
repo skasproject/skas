@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"skas/sk-common/pkg/clientauth"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
+	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-merge/internal/providerchain"
 )
@@ -16,6 +17,7 @@ type PasswordChangeHandler struct {
 	commonHandlers.BaseHandler
 	Chain         providerchain.ProviderChain
 	ClientManager clientauth.Manager
+	Protector     protector.Protector
 }
 
 func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
@@ -23,6 +25,11 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 	err := requestPayload.FromJson(request.Body)
 	if err != nil {
 		p.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
+		return
+	}
+	locked := p.Protector.Entry(requestPayload.Login)
+	if locked {
+		p.HttpSendError(response, "Locked", http.StatusServiceUnavailable)
 		return
 	}
 	if !p.ClientManager.Validate(&requestPayload.ClientAuth) {
@@ -34,6 +41,10 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 		p.HttpSendError(response, fmt.Sprintf("Providers change password: %v", err), http.StatusBadGateway)
 		return
 	}
+	if changePasswordResponse.Status == proto.UnknownUser || changePasswordResponse.Status == proto.InvalidOldPassword {
+		p.Protector.Failure(requestPayload.Login)
+	}
+	p.Logger.V(0).Info("Password change", "user", requestPayload.Login, "result", string(changePasswordResponse.Status))
 	p.ServeJSON(response, changePasswordResponse)
 	return
 }
