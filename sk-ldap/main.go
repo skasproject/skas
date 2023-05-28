@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/pior/runnable"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
+	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-ldap/internal/config"
 	"skas/sk-ldap/internal/identitygetter"
@@ -35,6 +37,7 @@ func main() {
 			hdl := &commonHandlers.IdentityHandler{
 				IdentityGetter: identityGetter,
 				ClientManager:  clientauth.New(serverConfig.Services.Identity.Clients, serverConfig.Interface != "127.0.0.1"),
+				Protector:      protector.New(serverConfig.Services.Identity.Protected, context.Background(), config.Log.WithName("sk-ldap.identity.protector")),
 			}
 			server.AddHandler(proto.IdentityMeta, hdl)
 		} else {

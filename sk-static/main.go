@@ -56,7 +56,7 @@ func main() {
 			hdl := &commonHandlers.IdentityHandler{
 				IdentityGetter: identityGetter,
 				ClientManager:  clientauth.New(serverConfig.Services.Identity.Clients, serverConfig.Interface != "127.0.0.1"),
-				Protector:      protector.New(context.Background(), config.Log.WithName("protector")),
+				Protector:      protector.New(serverConfig.Services.Identity.Protected, context.Background(), config.Log.WithName("sk-static.identity.protector")),
 			}
 			server.AddHandler(proto.IdentityMeta, hdl)
 		} else {
