@@ -33,7 +33,7 @@ func (p crdIdentityGetter) GetIdentity(request proto.IdentityRequest) (*proto.Id
 		return nil, misc.NewHttpError("Can't handle detailed request", http.StatusBadRequest)
 	}
 	responsePayload := &proto.IdentityResponse{
-		Status:    proto.NotFound,
+		Status:    proto.UserNotFound,
 		User:      proto.InitUser(request.Login),
 		Details:   []proto.UserDetail{},
 		Authority: "",
@@ -61,7 +61,7 @@ func (p crdIdentityGetter) GetIdentity(request proto.IdentityRequest) (*proto.Id
 	}
 	if err != nil {
 		p.logger.V(1).Info("User not found", "user", request.Login)
-		responsePayload.Status = proto.NotFound
+		responsePayload.Status = proto.UserNotFound
 		return responsePayload, nil
 	}
 	if usr.Spec.Uid != nil {

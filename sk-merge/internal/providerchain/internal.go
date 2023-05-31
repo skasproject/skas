@@ -16,7 +16,7 @@ type providerChain struct {
 
 var priorityByStatus = map[proto.Status]int{
 	proto.Undefined:         0,
-	proto.NotFound:          1,
+	proto.UserNotFound:      1,
 	proto.PasswordMissing:   2,
 	proto.PasswordUnchecked: 3,
 	proto.PasswordChecked:   4,
@@ -31,7 +31,7 @@ func priority(status proto.Status) int {
 func (pc *providerChain) GetIdentity(login, password string, detailed bool) (*proto.IdentityResponse, error) {
 	response := &proto.IdentityResponse{
 		User:      proto.InitUser(login),
-		Status:    proto.NotFound,
+		Status:    proto.UserNotFound,
 		Details:   make([]proto.UserDetail, 0, len(pc.providers)),
 		Authority: "",
 	}

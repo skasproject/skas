@@ -23,13 +23,20 @@ type Status string
 
 // If password is not provided in the request and there is no password in the user definition, status should be 'passwordMissing' (Not 'passwordUnchecked')
 const (
-	NotFound          = "notFound"
+	// ---- Following for identity and login response
+	UserNotFound      = "userNotFound"
 	Disabled          = "disabled"
 	PasswordChecked   = "passwordChecked"
 	PasswordFail      = "passwordFail"
 	PasswordUnchecked = "passwordUnchecked" // Because password was not provided in the request
 	PasswordMissing   = "passwordMissing"   // Because this provider does not store a password for this user
 	Undefined         = "undefined"         // Used to mark a non-critical failing provider in userDescribe
+	// ---- Following is specific to passwordChange
+	PasswordChanged    = "passwordChanged"
+	UnknownProvider    = "unknownProvider"
+	InvalidOldPassword = "invalidOldPassword"
+	InvalidNewPassword = "invalidNewPassword" // If some password rules are implemented
+	Unsupported        = "unsupported"        // This provider does not support password change
 )
 
 // This object is also used in Token K8s api in sk-auth

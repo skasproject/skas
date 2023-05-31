@@ -27,7 +27,7 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 		p.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
-	locked := p.Protector.Entry(requestPayload.Login)
+	locked := p.Protector.EntryForLogin(requestPayload.Login)
 	if locked {
 		p.HttpSendError(response, "Locked", http.StatusServiceUnavailable)
 		return
@@ -44,9 +44,7 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 		p.HttpSendError(response, fmt.Sprintf("Provider change password: %v", err), http.StatusInternalServerError)
 		return
 	}
-	if changePasswordResponse.Status == proto.InvalidOldPassword || changePasswordResponse.Status == proto.UnknownUser {
-		p.Protector.Failure(requestPayload.Login)
-	}
+	p.Protector.ProtectLoginResult(requestPayload.Login, changePasswordResponse.Status)
 	p.Logger.V(0).Info("Password change", "user", requestPayload.Login, "result", string(changePasswordResponse.Status))
 	p.ServeJSON(response, changePasswordResponse)
 	return

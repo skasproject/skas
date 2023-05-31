@@ -34,7 +34,7 @@ func (h *IdentityHandler) ServeHTTP(response http.ResponseWriter, request *http.
 		h.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
-	locked := h.Protector.Entry(requestPayload.Login)
+	locked := h.Protector.EntryForLogin(requestPayload.Login)
 	if locked {
 		h.HttpSendError(response, "Locked", http.StatusServiceUnavailable)
 		return
@@ -58,9 +58,7 @@ func (h *IdentityHandler) ServeHTTP(response http.ResponseWriter, request *http.
 	// Failure cases are:
 	// - PasswordFail if password is provided on request
 	// - NotFound in all cases
-	if (requestPayload.Password != "" && responsePayload.Status == proto.PasswordFail) || (responsePayload.Status == proto.NotFound) {
-		h.Protector.Failure(responsePayload.Login)
-	}
+	h.Protector.ProtectLoginResult(requestPayload.Login, responsePayload.Status)
 	h.GetLog().Info("User status", "login", requestPayload.Login, "status", responsePayload.Status)
 	h.ServeJSON(response, responsePayload)
 }

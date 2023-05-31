@@ -116,6 +116,7 @@ DONE:
 - Reference and normalize os.exit() code
 - Set a version number in saved config and tokenbag file name
 - Optionally, request the client to provide id/secret on init (kubeconfig)
+- Set TERM_SESSION_ID in the local storage, to have by session separated context (Check interaction with kubectx)
 
 DONE
 - kubeconfig configuration: Replace contextName and namespace by context.name and context.namespace

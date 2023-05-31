@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"skas/sk-common/proto/v1/proto"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -14,9 +15,19 @@ import (
 // After some period without failure, the history is cleanup up.
 //
 
+type LoginProtector interface {
+	EntryForLogin(login string) (locked bool)
+	ProtectLoginResult(login string, status proto.Status)
+}
+
+type TokenProtector interface {
+	EntryForToken() (locked bool)
+	TokenNotFound()
+}
+
 type Protector interface {
-	Entry(login string) (locked bool)
-	Failure(login string)
+	LoginProtector
+	TokenProtector
 }
 
 var _ Protector = &protector{}
@@ -38,6 +49,9 @@ type protector struct {
 	penaltyByFailure  time.Duration
 	maxPendingFailure int64
 }
+
+const UnknownUser = "_unknownUser_"
+const UnknownToken = "_unknownToken_"
 
 type Option func(*protector)
 
@@ -95,7 +109,7 @@ func New(activated bool, ctx context.Context, logger logr.Logger, opts ...Option
 		stateByLogin:      make(map[string]*loginState),
 		cleanerPeriod:     60 * time.Second,
 		cleanDelay:        30 * time.Minute,
-		freeFailure:       2,
+		freeFailure:       4,
 		maxPenalty:        15 * time.Second,
 		penaltyByFailure:  1 * time.Second,
 		maxPendingFailure: 20,
@@ -110,19 +124,36 @@ func New(activated bool, ctx context.Context, logger logr.Logger, opts ...Option
 	return p
 }
 
-func (p *protector) Entry(login string) bool /*locked*/ {
+func (p *protector) EntryForLogin(login string) bool /*locked*/ {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	state, ok := p.stateByLogin[login]
 	if ok && state.pendingFailures.Load() > p.maxPendingFailure {
-		p.logger.V(0).Info("*******WARNING: Too many pending failing request. May be an attack ", "login", login)
+		p.logger.V(0).Info("*******WARNING: Too many pending password failing request. May be an attack ", "login", login)
 		return true
 	}
-	p.logger.V(2).Info("protector.Entry()", "login", login)
+	state, ok = p.stateByLogin[UnknownUser]
+	if ok && state.pendingFailures.Load() > p.maxPendingFailure {
+		p.logger.V(0).Info("*******WARNING: Too many pending user failing request. May be an attack ", "login", login)
+		return true
+	}
+	p.logger.V(2).Info("protector.EntryForLogin()", "login", login)
 	return false
 }
 
-func (p *protector) Failure(login string) {
+func (p *protector) EntryForToken() bool /*locked*/ {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	state, ok := p.stateByLogin[UnknownToken]
+	if ok && state.pendingFailures.Load() > p.maxPendingFailure {
+		p.logger.V(0).Info("*******WARNING: Too many pending token failing request. May be an attack ")
+		return true
+	}
+	p.logger.V(2).Info("protector.EntryForToken()")
+	return false
+}
+
+func (p *protector) failure(login string) {
 	p.logger.V(2).Info("protector.Failure(1/2)", "login", login)
 	p.mu.Lock()
 	state, ok := p.stateByLogin[login]
@@ -140,6 +171,18 @@ func (p *protector) Failure(login string) {
 	time.Sleep(delay)
 	state.pendingFailures.Add(-1)
 	p.logger.V(2).Info("protector.Failure(2/2)", "login", login)
+}
+
+func (p *protector) TokenNotFound() {
+	p.failure(UnknownToken)
+}
+
+func (p *protector) ProtectLoginResult(login string, status proto.Status) {
+	if status == proto.UserNotFound {
+		p.failure(UnknownUser)
+	} else if status == proto.PasswordFail || status == proto.InvalidOldPassword {
+		p.failure(login)
+	}
 }
 
 func (p *protector) clean() {
