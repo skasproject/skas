@@ -8,6 +8,7 @@ import (
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/misc"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
+	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
 )
 
@@ -18,6 +19,7 @@ type TokenRenewHandler struct {
 	commonHandlers.BaseHandler
 	ClientManager clientauth.Manager
 	TokenStore    tokenstore.TokenStore
+	Protector     protector.TokenProtector
 }
 
 func (t *TokenRenewHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
@@ -27,15 +29,22 @@ func (t *TokenRenewHandler) ServeHTTP(response http.ResponseWriter, request *htt
 		t.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
+	locked := t.Protector.EntryForToken()
+	if locked {
+		t.HttpSendError(response, "Locked", http.StatusServiceUnavailable)
+		return
+	}
 	if !t.ClientManager.Validate(&requestPayload.ClientAuth) {
 		t.HttpSendError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
-
 	user, err := t.TokenStore.Get(requestPayload.Token)
 	if err != nil {
 		t.HttpSendError(response, fmt.Sprintf("Error while retreiving token in the store: %v", err.Error()), http.StatusUnauthorized)
 		return
+	}
+	if user == nil {
+		t.Protector.TokenNotFound()
 	}
 	responsePayload := &proto.TokenRenewResponse{
 		Token: requestPayload.Token,

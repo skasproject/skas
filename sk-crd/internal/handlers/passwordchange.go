@@ -31,7 +31,7 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 		p.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
-	locked := p.Protector.Entry(requestPayload.Login)
+	locked := p.Protector.EntryForLogin(requestPayload.Login)
 	if locked {
 		p.HttpSendError(response, "Locked", http.StatusServiceUnavailable)
 		return
@@ -54,16 +54,16 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 		return
 	}
 	if err != nil {
-		p.Protector.Failure(responsePayload.Login)
+		p.Protector.ProtectLoginResult("", proto.UserNotFound)
 		p.Logger.V(0).Info("User not found", "user", requestPayload.Login)
-		responsePayload.Status = proto.UnknownUser
+		responsePayload.Status = proto.UserNotFound
 		p.ServeJSON(response, responsePayload)
 		return
 	}
 	// Check provided oldPassword
 	err = bcrypt.CompareHashAndPassword([]byte(usr.Spec.PasswordHash), []byte(requestPayload.OldPassword))
 	if err != nil {
-		p.Protector.Failure(responsePayload.Login)
+		p.Protector.ProtectLoginResult(responsePayload.Login, proto.InvalidOldPassword)
 		p.Logger.V(0).Info("Invalid old password", "user", requestPayload.Login)
 		responsePayload.Status = proto.InvalidOldPassword
 		p.ServeJSON(response, responsePayload)
@@ -89,7 +89,7 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 		return
 	}
 	p.Logger.V(0).Info("Password changed", "user", requestPayload.Login)
-	responsePayload.Status = proto.Done
+	responsePayload.Status = proto.PasswordChanged
 	p.ServeJSON(response, responsePayload)
 	return
 }

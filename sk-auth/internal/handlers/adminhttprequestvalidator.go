@@ -6,6 +6,7 @@ import (
 	"skas/sk-auth/internal/tokenstore"
 	"skas/sk-common/pkg/misc"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
+	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
 	"strings"
 )
@@ -15,12 +16,16 @@ var _ commonHandlers.HttpRequestValidator = &AdminHttpRequestValidator{}
 type AdminHttpRequestValidator struct {
 	TokenStore     tokenstore.TokenStore
 	IdentityGetter commonHandlers.IdentityGetter
+	Protector      protector.Protector
 }
 
 func (a *AdminHttpRequestValidator) Validate(request *http.Request, response http.ResponseWriter) misc.HttpError {
-	user, err := a.getAuthUser(request)
+	user, err, locked := a.getAuthUser(request)
 	if err != nil {
 		return misc.NewHttpError("Server error. Check server logs", http.StatusInternalServerError)
+	}
+	if locked {
+		return misc.NewHttpError("Locked", http.StatusServiceUnavailable)
 	}
 	if user == nil {
 		response.Header().Set("WWW-Authenticate", "Basic realm=\"/skas\"")
@@ -46,7 +51,7 @@ func getBearerToken(request *http.Request) string {
 }
 
 func userInGroup(user *proto.User, group string) bool {
-	//fmt.Printf("usenInGroup() user:%v  groups:%s", user, group)
+	//fmt.Printf("userInGroup() user:%v  groups:%s", user, group)
 	if user.Groups == nil {
 		return false
 	}
@@ -58,24 +63,35 @@ func userInGroup(user *proto.User, group string) bool {
 	return false
 }
 
-func (a *AdminHttpRequestValidator) getAuthUser(request *http.Request) (*proto.User, error) {
+func (a *AdminHttpRequestValidator) getAuthUser(request *http.Request) (*proto.User, error /* locked */, bool) {
 	login, password, ok := request.BasicAuth()
 	if ok {
-		user, _, err := doLogin(a.IdentityGetter, login, password)
-		if err != nil {
-			return nil, err
+		locked := a.Protector.EntryForLogin(login)
+		if locked {
+			return nil, nil, true
 		}
-		return user, nil
+		user, _, err := doLogin(a.IdentityGetter, login, password, a.Protector)
+		if err != nil {
+			return nil, err, false
+		}
+		return user, nil, false
 	}
 	// Try with a skas token
 	token := getBearerToken(request)
 	if token != "" {
+		locked := a.Protector.EntryForToken()
+		if locked {
+			return nil, nil, true
+		}
 		user, err := a.TokenStore.Get(token)
 		if err != nil {
-			return nil, err
+			return nil, err, false
 		}
-		return user, nil
+		if user == nil {
+			a.Protector.TokenNotFound()
+		}
+		return user, nil, false
 	}
 	// No authentication in header
-	return nil, nil
+	return nil, nil, false
 }

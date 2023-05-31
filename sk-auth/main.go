@@ -86,24 +86,23 @@ func main() {
 	}
 	identityGetter := identitygetter.New(provider)
 
-	identityRequestValidator := &handlers.AdminHttpRequestValidator{
-		TokenStore:     tokenStore,
-		IdentityGetter: identityGetter,
-	}
 	for idx, serverConfig := range config.Conf.Servers {
 		server := skserver.New(fmt.Sprintf("server[%d]", idx), &config.Conf.Servers[idx].SkServerConfig, config.Log.WithName(fmt.Sprintf("authServer[%d]", idx)))
 
 		// ---------------------------------------------------- Token service
 		if !serverConfig.Services.Token.Disabled {
+			prtct := protector.New(serverConfig.Services.Token.Protected, context.Background(), config.Log.WithName("sk-auth.token.protector"))
 			hdlTc := &handlers.TokenCreateHandler{
 				ClientManager:  clientauth.New(serverConfig.Services.Token.Clients, false),
 				TokenStore:     tokenStore,
 				IdentityGetter: identityGetter,
+				Protector:      prtct,
 			}
 			server.AddHandler(proto.TokenCreateMeta, hdlTc)
 			hdlTr := &handlers.TokenRenewHandler{
 				ClientManager: clientauth.New(serverConfig.Services.Token.Clients, false),
 				TokenStore:    tokenStore,
+				Protector:     prtct,
 			}
 			server.AddHandler(proto.TokenRenewMeta, hdlTr)
 		} else {
@@ -113,6 +112,7 @@ func main() {
 		if !serverConfig.Services.K8sAuth.Disabled {
 			hdl := &handlers.TokenReviewHandler{
 				TokenStore: tokenStore,
+				Protector:  protector.New(serverConfig.Services.K8sAuth.Protected, context.Background(), config.Log.WithName("sk-auth.k8sAuth.protector")),
 			}
 			server.AddHandler(proto.TokenReviewMeta, hdl)
 		} else {
@@ -143,6 +143,7 @@ func main() {
 			hdl := &handlers.LoginHandler{
 				ClientManager:  clientauth.New(serverConfig.Services.Kubeconfig.Clients, false),
 				IdentityGetter: identityGetter,
+				Protector:      protector.New(serverConfig.Services.Login.Protected, context.Background(), config.Log.WithName("sk-auth.login.protector")),
 			}
 			server.AddHandler(proto.LoginMeta, hdl)
 		} else {
@@ -150,11 +151,18 @@ func main() {
 		}
 		// ---------------------------------------------------- Identity service
 		if !serverConfig.Services.Identity.Disabled {
+			prt := protector.New(serverConfig.Services.Identity.Protected, context.Background(), config.Log.WithName("sk-auth.identity.protector"))
+			identityRequestValidator := &handlers.AdminHttpRequestValidator{
+				TokenStore:     tokenStore,
+				IdentityGetter: identityGetter,
+				Protector:      prt,
+			}
+
 			hdl := &commonHandlers.IdentityHandler{
 				IdentityGetter:       identityGetter,
 				ClientManager:        clientauth.New(serverConfig.Services.Identity.Clients, false),
 				HttpRequestValidator: identityRequestValidator,
-				Protector:            protector.New(serverConfig.Services.Identity.Protected, context.Background(), config.Log.WithName("sk-auth.identity.protector")),
+				Protector:            prt,
 			}
 			server.AddHandler(proto.IdentityMeta, hdl)
 		} else {

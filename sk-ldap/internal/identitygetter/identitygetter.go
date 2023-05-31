@@ -30,7 +30,7 @@ func (l *ldapIdentityGetter) GetIdentity(request proto.IdentityRequest) (*proto.
 	}
 	// Set some default values
 	response := proto.IdentityResponse{
-		Status:    proto.NotFound,
+		Status:    proto.UserNotFound,
 		User:      proto.InitUser(request.Login),
 		Details:   []proto.UserDetail{},
 		Authority: "",

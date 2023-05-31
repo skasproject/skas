@@ -7,6 +7,7 @@ import (
 	"skas/sk-common/pkg/clientauth"
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
+	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
 )
 
@@ -18,6 +19,7 @@ type LoginHandler struct {
 	commonHandlers.BaseHandler
 	ClientManager  clientauth.Manager
 	IdentityGetter commonHandlers.IdentityGetter
+	Protector      protector.LoginProtector
 }
 
 func (l *LoginHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
@@ -27,11 +29,16 @@ func (l *LoginHandler) ServeHTTP(response http.ResponseWriter, request *http.Req
 		l.HttpSendError(response, fmt.Sprintf("Payload decoding: %v", err), http.StatusBadRequest)
 		return
 	}
+	locked := l.Protector.EntryForLogin(requestPayload.Login)
+	if locked {
+		l.HttpSendError(response, "Locked", http.StatusServiceUnavailable)
+		return
+	}
 	if !l.ClientManager.Validate(&requestPayload.ClientAuth) {
 		l.HttpSendError(response, "Client authentication failed", http.StatusUnauthorized)
 		return
 	}
-	user, _, err := doLogin(l.IdentityGetter, requestPayload.Login, requestPayload.Password)
+	user, _, err := doLogin(l.IdentityGetter, requestPayload.Login, requestPayload.Password, l.Protector)
 	if err != nil {
 		l.HttpSendError(response, fmt.Sprintf("Error on downside login request: %s", err.Error()), http.StatusInternalServerError)
 		return

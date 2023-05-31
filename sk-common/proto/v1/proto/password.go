@@ -23,22 +23,11 @@ type PasswordChangeRequest struct {
 	NewPassword string     `json:"newPassword"`
 }
 
-type PasswordChangeStatus string
-
-const (
-	Done               = "done"
-	UnknownProvider    = "unknownProvider"
-	UnknownUser        = "unknownUser"
-	InvalidOldPassword = "invalidOldPassword"
-	InvalidNewPassword = "invalidNewPassword" // If some password rules are implemented
-	Unsupported        = "unsupported"        // This provider does not support password change
-)
-
 var _ ResponsePayload = &PasswordChangeResponse{}
 
 type PasswordChangeResponse struct {
-	Login  string               `json:"login"`
-	Status PasswordChangeStatus `json:"status"`
+	Login  string `json:"login"`
+	Status Status `json:"status"`
 }
 
 // ------------------------------------------------------------------------

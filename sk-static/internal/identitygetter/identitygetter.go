@@ -31,7 +31,7 @@ func (s staticIdentityGetter) GetIdentity(request proto.IdentityRequest) (*proto
 	}
 	responsePayload := &proto.IdentityResponse{
 		User:      proto.InitUser(request.Login),
-		Status:    proto.NotFound,
+		Status:    proto.UserNotFound,
 		Details:   []proto.UserDetail{},
 		Authority: "",
 	}
@@ -45,7 +45,7 @@ func (s staticIdentityGetter) GetIdentity(request proto.IdentityRequest) (*proto
 	user, ok := content.UserByLogin[request.Login]
 	if !ok {
 		s.logger.V(1).Info("User not found", "user", request.Login)
-		responsePayload.Status = proto.NotFound
+		responsePayload.Status = proto.UserNotFound
 		return responsePayload, nil
 	}
 	if user.Uid != nil {
