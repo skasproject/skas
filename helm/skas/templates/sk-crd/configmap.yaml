@@ -26,9 +26,11 @@ data:
           identity:
             disabled: {{ .Values.skCrd.exposure.internal.services.identity.disabled }}
             clients: {{ .Values.skCrd.exposure.internal.services.identity.clients | toJson }}
+            protected: {{ .Values.skCrd.exposure.internal.services.identity.protected }}
           passwordChange:
             disabled: {{ .Values.skCrd.exposure.internal.services.passwordChange.disabled}}
             clients: {{ .Values.skCrd.exposure.internal.services.passwordChange.clients | toJson }}
+            protected: {{ .Values.skCrd.exposure.internal.services.passwordChange.protected }}
       {{- end }}
       {{- if .Values.skCrd.exposure.external.enabled}}
       - port: {{ .Values.skCrd.exposure.external.port }}
@@ -41,9 +43,11 @@ data:
           identity:
             disabled: {{ .Values.skCrd.exposure.external.services.identity.disabled }}
             clients: {{ .Values.skCrd.exposure.external.services.identity.clients  | toJson }}
+            protected: {{ .Values.skCrd.exposure.external.services.identity.protected }}
           passwordChange:
             disabled: {{ .Values.skCrd.exposure.external.services.passwordChange.disabled }}
             clients: {{ .Values.skCrd.exposure.external.services.passwordChange.clients  | toJson }}
+            protected: {{ .Values.skCrd.exposure.external.services.passwordChange.protected }}
       {{- end }}
 {{ end }}
 
