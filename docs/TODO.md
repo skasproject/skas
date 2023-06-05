@@ -20,6 +20,7 @@ DONE:
 
 ## All
 
+- Add a group filtering system by provider.
 - Ensure copyright message in all relevant location
 - ? Switch to logrus, to have more level (i.e WARNING) ?
 - Display client.id in relevant message (Modify LoggingHandler)

@@ -57,9 +57,12 @@ func (pc *providerChain) GetIdentity(login, password string, detailed bool) (*pr
 		if userDetail.Status != proto.Undefined {
 			// A provider can carry Groups information even for an non existing-user
 			if userDetail.Provider.GroupAuthority {
-				response.User.Groups = append(response.User.Groups, userDetail.Translated.Groups...)
+				response.Groups = append(response.Groups, userDetail.Translated.Groups...)
 			}
 		}
+		// If undefined or notFound, userDetails will have empty array
+		response.Emails = append(response.Emails, userDetail.Emails...)
+		response.CommonNames = append(response.CommonNames, userDetail.CommonNames...)
 		if detailed {
 			response.Details = append(response.Details, *userDetail)
 		}

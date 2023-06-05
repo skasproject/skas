@@ -25,6 +25,7 @@ data:
           identity:
             disabled: {{ .Values.skStatic.exposure.internal.services.identity.disabled }}
             clients: {{ .Values.skStatic.exposure.internal.services.identity.clients | toJson }}
+            protected: {{ .Values.skStatic.exposure.internal.services.identity.protected }}
       {{- end }}
       {{- if .Values.skStatic.exposure.external.enabled}}
       - port: {{ .Values.skStatic.exposure.external.port }}
@@ -37,6 +38,7 @@ data:
           identity:
             disabled: {{ .Values.skStatic.exposure.external.services.identity.disabled }}
             clients: {{ .Values.skStatic.exposure.external.services.identity.clients  | toJson }}
+            protected: {{ .Values.skStatic.exposure.external.services.identity.protected }}
       {{- end }}
 
 {{ end }}

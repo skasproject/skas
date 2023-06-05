@@ -146,20 +146,25 @@ skAuth:
         token:
           disabled: true
           clients: [] # Fill to secure
+          protected: false
         identity:
           disabled: true
           clients: [] # Fill to secure
+          protected: false
         login:
           disabled: true
           clients: [] # Fill to secure
+          protected: false
         passwordChange:
           disabled: true
           clients: [] # Fill to secure
+          protected: false
         kubeconfig:
           disabled: true
           clients: [] # Fill to secure
         k8sAuth:
           disabled: true
+          protected: false
     external:
       enabled: true
       port: 7110
@@ -168,20 +173,25 @@ skAuth:
         token:
           disabled: false
           clients: [] # Fill to secure
+          protected: true
         identity:
           disabled: false
           clients: [] # Fill to secure
+          protected: true
         login:
           disabled: false
           clients: [] # Fill to secure
+          protected: true
         passwordChange:
           disabled: false
           clients: [] # Fill to secure
+          protected: true
         kubeconfig:
           disabled: false
           clients: [] # Fill to secure
         k8sAuth:
           disabled: false
+          protected: true
       ingress:
         enabled: true
         host:
@@ -304,7 +314,10 @@ skMerge:
 
   # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
   # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
-  # In such case, a Client list must be provided to control access. And ssl: true is strongly recommended.
+  # In such case:
+  # - A Client list should be provided to control access.
+  # - ssl: true is strongly recommended.
+  # - And protection against BFA should be activated (protected: true)
   exposure:
     internal:
       enabled: true
@@ -313,9 +326,11 @@ skMerge:
         identity:
           disabled: false
           clients: []
+          protected: false
         passwordChange:
           disabled: false
           clients: []
+          protected: false
     external:
       enabled: false
       port: 7111
@@ -324,9 +339,11 @@ skMerge:
         identity:
           disabled: false
           clients: [] # Must be completed
+          protected: true
         passwordChange:
           disabled: false
           clients: [] # Must be completed
+          protected: true
       ingress:
         enabled: false
         host:
@@ -386,7 +403,10 @@ skCrd:
 
   # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
   # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
-  # In such case, a Client list must be provided to control access. And ssl: true is strongly recommended.
+  # In such case:
+  # - A Client list should be provided to control access.
+  # - ssl: true is strongly recommended.
+  # - And protection against BFA should be activated (protected: true)
   exposure:
     internal:
       enabled: true
@@ -395,9 +415,11 @@ skCrd:
         identity:
           disabled: false
           clients: []
+          protected: false
         passwordChange:
           disabled: false
           clients: []
+          protected: false
     external:
       enabled: false
       port: 7112
@@ -406,9 +428,11 @@ skCrd:
         identity:
           disabled: false
           clients: [] # Must be completed
+          protected: true
         passwordChange:
           disabled: false
           clients: [] # Must be completed
+          protected: true
       ingress:
         enabled: false
         host:
@@ -456,7 +480,10 @@ skLdap:
 
   # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
   # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
-  # In such case, a Client list must be provided to control access. And ssl: true is strongly recommended.
+  # In such case:
+  # - A Client list should be provided to control access.
+  # - ssl: true is strongly recommended.
+  # - And protection against BFA should be activated (protected: true)
   exposure:
     internal:
       port: 7013
@@ -465,6 +492,7 @@ skLdap:
         identity:
           disabled: false
           clients: []
+          protected: false
     external:
       enabled: false
       port: 7113
@@ -473,6 +501,7 @@ skLdap:
         identity:
           disabled: false
           clients: [] # Must be completed
+          protected: true
       ingress:
         enabled: false
         host:
@@ -599,6 +628,7 @@ skStatic:
         identity:
           disabled: false
           clients: []
+          protected: false
     external:
       enabled: false
       port: 7114
@@ -607,6 +637,7 @@ skStatic:
         identity:
           disabled: false
           clients: [] # Must be completed
+          protected: true
       ingress:
         enabled: false
         host:
