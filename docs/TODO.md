@@ -20,6 +20,7 @@ DONE:
 
 ## All
 
+- A system to control password force (len, characters, etc...)
 - Add a group filtering system by provider.
 - Ensure copyright message in all relevant location
 - ? Switch to logrus, to have more level (i.e WARNING) ?
@@ -33,13 +34,17 @@ DONE:
 - Add debug/trace on skhttp client.
 - More info on version. cf dex
 - systematize global rootCaPath, rootCaData
-- Setup a system to force password change
 - Think about a system who can safely delegate group binding inside a namespace
 - Display client[].id on startup (Modify baseHandler by adding ClientManager ?)
-- Add a protection against Brut force Attack 
 - Check http handlers timeout (cf https://betterprogramming.pub/changes-in-go-1-20-b0a82d4b6c44, issue 6 )
 - Tracing (open telemetry ?)
 - Harden http server (https://adam-p.ca/blog/2022/01/golang-http-server-timeouts/, https://blog.cloudflare.com/exposing-go-on-the-internet/#timeouts)
+- Enrolment setup
+  - A system to force password change
+  - A small front to perform password change
+  - On user creation, generate a transient password, with a proposal for an email
+  - A link for password reset
+
 
 DONE:
 
@@ -61,6 +66,7 @@ DONE:
     And one intended to be accessed externally, with default config to be closed.
 - Refactor the provider configuration. To ease helm chart usage. (May be related to domain)
 - Rename Identity.UserDetail.ProviderSpec to Identity.UserDetail.Provider
+- Add a protection against Brut force Attack
 
 
 ## sk-static

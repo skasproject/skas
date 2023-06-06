@@ -60,7 +60,7 @@ var PasswordCmd = &cobra.Command{
 			os.Exit(4)
 		}
 		switch resp.Status {
-		case proto.Done:
+		case proto.PasswordChanged:
 			fmt.Printf("Password has been changed sucessfully.\n")
 		case proto.InvalidOldPassword:
 			fmt.Printf("ERROR: Invalid old password\n")
@@ -70,7 +70,7 @@ var PasswordCmd = &cobra.Command{
 			fmt.Printf("SORRY: Your password can't be changed by this tool.\n")
 		case proto.UnknownProvider:
 			fmt.Printf("ERROR: Internal system error (Unknown provider '%s')\n", passwordChangeRequest.Provider)
-		case proto.UnknownUser:
+		case proto.UserNotFound:
 			fmt.Printf("ERROR:Internal system error (Unknown user '%s')\n", passwordChangeRequest.Login)
 		default:
 			fmt.Printf("Internal system error (Unknown status '%s')\n", resp.Status)
