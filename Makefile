@@ -2,8 +2,8 @@
 # Image URL to use all building/pushing image targets
 DOCKER_IMG := ghcr.io/skasproject/skas
 
-DOCKER_TAG := 0.2.0
-VERSION ?= 0.2.0
+DOCKER_TAG := 0.2.1
+VERSION ?= 0.2.1
 
 # To authenticate for pushing in github repo:
 # echo $GITHUB_TOKEN | docker login ghcr.io -u $USER_NAME --password-stdin
@@ -14,7 +14,6 @@ VERSION ?= 0.2.0
 # ? What is your preferred protocol for Git operations? HTTPS
 # ? Authenticate Git with your GitHub credentials? Yes
 # ? How would you like to authenticate GitHub CLI? Login with a web browser
-
 
 BUILDX_CACHE=/tmp/docker_cache
 

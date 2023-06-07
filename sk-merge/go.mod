@@ -1,12 +1,12 @@
 module skas/sk-merge
 
-replace skas/sk-common v0.2.0 => ../sk-common
+replace skas/sk-common v0.2.1 => ../sk-common
 
 require (
 	github.com/go-logr/logr v1.2.3
 	github.com/pior/runnable v0.11.0
 	github.com/spf13/pflag v1.0.5
-	skas/sk-common v0.2.0
+	skas/sk-common v0.2.1
 )
 
 require (

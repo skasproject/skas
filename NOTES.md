@@ -1,11 +1,11 @@
 
 # Test docker image
 
-docker run -v $(pwd)/sk-static:/config -p 7010:7010 ghcr.io/skasproject/skas:0.2.0 /sk-static --configFile config/config.yaml --usersFile config/users.yaml --bindAddr ":7010"
+docker run -v $(pwd)/sk-static:/config -p 7010:7010 ghcr.io/skasproject/skas:0.2.1 /sk-static --configFile config/config.yaml --usersFile config/users.yaml --bindAddr ":7010"
 
-docker run -v $(pwd)/sk-ldap:/config -p 7011:7011 ghcr.io/skasproject/skas:0.2.0 /sk-ldap --configFile config/sampleconfigs/config-ldap-ops.yaml  --bindAddr ":7011"
+docker run -v $(pwd)/sk-ldap:/config -p 7011:7011 ghcr.io/skasproject/skas:0.2.1 /sk-ldap --configFile config/sampleconfigs/config-ldap-ops.yaml  --bindAddr ":7011"
 
-docker run -v $(pwd)/sk-crd:/config -p 7012:7012 --env KUBECONFIG=config/tmp/kube.kspray1.scw01.yaml ghcr.io/skasproject/skas:0.2.0 /sk-crd --configFile config/config.yaml  --bindAddr ":7012"
+docker run -v $(pwd)/sk-crd:/config -p 7012:7012 --env KUBECONFIG=config/tmp/kube.kspray1.scw01.yaml ghcr.io/skasproject/skas:0.2.1 /sk-crd --configFile config/config.yaml  --bindAddr ":7012"
 
 
 

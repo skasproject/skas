@@ -2,7 +2,7 @@ module skas/sk-auth
 
 go 1.19
 
-replace skas/sk-common v0.2.0 => ../sk-common
+replace skas/sk-common v0.2.1 => ../sk-common
 
 require (
 	github.com/bombsimon/logrusr/v4 v4.0.0
@@ -14,7 +14,7 @@ require (
 	k8s.io/apimachinery v0.26.1
 	k8s.io/client-go v0.26.1
 	sigs.k8s.io/controller-runtime v0.14.4
-	skas/sk-common v0.2.0
+	skas/sk-common v0.2.1
 )
 
 require (
