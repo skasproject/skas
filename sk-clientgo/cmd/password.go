@@ -46,12 +46,14 @@ var PasswordCmd = &cobra.Command{
 				os.Exit(2)
 			}
 		}
+
+		newPasswordHash := utils.Hash(newPassword)
 		passwordChangeRequest := &proto.PasswordChangeRequest{
-			ClientAuth:  client.GetClientAuth(),
-			Provider:    tokenBag.Authority,
-			Login:       tokenBag.User.Login,
-			OldPassword: oldPassword,
-			NewPassword: newPassword,
+			ClientAuth:      client.GetClientAuth(),
+			Provider:        tokenBag.Authority,
+			Login:           tokenBag.User.Login,
+			OldPassword:     oldPassword,
+			NewPasswordHash: newPasswordHash,
 		}
 		resp := proto.PasswordChangeResponse{}
 		err = client.Do(proto.PasswordChangeMeta, passwordChangeRequest, &resp, nil)

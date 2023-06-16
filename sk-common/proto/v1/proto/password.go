@@ -16,11 +16,12 @@ var PasswordChangeMeta = &RequestMeta{
 var _ RequestPayload = &PasswordChangeRequest{}
 
 type PasswordChangeRequest struct {
-	ClientAuth  ClientAuth `json:"clientAuth"`
-	Provider    string     `json:"provider"`
-	Login       string     `json:"login"`
-	OldPassword string     `json:"oldPassword"`
-	NewPassword string     `json:"newPassword"`
+	ClientAuth      ClientAuth `json:"clientAuth"`
+	Provider        string     `json:"provider"`
+	Login           string     `json:"login"`
+	OldPassword     string     `json:"oldPassword"`
+	NewPassword     string     `json:"newPassword,omitempty"` // Not used anymore.
+	NewPasswordHash string     `json:"newPasswordHash"`
 }
 
 var _ ResponsePayload = &PasswordChangeResponse{}
