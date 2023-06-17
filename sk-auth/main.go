@@ -40,7 +40,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	config.Log.Info("sk-auth start", "version", config.Version, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.Token.StorageType)
+	config.Log.Info("sk-auth start", "version", config.Version, "build", config.BuildTs, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.Token.StorageType)
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager

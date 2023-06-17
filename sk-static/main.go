@@ -45,7 +45,7 @@ func main() {
 	}
 	runnableMgr.Add(watcher)
 	content := watcher.Get().(*users.Content)
-	config.Log.Info("sk-static start", "version", config.Version, "nbUsers", len(content.UserByLogin), "nbrGroupBindings", content.GroupBindingCount, "logLevel", config.Conf.Log.Level)
+	config.Log.Info("sk-static start", "version", config.Version, "build", config.BuildTs, "nbUsers", len(content.UserByLogin), "nbrGroupBindings", content.GroupBindingCount, "logLevel", config.Conf.Log.Level)
 
 	identityGetter := identitygetter.New(watcher, config.Log.WithName("staticProvider"))
 

@@ -34,7 +34,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	config.Log.Info("sk-crd start", "userDbNamespace", config.Conf.Namespace, "version", config.Version, "logLevel", config.Conf.Log.Level)
+	config.Log.Info("sk-crd start", "userDbNamespace", config.Conf.Namespace, "version", config.Version, "build", config.BuildTs, "logLevel", config.Conf.Log.Level)
 
 	//config.Config.Log.V(0).Info("Log V0")
 	//config.Config.Log.V(1).Info("Log V1")
