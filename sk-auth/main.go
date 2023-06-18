@@ -168,6 +168,17 @@ func main() {
 		} else {
 			config.Log.Info("'identity' service disabled")
 		}
+		// ---------------------------------------------------- PasswordStrength service
+		if !serverConfig.Services.PasswordStrength.Disabled {
+			hdl := &handlers.PasswordStrengthHandler{
+				ClientManager: clientauth.New(serverConfig.Services.Kubeconfig.Clients, false),
+			}
+			server.AddHandler(proto.PasswordStrengthMeta, hdl)
+			config.Log.Info("passwordStrength config", "forbidCommon", config.Conf.PasswordStrength.ForbidCommon, "minimumScore", config.Conf.PasswordStrength.MinimumScore)
+		} else {
+			config.Log.Info("'passwordStrength' service disabled")
+		}
+		// -----------------------------------------------------------------------------------
 		if config.Conf.Token.StorageType == "memory" {
 			runnableMgr.Add(server)
 		} else {

@@ -137,6 +137,10 @@ skAuth:
   #      cpu: 100m
   #      memory: 100Mi
 
+  # Define password requirement
+  passwordStrength:
+    forbidCommon: true    # Test against lists of common password
+    minimumScore: 3       # From 0 (Accept anything) to 4
 
   exposure:
     internal:

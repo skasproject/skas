@@ -93,6 +93,9 @@ func Setup() error {
 		if srv.Services.Kubeconfig.Protected {
 			return fmt.Errorf("server[%d]: 'kubeconfig service can't be protected", idx)
 		}
+		if srv.Services.PasswordStrength.Protected {
+			return fmt.Errorf("server[%d]: 'passwordStrength service can't be protected", idx)
+		}
 	}
 	if serverWithKubeconfigCount > 0 {
 		err = initKubeconfig(&Conf.Kubeconfig)

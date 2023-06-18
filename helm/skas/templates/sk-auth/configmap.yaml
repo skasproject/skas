@@ -20,6 +20,9 @@ data:
     probeAddr: ":{{ .Values.skAuth.probe.port }}"
     {{- end }}
     adminGroup: {{ .Values.skAuth.adminGroup }}
+    passwordStrength:
+      forbidCommon: {{ .Values.skAuth.passwordStrength.forbidCommon }}
+      minimumScore: {{ .Values.skAuth.passwordStrength.minimumScore }}
     servers:
       {{- if .Values.skAuth.exposure.internal.enabled}}
       - port: {{ .Values.skAuth.exposure.internal.port }}

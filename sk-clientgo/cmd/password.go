@@ -46,7 +46,11 @@ var PasswordCmd = &cobra.Command{
 				os.Exit(2)
 			}
 		}
-
+		acceptable := utils.PasswordCheck(client, newPassword, &tokenBag.User, []string{oldPassword})
+		if !acceptable {
+			fmt.Printf("Unsatisfactory password strength!\n")
+			os.Exit(2)
+		}
 		newPasswordHash := utils.Hash(newPassword)
 		passwordChangeRequest := &proto.PasswordChangeRequest{
 			ClientAuth:      client.GetClientAuth(),

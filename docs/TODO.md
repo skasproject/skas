@@ -22,6 +22,7 @@ DONE:
 
 - A system to control password force (len, characters, etc...) (cf:https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10-million-password-list-top-100000.txt)
 - Forward providers error up to client (ex: invalid NewPasswordHash on change password)
+- Switch to a full REST api for user and groupbindings (And tokens list/delete)
 - Add a group filtering system by provider.
 - Ensure copyright message in all relevant location
 - ? Switch to logrus, to have more level (i.e WARNING) ?

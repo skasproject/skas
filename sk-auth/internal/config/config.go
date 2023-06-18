@@ -23,25 +23,32 @@ type Token struct {
 	LastHitStep       int            `yaml:"lastHitStep"`       // When tokenStorage==crd, the max difference between reality and what is stored in API Server. In per mille of InactivityTimeout. Aim is to avoid API server overloading
 }
 
+type PasswordStrength struct {
+	ForbidCommon bool `yaml:"forbidCommon"`
+	MinimumScore int  `yaml:"minimumScore"`
+}
+
 type AuthServerConfig struct {
 	cconfig.SkServerConfig `yaml:",inline"`
 	Services               struct {
-		Token          cconfig.ServiceConfig `yaml:"token"`
-		Identity       cconfig.ServiceConfig `yaml:"identity"`
-		Login          cconfig.ServiceConfig `yaml:"login"`
-		K8sAuth        cconfig.ServiceConfig `yaml:"k8sAuth"`
-		PasswordChange cconfig.ServiceConfig `yaml:"passwordChange"`
-		Kubeconfig     cconfig.ServiceConfig `yaml:"kubeconfig"`
+		Token            cconfig.ServiceConfig `yaml:"token"`
+		Identity         cconfig.ServiceConfig `yaml:"identity"`
+		Login            cconfig.ServiceConfig `yaml:"login"`
+		K8sAuth          cconfig.ServiceConfig `yaml:"k8sAuth"`
+		PasswordChange   cconfig.ServiceConfig `yaml:"passwordChange"`
+		Kubeconfig       cconfig.ServiceConfig `yaml:"kubeconfig"`
+		PasswordStrength cconfig.ServiceConfig `yaml:"passwordStrength"`
 	} `yaml:"services"`
 }
 
 type Config struct {
-	Log        misc.LogConfig         `yaml:"log"`
-	Servers    []AuthServerConfig     `yaml:"servers"`
-	Token      Token                  `yaml:"token"`
-	Kubeconfig proto.KubeconfigConfig `yaml:"kubeconfig"`
-	Provider   skclient.Config        `yaml:"provider"`
-	AdminGroup string                 `yaml:"adminGroup"`
-	MetricAddr string                 `yaml:"metricAddr"`
-	ProbeAddr  string                 `yaml:"probeAddr"`
+	Log              misc.LogConfig         `yaml:"log"`
+	Servers          []AuthServerConfig     `yaml:"servers"`
+	Token            Token                  `yaml:"token"`
+	Kubeconfig       proto.KubeconfigConfig `yaml:"kubeconfig"`
+	Provider         skclient.Config        `yaml:"provider"`
+	AdminGroup       string                 `yaml:"adminGroup"`
+	MetricAddr       string                 `yaml:"metricAddr"`
+	ProbeAddr        string                 `yaml:"probeAddr"`
+	PasswordStrength PasswordStrength       `yaml:"passwordStrength"`
 }
