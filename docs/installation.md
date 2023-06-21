@@ -1,5 +1,5 @@
 
-# Getting started
+# Installation
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -13,8 +13,9 @@
   - [No Certificate Manager](#no-certificate-manager)
 - [Kubernetes API Server configuration (Authentication webhook)](#kubernetes-api-server-configuration-authentication-webhook)
   - [Manual configuration](#manual-configuration)
-  - [Using an Ansible playbook](#using-an-ansible-playbook)
+  - [Using an Ansible role](#using-an-ansible-role)
   - [Troubleshooting](#troubleshooting)
+- [Kubectl extension installation.](#kubectl-extension-installation)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -31,7 +32,9 @@ The following is assumed
 
 First create a dedicated namespace:
 
+```
 kubectl create namespace skas-system
+```
 
 Then, you can deploy the helm chart:
 
@@ -103,13 +106,13 @@ Please note that the ingress is configured with `ssl-passthroughs`. The underlyi
 
 ### No Certificate Manager
 
-If you do not want to use Certificate Manager, launch the helm chart without `clusterIssuer` definition. 
+If you do not use Certificate Manager, launch the helm chart without `clusterIssuer` definition. 
 Then, the secret hosting the certificate for the services will be missing and will need to be created it manually. (The 'skas' pod will fail)
 
 - Prepare PEM encoded self-signed certificate and key files.The certificate must be valid for the following hostnames:
   - `skas-auth`
-  - `skas-auth.skas-system.svc`                                                                                                                                │
-  - `localhost`                                                                                                                                                 │
+  - `skas-auth.skas-system.svc`
+  - `localhost`
   - `skas.ingress.mycluster.internal` (To be adjusted to your the effective host name provided above)
 - Base64-encode the CA cert (in its PEM format)
 - Create Secret in `skas-system` namespace as follows:
@@ -282,5 +285,36 @@ $ curl -L https://github.com/skasproject/skas/releases/download/0.2.0/kubectl-sk
 $ chmod 755 kubectl-sk
 $ sudo mv kubectl-sk /usr/local/bin
 ```
+
+You can now check the extension is effective
+
+```
+$ kubectl sk
+A kubectl plugin for Kubernetes authentication
+
+Usage:
+kubectl-sk [command]
+
+Available Commands:
+completion  Generate the autocompletion script for the specified shell
+hash        Provided password hash, for use in config file
+help        Help about any command
+init        Add a new context in Kubeconfig file for skas access
+login       Logout and get a new token
+logout      Clear local token
+password    Change current password
+user        Skas user management
+version     display skas client version
+whoami      Display current logged user, if any
+
+Flags:
+-h, --help                help for kubectl-sk
+--kubeconfig string   kubeconfig file path. Override default configuration.
+--logLevel string     Log level (default "INFO")
+--logMode string      Log mode: 'dev' or 'json' (default "dev")
+
+Use "kubectl-sk [command] --help" for more information about a command.
+```
+
 
 SKAS is now fully installed.  

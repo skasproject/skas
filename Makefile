@@ -74,6 +74,7 @@ generate:	## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject
 .PHONY: doc
 doc: ## Generate doc index
 	doctoc docs/installation.md --github --title '## Index'
+	doctoc docs/usage.md --github --title '## Index'
 
 # ----------------------------------------------------------------------Docker local config
 

@@ -12,16 +12,17 @@ Its main features are:
 - Allow centralized user management in a multi-cluster environment.
 - Allow delegation of the management for a subset of Users and/or Groups.
 - Provide flexible architecture to handle sophisticated user management in a complex environment.
+- Can use a ReadOnly access to the LDAP/AD server(s). User profile can then be enriched with local information.
 
-To go forward:
+To move forward:
 
 - [Installation](docs/installation.md)
-- [Initial usage](docs/initial_usage.md)
+- [usage](docs/usage.md)
 - [Configure an LDAP server]()
 - [Add a second LDAP Server]()
 - [Delegate user database administration]()
 - [Centralized user management in a multi-cluster context]() 
-- [DEX integration. Argocd as an example]()
+- [DEX integration with Argocd as an example]()
 
 
 
