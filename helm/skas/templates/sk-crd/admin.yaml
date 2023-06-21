@@ -1,0 +1,27 @@
+
+{{ with .Values.skCrd.initialUser }}
+---
+apiVersion: userdb.skasproject.io/v1alpha1
+kind: User
+metadata:
+  name: {{ .login }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+{{- with .commonNames }}
+  commonNames:
+  {{- toYaml . | nindent 4 }}
+{{- end }}
+  passwordHash: {{ .passwordHash }}
+
+
+---
+apiVersion: userdb.skasproject.io/v1alpha1
+kind: GroupBinding
+metadata:
+  name: {{ (printf "%s-%s" .login $.Values.skAuth.adminGroup) | replace ":" "-" }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  user: {{ .login }}
+  group: {{ $.Values.skAuth.adminGroup}}
+
+{{- end }}

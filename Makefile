@@ -71,6 +71,10 @@ generate:	## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject
 	cd sk-auth && make generate
 	cd sk-common && make generate
 
+.PHONY: doc
+doc: ## Generate doc index
+	doctoc docs/installation.md --github --title '## Index'
+
 # ----------------------------------------------------------------------Docker local config
 
 .PHONY: docker-set-multiplatform-builder

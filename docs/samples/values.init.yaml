@@ -1,0 +1,15 @@
+
+
+clusterIssuer: cluster-issuer1
+
+skAuth:
+  exposure:
+    external:
+      ingress:
+        host: skas.ingress.mycluster.internal
+  kubeconfig:
+    context:
+      name: skas@mycluster.internal
+    cluster:
+      apiServerUrl: https://kubernetes.ingress.mycluster.internal
+

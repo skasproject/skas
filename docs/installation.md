@@ -1,0 +1,286 @@
+
+# Getting started
+
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Index
+
+- [Skas server deployment.](#skas-server-deployment)
+  - [Install helm chart](#install-helm-chart)
+  - [Note on 'skAuth.kubeconfig....' variables:](#note-on-skauthkubeconfig-variables)
+  - [Use another ingress controller instead of nginx](#use-another-ingress-controller-instead-of-nginx)
+  - [No Certificate Manager](#no-certificate-manager)
+- [Kubernetes API Server configuration (Authentication webhook)](#kubernetes-api-server-configuration-authentication-webhook)
+  - [Manual configuration](#manual-configuration)
+  - [Using an Ansible playbook](#using-an-ansible-playbook)
+  - [Troubleshooting](#troubleshooting)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Skas server deployment.
+
+### Install helm chart
+
+The simplest and recommended method to install the skas server is to use the provided helm chart.
+
+The following is assumed
+
+- Certificate manager is deployed in the target cluster and a ClusterIssuer is defined.
+- The nginx ingress controller is deployed in the target cluster
+
+First create a dedicated namespace:
+
+kubectl create namespace skas-system
+
+Then, you can deploy the helm chart:
+
+```
+$ helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.0/skas-0.2.0.tgz \
+    --set clusterIssuer=your-cluster-issuer \
+    --set skAuth.exposure.external.ingress.host=skas.ingress.mycluster.internal
+    --set skAuth.kubeconfig.context.name=skas@mycluster.internal
+    --set skAuth.kubeconfig.cluster.apiServerUrl=https://kubernetes.ingress.mycluster.internal
+```
+
+With the following values, adjusted to your context:
+
+- `clusterIssuer`: The Certificate Manager ClusterIssuer used to generate the certificate for all ingress access.
+- `skAuth.exposure.external.ingress.host`: The ingress hostname used to access the SKAS service from outside of the cluster.
+- `skAuth.kubeconfig.context.name`: The context name which will be used in the local config file.
+- `skAuth.kubeconfig.cluster.apiServerUrl`: The API server URL, from outside of the cluster.
+
+As an alternate approach, you can create a local values yaml file:
+
+```
+$ cat >./values.init.yaml <<EOF
+clusterIssuer: your-cluster-issuer
+
+skAuth:
+  exposure:
+    external:
+      ingress:
+        host: skas.ingress.mycluster.internal
+  kubeconfig:
+    context:
+      name: skas@mycluster.internal
+    cluster:
+      apiServerUrl: https://kubernetes.ingress.mycluster.internal
+EOF
+```
+
+And issue the helm command as:
+
+```
+$ helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz --values ./values.init.yaml
+```
+
+Then, if the installation is successful, you should be able to see the 'skas' server pod:
+
+```
+$ kubectl -n skas-system get pods
+NAME                    READY   STATUS    RESTARTS   AGE
+skas-746c54dc75-v8v2f   3/3     Running   0          25s
+```
+
+### Note on 'skAuth.kubeconfig....' variables:
+
+For accessing a kubernetes cluster with kubectl, you need a configuration file (By default in <homedir>/.kube/config).
+As this file can host several context of connexion, its setup can be cumbersome.
+
+SKAS provide a mechanism to create or update this user's configuration. The two last variable are relevant to this mechanism, and, as such, not strictly required.
+
+- The `...context.name` variable is just a name. You can set whatever you want to identify the target cluster.
+- The `...cluster.apiServerUrl` can be copied from an existing 'config' file.
+
+### Use another ingress controller instead of nginx
+
+If using another ingress controller, launch the helm chart with `--set ingressClass=xxxx`. As the value will not be 'nginx', no ingress resource will be 
+created by the helm chart. It is up to you to setup your own ingress. 
+([Here](https://github.com/skasproject/skas/blob/main/helm/skas/templates/sk-auth/exposure/ingress.yaml) is the nginx definition, as a starting point.)
+
+Please note that the ingress is configured with `ssl-passthroughs`. The underlying service will handle SSL.
+
+### No Certificate Manager
+
+If you do not want to use Certificate Manager, launch the helm chart without `clusterIssuer` definition. 
+Then, the secret hosting the certificate for the services will be missing and will need to be created it manually. (The 'skas' pod will fail)
+
+- Prepare PEM encoded self-signed certificate and key files.The certificate must be valid for the following hostnames:
+  - `skas-auth`
+  - `skas-auth.skas-system.svc`                                                                                                                                │
+  - `localhost`                                                                                                                                                 │
+  - `skas.ingress.mycluster.internal` (To be adjusted to your the effective host name provided above)
+- Base64-encode the CA cert (in its PEM format)
+- Create Secret in `skas-system` namespace as follows:
+
+```
+$ kubectl -n skas-system create secret tls skas-auth-cert --cert=<CERTIFICATE FILE> --key=<KEY FILE>
+```
+
+Then, the `skas` pod should start successfully.
+
+## Kubernetes API Server configuration (Authentication webhook)
+
+### Manual configuration
+
+The Authentication Webhook of the API server should be configured to reach our authentication module.
+
+Depending of your installation, the directory mentioned below may differs.
+
+Also, this procedure assume the API Server is managed by the Kubelet, as a static Pod. If your API Server is managed by another system (i.e. systemd), you should adapt accordingly.
+
+**The following operations must be performed on all nodes hosting an instance of the Kubernetes API server**. Typically, all nodes of the control plane.
+
+Also, these operations require `root` access on these node.
+
+First, create a folder dedicated to `skas`:
+
+```
+# mkdir -p /etc/kubernetes/skas
+```
+
+Then, create the Authentication webhook configuration file in this folder (You can cut/paste the following):
+
+```
+# cat >/etc/kubernetes/skas/hookconfig.yaml <<EOF
+apiVersion: v1
+kind: Config
+# clusters refers to the remote service.
+clusters:
+  - name: sk-auth
+    cluster:
+      certificate-authority: /etc/kubernetes/skas/skas_auth_ca.crt        # CA for verifying the remote service.
+      server: https://sk-auth.skas-system.svc:7014/v1/tokenReview # URL of remote service to query. Must use 'https'.
+
+# users refers to the API server's webhook configuration.
+users:
+  - name: skasapisrv
+
+# kubeconfig files require a context. Provide one for the API server.
+current-context: authwebhook
+contexts:
+- context:
+    cluster: sk-auth
+    user: skasapisrv
+  name: authwebhook
+EOF
+```
+
+As you can see in this file, there is a reference to the certificate authority of the authentication webhook service. So, you must fetch it and copy to this location:
+
+> NB: It is assumed `kubectl` command was installed in this node.
+
+```
+kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}' | base64 -d >/etc/kubernetes/skas/skas_auth_ca.crt  
+```
+
+```
+ls -l /etc/kubernetes/skas
+total 8
+-rw-r--r--. 1 root root  620 May 11 12:36 hookconfig.yaml
+-rw-r--r--. 1 root root 1220 May 11 12:58 skas_auth_ca.crt
+```
+
+Now, you must edit the API server manifest file (`/etc/kubernetes/manifests/kube-apiserver.yaml`) to load the `hookconfig.yaml` file:
+
+```
+# vi /etc/kubernetes/manifests/kube-apiserver.yaml
+```
+
+First step is to add two flags to the kube-apiserver command line:
+
+- `--authentication-token-webhook-cache-ttl`: How long to cache authentication decisions.
+- `--authentication-token-webhook-config-file`: The path to the configuration file we just setup
+
+Here is what it should look like:
+
+```
+...
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+    - --authentication-token-webhook-cache-ttl=30s
+    - --authentication-token-webhook-config-file=/etc/kubernetes/skas/hookconfig.yaml
+    - --advertise-address=192.168.33.16
+    - --allow-privileged=true
+    - --anonymous-auth=True
+...
+```
+
+And the second step will consists to map the node folder `/etc/kubernetes/skas` inside the API server pod, under the same path.
+This is required as these files are accessed in the API Server container context.
+
+For this, a new `volumeMounts` entry should be added:
+
+```
+    volumeMounts:
+    - mountPath: /etc/kubernetes/skas
+      name: skas-config
+    ....
+```
+
+And a corresponding new `volumes`  entry:
+
+```
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/skas
+      type: ""
+    name: skas-config
+  ....
+```
+
+And another configuration parameter must be defined. The `dnsPolicy` must be set to `ClusterFirstWithHostNet`. Ensure such key does not already exists and add it:
+
+```
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet 
+```
+
+This complete the API Server configuration. Saving the edited file will trigger a restart of the API Server.
+
+For more information, the kubernetes documentation on this topic is [here](https://kubernetes.io/docs/reference/access-authn-authz/webhook/)
+
+**Remember: Perform this on all nodes hosting an instance of API Server.**
+
+### Using an Ansible role
+
+If ansible is one of your favorite tool, you may automate these tedious tasks by using an ansible role.
+
+You will find a good starting point [here](https://github.com/ezcluster/ezck8s/tree/master/k8s/skas/roles/skas-apiserver)
+
+As the manual installation, you may need to modify it accordingly to you local context.
+
+### Troubleshooting
+
+A small typo or incoherence in configuration may lead to API Server unable to restart.
+If this is the case, you may have a look in the logs of the Kubelet (Remember, as a static pod, the API Server is managed by the Kubelet) in order to figure out what'is happen.
+
+If you made a modification in this the `hookconfig.yaml` file, or if you update the CA file, will need to restart the API Server to reload the configuration.
+But, the API Server is a 'static pod', a pod managed by the kubelet. As such, it can't be restarted as a standard pod.
+The simplest way to trigger its effective reload is to modify the `/etc/kubernetes/manifests/kube-apiserver.yaml` file.
+And you will need a real modification. Touch may not be enough. A common trick here is to modify slightly `the authentication-token-webhook-cache-ttl` flag value.
+
+## Kubectl extension installation.
+
+SKAS provide a CLI interface as an extension of kubectl
+
+Installation is straightforward:
+
+- Download the executable for your OS/Architecture
+- Name it kubectl-sk (To comply to the naming convention of kubectl extension)
+- Make it executable
+- Move it to a folder accessed by your PATH.
+
+For example:
+
+```
+$ cd /tmp
+$ curl -L https://github.com/skasproject/skas/releases/download/0.2.0/kubectl-sk_0.2.0_darwin_amd64 -o ./kubectl-sk
+$ chmod 755 kubectl-sk
+$ sudo mv kubectl-sk /usr/local/bin
+```
+
+SKAS is now fully installed.  
