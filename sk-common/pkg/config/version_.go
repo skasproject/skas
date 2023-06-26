@@ -3,5 +3,5 @@
 package config
 
 var Version = "0.2.1"
-var BuildTs = "20230625.194345"
+var BuildTs = "20230626.102707"
 

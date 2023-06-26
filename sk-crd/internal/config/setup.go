@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/pflag"
 	"os"
+	"skas/sk-common/pkg/config"
 	"skas/sk-common/pkg/misc"
 )
 
@@ -28,7 +29,7 @@ func Setup() error {
 
 	// ------------------------------------ Version display
 	if version {
-		fmt.Printf("%s\n", Version)
+		fmt.Printf("%s\n", config.Version)
 		os.Exit(0)
 	}
 

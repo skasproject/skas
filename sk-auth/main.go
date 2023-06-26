@@ -19,6 +19,7 @@ import (
 	"skas/sk-auth/internal/tokenstore/memory"
 	"skas/sk-auth/k8sapis/session/v1alpha1"
 	"skas/sk-common/pkg/clientauth"
+	cconfig "skas/sk-common/pkg/config"
 	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
@@ -40,7 +41,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	config.Log.Info("sk-auth start", "version", config.Version, "build", config.BuildTs, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.Token.StorageType)
+	config.Log.Info("sk-auth start", "version", cconfig.Version, "build", cconfig.BuildTs, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.Token.StorageType)
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager

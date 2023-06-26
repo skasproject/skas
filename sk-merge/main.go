@@ -6,6 +6,7 @@ import (
 	"github.com/pior/runnable"
 	"os"
 	"skas/sk-common/pkg/clientauth"
+	cconfig "skas/sk-common/pkg/config"
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/pkg/skserver/protector"
@@ -21,7 +22,7 @@ func main() {
 		_, _ = fmt.Fprintf(os.Stderr, "Unable to load configuration: %v\n", err)
 		os.Exit(2)
 	}
-	config.Log.Info("sk-merge start", "version", config.Version, "build", config.BuildTs, "logLevel", config.Conf.Log.Level)
+	config.Log.Info("sk-merge start", "version", cconfig.Version, "build", cconfig.BuildTs, "logLevel", config.Conf.Log.Level)
 
 	// providerChain is based on http.client, which is thread safe. So, can be shared by all servers
 	providerChain, err := providerchain.New(config.Log.WithName("providerChain"))

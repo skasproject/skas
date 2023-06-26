@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"skas/sk-clientgo/internal/config"
+	"skas/sk-common/pkg/config"
 )
 
 var versionVarFlags struct {
