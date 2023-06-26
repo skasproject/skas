@@ -1,0 +1,27 @@
+{% if skas_clusterIssuer is defined %}
+clusterIssuer: {{ skas_clusterIssuer  }}
+{% endif %}
+
+
+skAuth:
+  exposure:
+    external:
+      ingress:
+{% if skas_ingress_nginx_host is defined %}
+        host: {{ skas_ingress_nginx_host }}
+{% else %}
+         host:
+{% endif %}
+  kubeconfig:
+    context:
+{% if skas_context is defined %}
+      name: {{ skas_context }}
+{% else %}
+      name:
+{% endif %}
+    cluster:
+{% if skas_api_server_url is defined %}
+      apiServerUrl: {{ skas_api_server_url }}
+{% else %}
+      apiServerUrl:
+{% endif %}

@@ -5,6 +5,9 @@ before:
     - sh -c "cd helm && rm -r dist"
     - sh -c "cd helm && helm package -d ./dist skas"
     - sh -c "cd helm && helm package -d ./dist skusers"
+    - sh -c "cd ansible/roles && tar cvzf ../../dist/skas-apiserver-role-{{ .Tag }}.tgz skas-apiserver/"
+    - sh -c "cd ansible/roles && tar cvzf ../../dist/skas-chart-role-{{ .Tag }}.tgz skas-chart/"
+    - sh -c "cd ansible/roles && tar cvzf ../../dist/skusers-role-{{ .Tag }}.tgz skusers/"
 builds:
   - id: sk-clientgo
     binary: kubectl-sk

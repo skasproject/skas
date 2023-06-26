@@ -1,0 +1,32 @@
+
+
+# ----------------------------------------- Helm chart removal
+-
+- name: Helm chart uninstall
+  block:
+
+  - name: Remove skas helm chart
+    shell: helm -n "{{ skas_namespace }}" uninstall {{ skas_helm_release }}
+    args:
+      chdir: /tmp
+    run_once: true
+
+#  - name: Remove skas helm chart
+#    kubernetes.core.helm:
+#      release_state: absent
+#      release_name: "{{ skas_helm_release }}"
+#      release_namespace: "{{ skas_namespace}}"
+#      create_namespace: false
+#      chart_ref: "{{ skas_helm_chart_url }}"
+#      values_files:
+#        - /tmp/skas_values.yaml
+
+  - name: Remove skas namespace
+    k8s:
+      state: absent
+      definition:
+        api_version: v1
+        kind: Namespace
+        metadata:
+          name: "{{ skas_namespace }}"
+  run_once: true

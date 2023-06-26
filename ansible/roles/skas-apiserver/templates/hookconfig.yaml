@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Config
+# clusters refers to the remote service.
+clusters:
+  - name: sk-auth
+    cluster:
+      certificate-authority: /etc/kubernetes/skas/skas_auth_ca.crt       # CA for verifying the remote service.
+      server: "{{skas_auth_webhook_url}}" # URL of remote service to query. Must use 'https'.
+
+# users refers to the API server's webhook configuration.
+users:
+  - name: skasapisrv
+
+# kubeconfig files require a context. Provide one for the API server.
+current-context: authwebhook
+contexts:
+- context:
+    cluster: sk-auth
+    user: skasapisrv
+  name: authwebhook

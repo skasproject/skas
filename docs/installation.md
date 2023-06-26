@@ -39,7 +39,7 @@ kubectl create namespace skas-system
 Then, you can deploy the helm chart:
 
 ```
-$ helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.0/skas-0.2.0.tgz \
+$ helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
     --set clusterIssuer=your-cluster-issuer \
     --set skAuth.exposure.external.ingress.host=skas.ingress.mycluster.internal
     --set skAuth.kubeconfig.context.name=skas@mycluster.internal
@@ -281,7 +281,7 @@ For example:
 
 ```
 $ cd /tmp
-$ curl -L https://github.com/skasproject/skas/releases/download/0.2.0/kubectl-sk_0.2.0_darwin_amd64 -o ./kubectl-sk
+$ curl -L https://github.com/skasproject/skas/releases/download/0.2.1/kubectl-sk_0.2.1_darwin_amd64 -o ./kubectl-sk
 $ chmod 755 kubectl-sk
 $ sudo mv kubectl-sk /usr/local/bin
 ```

@@ -6,5 +6,4 @@
 **/tmp
 .DS_Store
 **/.DS_Store
-/dist
 /helm/dist

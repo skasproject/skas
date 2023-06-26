@@ -53,8 +53,17 @@ docker: version ## Build and push skas image
 	$(DOCKER_BUILD) $(DOCKER_PUSH) -t $(DOCKER_IMG):$(DOCKER_TAG) -f Dockerfile .
 
 
+.PHONY: roles
+roles: ## Publish ansible roles in a public repo
+	cd ansible/roles && tar cvzf ../../dist/skas-apiserver-role-${VERSION}.tgz skas-apiserver/
+	cd ../warehouse && gh release upload --clobber $(VERSION) ../skas/dist/skas-apiserver-role-${VERSION}.tgz
+	cd ansible/roles && tar cvzf ../../dist/skas-chart-role-${VERSION}.tgz skas-chart/
+	cd ../warehouse && gh release upload --clobber $(VERSION) ../skas/dist/skas-chart-role-${VERSION}.tgz
+	cd ansible/roles && tar cvzf ../../dist/skusers-role-${VERSION}.tgz skusers/
+	cd ../warehouse && gh release upload --clobber $(VERSION) ../skas/dist/skusers-role-${VERSION}.tgz
+
 .PHONY: charts
-charts: ## Publish helm chart
+charts: ## Publish helm chart in a public repo (Not the main one)
 	cd helm && helm package -d ../dist skas
 	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/dist/skas-$(VERSION).tgz
 	cd helm && helm package -d ../dist skusers

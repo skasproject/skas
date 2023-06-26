@@ -1,0 +1,5 @@
+{% if skas_helm_values is defined %}
+{{ skas_helm_values | to_nice_yaml }}
+{% else %}
+{}
+{% endif %}

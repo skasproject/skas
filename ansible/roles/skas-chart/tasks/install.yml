@@ -1,0 +1,42 @@
+
+# ----------------------------------------- Deployment
+
+- name: Helm chart deployment
+  block:
+  - name: Create skas namespace
+    k8s:
+      state: present
+      definition:
+        api_version: v1
+        kind: Namespace
+        metadata:
+          name: "{{ skas_namespace }}"
+
+  - name: Setup values1 file
+    template:
+      src: "values1.yaml.j2"
+      dest: /tmp/skas_values1.yaml
+  - name: Setup values2 file
+    template:
+      src: "values2.yaml.j2"
+      dest: /tmp/skas_values2.yaml
+
+
+  # From https://docs.ansible.com/ansible/latest/collections/kubernetes/core/helm_module.html
+  # The default idempotency check can fail to report changes when release_state is set to present and chart_repo_url is defined. Install helm diff >= 3.4.1 for better results.
+  # So, we first download the chart localy
+
+  - name: Fetch the skas chart
+    ansible.builtin.get_url:
+      url: "{{ skas_helm_chart_url }}"
+      dest: /tmp/skas_chart.tgz
+
+  # We use shell helm as the kubernetes.core.helm module will not upgrade in most case
+  - name: Deploy skas helm chart
+    shell: helm -n "{{ skas_namespace }}" upgrade -i {{ skas_helm_release }} --values /tmp/skas_values1.yaml --values /tmp/skas_values2.yaml /tmp/skas_chart.tgz
+    args:
+      chdir: /tmp
+
+  run_once: true
+
+

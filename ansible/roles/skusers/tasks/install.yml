@@ -1,0 +1,21 @@
+
+# ----------------------------------------- Deployment
+
+
+- name: Setup value file
+  template:
+    src: "values.yaml.j2"
+    dest: /tmp/skas_users_values.yaml
+  run_once: true
+
+- name: Deploy skuser helm chart
+  kubernetes.core.helm:
+    release_state: present
+    release_name: "{{ skas_users_helm_release }}"
+    release_namespace: "{{ skas_namespace}}"
+    create_namespace: false
+    chart_ref: "{{ skas_users_helm_chart_url }}"
+    values_files:
+      - /tmp/skas_users_values.yaml
+  run_once: true
+
