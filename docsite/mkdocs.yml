@@ -1,0 +1,10 @@
+site_name: SKAS
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Test: menutest.md
+theme:
+  name: 'rtd-dropdown'
+  name: readthedocs
