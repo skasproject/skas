@@ -57,6 +57,7 @@ func New() (skclient.SkClient, error) {
 }
 
 func NewForInit(serverUrl string) (skclient.SkClient, error) {
+	groomFlags()
 	conf := &flags.server
 	if serverUrl != "" {
 		if conf.Url != "" {
