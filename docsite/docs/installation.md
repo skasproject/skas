@@ -7,7 +7,7 @@ The simplest and recommended method to install the skas server is to use the pro
 
 The following is assumed
 
-- Certificate manager is deployed in the target cluster and a `clusterIssuer` is defined.
+- Certificate manager is deployed in the target cluster and a `ClusterIssuer` is defined.
 - There is an nginx ingress controller deployed in the target cluster
 
 First create a dedicated namespace:
@@ -21,14 +21,14 @@ Then, you can deploy the helm chart:
 ```shell
 helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
     --set clusterIssuer=your-cluster-issuer \
-    --set skAuth.exposure.external.ingress.host=skas.ingress.mycluster.internal
-    --set skAuth.kubeconfig.context.name=skas@mycluster.internal
+    --set skAuth.exposure.external.ingress.host=skas.ingress.mycluster.internal \
+    --set skAuth.kubeconfig.context.name=skas@mycluster.internal \
     --set skAuth.kubeconfig.cluster.apiServerUrl=https://kubernetes.ingress.mycluster.internal
 ```
 
 With the following values, adjusted to your context:
 
-- `clusterIssuer`: The Certificate Manager `clusterIssuer` used to generate the certificate for all ingress access.
+- `clusterIssuer`: The Certificate Manager `ClusterIssuer` used to generate the certificate for all ingress access.
 - `skAuth.exposure.external.ingress.host`: The ingress hostname used to access the SKAS service from outside of the cluster. 
   You will also have to define this name in your DNS.
 
@@ -80,7 +80,7 @@ Please note that the ingress is configured with `ssl-passthroughs`. The underlyi
 
 ### No Certificate Manager
 
-If you do not use Certificate Manager, launch the helm chart without `clusterIssuer` definition. 
+If you do not use Certificate Manager, launch the helm chart without `ClusterIssuer` definition. 
 Then, the secret hosting the certificate for the services will be missing and will need to be created it manually. (The `skas` pod will fail)
 
 - Prepare PEM encoded self-signed certificate and key files.The certificate must be valid for the following hostnames:
@@ -103,7 +103,7 @@ The Authentication Webhook of the API server should be configured to reach our a
 
 ### Manual configuration
 
-Depending of your installation, the directory mentioned below may differs.
+Depending of your installation, the directory mentioned below may differs (For information, the clusters used for test and documentation are built with [kubespray](https://github.com/kubernetes-sigs/kubespray))
 
 Also, this procedure assume the API Server is managed by the Kubelet, as a static Pod. If your API Server is managed by another system (i.e. systemd), you should adapt accordingly.
 
@@ -226,9 +226,31 @@ For more information, the kubernetes documentation on this topic is [here](https
 
 If ansible is one of your favorite tool, you may automate these tedious tasks by using an ansible role.
 
-You will find a good starting point [here](https://github.com/skasproject/skas/releases/download/0.2.1/skas-apiserver-role-0.2.1.tgz)
+You will find such a role [here](https://github.com/skasproject/skas/releases/download/0.2.1/skas-apiserver-role-0.2.1.tgz)
 
 As the manual installation, you may need to modify it accordingly to you local context.
+
+To use it, we assume you have an ansible configuration with an inventory defining the target cluster. Then:
+
+- Download, and untar the role archive provided above in a folder which is part of the rolepath. 
+- create a playbook file, such as :
+
+```shell
+cat >./skas.yaml <<EOF
+- hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server
+  tags: [ "skas" ]
+  roles:
+  - skas-apiserver
+EOF
+```
+
+- Launch the playbook:
+
+```shell
+ansible-playbook ./skas.yaml
+```
+
+The playbook will perform all the steps described in the manual installation above. This will generate a restart of the API server.
 
 ### Troubleshooting
 
@@ -290,5 +312,4 @@ Flags:
 Use "kubectl-sk [command] --help" for more information about a command.
 ```
 
-
-SKAS is now fully installed.  
+SKAS is now fully installed. You can now move on initial configuration 

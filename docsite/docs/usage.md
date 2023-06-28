@@ -1,38 +1,61 @@
 
-# SKAS usage
+# Usage
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Index
+## Initial configuration
 
-  - [Kubernetes config file configuration.](#kubernetes-config-file-configuration)
-  - [Use default admin account](#use-default-admin-account)
-- [Getting started](#getting-started)
-  - [Initial local admin creation](#initial-local-admin-creation)
-  - [User context initialisation](#user-context-initialisation)
-- [Tricks: Another session](#tricks-another-session)
-- [Argo cd](#argo-cd)
-- [Services setup](#services-setup)
-  - [Prerequisite](#prerequisite)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## Kubernetes config file configuration.
+### Local client configuration
 
 It is assumed here than `kubectl` is installed. (If not, [see here](https://kubernetes.io/docs/tasks/tools/))
 
-It is also assumed the `kubectl-sk` CLI extension has been installed (If not, [see here](./installation.md#kubectl-extension-installation))
+It is also assumed the `kubectl-sk` CLI extension has been installed (If not, [see here](./installation.md#skas-cli-installation))
 
-For accessing a kubernetes cluster with kubectl, you need a configuration file (By default in <homedir>/.kube/config).
+For accessing a kubernetes cluster with kubectl, you need a configuration file (By default in `<homedir>/.kube/config`).
 
-SKAS provide a mechanism to create or update this user's configuration.
+SKAS provide a mechanism to create or update this user's configuration file.
 
 ```
 $ kubectl sk init https://skas.ingress.mycluster.internal
-Setup new context 'skas@mycluster.internal' in kubeconfig file '/Users/sa/.kube/config'
+Setup new context 'skas@mycluster.internal' in kubeconfig file '/Users/john/.kube/config'
 ```
 
-## Use default admin account 
+You can validate this new context is now the current one:
+
+```shell
+kubectl config current-context
+skas@mycluster.internal
+```
+
+#### Got a certificate issue ?
+
+If your system is not configured with the CA which has been used to certify SKAS (cf the `clusterIssuer` parameter on initial installation), you will encounter an error like:
+
+```shell
+ERRO[0000] error on GET kubeconfig from remote server  
+ error="error on http connection: Get \"https://skas.ingress.mycluster.internal/v1/kubeconfig\": 
+ tls: failed to verify certificate: x509: certificate signed by unknown authority"
+```
+
+You may get ride of this error by providing the root CA certificate as a file:
+
+```shell
+kubectl sk init https://skas.ingress.mycluster.internal --authRootCaPath=./CA.crt
+```
+
+> _A CA certificate file is a text file which begin by `-----BEGIN CERTIFICATE-----` and ends with `-----END CERTIFICATE-----`. 
+Such CA file must have been provided to you by some system administrator._
+
+If you are unable to get such CA certificate, you can skip the test by setting a flag:
+
+```shell
+kubectl sk init --authInsecureSkipVerify=true https://skas.ingress.mycluster.internal
+```
+
+But, be aware this is a security breach, as the target site can be a fake one. Use this flag should be limited to initial evaluation context.
+
+### Use default admin account 
+
+SKAS manage a local users database, where users are stored a Kubernetes resources. 
+
 
 ```
 $ kubectl -n skas-system get skusers
@@ -47,6 +70,26 @@ $ kubectl -n skas-system get groupbindings
 NAME               USER    GROUP
 admin-skas-admin   admin   skas-admin
 ```
+
+
+
+
+
+```shell
+kubectl explain pods
+Login:admin
+Password:
+KIND:       Pod
+VERSION:    v1
+
+DESCRIPTION:
+Pod is a collection of containers that can run on a host. This resource is
+created by clients and scheduled onto hosts.
+...........
+```
+
+
+
 
 ```
 kubectl get ns
