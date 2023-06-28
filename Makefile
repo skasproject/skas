@@ -44,19 +44,15 @@ docker: version ## Build and push skas image
 
 .PHONY: roles
 roles: ## Publish ansible roles in a public repo
-	cd ansible/roles && tar cvzf ../../dist/skas-apiserver-role-${VERSION}.tgz skas-apiserver/
-	cd ../warehouse && gh release upload --clobber $(VERSION) ../skas/dist/skas-apiserver-role-${VERSION}.tgz
-	cd ansible/roles && tar cvzf ../../dist/skas-chart-role-${VERSION}.tgz skas-chart/
-	cd ../warehouse && gh release upload --clobber $(VERSION) ../skas/dist/skas-chart-role-${VERSION}.tgz
-	cd ansible/roles && tar cvzf ../../dist/skusers-role-${VERSION}.tgz skusers/
-	cd ../warehouse && gh release upload --clobber $(VERSION) ../skas/dist/skusers-role-${VERSION}.tgz
+	cd extra/ansible/roles && tar cvzf ../../dist/skas-apiserver-role-${VERSION}.tgz skas-apiserver/
+	cd ../warehouse && gh release upload --clobber $(VERSION) ../skas/extra/dist/skas-apiserver-role-${VERSION}.tgz
 
 .PHONY: charts
 charts: ## Publish helm chart in a public repo (Not the main one)
-	cd helm && helm package -d ../dist skas
-	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/dist/skas-$(VERSION).tgz
-	cd helm && helm package -d ../dist skusers
-	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/dist/skusers-$(VERSION).tgz
+	cd extra/helm && helm package -d ../dist skas
+	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/extra/dist/skas-$(VERSION).tgz
+	cd extra/helm && helm package -d ../dist skusers
+	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/extra/dist/skusers-$(VERSION).tgz
 
 
 .PHONY: manifests
