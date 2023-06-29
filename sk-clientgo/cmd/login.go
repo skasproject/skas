@@ -9,10 +9,6 @@ import (
 	"skas/sk-clientgo/internal/tokenbag"
 )
 
-func init() {
-	httpClient.AddFlags(LoginCmd)
-}
-
 var LoginCmd = &cobra.Command{
 	Use:   "login [user, [password]]",
 	Short: "Logout and get a new token",

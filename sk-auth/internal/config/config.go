@@ -31,12 +31,13 @@ type PasswordStrength struct {
 type AuthServerConfig struct {
 	cconfig.SkServerConfig `yaml:",inline"`
 	Services               struct {
-		Token            cconfig.ServiceConfig `yaml:"token"`
-		Identity         cconfig.ServiceConfig `yaml:"identity"`
-		Login            cconfig.ServiceConfig `yaml:"login"`
-		K8sAuth          cconfig.ServiceConfig `yaml:"k8sAuth"`
-		PasswordChange   cconfig.ServiceConfig `yaml:"passwordChange"`
+		Identity cconfig.ServiceConfig `yaml:"identity"`
+		Login    cconfig.ServiceConfig `yaml:"login"`
+		K8sAuth  cconfig.ServiceConfig `yaml:"k8sAuth"`
+		// The following services are intended to be used by sk-clientgo/kubectl-sk
 		Kubeconfig       cconfig.ServiceConfig `yaml:"kubeconfig"`
+		Token            cconfig.ServiceConfig `yaml:"token"`
+		PasswordChange   cconfig.ServiceConfig `yaml:"passwordChange"`
 		PasswordStrength cconfig.ServiceConfig `yaml:"passwordStrength"`
 	} `yaml:"services"`
 }

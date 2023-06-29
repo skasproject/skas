@@ -147,10 +147,6 @@ skAuth:
       enabled: false
       port: 7010
       services:
-        token:
-          disabled: true
-          clients: [] # Fill to secure
-          protected: false
         identity:
           disabled: true
           clients: [] # Fill to secure
@@ -159,30 +155,45 @@ skAuth:
           disabled: true
           clients: [] # Fill to secure
           protected: false
-        passwordChange:
+        k8sAuth:
           disabled: true
-          clients: [] # Fill to secure
           protected: false
         kubeconfig:
           disabled: true
           clients: [] # Fill to secure
-        k8sAuth:
+        token:
           disabled: true
+          clients: [] # Fill to secure
           protected: false
+        passwordChange:
+          disabled: true
+          clients: [] # Fill to secure
+          protected: false
+        passwordStrength:
+          disabled: true
+          clients: [] # Fill to secure
     external:
       enabled: true
       port: 7110
       ssl: true
       services:
-        token:
-          disabled: false
-          clients: [] # Fill to secure
-          protected: true
         identity:
-          disabled: false
+          disabled: true
           clients: [] # Fill to secure
           protected: true
         login:
+          disabled: true
+          clients: [] # Fill to secure
+          protected: true
+        k8sAuth:
+          disabled: false
+          protected: true
+        # WARNING: The following services are called by sk-clientgo(kubectl-sk). And this client store only one clientId/clientSecret pair.
+        # So, if clients authentication is enabled, it must be valid for a single clientId/clientSecret pair for all the following services.
+        kubeconfig:
+          disabled: false
+          clients: [] # Fill to secure
+        token:
           disabled: false
           clients: [] # Fill to secure
           protected: true
@@ -190,12 +201,9 @@ skAuth:
           disabled: false
           clients: [] # Fill to secure
           protected: true
-        kubeconfig:
+        passwordStrength:
           disabled: false
           clients: [] # Fill to secure
-        k8sAuth:
-          disabled: false
-          protected: true
       ingress:
         enabled: true
         host:
@@ -244,14 +252,6 @@ skAuth:
       apiServerUrl:                       # Required
       rootCaData:                         # Default from '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
       insecureSkipVerify: false
-    user:
-      authServerUrl:                      # Default will be taken from ingress.host. If ingress is not enabled, a value must be provided here
-      rootCaPath: /tmp/cert/server/ca.crt
-      rootCaData:                         # Default will be set from rootCaPath
-      insecureSkipVerify: false
-      clientAuth:
-        id:                               # Default ""
-        secret:                           # Default ""
 
 
 # --------------------------------------------------------------------------------------------------------- skMerge

@@ -12,10 +12,6 @@ import (
 // This is intended to be used as client-go exc plugin. It communicates by a json printed on stdout.
 // So, not other print to stdout should be performed. Use stderr to display messages to the user
 
-func init() {
-	httpClient.AddFlags(authCmd)
-}
-
 var authCmd = &cobra.Command{
 	Use:    "auth",
 	Short:  "To be used as client-go exec plugin",

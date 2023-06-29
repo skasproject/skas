@@ -29,10 +29,6 @@ data:
         interface: "127.0.0.1"
         ssl: false
         services:
-          token:
-            disabled: {{.Values.skAuth.exposure.internal.services.token.disabled }}
-            clients: {{ .Values.skAuth.exposure.internal.services.token.clients | toJson }}
-            protected: {{ .Values.skAuth.exposure.internal.services.token.protected }}
           identity:
             disabled: {{.Values.skAuth.exposure.internal.services.identity.disabled }}
             clients: {{ .Values.skAuth.exposure.internal.services.identity.clients | toJson }}
@@ -44,13 +40,20 @@ data:
           k8sAuth:
             disabled: {{.Values.skAuth.exposure.internal.services.k8sAuth.disabled }}
             protected: {{ .Values.skAuth.exposure.internal.services.k8sAuth.protected }}
+          kubeconfig:
+            disabled: {{ .Values.skAuth.exposure.internal.services.kubeconfig.disabled}}
+            clients: {{ .Values.skAuth.exposure.internal.services.kubeconfig.clients | toJson }}
+          token:
+            disabled: {{.Values.skAuth.exposure.internal.services.token.disabled }}
+            clients: {{ .Values.skAuth.exposure.internal.services.token.clients | toJson }}
+            protected: {{ .Values.skAuth.exposure.internal.services.token.protected }}
           passwordChange:
             disabled: {{ .Values.skAuth.exposure.internal.services.passwordChange.disabled}}
             clients: {{ .Values.skAuth.exposure.internal.services.passwordChange.clients | toJson }}
             protected: {{ .Values.skAuth.exposure.internal.services.passwordChange.protected }}
-          kubeconfig:
-            disabled: {{ .Values.skAuth.exposure.internal.services.kubeconfig.disabled}}
-            clients: {{ .Values.skAuth.exposure.internal.services.kubeconfig.clients | toJson }}
+          passwordStrength:
+            disabled: {{ .Values.skAuth.exposure.internal.services.passwordChange.disabled}}
+            clients: {{ .Values.skAuth.exposure.internal.services.passwordStrength.clients | toJson }}
       {{- end }}
       {{- if .Values.skAuth.exposure.external.enabled}}
       - port: {{ .Values.skAuth.exposure.external.port }}
@@ -60,10 +63,6 @@ data:
         certDir: /tmp/cert/server
         {{- end }}
         services:
-          token:
-            disabled: {{ .Values.skAuth.exposure.external.services.token.disabled}}
-            clients: {{ .Values.skAuth.exposure.external.services.token.clients  | toJson }}
-            protected: {{ .Values.skAuth.exposure.external.services.token.protected }}
           identity:
             disabled: {{ .Values.skAuth.exposure.external.services.identity.disabled}}
             clients: {{ .Values.skAuth.exposure.external.services.identity.clients  | toJson }}
@@ -75,13 +74,20 @@ data:
           k8sAuth:
             disabled: {{.Values.skAuth.exposure.external.services.k8sAuth.disabled }}
             protected: {{ .Values.skAuth.exposure.external.services.k8sAuth.protected }}
+          kubeconfig:
+            disabled: {{ .Values.skAuth.exposure.external.services.kubeconfig.disabled}}
+            clients: {{ .Values.skAuth.exposure.external.services.kubeconfig.clients | toJson }}
+          token:
+            disabled: {{ .Values.skAuth.exposure.external.services.token.disabled}}
+            clients: {{ .Values.skAuth.exposure.external.services.token.clients  | toJson }}
+            protected: {{ .Values.skAuth.exposure.external.services.token.protected }}
           passwordChange:
             disabled: {{ .Values.skAuth.exposure.external.services.passwordChange.disabled }}
             clients: {{ .Values.skAuth.exposure.external.services.passwordChange.clients  | toJson }}
             protected: {{ .Values.skAuth.exposure.external.services.passwordChange.protected }}
-          kubeconfig:
-            disabled: {{ .Values.skAuth.exposure.external.services.kubeconfig.disabled}}
-            clients: {{ .Values.skAuth.exposure.external.services.kubeconfig.clients | toJson }}
+          passwordStrength:
+            disabled: {{ .Values.skAuth.exposure.external.services.passwordChange.disabled }}
+            clients: {{ .Values.skAuth.exposure.external.services.passwordStrength.clients  | toJson }}
       {{- end }}
     provider:
 {{ .Values.skAuth.provider | toYaml | indent 6 }}
@@ -100,16 +106,6 @@ data:
         apiServerUrl: "{{ .Values.skAuth.kubeconfig.cluster.apiServerUrl }}"
         rootCaData: "{{ .Values.skAuth.kubeconfig.cluster.rootCaData }}"
         insecureSkipVerify: {{ default false .Values.skAuth.kubeconfig.cluster.insecureSkipVerify }}
-      user:
-        authServerUrl: {{ include "skAuth.kubeconfig.authServerUrl" . }}
-        rootCaData: "{{ .Values.skAuth.kubeconfig.user.rootCaData }}"
-        rootCaPath: "{{ .Values.skAuth.kubeconfig.user.rootCaPath }}"
-        insecureSkipVerify: {{ default false .Values.skAuth.kubeconfig.user.insecureSkipVerify }}
-        {{- with .Values.skAuth.kubeconfig.user.clientAuth }}
-        clientAuth:
-          id: "{{ .id }}"
-          secret: "{{ .secret }}"
-        {{- end }}
 
 {{ end }}
 
