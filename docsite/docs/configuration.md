@@ -1,0 +1,5 @@
+
+# Configuration
+
+## LDAP configuration
+

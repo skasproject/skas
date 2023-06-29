@@ -1,9 +1,8 @@
 
 # Usage
 
-## Initial configuration
 
-### Local client configuration
+## Local client configuration
 
 It is assumed here than `kubectl` is installed. (If not, [see here](https://kubernetes.io/docs/tasks/tools/))
 
@@ -21,11 +20,11 @@ Setup new context 'skas@mycluster.internal' in kubeconfig file '/Users/john/.kub
 You can validate this new context is now the current one:
 
 ```shell
-kubectl config current-context
+$ kubectl config current-context
 skas@mycluster.internal
 ```
 
-#### Got a certificate issue ?
+### Got a certificate issue ?
 
 If your system is not configured with the CA which has been used to certify SKAS (cf the `clusterIssuer` parameter on initial installation), you will encounter an error like:
 
@@ -38,7 +37,7 @@ ERRO[0000] error on GET kubeconfig from remote server
 You may get ride of this error by providing the root CA certificate as a file:
 
 ```shell
-kubectl sk init https://skas.ingress.mycluster.internal --authRootCaPath=./CA.crt
+$ kubectl sk init https://skas.ingress.mycluster.internal --authRootCaPath=./CA.crt
 ```
 
 > _A CA certificate file is a text file which begin by `-----BEGIN CERTIFICATE-----` and ends with `-----END CERTIFICATE-----`. 
@@ -47,61 +46,113 @@ Such CA file must have been provided to you by some system administrator._
 If you are unable to get such CA certificate, you can skip the test by setting a flag:
 
 ```shell
-kubectl sk init --authInsecureSkipVerify=true https://skas.ingress.mycluster.internal
+$ kubectl sk init --authInsecureSkipVerify=true https://skas.ingress.mycluster.internal
 ```
 
 But, be aware this is a security breach, as the target site can be a fake one. Use this flag should be limited to initial evaluation context.
 
-### Use default admin account 
+## First run with default admin account 
 
-SKAS manage a local users database, where users are stored a Kubernetes resources. 
+SKAS manage a local users database, where users are stored as Kubernetes resources.
 
+For convenience, a first `admin` user has been created during the installation.  With password `admin`
 
-```
-$ kubectl -n skas-system get skusers
+By default, SKAS users are stored in the namespace `skas-system`.
+
+You could list them, using standard kubectl commands:
+
+```shell
+$ kubectl -n skas-system get users.userdb.skasproject.io
 Login:admin
 Password:
 NAME    COMMON NAMES             EMAILS   UID   COMMENT   DISABLED
 admin   ["SKAS administrator"]
 ```
 
+Several remarks:
+
+- If you have configured your client as described above, you now have to be logged to perform any kubectl action. 
+  So the login/password interaction
+- Default password is `admin`. **DON'T FORGET TO CHANGE IT**. See below.
+- The `admin` user has been granted to access SKAS resources in `skas-system` namespace using kubernetes RBAC
+- `kubectl -n skas-system get users` will no works, as `users` refers to a standard kubernetes resources.
+
+To ease SKAS user management, an alias has been defined: `skuser`
+
+```shell
+$ kubectl -n skas-system get skusers
+NAME    COMMON NAMES             EMAILS   UID   COMMENT   DISABLED
+admin   ["SKAS administrator"]
 ```
-$ kubectl -n skas-system get groupbindings
+
+Note there is now no login/password interaction. A token has been granted during the first login. 
+This token will expire after a delay of inactivity. (Like a Web session). This delay is 30mn by default.
+
+### Password change
+
+As stated above, you must change the password of this account:
+
+```shell
+$ kubectl sk password
+Will change password for user 'admin'
+Old password:
+New password:
+Confirm new password:
+Password has been changed sucessfully.
+```
+
+Note the `sk`, as such command is performed by the SKAS kubectl extension.
+
+There is a check about password strength. So, you may have such response:
+
+```shell
+$ kubectl sk password
+Will change password for user 'admin'
+Old password:
+New password:
+Confirm new password:
+Unsatisfactory password strength!
+```
+
+There is no well defined password criteria (such as length, special character, etc...). 
+An algorithm provide a score for the password, and this score must match a minimum (configurable) value.
+There is also a check against a list of commonly used passwords.
+
+The easiest way to overcome this restriction is to increase your password length.
+
+### SKAS group binding
+
+In fact, what has been granted to access SAKS resources is not the admin account (It could be), but a group named `skas-system`.
+
+And the user `admin` has been included in the group by another SKAS resources named `groupbindings.userdb.skasproject.io`, with `groupbindings`as an alias/
+
+```shell
+$ kubectl -n skas-system get groupBindings
 NAME               USER    GROUP
 admin-skas-admin   admin   skas-admin
 ```
 
+> _In kubernetes, a group does not exist as a concrete resources. It only exists as it is referenced by RBAC `roleBinding` or `clusterRoleBindigs`. Or by SKAS `groupBinding`_
 
+### Be a cluster admin
 
-
+Let's try the following:
 
 ```shell
-kubectl explain pods
-Login:admin
-Password:
-KIND:       Pod
-VERSION:    v1
-
-DESCRIPTION:
-Pod is a collection of containers that can run on a host. This resource is
-created by clients and scheduled onto hosts.
-...........
-```
-
-
-
-
-```
-kubectl get ns
+$ kubectl get namespaces
 Error from server (Forbidden): namespaces is forbidden: User "admin" cannot list resource "namespaces" in API group "" at the cluster scope
 ```
 
+It is clear than we are authenticated as `admin`, but this account has no permissions to perform cluster-wide operation.
 
+Such permissions can be granted by binding this user to a group having such rights:
 
 ```
 $ kubectl sk user bind admin system:masters
 GroupBinding 'admin.system.masters' created in namespace 'skas-system'.
 ```
+
+For this to be effective, logout and login back:
 
 ```
 $ kubectl sk logout
@@ -117,91 +168,62 @@ ingress-nginx     Active   4d21h
 .....
 ```
 
-```
-$ kubectl sk password
-Will change password for user 'admin'
-Old password:
-New password:
-Confirm new password:
-Password has been changed sucessfully.
-```
+You can check the new `groupBindings` list:
 
-
-```
-$ kubectl sk password
-Will change password for user 'admin'
-Old password:
-New password:
-Confirm new password:
-Unsatisfactory password strength!
+```shell
+$ kubectl -n skas-system get groupBindings
+NAME                   USER    GROUP
+admin-skas-admin       admin   skas-admin
+admin.system.masters   admin   system:masters
 ```
 
+## CLI users management.
+
+### Create user
+
+### Describe user
+
+### Modify user
+
+### Manage user's groups
+
+## Manifests users management
+
+### User resources
+
+### GroupBinding resources
+
+## Others `kubectl sk` commands
+
+### hash
+
+### init
+
+### login
+
+### logout
+
+### password
+
+### version
+
+### whoami
 
 
-
-
--------------------------------------------------------------------------------------------------------------
-
-# Getting started
-
-
-## Initial local admin creation
-
-```
-# Set As a kube administator
-KUBECONFIG=....../ksprayX/build/config
-
-$ kubectl sk user create ladmin --commonName "Local admin" --email "ladmin@ksprayX.local" --inputPassword
-User 'ladmin' created in namespace 'skas-system'.
-
-$ kubectl sk user bind ladmin system:masters
-GroupBinding 'ladmin.system.masters' created in namespace 'skas-system'.
-
-unset KUBECONFIG
-```
-
-## User context initialisation
-
-```
-$ kubectl sk init https://skas.ingress.ksprayX
-Setup new context 'skas@ksprayX.vb' in kubeconfig file '/Users/sa/.kube/config'
-
-$ kubectx
-skas@ksprayX.vb
-skas@kspray3.vb
-
-$ kubectl get ns
-Login:ladmin
-Password:
-NAME              STATUS   AGE
-cert-manager      Active   23h
-.......
-
+``` 
+---------------------------------------------------------------------------------------------------------------
 ```
 
-Set also as skas administrator
 
-```
-$ kubectl sk user describe admin
-Unauthorized!
+Tricks and tools
 
-$ kubectl sk user bind ladmin skas-admin
-GroupBinding 'ladmin.skas-admin' created in namespace 'skas-system'.
+k9s
 
-$ kubectl sk logout
-Bye!
+reloader
 
-$ kubectl sk user describe admin
-Login:ladmin
-Password:
-USER    STATUS         UID   GROUPS   EMAILS   COMMON NAMES   AUTH
-admin   userNotFound   0
 
-$ kubectl sk user describe ladmin
-USER     STATUS              UID   GROUPS                      EMAILS                 COMMON NAMES   AUTH
-ladmin   passwordUnchecked   0     skas-admin,system:masters   ladmin@ksprayX.local   Local admin    crd
+Another session
 
-```
 
 Create another user
 

@@ -8,18 +8,19 @@ The simplest and recommended method to install the skas server is to use the pro
 The following is assumed
 
 - Certificate manager is deployed in the target cluster and a `ClusterIssuer` is defined.
-- There is an nginx ingress controller deployed in the target cluster
+- There is an nginx ingress controller deployed in the target cluster.
+- You have a local kubernetes configuration with full admin rights on target cluster.
 
 First create a dedicated namespace:
 
 ```shell
-kubectl create namespace skas-system
+$ kubectl create namespace skas-system
 ```
 
 Then, you can deploy the helm chart:
 
 ```shell
-helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
+$ helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
     --set clusterIssuer=your-cluster-issuer \
     --set skAuth.exposure.external.ingress.host=skas.ingress.mycluster.internal \
     --set skAuth.kubeconfig.context.name=skas@mycluster.internal \
@@ -40,7 +41,7 @@ The two following values will be used on generation of user's k8s config files:
 As an alternate approach, you can create a local values yaml file:
 
 ```shell
-cat >./values.init.yaml <<EOF
+$ cat >./values.init.yaml <<EOF
 clusterIssuer: your-cluster-issuer
 
 skAuth:
@@ -59,13 +60,13 @@ EOF
 And issue the helm command as:
 
 ```shell
-helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz --values ./values.init.yaml
+$ helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz --values ./values.init.yaml
 ```
 
 Then, if the installation is successful, you should be able to see the 'skas' server pod:
 
 ```shell
-kubectl -n skas-system get pods
+$ kubectl -n skas-system get pods
 NAME                    READY   STATUS    RESTARTS   AGE
 skas-746c54dc75-v8v2f   3/3     Running   0          25s
 ```
@@ -92,7 +93,7 @@ Then, the secret hosting the certificate for the services will be missing and wi
 - Create Secret in `skas-system` namespace as follows:
 
 ```shell
-kubectl -n skas-system create secret tls skas-auth-cert --cert=<CERTIFICATE FILE> --key=<KEY FILE>
+$ kubectl -n skas-system create secret tls skas-auth-cert --cert=<CERTIFICATE FILE> --key=<KEY FILE>
 ```
 
 Then, the `skas` pod should start successfully.
@@ -114,13 +115,13 @@ Also, these operations require `root` access on these nodes.
 First, create a folder dedicated to `skas`:
 
 ```
-mkdir -p /etc/kubernetes/skas
+[root]$ mkdir -p /etc/kubernetes/skas
 ```
 
 Then, create the Authentication webhook configuration file in this folder (You can cut/paste the following):
 
 ```shell
-cat >/etc/kubernetes/skas/hookconfig.yaml <<EOF
+[root]$ cat >/etc/kubernetes/skas/hookconfig.yaml <<EOF
 apiVersion: v1
 kind: Config
 # clusters refers to the remote service.
@@ -149,11 +150,11 @@ As you can see in this file, there is a reference to the certificate authority o
 > NB: It is assumed `kubectl` command was installed in this node, with an administrator configuration.
 
 ```shell
-kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}' | base64 -d >/etc/kubernetes/skas/skas_auth_ca.crt  
+[root]$ kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}' | base64 -d >/etc/kubernetes/skas/skas_auth_ca.crt  
 ```
 
 ```shell
-ls -l /etc/kubernetes/skas
+[root]$ ls -l /etc/kubernetes/skas
 total 8
 -rw-r--r--. 1 root root  620 May 11 12:36 hookconfig.yaml
 -rw-r--r--. 1 root root 1220 May 11 12:58 skas_auth_ca.crt
@@ -162,7 +163,7 @@ total 8
 Now, you must edit the API server manifest file (`/etc/kubernetes/manifests/kube-apiserver.yaml`) to load the `hookconfig.yaml` file:
 
 ```shell
-vi /etc/kubernetes/manifests/kube-apiserver.yaml
+[root]$ vi /etc/kubernetes/manifests/kube-apiserver.yaml
 ```
 
 First step is to add two flags to the kube-apiserver command line:
@@ -236,7 +237,7 @@ To use it, we assume you have an ansible configuration with an inventory definin
 - create a playbook file, such as :
 
 ```shell
-cat >./skas.yaml <<EOF
+$ cat >./skas.yaml <<EOF
 - hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server
   tags: [ "skas" ]
   roles:
@@ -247,7 +248,7 @@ EOF
 - Launch the playbook:
 
 ```shell
-ansible-playbook ./skas.yaml
+$ ansible-playbook ./skas.yaml
 ```
 
 The playbook will perform all the steps described in the manual installation above. This will generate a restart of the API server.
@@ -268,24 +269,24 @@ SKAS provide a CLI interface as an extension of kubectl
 
 Installation is straightforward:
 
-- Download the executable for your OS/Architecture
+- Download the executable **for your OS/Architecture**
 - Name it kubectl-sk (To comply to the naming convention of kubectl extension)
 - Make it executable
 - Move it to a folder accessed by your PATH.
 
-For example:
+For example, on a Mac Intel:
 
 ```shell
-cd /tmp
-curl -L https://github.com/skasproject/skas/releases/download/0.2.1/kubectl-sk_0.2.1_darwin_amd64 -o ./kubectl-sk
-chmod 755 kubectl-sk
-sudo mv kubectl-sk /usr/local/bin
+$ cd /tmp
+$ curl -L https://github.com/skasproject/skas/releases/download/0.2.1/kubectl-sk_0.2.1_darwin_amd64 -o ./kubectl-sk
+$ chmod 755 kubectl-sk
+$ sudo mv kubectl-sk /usr/local/bin
 ```
 
 You can now check the extension is effective
 
 ```shell
-kubectl sk
+$ kubectl sk
 A kubectl plugin for Kubernetes authentication
 
 Usage:
@@ -312,4 +313,4 @@ Flags:
 Use "kubectl-sk [command] --help" for more information about a command.
 ```
 
-SKAS is now fully installed. You can now move on initial configuration 
+SKAS is now fully installed. You can now move on usage part. 

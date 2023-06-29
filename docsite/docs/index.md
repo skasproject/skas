@@ -17,12 +17,16 @@ Its main features are:
 To move forward:
 
 - [Installation](./installation.md)
-- [usage](./usage.md)
-- [Configure an LDAP server]()
-- [Add a second LDAP Server]()
-- [Delegate user database administration]()
-- [Centralized user management in a multi-cluster context]()
-- [DEX integration with Argocd as an example]()
+- [User guide](./userguide.md)
+- Configuration
+    - [LDAP configuration](./configuration/#ldap-configration)
+- [Architecture](./architecture.md)
+- Advanced configuration
+    - [Delegate users management](./configuration/#delegated-user-management)
+    - [Add a second LDAP Server](./configuration/#add-a-second-ldap-server)
+    - [Centralized user management in a multi-cluster context]()
+- [DEX integration with Argocd as an example](dex.md)
+- [Tools and Tricks](./toolsandtricks.md)
 
 
 

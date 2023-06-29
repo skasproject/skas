@@ -3,8 +3,11 @@ site_name: SKAS
 nav:
   - Home: index.md
   - Installation: installation.md
-  - Usage: usage.md
-  - Test: menutest.md
+  - "User guide": userguide.md
+  - "Configuration": configuration.md
+  - "Architecture": architecture.md
+  - "Advanced configuration": advancedconfiguration.md
+  - "DEX integration": dex.md
+  - "Tools and Tricks": toolsandtricks.md
 theme:
-  name: 'rtd-dropdown'
   name: readthedocs
