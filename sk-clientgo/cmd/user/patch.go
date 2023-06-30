@@ -8,8 +8,8 @@ import (
 	"math/rand"
 	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"skas/sk-clientgo/httpClient"
 	"skas/sk-clientgo/internal/global"
+	"skas/sk-clientgo/internal/httpClient"
 	"skas/sk-clientgo/internal/k8sclient"
 	"skas/sk-clientgo/internal/utils"
 	userdbv1alpha1 "skas/sk-common/k8sapis/userdb/v1alpha1"
@@ -136,7 +136,7 @@ func handlePasswordHash(client skclient.SkClient) string {
 		return testAndHashPassword(client, userFlagsVars.password)
 	}
 	if userFlagsVars.generatePassword {
-		b := make([]byte, 10)
+		b := make([]byte, 12)
 		for i := range b {
 			b[i] = letterBytes[rand.Intn(len(letterBytes))]
 		}

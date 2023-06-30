@@ -7,11 +7,12 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 	"os"
-	"skas/sk-clientgo/httpClient"
 	"skas/sk-clientgo/internal/global"
+	"skas/sk-clientgo/internal/httpClient"
 	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/proto/v1/proto"
 	"strconv"
+	"strings"
 )
 
 var contextNameOverride string
@@ -46,8 +47,12 @@ var InitCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// Build client config from parameters
+		url := args[0]
+		if !(strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://")) {
+			url = "https://" + url
+		}
 		skConfig := &skclient.Config{
-			Url:                args[0],
+			Url:                url,
 			InsecureSkipVerify: authInsecureSkipVerify,
 		}
 		skConfig.ClientAuth.Id = clientId

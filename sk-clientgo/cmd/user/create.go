@@ -7,8 +7,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"skas/sk-clientgo/httpClient"
 	"skas/sk-clientgo/internal/global"
+	"skas/sk-clientgo/internal/httpClient"
 	"skas/sk-clientgo/internal/k8sclient"
 	userdbv1alpha1 "skas/sk-common/k8sapis/userdb/v1alpha1"
 )
