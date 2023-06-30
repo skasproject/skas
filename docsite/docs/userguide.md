@@ -177,13 +177,120 @@ admin-skas-admin       admin   skas-admin
 admin.system.masters   admin   system:masters
 ```
 
-## CLI users management.
+**WARNING: This means any member of the group `skas-admin` can promote itself as a full cluster administrator. 
+In fact, anybody able to create or modify resources in the `skas-admin` namespace can take control of the cluster. So, access to this namespace should be strictly controlled**  
+
+Refer to [Advanced configuration/Delegated user management]() to delegate user management without compromise cluster security. 
+
+## CLI users management
+
+The SKAS kubectl extension plugin provide a `user` command with several subcommands
+
+You can have a complete list of such subcommands:
+
+```
+$ kubectl sk user --help
+.......
+```
+
+NB: _You must be logged as a member of the group `skas-admin` to be able to use this command._
+
 
 ### Create user
 
-### Describe user
+Here is an example of user's creation:
+
+```shell
+$ kubectl sk user create luser1 --commonName "Local user1" --email "luser1@internal" --password "RtVksSuMgP5f"
+User 'luser1' created in namespace 'skas-system'.
+```
+
+The only mandatory parameters is the user's name:
+
+```shell
+$ kubectl sk user create luser2
+User 'luser2' created in namespace 'skas-system'.
+```
+
+> _As there is no password provided, login to the user will be impossible_
+
+A complete list of user's creation options can be displayed: 
+
+```shell
+$ kubectl sk user create --help
+Create a new user
+
+Usage:
+  kubectl-sk user create <user> [flags]
+
+Flags:
+      --comment string        User's comment
+      --commonName string     User's common name
+      --email string          User's email
+      --generatePassword      Generate and display a password
+  -h, --help                  help for create
+      --inputPassword         Interactive password request
+  -n, --namespace string      User's DB namespace (default "skas-system")
+      --password string       User's password
+      --passwordHash string   User's password hash (Result of 'kubectl skas hash')
+      --state string          User's state (enabled|disabled) (default "enabled")
+      --uid int               User's UID
+
+```
+
+Most of the options match a user's properties
+
+- `comment`, `commonName`, `email`, `uid` are just descriptive parameters, inspired from Unix user attributes.
+- `state` will allow to temporary disable a user.
+
+The `--namespace` allow to store the user resources in another namespace. See [Advanced configuration/Delegated user management]()
+
+There is several options related to the password:
+
+- `--password`: The password is provided as a parameter on the command line.
+- `--inputPassword`: There will be a `Password: / Confirm password:` user interaction.
+- `--generatePassword`: A random password is generated and displayed.
+- `--passwordHash`: Provide the hash of the password, as it will be stored in the resource. 
+  Use `kubectl sk hash` to generate the value. NB: Doing this way skip the check about password strength. 
+
+### List users
+
+Users can be listed using standard `kubectl` commands:
+
+```
+$ kubectl -n skas-system get skusers
+NAME     COMMON NAMES             EMAILS                UID   COMMENT   DISABLED
+admin    ["SKAS administrator"]
+luser1   ["Local user1"]          ["luser1@internal"]                   false
+luser2                                                                  false
+luser3                                                                  false
+```
 
 ### Modify user
+
+A subcommand `patch` is provided to modify a user. As an example:
+
+```shell
+$ kubectl sk user patch luser1 --state=disabled
+User 'luser1' updated in namespace 'skas-system'.
+
+$ kubectl -n skas-system get skuser luser1
+NAME     COMMON NAMES      EMAILS                UID   COMMENT   DISABLED
+luser1   ["Local user1"]   ["luser1@internal"]                   true
+```
+
+Most of the options are the same as the `user create` subcommand. 
+
+There is also a `--create` option which will allow user creation if it does not exists.
+
+### Delete user
+
+Users can be deleted using standard `kubectl` commands:
+
+```shell
+$ kubectl -n skas-system delete skuser luser2
+user.userdb.skasproject.io "luser2" deleted
+```
 
 ### Manage user's groups
 
@@ -192,6 +299,9 @@ admin.system.masters   admin   system:masters
 ### User resources
 
 ### GroupBinding resources
+
+## Session management
+
 
 ## Others `kubectl sk` commands
 
@@ -214,157 +324,4 @@ admin.system.masters   admin   system:masters
 ---------------------------------------------------------------------------------------------------------------
 ```
 
-
-Tricks and tools
-
-k9s
-
-reloader
-
-
-Another session
-
-
-Create another user
-
-```
-$ kubectl sk user create luser1 --commonName "Local user1" --email "luser1@ksprayX.local" --password luser1
-User 'luser1' created in namespace 'skas-system'.
-```
-
-List local users
-
-```
-$ kubectl -n skas-system get users
-NAME     COMMON NAMES      EMAILS                     UID   COMMENT   DISABLED
-ladmin   ["Local admin"]   ["ladmin@ksprayX.local"]                   false
-luser1   ["Local user1"]   ["luser1@ksprayX.local"]                   false
-```
-
-# Tricks: Another session
-
-```
-$ kubectl sk whoami
-USER     ID   GROUPS
-ladmin   0    skas-admin,system:masters
-```
-
-In another terminal:
-
-```
-export KUBECONFIG=/tmp/kconfig
-
-$ kubectl sk init https://skas.ingress.ksprayX
-Setup new context 'skas@ksprayX.vb' in kubeconfig file '/tmp/kconfig'
-
-$ kubectx
-skas@ksprayX.vb
-
-$ kubectl get ns
-Login:luser1
-Password:
-Error from server (Forbidden): namespaces is forbidden: User "luser1" cannot list resource "namespaces" in API group "" at the cluster scope
-
-$ kubectl sk whoami
-USER     ID   GROUPS
-luser1   0
-```
-
-Back to initial terminal:
-
-```
-$ kubectl sk whoami
-USER     ID   GROUPS
-ladmin   0    skas-admin,system:masters
-
-$ kubectl get ns
-NAME              STATUS   AGE
-cert-manager      Active   69m
-default           Active   76m
-ingress-nginx     Active   68m
-kube-node-lease   Active   76m
-kube-public       Active   76m
-kube-system       Active   76m
-kube-tools        Active   66m
-kyverno           Active   69m
-metallb-system    Active   69m
-skas-system       Active   66m
-topolvm-system    Active   68m
-```
-
 # Argo cd
-
-Login on the front using ladmin account.
-
-View user
-
-Try to create a project. Should fail
-
-```
-$ kubectl sk user bind ladmin argocd-admin
-```
-
-Now, on the front, logout and login.
-
-View user
-
-Try to create a project. Should fail
-
-
-Using the command line:
-
-```
-$ argocd login argocd.ingress.ksprayX --username ladmin --sso
-Opening browser for authentication
-Performing authorization_code flow login: https://argocd.ingress.ksprayX/api/dex/auth?access_type=offline&client_id=argo-cd-cli&code_challenge=R40jEBd-oQZ48N4tI2amiEg_0UULb_V4ARUk_U3r1Hc&code_challenge_method=S256&redirect_uri=http%3A%2F%2Flocalhost%3A8085%2Fauth%2Fcallback&response_type=code&scope=openid+profile+email+groups+offline_access&state=GLEuRGPrdUsKGNCDZCmsxhxS
-Authentication successful
-'ladmin@ksprayX.local' logged in successfully
-Context 'argocd.ingress.ksprayX' updated
-```
-
-# Services setup
-
-## Prerequisite
-
-Setup ook8s and launch scripts for secret creation.
-
-Add repo:
-
-```
-$ argocd repo add https://github.com/KubeDP/kdp-savb.git --username "SergeALEXANDRE" --password <pull kdc01 token>
-```
-
-Login on argocd (as admin)
-
-And apply apps of apps ....
-
-```
-
-cd .../kdp-savb/kargo
-kubectl apply -f metaX.yaml
-```
-
-Now, skas config has been modified to integrate an ldap server, with 'sa' account
-
-```
-kubectl sk user describe sa --explain
-USER   STATUS              UID    GROUPS                              EMAILS                 COMMON NAMES      AUTH
-sa     passwordUnchecked   2002   all,dawf01-admin,devs,inst1-admin   sa@broadsoftware.com   Serge ALEXANDRE   ldap
-
-Detail:
-PROVIDER   STATUS              UID    GROUPS                              EMAILS                 COMMON NAMES
-crd        userNotFound        0
-ldap       passwordUnchecked   2002   all,devs,inst1-admin,dawf01-admin   sa@broadsoftware.com   Serge ALEXANDRE
-```
-
-On can log as 'sa' on argocd.
-
-But to be able to work on it:
-
-```
-$ kubectl sk user bind sa argocd-admin
-GroupBinding 'sa.argocd-admin' created in namespace 'skas-system'.
-```
-
-
-One can also log on spark-histo (ladmin and sa) and argocd of inst1

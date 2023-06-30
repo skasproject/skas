@@ -178,7 +178,7 @@ skAuth:
       ssl: true
       services:
         identity:
-          disabled: true
+          disabled: false
           clients: [] # Fill to secure
           protected: true
         login:

@@ -3,3 +3,4 @@
 
 ## LDAP configuration
 
+## Merging identity provider
