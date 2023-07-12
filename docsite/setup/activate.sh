@@ -28,7 +28,7 @@ then
 elif [[ "$OSTYPE" == "darwin"* ]]
 then
 	# shellcheck disable=SC1090
-	source "${BASE_DIR}"/venv/usr/local/bin/activate
+	source "${BASE_DIR}"/venv/bin/activate
 	PS1='[mkdocs] \h:\W \u\$ '
 else
 	echo

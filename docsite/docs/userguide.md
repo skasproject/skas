@@ -34,7 +34,7 @@ ERRO[0000] error on GET kubeconfig from remote server
  tls: failed to verify certificate: x509: certificate signed by unknown authority"
 ```
 
-You may get ride of this error by providing the root CA certificate as a file:
+You may get rid of this error by providing the root CA certificate as a file:
 
 ```shell
 $ kubectl sk init https://skas.ingress.mycluster.internal --authRootCaPath=./CA.crt
@@ -59,7 +59,8 @@ For convenience, a first `admin` user has been created during the installation. 
 
 By default, SKAS users are stored in the namespace `skas-system`.
 
-You could list them, using standard kubectl commands:
+You could list them, using standard kubectl commands. If you have configured your client as described above, you now 
+have to be logged to perform any kubectl action. So the login/password interaction
 
 ```shell
 $ kubectl -n skas-system get users.userdb.skasproject.io
@@ -71,13 +72,11 @@ admin   ["SKAS administrator"]
 
 Several remarks:
 
-- If you have configured your client as described above, you now have to be logged to perform any kubectl action. 
-  So the login/password interaction
 - Default password is `admin`. **DON'T FORGET TO CHANGE IT**. See below.
 - The `admin` user has been granted to access SKAS resources in `skas-system` namespace using kubernetes RBAC
-- `kubectl -n skas-system get users` will no works, as `users` refers to a standard kubernetes resources.
+- `kubectl -n skas-system get users` may no works, as `users` refers also to a standard kubernetes resources.
 
-To ease SKAS user management, an alias has been defined: `skuser`
+To ease SKAS user management, an alias `skuser` has been defined.
 
 ```shell
 $ kubectl -n skas-system get skusers
@@ -122,7 +121,7 @@ The easiest way to overcome this restriction is to increase your password length
 
 ### SKAS group binding
 
-In fact, what has been granted to access SAKS resources is not the admin account (It could be), but a group named `skas-system`.
+In fact, what has been granted to access SKAS resources is not the admin account (It could be), but a group named `skas-system`.
 
 And the user `admin` has been included in the group by another SKAS resources named `groupbindings.userdb.skasproject.io`, with `groupbindings`as an alias/
 
@@ -143,7 +142,7 @@ $ kubectl get namespaces
 Error from server (Forbidden): namespaces is forbidden: User "admin" cannot list resource "namespaces" in API group "" at the cluster scope
 ```
 
-It is clear than we are authenticated as `admin`, but this account has no permissions to perform cluster-wide operation.
+It is clear than we are successfully authenticated as `admin`, but this account has no permissions to perform cluster-wide operation.
 
 Such permissions can be granted by binding this user to a group having such rights:
 
@@ -158,7 +157,7 @@ For this to be effective, logout and login back:
 $ kubectl sk logout
 Bye!
 
-$ kubectl get ns
+$ kubectl get namespaces
 Login:admin
 Password:
 NAME              STATUS   AGE
@@ -263,7 +262,6 @@ NAME     COMMON NAMES             EMAILS                UID   COMMENT   DISABLED
 admin    ["SKAS administrator"]
 luser1   ["Local user1"]          ["luser1@internal"]                   false
 luser2                                                                  false
-luser3                                                                  false
 ```
 
 ### Modify user
@@ -271,12 +269,12 @@ luser3                                                                  false
 A subcommand `patch` is provided to modify a user. As an example:
 
 ```shell
-$ kubectl sk user patch luser1 --state=disabled
-User 'luser1' updated in namespace 'skas-system'.
+$ kubectl sk user patch luser2 --state=disabled
+User 'luser2' updated in namespace 'skas-system'.
 
-$ kubectl -n skas-system get skuser luser1
-NAME     COMMON NAMES      EMAILS                UID   COMMENT   DISABLED
-luser1   ["Local user1"]   ["luser1@internal"]                   true
+$ kubectl -n skas-system get skuser luser2
+NAME     COMMON NAMES   EMAILS   UID   COMMENT   DISABLED
+luser2                                           true
 ```
 
 Most of the options are the same as the `user create` subcommand. 
@@ -292,36 +290,266 @@ $ kubectl -n skas-system delete skuser luser2
 user.userdb.skasproject.io "luser2" deleted
 ```
 
-### Manage user's groups
+### Manage user's groups and permissions.
 
-## Manifests users management
+To illustrate how SKAS interact with Kubernetes RBAC, we will setup a simple example. We will:
+
+- Create a namespace named `ldemo`.
+- Create a role named `configurator` in this namespace to manage resources of type `configMaps`.
+- Create a roleBinding between this role and a group named `ldemo-devs`.
+- Add the user `luser1` to this group.
+
+We assume we are logged as 'admin' to perform theses tasks:
+
+```shell
+$ kubectl create namespace ldemo
+namespace/ldemo created
+
+$ kubectl -n ldemo create role configurator --verb='*' --resource=configMaps
+role.rbac.authorization.k8s.io/configurator created
+
+$ kubectl -n ldemo create rolebinding configurator-ldemo-devs --role=configurator --group=ldemo-devs
+rolebinding.rbac.authorization.k8s.io/configurator-ldemo-devs created
+
+$ kubectl sk user bind luser1 ldemo-devs
+GroupBinding 'luser1.ldemo-devs' created in namespace 'skas-system'.
+
+```
+Now, we can test. First logout and login under `luser1`:
+
+```shell
+$ kubectl sk logout
+Bye!
+
+$ kubectl sk login
+Login:luser1
+Password:
+logged successfully..
+
+$ kubectl sk whoami
+USER     ID   GROUPS
+luser1   0    ldemo-devs
+```
+
+Now ensure we can create a `configMap` and view it.:
+
+```shell
+$ kubectl -n ldemo create configmap my-config --from-literal=key1=config1
+configmap/my-config created
+
+$ kubectl -n ldemo get configmaps my-config -o yaml
+apiVersion: v1
+data:
+  key1: config1
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2023-07-11T14:56:27Z"
+  name: my-config
+  namespace: ldemo
+  resourceVersion: "257983"
+  uid: ad55b282-9803-4688-b2df-a1c35f708313
+```
+
+Also, ensure we can delete it
+
+```shell
+$ kubectl -n ldemo delete configmap my-config
+configmap "my-config" deleted
+```
+
+> _Please, note than `roles` and `roleBindings` are namespaced resources while `users` and `groups` are cluster-wide resources._
+
+
+### Kubernetes RBAC referential integrity
+
+Kubernetes does not check referential integrity when creating a resource referencing another one. For example, the following will works:
+
+```shell
+kubectl -n ldemo create rolebinding missing-integrity --role=unexisting-role --group=unexisting-group
+rolebinding.rbac.authorization.k8s.io/missing-integrity created
+
+$ kubectl sk user bind unexisting-user unexisting-group
+GroupBinding 'unexisting-user.unexisting-group' created in namespace 'skas-system'.
+```
+
+May be the referenced resource will be created later. Or the link will be useless.
+
+This is clearly a design choice of Kubernetes. SKAS follow the same logic.
+
+## Using Manifests instead of CLI
+
+As users ans groups are defined as Kubernetes custom resources, they can be created and managed as any other resources, through manifests. 
+
+By default, all SKAS users and groups resources are stored in the namespace `skas-system`.
+
+Kubernetes RBAC has been configured during installation to allow management of such resources by all members of the `skas-admin` group.
 
 ### User resources
 
+Here is the manifest corresponding to the users we created previously:
+
+```yaml
+---
+apiVersion: userdb.skasproject.io/v1alpha1
+kind: User
+metadata:
+  name: luser1
+  namespace: skas-system
+spec:
+  commonNames:
+  - Local user1
+  emails:
+  - luser1@internal
+  passwordHash: $2a$10$q6nEVmP.MHo6VLAprTdTBuy6AHPel1uh3NocZdNjt.yh8HDE7Ja.m
+```
+
+- The resources name is the user login.
+- The password is stored in a non reversible hash form. The command `kubectl sk hash` is provided to compute such hash.
+
+Below is a sample of a user with all properties defined:
+
+```yaml
+---
+apiVersion: userdb.skasproject.io/v1alpha1
+kind: User
+metadata:
+  name: jsmith
+  namespace: skas-system
+spec:
+  commonNames:  
+    - John SMITH
+  passwordHash: $2a$10$qumINdiGJIM1si2wi8ceDOczChq2twfDEDa6DR7jiYL8rJNzeYtmu
+  emails: 
+    - jsmith@mycompany.com
+  uid: 100001
+  comment: A sample user
+  disabled: false 
+```
+
+To define such user, save the yaml definition if a file and perform a `kubectl apply -f <filaName>`
+
+> _Unfortunately, when logged using SKAS, it is impossible to use stdin on kubectl. <br>So, `cat <filename> | kubectl apply -f -` 
+will not work. This is inherent to the way the kubernetes client-go credential plugin works_
+
 ### GroupBinding resources
+
+The SKAS `GroupBinding` resources can also be defined as manifest:
+
+```yaml
+---
+apiVersion: userdb.skasproject.io/v1alpha1
+kind: GroupBinding
+metadata:
+  name: luser1.ldemo-devs
+  namespace: skas-system
+spec:
+  group: ldemo-devs
+  user: luser1
+```
 
 ## Session management
 
+### View active sessions
+
+En each user login, a token is generated. This token will expire after a delay of inactivity. (Like a Web session). This delay is 30mn by default.
+
+On server side, the SKAS tokens are also stored as Kubernetes custom resources, in the namespace `skas-system`. 
+And RBAC has been configured to allow access by any member of the `skas-admin` group.  
+
+The SKAS tokens can be listed as any other kubernetes resources:
+
+```shell
+$ kubectl -n skas-system get tokens
+NAME                                               CLIENT   USER LOGIN   AUTH.   USER ID   CREATION               LAST HIT
+khrvvqwvpotcufiltvymuumsvrodsbiuwypbzrjiqudzjthg            admin        crd     0         2023-07-12T08:23:36Z   2023-07-12T08:32:13Z
+ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd            luser1       crd     0         2023-07-12T08:27:19Z   2023-07-12T08:27:19Z
+```
+
+Each token represents an active user session. SKAS will remove it automatically after 30 minutes of inactivity by default.
+
+Also, there is a maximum token duration, which is set to 24 hours by default.
+
+A detailed view of each token can be displayed:
+
+```shell
+$ kubectl -n skas-system get tokens ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd -o yaml
+apiVersion: session.skasproject.io/v1alpha1
+kind: Token
+metadata:
+  creationTimestamp: "2023-07-12T08:27:19Z"
+  generation: 1
+  name: ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd
+  namespace: skas-system
+  resourceVersion: "513150"
+  uid: 220471a2-2ec1-4b7f-af85-8647c4406343
+spec:
+  authority: crd
+  client: ""
+  creation: "2023-07-12T08:27:19Z"
+  user:
+    commonNames:
+    - Local user1
+    emails:
+    - luser1@internal
+    groups:
+    - ldemo-devs
+    login: luser1
+    uid: 0
+status:
+  lastHit: "2023-07-12T08:27:19Z"
+```
+
+### Terminate session
+
+To end a session, the corresponding token is to be deleted:
+
+```shell
+$ kubectl -n skas-system delete tokens ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd
+token.session.skasproject.io "ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd" deleted
+```
+
+Note there is a local cache of 30 seconds on the client side. So the session will remains active on this short (and configurable) delay.
 
 ## Others `kubectl sk` commands
 
 ### hash
 
+This command compute the Hash value of a password. It is intended to be used when creating a user through a manifest.
+
+Note there is no password strength check doing this way.
+
 ### init
+
+This command has been used at the beginning of this chapter. If you enter `kubectl sk init --help`, you can see there is some more options:
+
+- Some are related to certificate management and was already mentioned.
+- Some allow overriding of values provided by the server.
+- `clientId/Secret` is an optional method to restrict access to this command to users provided with these information. To be configured on the server.
 
 ### login
 
+Perform the login/pasword interaction. 
+
+Will also allow providing login and password on the command line. 
+
 ### logout
+
+Logout the user, by deleting locally cached token.
 
 ### password
 
-### version
+To change current user password. 
+
+To change the password of another user, use the `kubectl sk user patch` command. Of course, you need to be member of the group `skas-admin` to do so.
 
 ### whoami
 
+Display the currently logged user and the groups its belong to.
 
-``` 
----------------------------------------------------------------------------------------------------------------
-```
+### version
 
-# Argo cd
+Display the current version of this SKAS plugin
+
+
+
+

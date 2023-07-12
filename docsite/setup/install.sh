@@ -28,7 +28,7 @@ then
 	fi
 	virtualenv --python="$PYTHON" "${MYDIR}"/../${VENV}
   # shellcheck disable=SC1090
-  source "${MYDIR}"/../${VENV}/usr/local/bin/activate
+  source "${MYDIR}"/../${VENV}/bin/activate
   pip install --upgrade pip
   pip install -r "${MYDIR}"/requirements.txt
 elif [[  -f /etc/os-release ]]

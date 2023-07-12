@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"
+	"skas/sk-clientgo/internal/global"
 )
 
 func LoadStuff(path string, decode func(decoder *yaml.Decoder) error) bool {
@@ -13,7 +14,8 @@ func LoadStuff(path string, decode func(decoder *yaml.Decoder) error) bool {
 		dec.SetStrict(true)
 		err = decode(dec)
 		if err != nil {
-			panic(err)
+			global.Log.Info("Invalid cached information. Will reset")
+			return false
 		}
 		_ = file.Close()
 		return true

@@ -1,6 +1,8 @@
 
 # Configuration
 
-## LDAP configuration
+## Kubernetes
 
-## Merging identity provider
+## Session values configuration
+
+## Securing init by clientId/clientSecret

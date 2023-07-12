@@ -44,7 +44,7 @@ type TokenStatus struct {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-// +kubebuilder:resource:scope=Namespaced,shortName=skastoken
+// +kubebuilder:resource:scope=Namespaced,shortName=sktoken;skastoken;sktokens;skastokens
 // +kubebuilder:printcolumn:name="Client",type=string,JSONPath=`.spec.client`
 // +kubebuilder:printcolumn:name="User login",type=string,JSONPath=`.spec.user.login`
 // +kubebuilder:printcolumn:name="Auth.",type=string,JSONPath=`.spec.authority`
