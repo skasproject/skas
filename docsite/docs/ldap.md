@@ -1,5 +1,7 @@
-# LDAP
+# LDAP and identity merging
 
-## Configuration
+## LDAP Configuration
 
 ## Merging identity provider
+
+

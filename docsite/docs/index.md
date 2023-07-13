@@ -14,21 +14,5 @@ Its main features are:
 - Provide flexible architecture to handle sophisticated user management in a complex environment.
 - Can use a ReadOnly access to the LDAP/AD server(s). User profile can then be enriched with local information.
 
-To move forward:
-
-- [Installation](./installation.md)
-- [User guide](./userguide.md)
-- Configuration
-    - [LDAP configuration](./configuration/#ldap-configration)
-- [Architecture](./architecture.md)
-- Advanced configuration
-    - [Delegate users management](./configuration/#delegated-user-management)
-    - [Add a second LDAP Server](./configuration/#add-a-second-ldap-server)
-    - [Centralized user management in a multi-cluster context]()
-- [DEX integration with Argocd as an example](dex.md)
-- [Tools and Tricks](./toolsandtricks.md)
-
-
-
 
 

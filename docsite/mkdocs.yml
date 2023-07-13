@@ -5,7 +5,7 @@ nav:
   - Installation: installation.md
   - "User guide": userguide.md
   - "Configuration": configuration.md
-  - "Ldap": ldap.md
+  - "Ldap and Identity merging": ldap.md
   - "Architecture": architecture.md
   - "Advanced configuration": advancedconfiguration.md
   - "DEX integration": dex.md

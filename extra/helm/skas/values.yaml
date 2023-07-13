@@ -26,11 +26,11 @@ image:
   repository: ghcr.io/skasproject/skas
   # -- Overrides the image tag whose default is the chart appVersion.
   tag:
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 
-# Default value. Mau be overridden by component
+# Default value. May be overridden by component
 log:
-  mode: dev
+  mode: json  # 'json' or 'dev'
   level: info
 
 # Security Context for all containers
@@ -220,7 +220,7 @@ skAuth:
   tokenConfig:
     # After this period without token validation, the session expire
     inactivityTimeout: "30m"
-    # After this period, the session expire, in all case.
+    # After this period, the session expire, in all cases.
     sessionMaxTTL: "12h"
     # This is intended for the client CLI, for token caching
     clientTokenTTL: "30s"

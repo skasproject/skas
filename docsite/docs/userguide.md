@@ -467,7 +467,7 @@ ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd            luser1       crd    
 
 Each token represents an active user session. SKAS will remove it automatically after 30 minutes of inactivity by default.
 
-Also, there is a maximum token duration, which is set to 24 hours by default.
+Also, there is a maximum token duration, which is set to 12 hours by default.
 
 A detailed view of each token can be displayed:
 
