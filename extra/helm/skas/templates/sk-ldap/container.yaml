@@ -42,11 +42,16 @@ Expand skLdap container
     - mountPath: /config.yaml
       name: sk-ldap-config
       subPath: config.yaml
-    {{ if and .Values.skLdap.exposure.external.enabled .Values.skLdap.exposure.external.ssl }}
+    {{- if and .Values.skLdap.exposure.external.enabled .Values.skLdap.exposure.external.ssl }}
     - mountPath: /tmp/cert/server
       name: sk-ldap-server-cert
       readOnly: true
-    {{ end }}
+    {{- end }}
+    {{- range .Values.skLdap.extraConfigMaps }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
 {{- end }}
 
 {{/*
@@ -61,6 +66,11 @@ Expand skLdap volumes in pod
   secret:
     defaultMode: 420
     secretName: {{ include "skLdap.certificateSecretName" . }}
+{{- end }}
+{{- range .Values.skLdap.extraConfigMaps }}
+- name: {{ .volume }}
+  configMap:
+    name: {{ .configMap }}
 {{- end }}
 
 {{- end }}

@@ -33,7 +33,8 @@ var PatchCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		skClient, err := httpClient.New()
 		if err != nil {
-			global.Log.Error(err, "error on http client init")
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: %s\n", err.Error())
+			//global.Log.Error(err, "error on http client init")
 			os.Exit(10)
 		}
 		kc := k8sclient.New(userdbv1alpha1.SchemeBuilder, global.KubeconfigPath, userFlagsVars.namespace)

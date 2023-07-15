@@ -3,9 +3,10 @@ site_name: SKAS
 nav:
   - Home: index.md
   - Installation: installation.md
-  - "User guide": userguide.md
+  - "Admin guide": adminguide.md
   - "Configuration": configuration.md
-  - "Ldap and Identity merging": ldap.md
+  - "LDAP Setup": ldap.md
+  - "Identity Providers chaining": chaining.md
   - "Architecture": architecture.md
   - "Advanced configuration": advancedconfiguration.md
   - "DEX integration": dex.md

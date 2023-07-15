@@ -51,6 +51,9 @@ func New() (skclient.SkClient, error) {
 			return nil, fmt.Errorf("error in kubconfig: Unable locate user '%s'. Try kubectl sk init --force https://..... ", context.AuthInfo)
 		}
 		varFromName := make(map[string]string)
+		if user.Exec == nil || user.Exec.Env == nil {
+			return nil, fmt.Errorf("error in kubeconfig. Does not look like a SKAS configuration. Are you logged as a SKAS user? ")
+		}
 		for _, execEnvVar := range user.Exec.Env {
 			varFromName[execEnvVar.Name] = execEnvVar.Value
 		}

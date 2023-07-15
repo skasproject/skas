@@ -9,7 +9,7 @@ import (
 	"skas/sk-clientgo/internal/tokenbag"
 )
 
-// This is intended to be used as client-go exc plugin. It communicates by a json printed on stdout.
+// This is intended to be used as client-go exec plugin. It communicates by a json printed on stdout.
 // So, not other print to stdout should be performed. Use stderr to display messages to the user
 
 var authCmd = &cobra.Command{

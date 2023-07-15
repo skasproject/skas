@@ -539,7 +539,7 @@ skLdap:
     insecureSkipVerify: false
 
     # Connect to the insecure port then issue a StartTLS command to negotiate a
-    # secure connection. If unsupplied secure connections will use the LDAPS protocol.
+    # secure connection. If not supplied secure connections will use the LDAPS protocol.
     startTLS: false
 
     # Path to a trusted root certificate file, or Base64 encoded PEM data containing root CAs.
@@ -588,6 +588,11 @@ skLdap:
       # If there is several value for LinkUserAttr, we will loop on.
       linkGroupAttr:
       linkUserAttr:
+
+  extraConfigMaps: []
+  # - configMap:
+  #   volume:
+  #   mountPath:
 
 
 # --------------------------------------------------------------------------------------------------------- skStatic

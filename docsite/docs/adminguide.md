@@ -1,5 +1,5 @@
 
-# Usage
+# Admin guide
 
 
 ## Local client configuration
@@ -40,8 +40,11 @@ You may get rid of this error by providing the root CA certificate as a file:
 $ kubectl sk init https://skas.ingress.mycluster.internal --authRootCaPath=./CA.crt
 ```
 
-> _A CA certificate file is a text file which begin by `-----BEGIN CERTIFICATE-----` and ends with `-----END CERTIFICATE-----`. 
-Such CA file must have been provided to you by some system administrator._
+Provided you are a kubernetes system administrator, here is how to get this CA.crt file:
+
+```
+kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}' | base64 -d >./CA.crt
+```
 
 If you are unable to get such CA certificate, you can skip the test by setting a flag:
 
@@ -550,6 +553,17 @@ Display the currently logged user and the groups its belong to.
 
 Display the current version of this SKAS plugin
 
+## What to provide to other Kubernetes users
 
+Here is a small checklist of what to provide to non-admin users to allow them to use kubectl on a SKAS enabled cluster.
+
+- Obviously, instructions to install `kubectl`.
+- Instructions to install `kubectl-sk`
+- If needed, the `CA.crt` certificate file
+- The `kubectl sk init https://skas.....` command line.
+- The namespace(s) they are allowed to access
+
+About this last point: You can instruct them to add the `--namespaceOverride` option on `kubectl sk init ...` command.
+This will define the provided namespace as the default one in the `~/.kube/config` file.
 
 

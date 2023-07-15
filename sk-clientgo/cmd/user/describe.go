@@ -32,7 +32,8 @@ var DescribeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client, err := httpClient.New()
 		if err != nil {
-			global.Log.Error(err, "error on InitHttpClient()")
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: %s\n", err.Error())
+			//global.Log.Error(err, "error on InitHttpClient()")
 			os.Exit(10)
 		}
 		tokenBag := tokenbag.Retrieve(client)
