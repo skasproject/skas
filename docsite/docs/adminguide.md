@@ -421,7 +421,7 @@ metadata:
 spec:
   commonNames:  
     - John SMITH
-  passwordHash: $2a$10$qumINdiGJIM1si2wi8ceDOczChq2twfDEDa6DR7jiYL8rJNzeYtmu
+  passwordHash: $2a$10$lnweus6Oe3/XMoRaIImnVOwmxZ.xMp7iRB3X1TOcszzHE8nxfiwJK  # Password: "Xderghy12"
   emails: 
     - jsmith@mycompany.com
   uid: 100001
@@ -433,6 +433,7 @@ To define such user, save the yaml definition if a file and perform a `kubectl a
 
 > _Unfortunately, when logged using SKAS, it is impossible to use stdin on kubectl. <br>So, `cat <filename> | kubectl apply -f -` 
 will not work. This is inherent to the way the kubernetes client-go credential plugin works_
+
 
 ### GroupBinding resources
 

@@ -107,11 +107,23 @@ skLdap:
 ```
 
 - `skMerge` is the SKAS module aimed to merge information from several Identity Provider. This merge obey to some rules which will be described later.
-- `skMerge.providers` is the ordered list of Identity Providers.
+- `skMerge.providers` is the ordered list of Identity Providers. 
 - `crd` is the name of the provider managing the user database in the `skas-system` namespace.
 - `ldap` is the name of our LDAP provider, which will be configured under the `skLdap` subsection.
 - `skLdap.enabled` must be set to `true` (It is `false` by default).
 - `skLdap.ldap.*` is the LDAP configuration with all parameters and their description.
+
+To apply this configuration:
+
+```shell
+$ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
+--values ./values.init.yaml --values --values ./values.ldap.yaml
+```
+
+> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file_
+
+In this configuration, there is two source of identity: Our original `skas-system` user database and the newly added `ldap` server. 
+How these two sources are merged is the object of the next chapter. 
 
 ### Sample configurations
 
@@ -153,15 +165,6 @@ EOF
 Note that, as the connection is using SSL, there is a need to provide a Certificate Authority. 
 Such CA is provided here in `skLdap.ldap.rootCAData`, as a base64 encoded certificate file.
 
-To apply this configuration:
-
-```shell
-$ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
---values ./values.init.yaml --values --values ./values.ldap.yaml
-```
-
-> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file_
-
 And here is a sample of configuration, aimed to connect to an FreeIPA LDAP server
 
 ```
@@ -195,6 +198,14 @@ skLdap:
       nameAttr: cn
 EOF
 ```
+
+Trick: To get the `rootCAData` from a FreeIPA server, log on this server and:
+
+```
+$ cd /etc/ipa
+$ cat ca.crt  | base64 -w0
+```
+
 
 ### Setup LDAP CA in a configMap
 

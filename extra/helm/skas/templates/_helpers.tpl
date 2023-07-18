@@ -82,4 +82,10 @@ Create list of config map for reloader.stakater.com
 {{- if .Values.skAuth.enabled }}
 {{- include "skAuth.configmapName" . }},
 {{- end }}
+{{- if .Values.skCrd.enabled }}
+{{- include "skCrd.configmapName" . }},
+{{- end }}
+{{- if .Values.skLdap.enabled }}
+{{- include "skLdap.configmapName" . }},
+{{- end }}
 {{- end }}
