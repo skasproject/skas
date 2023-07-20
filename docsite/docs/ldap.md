@@ -120,7 +120,7 @@ $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/
 --values ./values.init.yaml --values --values ./values.ldap.yaml
 ```
 
-> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file_
+> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
 In this configuration, there is two source of identity: Our original `skas-system` user database and the newly added `ldap` server. 
 How these two sources are merged is the object of the next chapter. 
@@ -242,8 +242,8 @@ skLdap:
     .....
 ```
 
-The `skLdap.extraConfigMaps` subsection instruct the POD to mount this configMap to the defined location. 
-`skLdap.ldap.rootCA` can now refer to the mounted value. 
+The `skLdap.extraConfigMaps` subsection instruct the POD to mount this configMap to the defined location. The property
+`skLdap.ldap.rootCA` can now refer to the mounted value. Of course `skLdap.ldap.rootCAData` should be removed.
 
 
 
