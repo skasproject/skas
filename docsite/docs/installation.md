@@ -313,4 +313,4 @@ Flags:
 Use "kubectl-sk [command] --help" for more information about a command.
 ```
 
-SKAS is now fully installed. You can now move on usage part. 
+SKAS is now fully installed. You can now move on [Admin guide](./adminguide.md). 

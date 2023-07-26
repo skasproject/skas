@@ -23,7 +23,7 @@ But such configuration should never be used in a production context, as they are
 
 ## LDAP Configuration
 
-### Helm values.ldap.yaml
+### The helm values file
 
 LDAP activation and configuration can be performed by adding specifics values during Helm (re)deployment.
 

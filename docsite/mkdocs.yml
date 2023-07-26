@@ -12,4 +12,42 @@ nav:
   - "DEX integration": dex.md
   - "Tools and Tricks": toolsandtricks.md
 theme:
-  name: readthedocs
+#  name: readthedocs
+#  titles_only: false
+#  name: mkdocs
+#  name: windmill-dark
+#  name: gitbook
+  #  name: dracula
+  name: material
+  palette:
+    - scheme: slate
+      primary: black
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  icon:
+    repo: fontawesome/brands/github
+  features:
+#    - content.code.copy
+#    - content.code.select
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_code_format
+  - attr_list
+  - md_in_html
+
+repo_url: https://github.com/skasproject/skas

@@ -12,7 +12,7 @@ For accessing a kubernetes cluster with kubectl, you need a configuration file (
 
 SKAS provide a mechanism to create or update this user's configuration file.
 
-```
+```shell
 $ kubectl sk init https://skas.ingress.mycluster.internal
 Setup new context 'skas@mycluster.internal' in kubeconfig file '/Users/john/.kube/config'
 ```
@@ -40,10 +40,10 @@ You may get rid of this error by providing the root CA certificate as a file:
 $ kubectl sk init https://skas.ingress.mycluster.internal --authRootCaPath=./CA.crt
 ```
 
-Provided you are a kubernetes system administrator, here is how to get this CA.crt file:
+Provided you are a kubernetes system administrator, here is how you can get this CA.crt file:
 
-```
-kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}' | base64 -d >./CA.crt
+```shell
+$ kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}' | base64 -d >./CA.crt
 ```
 
 If you are unable to get such CA certificate, you can skip the test by setting a flag:
@@ -52,7 +52,7 @@ If you are unable to get such CA certificate, you can skip the test by setting a
 $ kubectl sk init --authInsecureSkipVerify=true https://skas.ingress.mycluster.internal
 ```
 
-But, be aware this is a security breach, as the target site can be a fake one. Use this flag should be limited to initial evaluation context.
+> _This is a security breach, as the target site can be a fake one. Use this flag should be limited to initial evaluation context._
 
 ## First run with default admin account 
 
@@ -149,14 +149,14 @@ It is clear than we are successfully authenticated as `admin`, but this account 
 
 Such permissions can be granted by binding this user to a group having such rights:
 
-```
+```shell
 $ kubectl sk user bind admin system:masters
 GroupBinding 'admin.system.masters' created in namespace 'skas-system'.
 ```
 
 For this to be effective, logout and login back:
 
-```
+```shell
 $ kubectl sk logout
 Bye!
 
@@ -190,12 +190,12 @@ The SKAS kubectl extension plugin provide a `user` command with several subcomma
 
 You can have a complete list of such subcommands:
 
-```
+```shell
 $ kubectl sk user --help
 .......
 ```
 
-NB: _You must be logged as a member of the group `skas-admin` to be able to use this command._
+> _You must be logged as a member of the group `skas-admin` to be able to use this command._
 
 
 ### Create user
@@ -214,11 +214,11 @@ $ kubectl sk user create luser2
 User 'luser2' created in namespace 'skas-system'.
 ```
 
-> _As there is no password provided, login to the user will be impossible_
+> _As there is no password provided, login for this user will be impossible_
 
 A complete list of user's creation options can be displayed: 
 
-```shell
+```
 $ kubectl sk user create --help
 Create a new user
 
@@ -259,7 +259,7 @@ There is several options related to the password:
 
 Users can be listed using standard `kubectl` commands:
 
-```
+```shell
 $ kubectl -n skas-system get skusers
 NAME     COMMON NAMES             EMAILS                UID   COMMENT   DISABLED
 admin    ["SKAS administrator"]
