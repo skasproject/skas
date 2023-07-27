@@ -9,7 +9,7 @@ The following is assumed
 
 - Certificate manager is deployed in the target cluster and a `ClusterIssuer` is defined.
 - There is an nginx ingress controller deployed in the target cluster.
-- You have a local kubernetes configuration with full admin rights on target cluster.
+- You have a local client kubernetes configuration with full admin rights on target cluster.
 
 First create a dedicated namespace:
 
