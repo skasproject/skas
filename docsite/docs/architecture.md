@@ -2,6 +2,8 @@
 
 ## Overview
 
+### Initial deployment
+
 Here is the different modules involved for a SKAS authentication, right after installation: 
 
 ![Overview](./images/draw1.png){ align=left width=350}
@@ -10,16 +12,11 @@ SKAS is deployed as a Kubernetes Pod, this pod hosting three containers:
 
 - `skAuth` which is in charge of delivering Kubernetes tokens and validate them.
 - `skmerge`, which is in charge of building a consolidated identity from several identity providers. As in this configuration there is a single one, it act as a simple passthrough
-- `skCrd`, which is an identity provider storing user's information in the Kubernetes storage.
+- `skCrd`, which is an identity provider storing user's information in the Kubernetes storage, in namesapce `skas-admin`.
 
-Arrow figure out the main communication flow between components. All of them are simple HTTP exchanges.
+Arrow figure out the main communication flow between components. All of them are HTTP exchanges.
 
-![](./images/empty.png)
-
-For clarity, some connection has not been figured in this diagram:
-
-- The `skCrd` module rely on the API server to store its user database, as Custom Resources.
-- The `skAuth` module relay on the API server to store active tokens, as Custom Resources.
+![](./images/empty.png){width=700}
 
 Here is a summary of exchange for an initial interaction
 
@@ -33,6 +30,19 @@ Here is a summary of exchange for an initial interaction
 - The API Server apply its RBAC rules on user's information to allow or deny requested operation. 
 
 There is a more detailed description of this interaction as [sequence diagram](./architecture.md#sequence-diagrams).
+
+### LDAP setup
+
+![ldap](./images/draw2.png){ align=right width=350}
+
+
+This schema describe the architecture when an LDAP server has been configured, as described in a [previous chapter](./ldap.md):
+
+The `skMerge` module is now plugged on two Identity providers: `skCrd` and `skLdap`.
+
+And `skLdap` is connected to an external LDAP server
+
+![](./images/empty.png){width=700}
 
 ## Modules and interfaces
 

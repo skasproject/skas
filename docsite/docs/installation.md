@@ -322,4 +322,4 @@ $ kubectl plugin list
 ....
 ```
 
-SKAS is now fully installed. You can now move on [Admin guide](./adminguide.md). 
+SKAS is now fully installed. You can now move on the [User guide](./userguide.md). 

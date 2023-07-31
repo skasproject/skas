@@ -23,6 +23,8 @@ But such configuration should never be used in a production context, as they are
 
 ## LDAP Configuration
 
+> _To have a better understanding of what this configuration implies, you can refer to the [Architecture Overview](./architecture.md#overview) part._
+
 ### The helm values file
 
 LDAP activation and configuration can be performed by adding specifics values during Helm (re)deployment.
@@ -106,7 +108,7 @@ skLdap:
       linkUserAttr:
 ```
 
-- `skMerge` is the SKAS module aimed to merge information from several Identity Provider. This merge obey to some rules which will be described later.
+- `skMerge` is the SKAS module aimed to merge information from several Identity Provider. This merge obey to some rules which will be described [here](./chaining.md).
 - `skMerge.providers` is the ordered list of Identity Providers. 
 - `crd` is the name of the provider managing the user database in the `skas-system` namespace.
 - `ldap` is the name of our LDAP provider, which will be configured under the `skLdap` subsection.

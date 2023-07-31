@@ -31,15 +31,13 @@ By default, user information are consolidated the following way:
           `crd` provider), then the authoritative one is the next in the list. 
     - The UID will be defined by the authoritative provider.
 
-
 ## CLI user management
 
 Of course, all `kubctl sk user ...` operation such as `create`, `patch`, `bind/unbind` can only modify resources in the `crd` provider. They have no impact on `ldap` or other external provider.
 
 > _From the SKAS perspective, LDAP is 'Read Only'_
 
-For user member of the `skas-admin` group, there is a `kubectl sk user describe...` subcommand. This will display 
-consolidated information for any user. For example:
+A specific `kubectl sk user describe` subcommand will display consolidated information for any user. For example:
 
 ```
 $ kubectl sk user describe jsmith
@@ -48,6 +46,8 @@ jsmith   passwordUnchecked   100001   devs,itdep,staff   john.smith@mycompany.co
 ```
 
 Note the last column, which indicate which provider is authoritative for this user.
+
+> _Access to this subcommand is reserved to the members of the `skas-admin` group._
 
 The flag `--explain` will allow to understand from where user's information are sourced:
 
@@ -94,7 +94,7 @@ crd        userNotFound        0
 ldap       passwordUnchecked   1148400003   staff,itdep   oriley@mycompany.com   Oliver RILEY
 ```
 
-Let's say we want this user to able to ba an admin for SKAS and also for the Kubernetes. For this, we need to setup two GroupBindings:
+Let's say we want this user to able to ba an admin for SKAS and also for the Kubernetes cluster. For this, we need to setup two GroupBindings:
 
 ```
 $ kubectl sk user bind oriley system:masters
@@ -115,8 +115,7 @@ ldap       passwordUnchecked   1148400003   staff,itdep                 oriley@m
 
 Of course, this group binding could have been performed on the LDAP server. But this imply to have some Write access on it. 
 And it could be a best practice to manage cluster authorization at cluster level. 
-(We will see later a way to centralize authorization in a multi-clusters context). 
-
+(We will see later a way to centralize authorization in a multi-clusters context).
 
 ## Role binding
 
