@@ -265,12 +265,12 @@ And you will need a real modification. Touch may not be enough. A common trick h
 
 ## SKAS CLI installation.
 
-SKAS provide a CLI interface as an extension of kubectl
+SKAS provide a CLI interface as an [extension of kubectl](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)
 
 Installation is straightforward:
 
 - Download the executable **for your OS/Architecture**
-- Name it kubectl-sk (To comply to the naming convention of kubectl extension)
+- Name it `kubectl-sk` (To comply to the naming convention of kubectl extension)
 - Make it executable
 - Move it to a folder accessed by your PATH.
 
@@ -311,6 +311,15 @@ Flags:
 --logMode string      Log mode: 'dev' or 'json' (default "dev")
 
 Use "kubectl-sk [command] --help" for more information about a command.
+```
+
+There is also a command to list all available plugins:
+
+```shell
+$ kubectl plugin list
+....
+/usr/local/bin/kubectl-sk
+....
 ```
 
 SKAS is now fully installed. You can now move on [Admin guide](./adminguide.md). 

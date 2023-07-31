@@ -50,7 +50,8 @@ func inputCredentials(login, password string) (string, string) {
 		r := bufio.NewReader(os.Stdin)
 		login, err = r.ReadString('\n')
 		if err != nil {
-			panic(err)
+			_, _ = fmt.Fprintf(os.Stderr, "\nUnable to access stdin to input login. Try login with `kubectl sk login' or 'kubectl-sk login'.` and issue this command again\n\n")
+			os.Exit(18)
 		}
 		login = strings.TrimSpace(login)
 	}

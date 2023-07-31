@@ -3,7 +3,7 @@ site_name: SKAS
 nav:
   - Home: index.md
   - Installation: installation.md
-  - "Admin guide": adminguide.md
+  - "User guide": userguide.md
   - "Configuration": configuration.md
   - "LDAP Setup": ldap.md
   - "Identity Providers chaining": chaining.md

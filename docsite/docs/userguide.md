@@ -1,6 +1,5 @@
 
-# Admin guide
-
+# User guide
 
 ## Local client configuration
 
@@ -54,7 +53,9 @@ $ kubectl sk init --authInsecureSkipVerify=true https://skas.ingress.mycluster.i
 
 > _This is a security breach, as the target site can be a fake one. Use this flag should be limited to initial evaluation context._
 
-## First run with default admin account 
+## Basic usage
+
+### login with default admin account
 
 SKAS manage a local users database, where users are stored as Kubernetes resources.
 
@@ -87,8 +88,50 @@ NAME    COMMON NAMES             EMAILS   UID   COMMENT   DISABLED
 admin   ["SKAS administrator"]
 ```
 
-Note there is now no login/password interaction. A token has been granted during the first login. 
+Note there is now no login/password interaction. A token has been granted during the first login.
 This token will expire after a delay of inactivity. (Like a Web session). This delay is 30mn by default.
+
+### logout and login
+
+Once logged, you can use `kubectl` as usual. The token will be transparently used until it expire on inactivity.
+
+If expired, you will be prompted again to enter login and password.
+
+You can also logout at any time by using the command:
+
+```shell
+$ kubectl sk logout
+```
+
+Note the `sk` who instruct `kubectl` to forward the command to the `kubectl-sk` extension.
+
+Then, you will be prompted again for your login/password on the next `kubectl`command. 
+
+You can also use explicit login:
+
+```shell
+$ kubectl sk login
+Login:admin
+Password:
+logged successfully..
+```
+
+or
+
+```shell
+$ kubectl sk login admin
+Password:
+logged successfully..
+```
+
+or
+
+```shell
+$ kubectl sk login admin ${ADMIN_PASSWORD}
+logged successfully..
+```
+
+> _`sk login` perform an `sk logout` if logged._
 
 ### Password change
 
@@ -126,7 +169,7 @@ The easiest way to overcome this restriction is to increase your password length
 
 In fact, what has been granted to access SKAS resources is not the admin account (It could be), but a group named `skas-system`.
 
-And the user `admin` has been included in the group by another SKAS resources named `groupbindings.userdb.skasproject.io`, with `groupbindings`as an alias/
+And the user `admin` has been included in the group by another SKAS resources named `groupbindings.userdb.skasproject.io`, with `groupbindings`as an alias:
 
 ```shell
 $ kubectl -n skas-system get groupBindings
@@ -184,6 +227,33 @@ In fact, anybody able to create or modify resources in the `skas-admin` namespac
 
 Refer to [Advanced configuration/Delegated user management]() to delegate user management without compromise cluster security. 
 
+### Issue with `stdin`
+
+If you issue a `kubectl` command which use `stdin` as input, you may encounter the following error message:
+
+```shell
+$ cat mymanifest.yaml | kubectl apply -f -
+Login:
+Unable to access stdin to input login. Try login with `kubectl sk login' or 'kubectl-sk login'.` and issue this command again
+
+Unable to connect to the server: getting credentials: exec: executable kubectl-sk failed with exit code 18
+```
+
+This occurs if you token is expired. There is a conflict on `stdin` usage for entering your login/password.
+
+Solution is to ensure to be logged before issuing such command:
+
+```shell
+$ kubectl sk login
+Login:oriley
+Password:
+logged successfully..
+
+[d3] m64:addons sa$ cat mymanifest.yaml | kubectl apply -f -
+pod/mypod created
+```
+
+
 ## CLI users management
 
 The SKAS kubectl extension plugin provide a `user` command with several subcommands
@@ -198,7 +268,7 @@ $ kubectl sk user --help
 > _You must be logged as a member of the group `skas-admin` to be able to use this command._
 
 
-### Create user
+### Create a new user
 
 Here is an example of user's creation:
 

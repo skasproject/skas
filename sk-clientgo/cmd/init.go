@@ -148,7 +148,7 @@ var InitCmd = &cobra.Command{
 			Exec: &api.ExecConfig{
 				APIVersion:      "client.authentication.k8s.io/v1",
 				Command:         command,
-				InteractiveMode: "Always",
+				InteractiveMode: "IfAvailable",
 				Args: []string{
 					"auth",
 				},

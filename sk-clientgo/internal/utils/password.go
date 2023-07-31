@@ -29,7 +29,8 @@ func InputPassword(prompt string) string {
 	}
 	bytePassword, err2 := terminal.ReadPassword(int(syscall.Stdin))
 	if err2 != nil {
-		panic(err2)
+		_, _ = fmt.Fprintf(os.Stderr, "Unable to access stdin to input password. Try login with `kubectl sk login' or 'kubectl-sk login'.`")
+		os.Exit(18)
 	}
 	_, _ = fmt.Fprintf(os.Stderr, "\n")
 	return strings.TrimSpace(string(bytePassword))
