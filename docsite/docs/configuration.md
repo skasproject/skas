@@ -31,6 +31,8 @@ To apply a modified file, the `helm upgrade` command should be used.
 $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz --values ./values.init.yaml
 ```
 
+### Pod restart
+
 For the new configuration to be taken in account, the `skas` pod(s) must be restarted. The best and simple way is to perform a 'rollout' on the skas deployment:
 
 ```shell
@@ -98,6 +100,7 @@ $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/
 
 We still need to add `values.init.yaml`, otherwise, corresponding default/empty values will be set.
 
+> _Don't forget to restart the pod(s). See above_
 
 ## Kubernetes integration
 
@@ -140,3 +143,5 @@ To apply a modified configuration:
 $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
 --values ./values.init.yaml --values ./values.behavior.yaml --values ./values.k8s.yaml
 ```
+
+> _Don't forget to restart the pod(s). See above_

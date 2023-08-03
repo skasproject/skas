@@ -124,8 +124,12 @@ $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](../configuration/#pod-restart)_
+
 In this configuration, there is two source of identity: Our original `skas-system` user database and the newly added `ldap` server. 
 How these two sources are merged is the object of the next chapter. 
+
+Once deployed, you can test your configuration using a `kubectl sk user describe <login> --explain` command. See the [next chapter](./chaining.md) for more information
 
 ### Sample configurations
 
@@ -247,5 +251,13 @@ skLdap:
 The `skLdap.extraConfigMaps` subsection instruct the POD to mount this configMap to the defined location. The property
 `skLdap.ldap.rootCA` can now refer to the mounted value. Of course `skLdap.ldap.rootCAData` should be removed.
 
+To apply this configuration:
+
+```shell
+$ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
+--values ./values.init.yaml --values --values ./values.ldap.yaml
+```
+
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](../configuration/#pod-restart)_
 
 

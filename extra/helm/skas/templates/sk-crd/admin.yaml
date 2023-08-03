@@ -1,4 +1,4 @@
-
+{{- if .Values.skCrd.enabled }}
 {{ with .Values.skCrd.initialUser }}
 ---
 apiVersion: userdb.skasproject.io/v1alpha1
@@ -24,4 +24,5 @@ spec:
   user: {{ .login }}
   group: {{ $.Values.skAuth.adminGroup}}
 
+{{- end }}
 {{- end }}

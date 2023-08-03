@@ -47,6 +47,16 @@ Expand skMerge container
       name: sk-merge-server-cert
       readOnly: true
     {{ end }}
+    {{- range .Values.skMerge.extraConfigMaps }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+    {{- range .Values.skMerge.extraSecrets }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
 {{- end }}
 
 
@@ -62,6 +72,17 @@ Expand slMerge volumes in pod
   secret:
     defaultMode: 420
     secretName: {{ include "skMerge.certificateSecretName" . }}
+{{- end }}
+{{- range .Values.skMerge.extraConfigMaps }}
+- name: {{ .volume }}
+  configMap:
+    name: {{ .configMap }}
+{{- end }}
+{{- range .Values.skMerge.extraSecrets }}
+- name: {{ .volume }}
+  secret:
+    secretName: {{ .secret }}
+    defaultMode: 420
 {{- end }}
 
 {{- end }}

@@ -52,6 +52,11 @@ Expand skLdap container
       mountPath: {{ .mountPath }}
       readOnly: true
     {{- end }}
+    {{- range .Values.skLdap.extraSecrets }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
 {{- end }}
 
 {{/*
@@ -71,6 +76,12 @@ Expand skLdap volumes in pod
 - name: {{ .volume }}
   configMap:
     name: {{ .configMap }}
+{{- end }}
+{{- range .Values.skLdap.extraSecrets }}
+- name: {{ .volume }}
+  secret:
+    secretName: {{ .secret }}
+    defaultMode: 420
 {{- end }}
 
 {{- end }}

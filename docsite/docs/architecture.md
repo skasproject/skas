@@ -35,8 +35,7 @@ There is a more detailed description of this interaction as [sequence diagram](.
 
 ![ldap](./images/draw2.png){ align=right width=350}
 
-
-This schema describe the architecture when an LDAP server has been configured, as described in a [previous chapter](./ldap.md):
+This schema describe the architecture when an LDAP server has been configured, as described in a [previous chapter](./ldap.md).
 
 The `skMerge` module is now plugged on two Identity providers: `skCrd` and `skLdap`.
 

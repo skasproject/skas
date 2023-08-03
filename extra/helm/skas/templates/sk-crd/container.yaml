@@ -61,6 +61,16 @@ Expand skCrd container
       name: sk-crd-server-cert
       readOnly: true
     {{ end }}
+    {{- range .Values.skCrd.extraConfigMaps }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+    {{- range .Values.skCrd.extraSecrets }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
 {{- end }}
 
 {{/*
@@ -75,6 +85,17 @@ Expand skCrd volumes in pod
   secret:
     defaultMode: 420
     secretName: {{ include "skCrd.certificateSecretName" . }}
+{{- end }}
+{{- range .Values.skCrd.extraConfigMaps }}
+- name: {{ .volume }}
+  configMap:
+    name: {{ .configMap }}
+{{- end }}
+{{- range .Values.skCrd.extraSecrets }}
+- name: {{ .volume }}
+  secret:
+    secretName: {{ .secret }}
+    defaultMode: 420
 {{- end }}
 
 {{- end }}

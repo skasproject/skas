@@ -253,6 +253,15 @@ skAuth:
       rootCaData:                         # Default from '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
       insecureSkipVerify: false
 
+  extraConfigMaps: []
+  # - configMap:
+  #   volume:
+  #   mountPath:
+
+  extraSecrets: []
+  # - secret:
+  #   volume:
+  #   mountPath:
 
 # --------------------------------------------------------------------------------------------------------- skMerge
 
@@ -293,6 +302,14 @@ skMerge:
       url: http://localhost:7013
     static:
       url: http://localhost:7014
+    #  extIdp:
+    #    url: https.extIdp.skas-system.svc
+    #    rootCaPath:     # Only one of rootCaData and rootCaPath must be defined
+    #    rootCaData:
+    #    insecureSkipVerify: false
+    #    clientAuth:
+    #      id:
+    #      secret:
 
 
   providers:
@@ -343,10 +360,14 @@ skMerge:
         identity:
           disabled: false
           clients: [] # Must be completed
+          # - id: clientId
+          #   secret: aSharedSecret
           protected: true
         passwordChange:
           disabled: false
           clients: [] # Must be completed
+          # - id: clientId
+          #   secret: aSharedSecret
           protected: true
       ingress:
         enabled: false
@@ -360,6 +381,15 @@ skMerge:
       # Will default to {{ include "skas.fullname" . }}-static
       ingressName:
 
+  extraConfigMaps: []
+  # - configMap:
+  #   volume:
+  #   mountPath:
+
+  extraSecrets: []
+  # - secret:
+  #   volume:
+  #   mountPath:
 
 # --------------------------------------------------------------------------------------------------------- skCrd
 
@@ -432,10 +462,14 @@ skCrd:
         identity:
           disabled: false
           clients: [] # Must be completed
+          # - id: clientId
+          #   secret: aSharedSecret
           protected: true
         passwordChange:
           disabled: false
           clients: [] # Must be completed
+          # - id: clientId
+          #   secret: aSharedSecret
           protected: true
       ingress:
         enabled: false
@@ -453,6 +487,16 @@ skCrd:
     login: admin
     passwordHash: $2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G  # admin
     commonNames: ["SKAS administrator"]
+
+  extraConfigMaps: []
+  # - configMap:
+  #   volume:
+  #   mountPath:
+
+  extraSecrets: []
+  # - secret:
+  #   volume:
+  #   mountPath:
 
 # --------------------------------------------------------------------------------------------------------- skLdap
 
@@ -494,6 +538,7 @@ skLdap:
   # - And protection against BFA should be activated (protected: true)
   exposure:
     internal:
+      enabled: true
       port: 7013
       enabled: true
       services:
@@ -509,6 +554,8 @@ skLdap:
         identity:
           disabled: false
           clients: [] # Must be completed
+          # - id: clientId
+          #   secret: aSharedSecret
           protected: true
       ingress:
         enabled: false
@@ -594,6 +641,10 @@ skLdap:
   #   volume:
   #   mountPath:
 
+  extraSecrets: []
+  # - secret:
+  #   volume:
+  #   mountPath:
 
 # --------------------------------------------------------------------------------------------------------- skStatic
 
@@ -650,6 +701,8 @@ skStatic:
         identity:
           disabled: false
           clients: [] # Must be completed
+          # - id: clientId
+          #   secret: aSharedSecret
           protected: true
       ingress:
         enabled: false
@@ -669,6 +722,13 @@ skStatic:
     users: []
     groupBindings: []
 
+  extraConfigMaps: []
+  # - configMap:
+  #   volume:
+  #   mountPath:
 
-
+  extraSecrets: []
+  # - secret:
+  #   volume:
+  #   mountPath:
 
