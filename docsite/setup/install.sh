@@ -3,6 +3,10 @@
 
 MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+
+BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+
 if [[  -f /etc/redhat-release ]]
 then
 	echo "On a RHEL or Centos system."
@@ -28,7 +32,14 @@ then
 	fi
 	virtualenv --python="$PYTHON" "${MYDIR}"/../${VENV}
   # shellcheck disable=SC1090
-  source "${MYDIR}"/../${VENV}/bin/activate
+	if [ -f "${BASE_DIR}"/venv/bin/activate ]; then
+	  source "${BASE_DIR}"/venv/bin/activate
+	elif [ -f "${BASE_DIR}"/venv/usr/local/bin/activate ]; then
+	  source "${BASE_DIR}"/venv/usr/local/bin/activate
+	else
+	  echo "Unable to find an 'activate' script!"
+	  exit 1
+	fi
   pip install --upgrade pip
   pip install -r "${MYDIR}"/requirements.txt
 elif [[  -f /etc/os-release ]]

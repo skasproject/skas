@@ -28,7 +28,14 @@ then
 elif [[ "$OSTYPE" == "darwin"* ]]
 then
 	# shellcheck disable=SC1090
-	source "${BASE_DIR}"/venv/bin/activate
+	if [ -f "${BASE_DIR}"/venv/bin/activate ]; then
+	  source "${BASE_DIR}"/venv/bin/activate
+	elif [ -f "${BASE_DIR}"/venv/usr/local/bin/activate ]; then
+	  source "${BASE_DIR}"/venv/usr/local/bin/activate
+	else
+	  echo "Unable to find an 'activate' script!"
+	  exit 1
+	fi
 	PS1='[mkdocs] \h:\W \u\$ '
 else
 	echo

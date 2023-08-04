@@ -40,7 +40,7 @@ $ kubectl -n skas-system rollout restart deployment skas
 deployment.apps/skas restarted
 ```
 
-> _There is some solution to perform an automatic restart. See [reloader](../toolsandtricks/#reloader)_
+> _There is some solution to perform an automatic restart. See [reloader](toolsandtricks.md/#reloader)_
 
 SKAS is a very flexible product and, as such, there is a lot of variables in the default `values.yaml` of the helm chart. 
 Fortunately, default values are appropriate in most case. 
@@ -89,7 +89,7 @@ aimed to be injected to a log management external system. To have a more 'human'
 - `skCrd.initialUser` will define the default admin user. Note the `passwordHash` has been commented out, 
 otherwise password would be reset on each apply of these values.
 
-> _The meaning of `skAuth` and `skCrd` subsection is described in the [Architecture](../architecture) chapter._
+> _The meaning of `skAuth` and `skCrd` subsection is described in the [Architecture](architecture.md) chapter._
 
 Then, to apply a modified configuration:
 
@@ -100,7 +100,7 @@ $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/
 
 We still need to add `values.init.yaml`, otherwise, corresponding default/empty values will be set.
 
-> _Don't forget to restart the pod(s). See above_
+> _Don't forget to restart the pod(s). See [above](#pod-restart)_
 
 ## Kubernetes integration
 
@@ -144,4 +144,4 @@ $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/
 --values ./values.init.yaml --values ./values.behavior.yaml --values ./values.k8s.yaml
 ```
 
-> _Don't forget to restart the pod(s). See above_
+> _Don't forget to restart the pod(s). See [above](#pod-restart)_

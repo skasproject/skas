@@ -124,7 +124,7 @@ $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](../configuration/#pod-restart)_
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md/#pod-restart)_
 
 In this configuration, there is two source of identity: Our original `skas-system` user database and the newly added `ldap` server. 
 How these two sources are merged is the object of the next chapter. 
@@ -258,6 +258,6 @@ $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/
 --values ./values.init.yaml --values --values ./values.ldap.yaml
 ```
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](../configuration/#pod-restart)_
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md/#pod-restart)_
 
 

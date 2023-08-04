@@ -176,7 +176,7 @@ EOF
 There is two entries aimed to configure a provider on the bottom of the `skMerge` module:
 
 - `providers` is a list of the connected providers, which allow to define their behavior. The order is important here. 
-  Refers to the [IDP chaining: Provider configuration](../chaining#provider-configuration) chapter.
+  Refers to the [IDP chaining: Provider configuration](chaining.md#provider-configuration) chapter.
 - `providerInfo` is a map providing information on how to reach these providers.<br>For `crd` and `ldap1`, we use the 
   default `localhost` port.<br>For `ldap2` we use the service created by the `skas2` deployment. 
 
@@ -193,7 +193,7 @@ $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](../configuration/#pod-restart)_
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md/#pod-restart)_
 
 #### Test
 
@@ -212,7 +212,7 @@ ldap2      userNotFound   0
 ```
 
 You can check than both ldap server are taken in account. This also ensure connection to both LDAP server are effective, 
-as a provider is `critical` by default (Refers to the [IDP chaining: Provider configuration](../chaining#provider-configuration) chapter). 
+as a provider is `critical` by default (Refers to the [IDP chaining: Provider configuration](chaining.md#provider-configuration) chapter). 
 
 ### Secured connection
 
@@ -380,7 +380,7 @@ $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](../configuration/#pod-restart)_
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md/#pod-restart)_
 
 You can now test again your configuration, as [described above](#test)
 
