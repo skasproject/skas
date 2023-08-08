@@ -61,8 +61,8 @@ skLdap:
     startTLS: false
 
     # Path to a trusted root certificate file, or Base64 encoded PEM data containing root CAs.
-    rootCA:
-    rootCAData:
+    rootCaPath:
+    rootCaData:
 
     # If server require client authentication with certificate.
     #  Path to a client cert file and a private key file
@@ -148,7 +148,7 @@ skLdap:
   ldap:
     host: ldap.mydomain.internal
     insecureNoSSL: false
-    rootCAData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
     bindDN: cn=Manager,dc=mydomain,dc=internal
     bindPW: admin123
     groupSearch:
@@ -169,7 +169,7 @@ EOF
 ```
 
 Note that, as the connection is using SSL, there is a need to provide a Certificate Authority. 
-Such CA is provided here in `skLdap.ldap.rootCAData`, as a base64 encoded certificate file.
+Such CA is provided here in `skLdap.ldap.rootCaData`, as a base64 encoded certificate file.
 
 And here is a sample of configuration, aimed to connect to an FreeIPA LDAP server
 
@@ -186,7 +186,7 @@ skLdap:
   ldap:
     host: ipa1.mydomain.internal
     port: 636
-    rootCAData: "LS0tLS1CRUdJTiBDRU4zclBySE.........................JRklDQVRFLS0tLS0K"
+    rootCaData: "LS0tLS1CRUdJTiBDRU4zclBySE.........................JRklDQVRFLS0tLS0K"
     bindDN: uid=admin,cn=users,cn=accounts,dc=mydomain,dc=internal
     bindPW: ipaadmin
     userSearch:
@@ -205,7 +205,7 @@ skLdap:
 EOF
 ```
 
-Trick: To get the `rootCAData` from a FreeIPA server, log on this server and:
+Trick: To get the `rootCaData` from a FreeIPA server, log on this server and:
 
 ```
 $ cd /etc/ipa
@@ -215,7 +215,7 @@ $ cat ca.crt  | base64 -w0
 
 ### Setup LDAP CA in a configMap
 
-The `rootCAData` attribute could be a quite long string, which can be troublesome. 
+The `rootCaData` attribute could be a quite long string, which can be troublesome. 
 An alternate solution is to store this in a configMap.
 
 First, create the configMap with the CA file: 
@@ -244,12 +244,12 @@ skLdap:
   ldap:
     host: ldap.ops.scw01
     insecureNoSSL: false
-    rootCA: /tmp/ca/ldap/CA.crt
+    rootCaPath: /tmp/ca/ldap/CA.crt
     .....
 ```
 
 The `skLdap.extraConfigMaps` subsection instruct the POD to mount this configMap to the defined location. The property
-`skLdap.ldap.rootCA` can now refer to the mounted value. Of course `skLdap.ldap.rootCAData` should be removed.
+`skLdap.ldap.rootCaPath` can now refer to the mounted value. Of course `skLdap.ldap.rootCaData` should be removed.
 
 To apply this configuration:
 

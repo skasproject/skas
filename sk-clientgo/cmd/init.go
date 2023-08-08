@@ -58,12 +58,12 @@ var InitCmd = &cobra.Command{
 		skConfig.ClientAuth.Id = clientId
 		skConfig.ClientAuth.Secret = clientSecret
 		if authRootCaPath != "" && !authInsecureSkipVerify {
-			rootCABytes, err := os.ReadFile(authRootCaPath)
+			rootCaBytes, err := os.ReadFile(authRootCaPath)
 			if err != nil {
 				_, _ = fmt.Fprintf(os.Stderr, "ERROR: Unable to read CA file: %s\n", err.Error())
 				os.Exit(15)
 			}
-			skConfig.RootCaData = base64.StdEncoding.EncodeToString(rootCABytes)
+			skConfig.RootCaData = base64.StdEncoding.EncodeToString(rootCaBytes)
 		}
 
 		client, err := httpClient.NewForInit(skConfig)

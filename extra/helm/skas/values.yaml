@@ -590,8 +590,8 @@ skLdap:
     startTLS: false
 
     # Path to a trusted root certificate file, or Base64 encoded PEM data containing root CAs.
-    rootCA:
-    rootCAData:
+    rootCaPath:
+    rootCaData:
 
     # If server require client authentication with certificate.
     #  Path to a client cert file and a private key file

@@ -24,9 +24,9 @@ type Config struct {
 	StartTLS bool `yaml:"startTLS"`
 
 	// Path to a trusted root certificate file.
-	RootCA string `yaml:"rootCA"`
+	RootCaPath string `yaml:"rootCaPath"`
 	// Base64 encoded PEM data containing root CAs.
-	RootCAData string `yaml:"rootCAData"`
+	RootCaData string `yaml:"rootCaData"`
 	// Path to a client cert file
 	ClientCert string `yaml:"clientCert"`
 	// Path to a client private key file

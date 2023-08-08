@@ -16,7 +16,7 @@ import (
 
 // Inspired from oauth.go connector.
 
-func New(conf *Config, altRootCAPaths string, altRootCaDatas string) (SkClient, error) {
+func New(conf *Config, altRootCaPaths string, altRootCaDatas string) (SkClient, error) {
 	// Just a test for validity. Not used in this function
 	u, err := url.Parse(conf.Url)
 	if err != nil {
@@ -31,7 +31,7 @@ func New(conf *Config, altRootCAPaths string, altRootCaDatas string) (SkClient, 
 		tlsConfig = &tls.Config{RootCAs: pool, InsecureSkipVerify: conf.InsecureSkipVerify}
 		if !conf.InsecureSkipVerify {
 			caCount := 0
-			rootCaPaths := []string{conf.RootCaPath, altRootCAPaths}
+			rootCaPaths := []string{conf.RootCaPath, altRootCaPaths}
 			for _, rootCaPath := range rootCaPaths {
 				if rootCaPath != "" {
 					if err := appendCaFromFile(tlsConfig.RootCAs, rootCaPath); err != nil {
@@ -75,11 +75,11 @@ func New(conf *Config, altRootCAPaths string, altRootCaDatas string) (SkClient, 
 }
 
 func appendCaFromFile(pool *x509.CertPool, caPath string) error {
-	rootCABytes, err := os.ReadFile(caPath)
+	rootCaBytes, err := os.ReadFile(caPath)
 	if err != nil {
 		return fmt.Errorf("failed to read CA file '%s': %w", caPath, err)
 	}
-	if !pool.AppendCertsFromPEM(rootCABytes) {
+	if !pool.AppendCertsFromPEM(rootCaBytes) {
 		return fmt.Errorf("invalid root CA certificate in file %s", caPath)
 	}
 	return nil

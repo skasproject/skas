@@ -55,7 +55,7 @@ skLdap:
   ldap:
     host: ldap2.mydomain.internal
     insecureNoSSL: false
-    rootCAData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
     bindDN: cn=Manager,dc=mydomain2,dc=internal
     bindPW: admin123
     groupSearch:
@@ -153,7 +153,7 @@ skLdap:
   ldap:
     host: ldap1.mydomain.internal
     insecureNoSSL: false
-    rootCAData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
     bindDN: cn=Manager,dc=mydomain1,dc=internal
     bindPW: admin123
     groupSearch:
@@ -239,7 +239,7 @@ skLdap:
   ldap:
     host: ldap2.mydomain.internal
     insecureNoSSL: false
-    rootCAData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
     bindDN: cn=Manager,dc=mydomain2,dc=internal
     bindPW: admin123
     groupSearch:
@@ -337,7 +337,7 @@ skLdap:
   ldap:
     host: ldap1.mydomain.internal
     insecureNoSSL: false
-    rootCAData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
     bindDN: cn=Manager,dc=mydomain1,dc=internal
     bindPW: admin123
     groupSearch:
