@@ -20,7 +20,6 @@ type PasswordChangeRequest struct {
 	Provider        string     `json:"provider"`
 	Login           string     `json:"login"`
 	OldPassword     string     `json:"oldPassword"`
-	NewPassword     string     `json:"newPassword,omitempty"` // Not used anymore.
 	NewPasswordHash string     `json:"newPasswordHash"`
 }
 

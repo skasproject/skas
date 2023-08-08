@@ -69,7 +69,7 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 		p.ServeJSON(response, responsePayload)
 		return
 	}
-	if requestPayload.NewPassword != "" || requestPayload.NewPasswordHash == "" {
+	if requestPayload.NewPasswordHash == "" {
 		// We are called from a 0.2.0 client
 		p.HttpSendError(response, "Protocol error. Please, update your kubectl-sk client", http.StatusBadRequest)
 		return
