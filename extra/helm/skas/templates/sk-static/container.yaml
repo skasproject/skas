@@ -16,16 +16,16 @@ Expand skStatic container
   imagePullPolicy: {{ .Values.image.pullPolicy }}
   {{- with .Values.skStatic.extraEnv }}
   env:
-  {{- toYaml . | nindent 12 }}
+  {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- with .Values.skStatic.resources }}
   resources:
-  {{- toYaml . | nindent 12 }}
+  {{- toYaml . | nindent 4 }}
   {{ end }}
   securityContext:
-    {{- toYaml .Values.commonContainerSecurityContext | nindent 12 }}
+    {{- toYaml .Values.commonContainerSecurityContext | nindent 4 }}
     {{- with .Values.skStatic.securityContext }}
-    {{- toYaml . | nindent 12 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
   ports:
     {{- if .Values.skStatic.exposure.internal.enabled }}

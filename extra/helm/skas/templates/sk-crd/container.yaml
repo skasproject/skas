@@ -27,16 +27,16 @@ Expand skCrd container
       scheme: {{ .Values.skCrd.probe.scheme }}
   {{- with .Values.skCrd.extraEnv }}
   env:
-    {{- toYaml . | nindent 12 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- with .Values.skCrd.resources }}
   resources:
-  {{- toYaml . | nindent 12 }}
+  {{- toYaml . | nindent 4 }}
   {{ end }}
   securityContext:
-    {{- toYaml .Values.commonContainerSecurityContext | nindent 12 }}
+    {{- toYaml .Values.commonContainerSecurityContext | nindent 4 }}
     {{- with .Values.skCrd.securityContext }}
-    {{- toYaml . | nindent 12 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
   ports:
     {{- if .Values.skCrd.exposure.internal.enabled }}

@@ -29,16 +29,16 @@ Expand skAuth container
   {{- end }}
   {{- with .Values.skAuth.extraEnv }}
   env:
-    {{- toYaml . | nindent 12 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- with .Values.skAuth.resources }}
   resources:
-  {{- toYaml . | nindent 12 }}
+  {{- toYaml . | nindent 4 }}
   {{ end }}
   securityContext:
-    {{- toYaml .Values.commonContainerSecurityContext | nindent 12 }}
+    {{- toYaml .Values.commonContainerSecurityContext | nindent 4 }}
     {{- with .Values.skAuth.securityContext }}
-    {{- toYaml . | nindent 12 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
   ports:
     {{- if .Values.skAuth.exposure.internal.enabled }}

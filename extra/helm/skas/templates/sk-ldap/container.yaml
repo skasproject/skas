@@ -16,16 +16,16 @@ Expand skLdap container
   imagePullPolicy: {{ .Values.image.pullPolicy }}
   {{- with .Values.skLdap.extraEnv }}
   env:
-  {{- toYaml . | nindent 12 }}
+  {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- with .Values.skLdap.resources }}
   resources:
-  {{- toYaml . | nindent 12 }}
+  {{- toYaml . | nindent 4 }}
   {{ end }}
   securityContext:
-    {{- toYaml .Values.commonContainerSecurityContext | nindent 12 }}
+    {{- toYaml .Values.commonContainerSecurityContext | nindent 4 }}
     {{- with .Values.skLdap.securityContext }}
-    {{- toYaml . | nindent 12 }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
   ports:
     {{- if .Values.skLdap.exposure.internal.enabled }}
