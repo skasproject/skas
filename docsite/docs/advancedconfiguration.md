@@ -36,66 +36,66 @@ In the following, two variants of this configuration will be described. One with
 
 ### Clear text connection
 
-#### `skLdap2` configuration
+#### Auxiliary POD configuration
 
 Here is a sample values file to configure the auxiliary POD:
 
-```shell
-$ cat >./values.ldap2.yaml <<EOF
-skAuth:
-  enabled: false
-skMerge:
-  enabled: false
-skCrd:
-  enabled: false
+??? abstract "values.ldap2.yaml"
 
-skLdap:
-  enabled: true
-  # --------------------------------- LDAP configuration
-  ldap:
-    host: ldap2.mydomain.internal
-    insecureNoSSL: false
-    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
-    bindDN: cn=Manager,dc=mydomain2,dc=internal
-    bindPW: admin123
-    groupSearch:
-      baseDN: ou=Groups,dc=mydomain2,dc=internal
-      filter: (objectClass=posixgroup)
-      linkGroupAttr: memberUid
-      linkUserAttr: uid
-      nameAttr: cn
-    timeoutSec: 10
-    userSearch:
-      baseDN: ou=Users,dc=mydomain,dc=internal
-      cnAttr: cn
-      emailAttr: mail
-      filter: (objectClass=inetOrgPerson)
-      loginAttr: uid
-      numericalIdAttr: uidNumber
-
-
-  # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
-  # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
-  # In such case:
-  # - A Client list should be provided to control access.
-  # - ssl: true is strongly recommended.
-  # - And protection against BFA should be activated (protected: true)
-  exposure:
-    internal:
+    ``` { .yaml .copy }
+    skAuth:
       enabled: false
-    external:
+    skMerge:
+      enabled: false
+    skCrd:
+      enabled: false
+    
+    skLdap:
       enabled: true
-      port: 7113
-      ssl: false
-      services:
-        identity:
-          disabled: false
-          clients:
-            - id: "*"
-              secret: "*"
-          protected: true
-EOF         
-```
+      # --------------------------------- LDAP configuration
+      ldap:
+        host: ldap2.mydomain.internal
+        insecureNoSSL: false
+        rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+        bindDN: cn=Manager,dc=mydomain2,dc=internal
+        bindPW: admin123
+        groupSearch:
+          baseDN: ou=Groups,dc=mydomain2,dc=internal
+          filter: (objectClass=posixgroup)
+          linkGroupAttr: memberUid
+          linkUserAttr: uid
+          nameAttr: cn
+        timeoutSec: 10
+        userSearch:
+          baseDN: ou=Users,dc=mydomain,dc=internal
+          cnAttr: cn
+          emailAttr: mail
+          filter: (objectClass=inetOrgPerson)
+          loginAttr: uid
+          numericalIdAttr: uidNumber
+    
+    
+      # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+      # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+      # In such case:
+      # - A Client list should be provided to control access.
+      # - ssl: true is strongly recommended.
+      # - And protection against BFA should be activated (protected: true)
+      exposure:
+        internal:
+          enabled: false
+        external:
+          enabled: true
+          port: 7113
+          ssl: false
+          services:
+            identity:
+              disabled: false
+              clients:
+                - id: "*"
+                  secret: "*"
+              protected: true
+    ```
 
 At the beginning of the file, we disable all other modules than `skLdap`.
 
@@ -129,49 +129,49 @@ Second step is to reconfigure the main POD
 
 Here is a sample of appropriate configuration:
 
-```shell
-$ cat >./values.ldap1and2.yaml <<EOF
-skMerge:
-  providers:
-    - name: crd
-    - name: ldap1
-      groupPattern: "dep1_%s"
-    - name: ldap2
-      groupPattern: "dep2_%s"
+??? abstract "values.ldap1and2.yaml"
 
-  providerInfo:
-    crd:
-      url: http://localhost:7012
-    ldap1:
-      url: http://localhost:7013
-    ldap2:
-      url: http://skas2-ldap.skas-system.svc
-
-skLdap:
-  enabled: true
-  # --------------------------------- LDAP configuration
-  ldap:
-    host: ldap1.mydomain.internal
-    insecureNoSSL: false
-    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
-    bindDN: cn=Manager,dc=mydomain1,dc=internal
-    bindPW: admin123
-    groupSearch:
-      baseDN: ou=Groups,dc=mydomain1,dc=internal
-      filter: (objectClass=posixgroup)
-      linkGroupAttr: memberUid
-      linkUserAttr: uid
-      nameAttr: cn
-    timeoutSec: 10
-    userSearch:
-      baseDN: ou=Users,dc=mydomain,dc=internal
-      cnAttr: cn
-      emailAttr: mail
-      filter: (objectClass=inetOrgPerson)
-      loginAttr: uid
-      numericalIdAttr: uidNumber
-EOF
-```
+    ``` { .yaml .copy }
+    skMerge:
+      providers:
+        - name: crd
+        - name: ldap1
+          groupPattern: "dep1_%s"
+        - name: ldap2
+          groupPattern: "dep2_%s"
+    
+      providerInfo:
+        crd:
+          url: http://localhost:7012
+        ldap1:
+          url: http://localhost:7013
+        ldap2:
+          url: http://skas2-ldap.skas-system.svc
+    
+    skLdap:
+      enabled: true
+      # --------------------------------- LDAP configuration
+      ldap:
+        host: ldap1.mydomain.internal
+        insecureNoSSL: false
+        rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+        bindDN: cn=Manager,dc=mydomain1,dc=internal
+        bindPW: admin123
+        groupSearch:
+          baseDN: ou=Groups,dc=mydomain1,dc=internal
+          filter: (objectClass=posixgroup)
+          linkGroupAttr: memberUid
+          linkUserAttr: uid
+          nameAttr: cn
+        timeoutSec: 10
+        userSearch:
+          baseDN: ou=Users,dc=mydomain,dc=internal
+          cnAttr: cn
+          emailAttr: mail
+          filter: (objectClass=inetOrgPerson)
+          loginAttr: uid
+          numericalIdAttr: uidNumber
+    ```
 
 There is two entries aimed to configure a provider on the bottom of the `skMerge` module:
 
@@ -218,72 +218,72 @@ as a provider is `critical` by default (Refers to the [IDP chaining: Provider co
 
 It should ne noted than unencrypted passwords will transit through the link between the two pods. So, setting up encryption is a must have.
 
-#### `skLdap2` configuration
+#### Auxiliary POD configuration
 
 Here is the modified version for the `skLdap2` pod configuration:
 
-```shell
-$ cat >./values.ldap2.yaml <<EOF
-skAuth:
-  enabled: false
-skMerge:
-  enabled: false
-skCrd:
-  enabled: false
+??? abstract "values.ldap2.yaml"
 
-clusterIssuer: your-cluster-issuer
-
-skLdap:
-  enabled: true
-  # --------------------------------- LDAP configuration
-  ldap:
-    host: ldap2.mydomain.internal
-    insecureNoSSL: false
-    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
-    bindDN: cn=Manager,dc=mydomain2,dc=internal
-    bindPW: admin123
-    groupSearch:
-      baseDN: ou=Groups,dc=mydomain2,dc=internal
-      filter: (objectClass=posixgroup)
-      linkGroupAttr: memberUid
-      linkUserAttr: uid
-      nameAttr: cn
-    timeoutSec: 10
-    userSearch:
-      baseDN: ou=Users,dc=mydomain,dc=internal
-      cnAttr: cn
-      emailAttr: mail
-      filter: (objectClass=inetOrgPerson)
-      loginAttr: uid
-      numericalIdAttr: uidNumber
-
-
-  # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
-  # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
-  # In such case:
-  # - A Client list should be provided to control access.
-  # - ssl: true is strongly recommended.
-  # - And protection against BFA should be activated (protected: true)
-  exposure:
-    internal:
+    ``` { .yaml .copy }
+    skAuth:
       enabled: false
-    external:
+    skMerge:
+      enabled: false
+    skCrd:
+      enabled: false
+    
+    clusterIssuer: your-cluster-issuer
+    
+    skLdap:
       enabled: true
-      port: 7113
-      ssl: true
-      services:
-        identity:
-          disabled: false
-          clients:
-            - id: skMerge
-              secret: aSharedSecret
-          protected: true
-EOF         
-```
+      # --------------------------------- LDAP configuration
+      ldap:
+        host: ldap2.mydomain.internal
+        insecureNoSSL: false
+        rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+        bindDN: cn=Manager,dc=mydomain2,dc=internal
+        bindPW: admin123
+        groupSearch:
+          baseDN: ou=Groups,dc=mydomain2,dc=internal
+          filter: (objectClass=posixgroup)
+          linkGroupAttr: memberUid
+          linkUserAttr: uid
+          nameAttr: cn
+        timeoutSec: 10
+        userSearch:
+          baseDN: ou=Users,dc=mydomain,dc=internal
+          cnAttr: cn
+          emailAttr: mail
+          filter: (objectClass=inetOrgPerson)
+          loginAttr: uid
+          numericalIdAttr: uidNumber
+    
+    
+      # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+      # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+      # In such case:
+      # - A Client list should be provided to control access.
+      # - ssl: true is strongly recommended.
+      # - And protection against BFA should be activated (protected: true)
+      exposure:
+        internal:
+          enabled: false
+        external:
+          enabled: true
+          port: 7113
+          ssl: true
+          services:
+            identity:
+              disabled: false
+              clients:
+                - id: skMerge
+                  secret: aSharedSecret
+              protected: true
+    ```
 
 The differences are the following:
 
-- There is a `clusterIssuer` definition to be able to generate a certificate. (It is assumed here than cert-manager is deployed in the cluster)
+- There is a `clusterIssuer` definition to be able to generate a certificate. (It is assumed here than `cert-manager` is deployed in the cluster)
 - `exposure.external.ssl` is set to `true`. This will also leads the generation of the server certificate.
 - The `service.identity.clients` authentication is also activated. The `id` and `secret` values will have to be provided by the `skMerge` client.
 
@@ -303,59 +303,59 @@ and the `cert-manager.io/v1/Certificate` request.
 
 Here is the modified version for the main SKAS POD configuration:
 
-```shell
-$ cat >./values.ldap1and2.yaml <<EOF
-skMerge:
-  providers:
-    - name: crd
-    - name: ldap1
-      groupPattern: "dep1_%s"
-    - name: ldap2
-      groupPattern: "dep2_%s"
+??? abstract "values.ldap1and2.yaml"
 
-  providerInfo:
-    crd:
-      url: http://localhost:7012
-    ldap1:
-      url: http://localhost:7013
-    ldap2:
-      url: https://skas2-ldap.skas-system.svc
-      rootCaPath: /tmp/cert/ldap2/ca.crt
-      insecureSkipVerify: false
-      clientAuth:
-        id: skMerge
-        secret: aSharedSecret
-
-  extraSecrets:
-    - secret: skas2-ldap-cert
-      volume: ldap2-cert
-      mountPath: /tmp/cert/ldap2
-
-skLdap:
-  enabled: true
-  # --------------------------------- LDAP configuration
-  ldap:
-    host: ldap1.mydomain.internal
-    insecureNoSSL: false
-    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
-    bindDN: cn=Manager,dc=mydomain1,dc=internal
-    bindPW: admin123
-    groupSearch:
-      baseDN: ou=Groups,dc=mydomain1,dc=internal
-      filter: (objectClass=posixgroup)
-      linkGroupAttr: memberUid
-      linkUserAttr: uid
-      nameAttr: cn
-    timeoutSec: 10
-    userSearch:
-      baseDN: ou=Users,dc=mydomain,dc=internal
-      cnAttr: cn
-      emailAttr: mail
-      filter: (objectClass=inetOrgPerson)
-      loginAttr: uid
-      numericalIdAttr: uidNumber
-EOF
-```
+    ``` { .yaml .copy }
+    skMerge:
+      providers:
+        - name: crd
+        - name: ldap1
+          groupPattern: "dep1_%s"
+        - name: ldap2
+          groupPattern: "dep2_%s"
+    
+      providerInfo:
+        crd:
+          url: http://localhost:7012
+        ldap1:
+          url: http://localhost:7013
+        ldap2:
+          url: https://skas2-ldap.skas-system.svc
+          rootCaPath: /tmp/cert/ldap2/ca.crt
+          insecureSkipVerify: false
+          clientAuth:
+            id: skMerge
+            secret: aSharedSecret
+    
+      extraSecrets:
+        - secret: skas2-ldap-cert
+          volume: ldap2-cert
+          mountPath: /tmp/cert/ldap2
+    
+    skLdap:
+      enabled: true
+      # --------------------------------- LDAP configuration
+      ldap:
+        host: ldap1.mydomain.internal
+        insecureNoSSL: false
+        rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+        bindDN: cn=Manager,dc=mydomain1,dc=internal
+        bindPW: admin123
+        groupSearch:
+          baseDN: ou=Groups,dc=mydomain1,dc=internal
+          filter: (objectClass=posixgroup)
+          linkGroupAttr: memberUid
+          linkUserAttr: uid
+          nameAttr: cn
+        timeoutSec: 10
+        userSearch:
+          baseDN: ou=Users,dc=mydomain,dc=internal
+          cnAttr: cn
+          emailAttr: mail
+          filter: (objectClass=inetOrgPerson)
+          loginAttr: uid
+          numericalIdAttr: uidNumber
+    ```
 
 The `providerInfo.ldap2` has been modified for SSL and authenticated connection:
 
@@ -390,7 +390,7 @@ There is still a security issue, as the shared secret (`aSharedSecret`) is in cl
 
 The good practice will be to store the secret value in a kubernetes `secret` resource, such as:
 
-```yaml
+``` { .yaml .copy }
 apiVersion: v1
 kind: Secret
 metadata:
@@ -403,62 +403,76 @@ type: Opaque
 
 Where `data.clientSecret` is the secret encoded in base 64.
 
-> There is several solution to generate such secret value. One can use Helm with some random generator function. Or  
+> There is several solution to generate such secret value. One can use Helm with some random generator function. Or use a [Secret generator](/toolsandtricks#secret-generator)
 
-#### `skLdap2` configuration
+#### Auxiliary POD configuration
 
 To use this secret, here is the new modified version for the `skLdap2` POD configuration:
 
-```shell
-$ cat >./values.ldap2.yaml <<EOF
-skAuth:
-  enabled: false
-skMerge:
-  enabled: false
-skCrd:
-  enabled: false
+??? abstract "values.ldap2.yaml"
 
-clusterIssuer: your-cluster-issuer
-
-skLdap:
-  enabled: true
-  # --------------------------------- LDAP configuration
-  ldap:
-    host: ldap2.mydomain.internal
-    ........
-
-  # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
-  # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
-  # In such case:
-  # - A Client list should be provided to control access.
-  # - ssl: true is strongly recommended.
-  # - And protection against BFA should be activated (protected: true)
-  exposure:
-    internal:
+    ``` { .yaml .copy }
+    skAuth:
       enabled: false
-    external:
+    skMerge:
+      enabled: false
+    skCrd:
+      enabled: false
+    
+    clusterIssuer: your-cluster-issuer
+    
+    skLdap:
       enabled: true
-      port: 7113
-      ssl: true
-      services:
-        identity:
-          disabled: false
-          clients:
-            - id: skMerge
-              secret: ${LDAP2_CLIENT_SECRET}
-          protected: true
-
-  extraEnv:
-    - name: LDAP2_CLIENT_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: ldap2-client-secret
-          key: clientSecret
-          
-EOF         
-```
-
-> _Ldap configuration has been skipped_
+      # --------------------------------- LDAP configuration
+      ldap:
+        host: ldap2.mydomain.internal
+        insecureNoSSL: false
+        rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+        bindDN: cn=Manager,dc=mydomain2,dc=internal
+        bindPW: admin123
+        groupSearch:
+          baseDN: ou=Groups,dc=mydomain2,dc=internal
+          filter: (objectClass=posixgroup)
+          linkGroupAttr: memberUid
+          linkUserAttr: uid
+          nameAttr: cn
+        timeoutSec: 10
+        userSearch:
+          baseDN: ou=Users,dc=mydomain,dc=internal
+          cnAttr: cn
+          emailAttr: mail
+          filter: (objectClass=inetOrgPerson)
+          loginAttr: uid
+          numericalIdAttr: uidNumber
+    
+      # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+      # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+      # In such case:
+      # - A Client list should be provided to control access.
+      # - ssl: true is strongly recommended.
+      # - And protection against BFA should be activated (protected: true)
+      exposure:
+        internal:
+          enabled: false
+        external:
+          enabled: true
+          port: 7113
+          ssl: true
+          services:
+            identity:
+              disabled: false
+              clients:
+                - id: skMerge
+                  secret: ${LDAP2_CLIENT_SECRET}
+              protected: true
+    
+      extraEnv:
+        - name: LDAP2_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: ldap2-client-secret
+              key: clientSecret
+    ```
 
 The modifications are the following:
 
@@ -471,66 +485,66 @@ The modifications are the following:
 
 Here is the modified version, with `secret` handling, for the main SKAS pod configuration:
 
-```shell
-$ cat >./values.ldap1and2.yaml <<EOF
-skMerge:
-  providers:
-    - name: crd
-    - name: ldap1
-      groupPattern: "dep1_%s"
-    - name: ldap2
-      groupPattern: "dep2_%s"
+??? abstract "values.ldap1and2.yaml"
 
-  providerInfo:
-    crd:
-      url: http://localhost:7012
-    ldap1:
-      url: http://localhost:7013
-    ldap2:
-      url: https://skas2-ldap.skas-system.svc
-      rootCaPath: /tmp/cert/ldap2/ca.crt
-      insecureSkipVerify: false
-      clientAuth:
-        id: skMerge
-        secret: ${LDAP2_CLIENT_SECRET}
-
-  extraEnv:
-    - name: LDAP2_CLIENT_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: ldap2-client-secret
-          key: clientSecret
-
-  extraSecrets:
-    - secret: skas2-ldap-cert
-      volume: ldap2-cert
-      mountPath: /tmp/cert/ldap2
-
-skLdap:
-  enabled: true
-  # --------------------------------- LDAP configuration
-  ldap:
-    host: ldap1.mydomain.internal
-    insecureNoSSL: false
-    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
-    bindDN: cn=Manager,dc=mydomain1,dc=internal
-    bindPW: admin123
-    groupSearch:
-      baseDN: ou=Groups,dc=mydomain1,dc=internal
-      filter: (objectClass=posixgroup)
-      linkGroupAttr: memberUid
-      linkUserAttr: uid
-      nameAttr: cn
-    timeoutSec: 10
-    userSearch:
-      baseDN: ou=Users,dc=mydomain,dc=internal
-      cnAttr: cn
-      emailAttr: mail
-      filter: (objectClass=inetOrgPerson)
-      loginAttr: uid
-      numericalIdAttr: uidNumber
-EOF
-```
+    ``` { .yaml .copy }
+    skMerge:
+      providers:
+        - name: crd
+        - name: ldap1
+          groupPattern: "dep1_%s"
+        - name: ldap2
+          groupPattern: "dep2_%s"
+    
+      providerInfo:
+        crd:
+          url: http://localhost:7012
+        ldap1:
+          url: http://localhost:7013
+        ldap2:
+          url: https://skas2-ldap.skas-system.svc
+          rootCaPath: /tmp/cert/ldap2/ca.crt
+          insecureSkipVerify: false
+          clientAuth:
+            id: skMerge
+            secret: ${LDAP2_CLIENT_SECRET}
+    
+      extraEnv:
+        - name: LDAP2_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: ldap2-client-secret
+              key: clientSecret
+    
+      extraSecrets:
+        - secret: skas2-ldap-cert
+          volume: ldap2-cert
+          mountPath: /tmp/cert/ldap2
+    
+    skLdap:
+      enabled: true
+      # --------------------------------- LDAP configuration
+      ldap:
+        host: ldap1.mydomain.internal
+        insecureNoSSL: false
+        rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+        bindDN: cn=Manager,dc=mydomain1,dc=internal
+        bindPW: admin123
+        groupSearch:
+          baseDN: ou=Groups,dc=mydomain1,dc=internal
+          filter: (objectClass=posixgroup)
+          linkGroupAttr: memberUid
+          linkUserAttr: uid
+          nameAttr: cn
+        timeoutSec: 10
+        userSearch:
+          baseDN: ou=Users,dc=mydomain,dc=internal
+          cnAttr: cn
+          emailAttr: mail
+          filter: (objectClass=inetOrgPerson)
+          loginAttr: uid
+          numericalIdAttr: uidNumber
+    ```
 
 The modifications are the same as the SKAS2 POD
 
