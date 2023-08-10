@@ -1,5 +1,27 @@
 # Tools and Tricks
 
+## Secret generator
+
+As stated in [Advanced configuration](advancedconfiguration.md#use-a-kubernetes-secrets), there is the need to generate 
+a random secret in the deployment. For this, one can use [kubernetes-secret-generator](https://github.com/mittwald/kubernetes-secret-generator),
+a custom kubernetes controller.
+
+Here is a manifest which, once applied, will create the secret `ldap2-client-secret` used the authenticate the communication between the two PODs of the two LDAP configuration referenced above.  
+
+```yaml
+---
+apiVersion: "secretgenerator.mittwald.de/v1alpha1"
+kind: "StringSecret"
+metadata:
+  name: ldap2-client-secret
+  namespace: skas-system
+spec:
+  fields:
+    - fieldName: "clientSecret"
+      encoding: "base64"
+      length: "15"
+```
+
 ## k9s
 
 ## Kubernetes dashboard

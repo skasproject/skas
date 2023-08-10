@@ -38,7 +38,7 @@ In the following, two variants of this configuration will be described. One with
 
 #### `skLdap2` configuration
 
-Here is a sample values file to configure the auxiliary pod:
+Here is a sample values file to configure the auxiliary POD:
 
 ```shell
 $ cat >./values.ldap2.yaml <<EOF
@@ -214,7 +214,7 @@ ldap2      userNotFound   0
 You can check than both ldap server are taken in account. This also ensure connection to both LDAP server are effective, 
 as a provider is `critical` by default (Refers to the [IDP chaining: Provider configuration](chaining.md#provider-configuration) chapter). 
 
-### Secured connection
+### Securing connection
 
 It should ne noted than unencrypted passwords will transit through the link between the two pods. So, setting up encryption is a must have.
 
@@ -301,7 +301,7 @@ and the `cert-manager.io/v1/Certificate` request.
 
 #### Main pod reconfiguration
 
-Here is the modified version for the main SKAS pod configuration:
+Here is the modified version for the main SKAS POD configuration:
 
 ```shell
 $ cat >./values.ldap1and2.yaml <<EOF
@@ -383,6 +383,156 @@ $ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/
 > _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md/#pod-restart)_
 
 You can now test again your configuration, as [described above](#test)
+
+### Use a Kubernetes secrets
+
+There is still a security issue, as the shared secret (`aSharedSecret`) is in clear text in both values file. As such it may ends up in some version control system.
+
+The good practice will be to store the secret value in a kubernetes `secret` resource, such as:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ldap2-client-secret
+  namespace: skas-system
+data:
+  clientSecret: Sk1rbkNyYW5WV1YwR0E5
+type: Opaque
+```
+
+Where `data.clientSecret` is the secret encoded in base 64.
+
+> There is several solution to generate such secret value. One can use Helm with some random generator function. Or  
+
+#### `skLdap2` configuration
+
+To use this secret, here is the new modified version for the `skLdap2` POD configuration:
+
+```shell
+$ cat >./values.ldap2.yaml <<EOF
+skAuth:
+  enabled: false
+skMerge:
+  enabled: false
+skCrd:
+  enabled: false
+
+clusterIssuer: your-cluster-issuer
+
+skLdap:
+  enabled: true
+  # --------------------------------- LDAP configuration
+  ldap:
+    host: ldap2.mydomain.internal
+    ........
+
+  # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+  # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+  # In such case:
+  # - A Client list should be provided to control access.
+  # - ssl: true is strongly recommended.
+  # - And protection against BFA should be activated (protected: true)
+  exposure:
+    internal:
+      enabled: false
+    external:
+      enabled: true
+      port: 7113
+      ssl: true
+      services:
+        identity:
+          disabled: false
+          clients:
+            - id: skMerge
+              secret: ${LDAP2_CLIENT_SECRET}
+          protected: true
+
+  extraEnv:
+    - name: LDAP2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: ldap2-client-secret
+          key: clientSecret
+          
+EOF         
+```
+
+> _Ldap configuration has been skipped_
+
+The modifications are the following:
+
+- The `skLdap.extraEnv` subsection inject the secret value as an environment variable in the container.
+- the `exposure.external.services.identity.clients[0].secret` fetch its value through this environment variable.
+
+> Most of the values provided by the helm chart ends up inside a configMap, which is then loaded by the SKAS executable. The environment variable interpolation occurs during this load.
+
+#### Main pod reconfiguration
+
+Here is the modified version, with `secret` handling, for the main SKAS pod configuration:
+
+```shell
+$ cat >./values.ldap1and2.yaml <<EOF
+skMerge:
+  providers:
+    - name: crd
+    - name: ldap1
+      groupPattern: "dep1_%s"
+    - name: ldap2
+      groupPattern: "dep2_%s"
+
+  providerInfo:
+    crd:
+      url: http://localhost:7012
+    ldap1:
+      url: http://localhost:7013
+    ldap2:
+      url: https://skas2-ldap.skas-system.svc
+      rootCaPath: /tmp/cert/ldap2/ca.crt
+      insecureSkipVerify: false
+      clientAuth:
+        id: skMerge
+        secret: ${LDAP2_CLIENT_SECRET}
+
+  extraEnv:
+    - name: LDAP2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: ldap2-client-secret
+          key: clientSecret
+
+  extraSecrets:
+    - secret: skas2-ldap-cert
+      volume: ldap2-cert
+      mountPath: /tmp/cert/ldap2
+
+skLdap:
+  enabled: true
+  # --------------------------------- LDAP configuration
+  ldap:
+    host: ldap1.mydomain.internal
+    insecureNoSSL: false
+    rootCaData: "LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K"
+    bindDN: cn=Manager,dc=mydomain1,dc=internal
+    bindPW: admin123
+    groupSearch:
+      baseDN: ou=Groups,dc=mydomain1,dc=internal
+      filter: (objectClass=posixgroup)
+      linkGroupAttr: memberUid
+      linkUserAttr: uid
+      nameAttr: cn
+    timeoutSec: 10
+    userSearch:
+      baseDN: ou=Users,dc=mydomain,dc=internal
+      cnAttr: cn
+      emailAttr: mail
+      filter: (objectClass=inetOrgPerson)
+      loginAttr: uid
+      numericalIdAttr: uidNumber
+EOF
+```
+
+The modifications are the same as the SKAS2 POD
 
 ## Delegated users management
 
