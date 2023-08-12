@@ -23,8 +23,6 @@ This pod will be instanced using the same SKAS helm chart, under another release
 When all modules are in the same POD, inter-module communication use the `localhost` internal POD network. 
 In this case, as the second `skLdap` module run in another POD, communication must go through a kubernetes service.
 
-
-
 This configuration requires two steps:
 
 - Setup a new Helm deployment for `skLdap2` pod.
@@ -32,7 +30,7 @@ This configuration requires two steps:
 
 ![](./images/empty.png){width=700}
 
-In the following, two variants of this configuration will be described. One with the connection in clear text, and one secured, with network encryption. 
+In the following, three variants of this configuration will be described. One with the connection in clear text, and two secured, with network encryption and inter-pod authentication. 
 
 ### Clear text connection
 
@@ -193,6 +191,8 @@ $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
 > _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md/#pod-restart)_
+
+If deploying two separate Charts is a constraint for you, you may setup a 'meta chart'. See [here](/toolsandtricks#tricks-setup-a-meta-helm-chart)  
 
 #### Test
 
