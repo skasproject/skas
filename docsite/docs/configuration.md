@@ -4,7 +4,7 @@
 ## Principle
 
 As installation was performed using an helm chart, configuration will be performed by providing a 'values' file overriding 
-the default [`values.yaml`](https://github.com/skasproject/skas/blob/0.2.1/extra/helm/skas/values.yaml) of the helm chart
+the default [`values.yaml`](https://github.com/skasproject/skas/blob/main/helm/skas/values.yaml) of the helm chart
 
 This is what was did in the initial configuration, which such a file:
 
@@ -28,7 +28,7 @@ EOF
 To apply a modified file, the `helm upgrade` command should be used.
 
 ```shell
-$ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz --values ./values.init.yaml
+$ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml
 ```
 
 ### Pod restart
@@ -94,11 +94,11 @@ otherwise password would be reset on each apply of these values.
 Then, to apply a modified configuration:
 
 ```shell
-$ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
---values ./values.init.yaml --values ./values.behavior.yaml
+$ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
+--values ./values.behavior.yaml
 ```
 
-We still need to add `values.init.yaml`, otherwise, corresponding default/empty values will be set.
+We still need to add `values.init.yaml`, otherwise, corresponding default/empty values will be reset.
 
 > _Don't forget to restart the pod(s). See [above](#pod-restart)_
 
@@ -140,7 +140,7 @@ EOF
 To apply a modified configuration:
 
 ```shell
-$ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
+$ helm -n skas-system upgrade skas skas/skas \
 --values ./values.init.yaml --values ./values.behavior.yaml --values ./values.k8s.yaml
 ```
 

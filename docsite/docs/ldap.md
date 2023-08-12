@@ -118,8 +118,8 @@ skLdap:
 To apply this configuration:
 
 ```shell
-$ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
---values ./values.init.yaml --values --values ./values.ldap.yaml
+$ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
+--values ./values.ldap.yaml
 ```
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
@@ -254,8 +254,8 @@ The `skLdap.extraConfigMaps` subsection instruct the POD to mount this configMap
 To apply this configuration:
 
 ```shell
-$ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
---values ./values.init.yaml --values --values ./values.ldap.yaml
+$ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
+--values ./values.ldap.yaml
 ```
 
 > _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md/#pod-restart)_

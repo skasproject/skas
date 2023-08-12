@@ -10,8 +10,15 @@ The following is assumed
 - Certificate manager is deployed in the target cluster and a `ClusterIssuer` is defined.
 - There is an nginx ingress controller deployed in the target cluster.
 - You have a local client kubernetes configuration with full admin rights on target cluster.
+- Helm is installed locally.
 
-First create a dedicated namespace:
+First, add the SKAS helm repo:
+
+```shell
+$ helm repo add skas https://skasproject.github.io/skas-charts
+```
+
+Then, create a dedicated namespace:
 
 ```shell
 $ kubectl create namespace skas-system
@@ -20,7 +27,7 @@ $ kubectl create namespace skas-system
 Then, you can deploy the helm chart:
 
 ```shell
-$ helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
+$ helm -n skas-system install skas skas/skas \
     --set clusterIssuer=your-cluster-issuer \
     --set skAuth.exposure.external.ingress.host=skas.ingress.mycluster.internal \
     --set skAuth.kubeconfig.context.name=skas@mycluster.internal \
@@ -60,7 +67,7 @@ EOF
 And issue the helm command as:
 
 ```shell
-$ helm -n skas-system install skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz --values ./values.init.yaml
+$ helm -n skas-system install skas skas/skas --values ./values.init.yaml
 ```
 
 Then, if the installation is successful, you should be able to see the 'skas' server pod:
@@ -240,6 +247,8 @@ To use it, we assume you have an ansible configuration with an inventory definin
 $ cat >./skas.yaml <<EOF
 - hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server
   tags: [ "skas" ]
+  vars:
+    skas_state: present
   roles:
   - skas-apiserver
 EOF
@@ -323,3 +332,41 @@ $ kubectl plugin list
 ```
 
 SKAS is now fully installed. You can now move on the [User guide](./userguide.md). 
+
+
+## SKAS Removal
+
+When performing SKAS removal, the first step is to reconfigure the API server.
+
+If you configured it manually, then you must remove the two entries `--authentication-token-webhook-cache-ttl` and `--authentication-token-webhook-config-file` from the API server manifest file (/etc/kubernetes/manifests/kube-apiserver.yaml)
+
+If you configured it using the ansible role, just modify the playbook by setting `skas_state: absent`: 
+
+```shell
+$ cat >./skas.yaml <<EOF
+- hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server
+  tags: [ "skas" ]
+  vars:
+    skas_state: absent
+  roles:
+  - skas-apiserver
+EOF
+```
+
+and launch it:
+
+```shell
+$ ansible-playbook ./skas.yaml
+```
+
+Then, you can uninstall the helm chart
+
+```shell
+$ helm -n skas-system uninstall skas
+```
+
+And delete the namespace
+
+```shell
+$ kubectl delete namespace skas-system
+```

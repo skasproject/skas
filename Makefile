@@ -7,6 +7,8 @@ VERSION ?= 0.2.1
 
 BUILD_TS ?= $(shell date -u +%Y%m%d.%H%M%S)
 
+SKAS_CHARTS ?= "../skas-charts"
+
 # To authenticate for pushing in github repo:
 # echo $GITHUB_TOKEN | docker login ghcr.io -u $USER_NAME --password-stdin
 
@@ -47,13 +49,18 @@ roles: ## Publish ansible roles in a public repo
 	cd extra/ansible/roles && tar cvzf ../../dist/skas-apiserver-role-${VERSION}.tgz skas-apiserver/
 	cd ../warehouse && gh release upload --clobber $(VERSION) ../skas/extra/dist/skas-apiserver-role-${VERSION}.tgz
 
-.PHONY: charts
-charts: ## Publish helm chart in a public repo (Not the main one)
-	cd extra/helm && helm package -d ../dist skas
-	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/extra/dist/skas-$(VERSION).tgz
-	cd extra/helm && helm package -d ../dist skusers
-	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/extra/dist/skusers-$(VERSION).tgz
+#.PHONY: charts
+#charts: ## Publish helm chart in a public repo (Not the main one)
+#	cd extra/helm && helm package -d ../dist skas
+#	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/extra/dist/skas-$(VERSION).tgz
+#	cd extra/helm && helm package -d ../dist skusers
+#	cd ../warehouse && gh release upload  --clobber $(VERSION) ../skas/extra/dist/skusers-$(VERSION).tgz
 
+.PHONY: charts
+charts: ## Publish helm chart in a public repo
+	cd extra/helm && helm package -d ../dist skas
+	cp extra/dist/skas-$(VERSION).tgz $(SKAS_CHARTS)/charts/skas-$(VERSION).tgz
+	cd $(SKAS_CHARTS) && helm repo index --url https://skasproject.github.io/skas-charts . && git add . && git commit -m "Update charts" && git push
 
 .PHONY: manifests
 manifests:	## Generate CustomResourceDefinition manifests.

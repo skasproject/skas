@@ -115,8 +115,7 @@ Then, there is the `exposure` part, who define how this service will be exposed.
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
---values ./values.ldap2.yaml
+helm -n skas-system install skas2 skas/skas --values ./values.ldap2.yaml
 ```
 
 > **Note the `skas2' release name** 
@@ -187,8 +186,8 @@ Then there is the configuration for the primary LDAP server, which must be adapt
 Then, the reconfiguration must be applied:
 
 ```shell
-$ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
---values ./values.init.yaml --values --values ./values.ldap1and2.yaml
+$ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
+--values ./values.ldap1and2.yaml
 ```
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
@@ -290,8 +289,7 @@ The differences are the following:
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
---values ./values.ldap2.yaml
+helm -n skas-system install skas2 skas/skas --values ./values.ldap2.yaml
 ```
 
 > **Note the `skas2' release name**
@@ -374,8 +372,8 @@ The property `skMerge.providerInfo.ldap2.rootCaPath` can now refer to the mounte
 Then, the reconfiguration must be applied:
 
 ```shell
-$ helm -n skas-system upgrade skas https://github.com/skasproject/skas/releases/download/0.2.1/skas-0.2.1.tgz \
---values ./values.init.yaml --values --values ./values.ldap1and2.yaml
+$ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
+--values ./values.ldap1and2.yaml
 ```
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
@@ -391,6 +389,7 @@ There is still a security issue, as the shared secret (`aSharedSecret`) is in cl
 The good practice will be to store the secret value in a kubernetes `secret` resource, such as:
 
 ``` { .yaml .copy }
+---
 apiVersion: v1
 kind: Secret
 metadata:
