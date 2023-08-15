@@ -17,6 +17,7 @@ data:
       level: {{ default .Values.log.level .Values.skCrd.log.level }}
     metricAddr: ":{{ .Values.skCrd.metric.port }}"
     probeAddr: ":{{ .Values.skCrd.probe.port }}"
+    namespace: "{{ .Values.skCrd.namespace }}"
     servers:
       {{- if .Values.skCrd.exposure.internal.enabled }}
       - port: {{ .Values.skCrd.exposure.internal.port }}

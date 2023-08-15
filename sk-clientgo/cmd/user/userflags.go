@@ -16,7 +16,7 @@ var userFlagsVars struct {
 }
 
 func addUserFlags(c *cobra.Command) {
-	c.PersistentFlags().StringVarP(&userFlagsVars.namespace, "namespace", "n", "skas-system", "User's DB namespace")
+	c.PersistentFlags().StringVarP(&userFlagsVars.namespace, "namespace", "n", "", "User's DB namespace")
 	c.PersistentFlags().StringVar(&userFlagsVars.email, "email", "", "User's email")
 	c.PersistentFlags().StringVar(&userFlagsVars.commonName, "commonName", "", "User's common name")
 	c.PersistentFlags().IntVar(&userFlagsVars.uid, "uid", 0, "User's UID")

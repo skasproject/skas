@@ -25,6 +25,7 @@ import (
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
+	"strings"
 	"time"
 )
 
@@ -41,7 +42,9 @@ func main() {
 		os.Exit(2)
 	}
 
-	config.Log.Info("sk-auth start", "version", cconfig.Version, "build", cconfig.BuildTs, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.Token.StorageType)
+	config.Log.Info("sk-auth start", "version", cconfig.Version, "build", cconfig.BuildTs,
+		"logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.Token.StorageType, "namespace", config.Conf.Namespace,
+		"adminGroups", strings.Join(config.Conf.AdminGroups, ","))
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager
@@ -60,7 +63,7 @@ func main() {
 			HealthProbeBindAddress: config.Conf.ProbeAddr,
 			LeaderElection:         false,
 			Logger:                 config.Log.WithName("manager"),
-			Namespace:              config.Conf.Token.Namespace,
+			Namespace:              config.Conf.Namespace,
 		})
 		time.Sleep(time.Second)
 		if err != nil {

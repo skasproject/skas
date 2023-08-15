@@ -19,7 +19,6 @@ type Token struct {
 	SessionMaxTTL     *time.Duration `yaml:"sessionMaxTTL"`     // After this period, the session expire, in all case.
 	ClientTokenTTL    *time.Duration `yaml:"clientTokenTTL"`    // This is intended for the client CLI, for token caching
 	StorageType       string         `yaml:"storageType"`       // 'memory' or 'crd'
-	Namespace         string         `yaml:"namespace"`         // When tokenStorage==crd, the namespace to store Tokens.
 	LastHitStep       int            `yaml:"lastHitStep"`       // When tokenStorage==crd, the max difference between reality and what is stored in API Server. In per mille of InactivityTimeout. Aim is to avoid API server overloading
 }
 
@@ -48,8 +47,10 @@ type Config struct {
 	Token            Token                  `yaml:"token"`
 	Kubeconfig       proto.KubeconfigConfig `yaml:"kubeconfig"`
 	Provider         skclient.Config        `yaml:"provider"`
-	AdminGroup       string                 `yaml:"adminGroup"`
+	AdminGroups      []string               `yaml:"adminGroups"`
 	MetricAddr       string                 `yaml:"metricAddr"`
 	ProbeAddr        string                 `yaml:"probeAddr"`
 	PasswordStrength PasswordStrength       `yaml:"passwordStrength"`
+	Namespace        string                 `yaml:"namespace"` // When tokenStorage==crd, the namespace to store Tokens.
+
 }

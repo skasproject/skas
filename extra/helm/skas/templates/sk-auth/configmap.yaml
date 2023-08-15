@@ -19,7 +19,7 @@ data:
     metricAddr: ":{{ .Values.skAuth.metric.port }}"
     probeAddr: ":{{ .Values.skAuth.probe.port }}"
     {{- end }}
-    adminGroup: {{ .Values.skAuth.adminGroup }}
+    adminGroups: {{ .Values.skAuth.adminGroups }}
     passwordStrength:
       forbidCommon: {{ .Values.skAuth.passwordStrength.forbidCommon }}
       minimumScore: {{ .Values.skAuth.passwordStrength.minimumScore }}
@@ -91,13 +91,13 @@ data:
       {{- end }}
     provider:
 {{ .Values.skAuth.provider | toYaml | indent 6 }}
+    namespace: {{ .Values.skAuth.namespace }}
     token:
       inactivityTimeout: {{ .Values.skAuth.tokenConfig.inactivityTimeout }}
       sessionMaxTTL: {{ .Values.skAuth.tokenConfig.sessionMaxTTL }}
       clientTokenTTL: {{ .Values.skAuth.tokenConfig.clientTokenTTL }}
       storageType: {{ .Values.skAuth.tokenConfig.storageType }}
       lastHitStep: {{ .Values.skAuth.tokenConfig.lastHitStep }}
-      namespace:
     kubeconfig:
       context:
         name: "{{ .Values.skAuth.kubeconfig.context.name }}"

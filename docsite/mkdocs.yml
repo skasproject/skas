@@ -8,7 +8,8 @@ nav:
   - "LDAP Setup": ldap.md
   - "Identity Providers chaining": chaining.md
   - "Architecture": architecture.md
-  - "Advanced configuration": advancedconfiguration.md
+  - "Two LDAP servers configuration": twoldapservers.md
+  - "Delegated users management": delegated.md
   - "DEX integration": dex.md
   - "Tools and Tricks": toolsandtricks.md
 theme:

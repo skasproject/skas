@@ -57,12 +57,13 @@ rules:
       - tokens/status
     verbs: ["*"]
 
-
+{{ if .Values.skAuth.adminGroups }}
+{{ if gt (len .Values.skAuth.adminGroups)  0 }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: "{{ include "skAuth.editorRoleName" . }}-{{ .Values.skAuth.adminGroup }}"
+  name: "{{ include "skAuth.editorRoleName" . }}-groups"
   labels:
     {{- include "skas.labels" . | nindent 4 }}
   {{- with .Values.commonAnnotations }}
@@ -70,12 +71,15 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 subjects:
+{{- range .Values.skAuth.adminGroups }}
   - kind: Group
-    name: {{ .Values.skAuth.adminGroup }}
-    namespace: {{ .Release.Namespace }}
+    name: {{ . }}
+{{- end }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: "{{ include "skAuth.editorRoleName" . }}"
+{{- end }}
+{{- end }}
 
 {{- end }}

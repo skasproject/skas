@@ -28,6 +28,7 @@ type tokenStore struct {
 	kubeClient  client.Client
 	lastHitStep time.Duration
 	logger      logr.Logger
+	namespace   string
 }
 
 func New(conf config.Token, kubeClient client.Client, logger logr.Logger) tokenstore.TokenStore {
@@ -38,6 +39,7 @@ func New(conf config.Token, kubeClient client.Client, logger logr.Logger) tokens
 		kubeClient:  kubeClient,
 		lastHitStep: lhStep,
 		logger:      logger,
+		namespace:   config.Conf.Namespace,
 	}
 }
 
@@ -57,7 +59,7 @@ func (t *tokenStore) NewToken(clientId string, user proto.User, authority string
 	crdToken := &v1alpha1.Token{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      tkn,
-			Namespace: t.Namespace,
+			Namespace: t.namespace,
 		},
 		Spec: v1alpha1.TokenSpec{
 			Client:    clientId,
@@ -89,7 +91,7 @@ func (t *tokenStore) getToken(token string) (*v1alpha1.Token, error) {
 	crdToken := v1alpha1.Token{}
 	for retry := 0; retry < 4; retry++ {
 		err := t.kubeClient.Get(context.TODO(), client.ObjectKey{
-			Namespace: t.Namespace,
+			Namespace: t.namespace,
 			Name:      token,
 		}, &crdToken)
 		if err == nil {
@@ -165,7 +167,7 @@ func (t *tokenStore) touch(tkn *v1alpha1.Token, now time.Time) error {
 func (t *tokenStore) Clean() error {
 	now := time.Now()
 	list := v1alpha1.TokenList{}
-	err := t.kubeClient.List(context.TODO(), &list, client.InNamespace(t.Namespace))
+	err := t.kubeClient.List(context.TODO(), &list, client.InNamespace(t.namespace))
 	if err != nil {
 		t.logger.Error(err, "Token Cleaner. List failed")
 		return err

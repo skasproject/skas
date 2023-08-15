@@ -1,28 +1,30 @@
 {{- if .Values.skCrd.enabled }}
-{{ with .Values.skCrd.initialUser }}
+{{- if .Values.skCrd.initialUser }}
 ---
 apiVersion: userdb.skasproject.io/v1alpha1
 kind: User
 metadata:
-  name: {{ .login }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ .Values.skCrd.initialUser.login }}
+  namespace: {{ $.Values.skCrd.namespace }}
 spec:
-{{- with .commonNames }}
+{{- with .Values.skCrd.initialUser.commonNames }}
   commonNames:
   {{- toYaml . | nindent 4 }}
 {{- end }}
-  passwordHash: {{ .passwordHash }}
+  passwordHash: {{ .Values.skCrd.initialUser.passwordHash }}
 
 
+{{ range .Values.skCrd.initialUser.groups }}
 ---
 apiVersion: userdb.skasproject.io/v1alpha1
 kind: GroupBinding
 metadata:
-  name: {{ (printf "%s-%s" .login $.Values.skAuth.adminGroup) | replace ":" "-" }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ (printf "%s-%s" $.Values.skCrd.initialUser.login .) | replace ":" "-" }}
+  namespace: {{ $.Values.skCrd.namespace }}
 spec:
-  user: {{ .login }}
-  group: {{ $.Values.skAuth.adminGroup}}
+  user: {{ $.Values.skCrd.initialUser.login }}
+  group: {{ . }}
+{{- end }}
 
 {{- end }}
 {{- end }}

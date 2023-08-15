@@ -107,7 +107,13 @@ skAuth:
   metric:
     port: 8084
 
-  adminGroup: skas-admin
+  # Members of these group will be allowed to perform 'kubectl_sk user describe'
+  # Also, they will be granted by RBAC to access token resources
+  adminGroups:
+  - skas-admin
+
+    # The namespace used as storage for token definition. Default to skas-system
+  namespace: skas-system
 
   # Will default to {{ include "skas.fullname" . }}-auth-config
   configmapName:
@@ -230,8 +236,6 @@ skAuth:
     # Will be he max difference between reality and what is stored in API Server
     # Aim is to avoid API server overloading
     lastHitStep: "3"
-    # The namespace used as storage for token definition. Default to deployment namespace
-    namespace:
 
   provider:
     url: http://localhost:7011
@@ -407,6 +411,13 @@ skCrd:
   metric:
     port: 8082
 
+  # Namespace for SKAS users and groupBindings storage
+  namespace: skas-system
+
+  # Members of theses groups will be granted RBAC access to users and groupBinding resources in the namespace above
+  adminGroups:
+    - skas-admin
+
   # Will default to {{ include "skas.fullname" . }}-crd-config
   configmapName:
 
@@ -487,6 +498,8 @@ skCrd:
     login: admin
     passwordHash: $2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G  # admin
     commonNames: ["SKAS administrator"]
+    groups:
+      - skas-admin
 
   extraConfigMaps: []
   # - configMap:

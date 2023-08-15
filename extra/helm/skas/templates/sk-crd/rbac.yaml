@@ -6,6 +6,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: "{{ include "skCrd.roleName" . }}"
+  namespace: {{ .Values.skCrd.namespace }}
   labels:
     {{- include "skas.labels" . | nindent 4 }}
   {{- with .Values.commonAnnotations }}
@@ -24,6 +25,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: "{{ include "skCrd.roleName" . }}-{{ include "skas.serviceAccountName" . }}"
+  namespace: {{ .Values.skCrd.namespace }}
   labels:
     {{- include "skas.labels" . | nindent 4 }}
   {{- with .Values.commonAnnotations }}
@@ -44,6 +46,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: "{{ include "skCrd.editorRoleName" . }}"
+  namespace: {{ .Values.skCrd.namespace }}
   labels:
     {{- include "skas.labels" . | nindent 4 }}
   {{- with .Values.commonAnnotations }}
@@ -58,11 +61,14 @@ rules:
     verbs: ["*"]
 
 
+{{ if .Values.skCrd.adminGroups }}
+{{ if gt (len .Values.skCrd.adminGroups)  0 }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: "{{ include "skCrd.editorRoleName" . }}-{{ .Values.skAuth.adminGroup }}"
+  name: "{{ include "skCrd.editorRoleName" . }}-groups"
+  namespace: {{ .Values.skCrd.namespace }}
   labels:
     {{- include "skas.labels" . | nindent 4 }}
   {{- with .Values.commonAnnotations }}
@@ -70,13 +76,16 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 subjects:
+{{- range .Values.skCrd.adminGroups }}
   - kind: Group
-    name: {{ .Values.skAuth.adminGroup }}
-    namespace: {{ .Release.Namespace }}
+    name: {{ . }}
+{{- end }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: "{{ include "skCrd.editorRoleName" . }}"
+{{- end }}
+{{- end }}
 
 
 {{- end }}
