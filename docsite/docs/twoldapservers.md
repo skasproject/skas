@@ -1,6 +1,8 @@
 
 # Adding a second LDAP server
 
+> _As the two configurations are quite similar, there is a lot of redundancy between this chapter and [Delegated users management](/delegated) chapter_
+
 ![ldap](./images/draw4.png){ align=right width=300}
 
 The obvious solution to add a second LDAP server would be to duplicate the `skLdap` Identity Provider container, hook it under the `skMerge` module and link it to our second LDAP server.
@@ -187,13 +189,13 @@ $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md/#pod-restart)_
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](/configuration#pod-restart)_
 
 If deploying two separate Charts is a constraint for you, you may setup a 'meta chart'. See [here](/toolsandtricks#tricks-setup-a-meta-helm-chart)
 
 ## Test
 
-Then, you can test your configuration:
+Then, you can now test your configuration:
 
 ```shell
 $ kubectl sk user describe nobody  --explain

@@ -79,6 +79,8 @@ skCrd:
     login: admin
     # passwordHash: $2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G  # admin
     commonNames: ["SKAS administrator"]
+    groups:
+      - skas-admin
 EOF
 ```
 

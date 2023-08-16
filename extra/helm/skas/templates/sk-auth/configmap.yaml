@@ -19,7 +19,10 @@ data:
     metricAddr: ":{{ .Values.skAuth.metric.port }}"
     probeAddr: ":{{ .Values.skAuth.probe.port }}"
     {{- end }}
-    adminGroups: {{ .Values.skAuth.adminGroups }}
+    {{- with .Values.skAuth.adminGroups}}
+    adminGroups:
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
     passwordStrength:
       forbidCommon: {{ .Values.skAuth.passwordStrength.forbidCommon }}
       minimumScore: {{ .Values.skAuth.passwordStrength.minimumScore }}
