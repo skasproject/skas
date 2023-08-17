@@ -37,10 +37,8 @@ Here is a sample values file to configure the auxiliary POD:
     ``` { .yaml .copy } 
     skAuth:
       enabled: false
-    
     skMerge:
       enabled: false
-    
     skLdap:
       enabled: false
     
@@ -372,14 +370,56 @@ It should ne noted than unencrypted passwords will transit through the link betw
 
 ### Auxiliary POD configuration
 
-Here is the modified version for the `skLdap2` pod configuration:
+Here is the modified version for the `skCrd2` pod configuration:
 
 ??? abstract "values.skCrd2.yaml"
 
-    ``` { .yaml .copy }
+    ``` { .yaml .copy } 
     skAuth:
       enabled: false
+    skMerge:
+      enabled: false
+    skLdap:
+      enabled: false
+
+    clusterIssuer: cluster-issuer1
+
+    skCrd:
+      enabled: true
+      namespace: dep1-userdb
+    
+      adminGroups:
+        - dep1-admin
+    
+      initialUser:
+        login: dep1-admin
+        passwordHash: $2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G  # admin
+        commonNames: ["DEP1 administrator"]
+        groups:
+          - admin
+    
+      # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+      # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+      # In such case:
+      # - A Client list should be provided to control access.
+      # - ssl: true is strongly recommended.
+      # - And protection against BFA should be activated (protected: true)
+      exposure:
+        internal:
+          enabled: false
+        external:
+          enabled: true
+          port: 7112
+          ssl: true
+          services:
+            identity:
+              disabled: false
+              clients:
+                - id: "skMerge"
+                  secret: "aSharedSecret"
+              protected: true
     ```
+
 
 The differences are the following:
 
@@ -390,7 +430,7 @@ The differences are the following:
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 skas/skas --values ./values.ldap2.yaml
+helm -n skas-system install skas2 skas/skas --values ./values.skCrd2.yaml
 ```
 
 > **Note the `skas2' release name**
@@ -408,38 +448,52 @@ Here is the modified version for the main SKAS POD configuration:
     skMerge:
       providers:
         - name: crd
-        - name: ldap1
-          groupPattern: "dep1_%s"
-        - name: ldap2
-          groupPattern: "dep2_%s"
+        - name: crd_dep1
+          groupPattern: "dep1-%s"
+    
+      providerInfo:
+        crd:
+          url: http://localhost:7012
+        crd_dep1:
+          url: https://skas2-crd.skas-system.svc
+          rootCaPath: /tmp/cert/skas2/ca.crt
+          insecureSkipVerify: false
+          clientAuth:
+            id: skMerge
+            secret: aSharedSecret
+    
+      extraSecrets:
+        - secret: skas2-crd-cert
+          volume: skas2-cert
+          mountPath: /tmp/cert/skas2
     ```
 
-The `providerInfo.ldap2` has been modified for SSL and authenticated connection:
+The `providerInfo.crd_dep1` has been modified for SSL and authenticated connection:
 
 - `url` begins with `https`.
-- `clientAuth` provides information to authenticated against the `skLdap2` pod.
+- `clientAuth` provides information to authenticated against the `skCrd2` pod.
 - `insecureSkipVerify` is set to false, as we want to check certificate validity.
-- `rootCaPath` is set to access the `ca.crt`, the CA validating the `skLdap2` server certificate.
+- `rootCaPath` is set to access the `ca.crt`, the CA validating the `skCrd2` server certificate.
 
-As stated above, during the deployment of the `skLdap2` auxiliary POD, a server certificate has been generated to allow
-SSL enabled services. This certificate is stored in a secret (of type `kubernetes.io/tls`) named `skas2-ldap-cert`.
+As stated above, during the deployment of the `skCrd2` auxiliary POD, a server certificate has been generated to allow
+SSL enabled services. This certificate is stored in a secret (of type `kubernetes.io/tls`) named `skas2-crd-cert`.
 Alongside the private/public key pair, it also contains the root Certificate authority under the name`ca.crt`.
 
 The `skMerge.extraSecrets` subsection instruct the POD to mount this secret to the defined location.
-The property `skMerge.providerInfo.ldap2.rootCaPath` can now refer to the mounted value.
+The property `skMerge.providerInfo.crd_dep1.rootCaPath` can now refer to the mounted value.
 
 Then, the reconfiguration must be applied:
 
 ```shell
 $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
---values ./values.ldap1and2.yaml
+--values ./values.main.yaml
 ```
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
 > _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md/#pod-restart)_
 
-You can now test again your configuration, as [described above](#test)
+You can now test again your configuration, as [described above](#test-and-usage)
 
 ## Use a Kubernetes secrets
 
@@ -452,7 +506,7 @@ The good practice will be to store the secret value in a kubernetes `secret` res
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ldap2-client-secret
+  name: skas2-client-secret
   namespace: skas-system
 data:
   clientSecret: Sk1rbkNyYW5WV1YwR0E5
@@ -465,18 +519,63 @@ Where `data.clientSecret` is the secret encoded in base 64.
 
 ### Auxiliary POD configuration
 
-To use this secret, here is the new modified version for the `skLdap2` POD configuration:
+To use this secret, here is the new modified version for the `skCrd2` POD configuration:
 
 ??? abstract "values.skCrd2.yaml"
 
-    ``` { .yaml .copy }
+    ``` { .yaml .copy } 
     skAuth:
       enabled: false
     skMerge:
       enabled: false
-    skCrd:
+    skLdap:
       enabled: false
+
+    clusterIssuer: cluster-issuer1
+
+    skCrd:
+      enabled: true
+      namespace: dep1-userdb
+    
+      adminGroups:
+        - dep1-admin
+    
+      initialUser:
+        login: dep1-admin
+        passwordHash: $2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G  # admin
+        commonNames: ["DEP1 administrator"]
+        groups:
+          - admin
+    
+      # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+      # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+      # In such case:
+      # - A Client list should be provided to control access.
+      # - ssl: true is strongly recommended.
+      # - And protection against BFA should be activated (protected: true)
+      exposure:
+        internal:
+          enabled: false
+        external:
+          enabled: true
+          port: 7112
+          ssl: true
+          services:
+            identity:
+              disabled: false
+              clients:
+                - id: "skMerge"
+                  secret: ${SKAS2_CLIENT_SECRET}
+              protected: true
+             
+      extraEnv:
+        - name: SKAS2_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: skas2-client-secret
+              key: clientSecret
     ```
+
 
 The modifications are the following:
 
@@ -495,10 +594,31 @@ Here is the modified version, with `secret` handling, for the main SKAS pod conf
     skMerge:
       providers:
         - name: crd
-        - name: ldap1
-          groupPattern: "dep1_%s"
-        - name: ldap2
-          groupPattern: "dep2_%s"
+        - name: crd_dep1
+          groupPattern: "dep1-%s"
+    
+      providerInfo:
+        crd:
+          url: http://localhost:7012
+        crd_dep1:
+          url: https://skas2-crd.skas-system.svc
+          rootCaPath: /tmp/cert/skas2/ca.crt
+          insecureSkipVerify: false
+          clientAuth:
+            id: skMerge
+            secret: ${SKAS2_CLIENT_SECRET}
+
+      extraEnv:
+        - name: SKAS2_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: skas2-client-secret
+              key: clientSecret
+    
+      extraSecrets:
+        - secret: skas2-crd-cert
+          volume: skas2-cert
+          mountPath: /tmp/cert/skas2
     ```
 
 The modifications are the same as the SKAS2 POD
