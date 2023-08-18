@@ -1,5 +1,7 @@
 # Tools and Tricks
 
+## reloader
+
 ## Secret generator
 
 As stated in [Two LDAP servers configuration](/twoldapservers) o [Delegated users management](/delegated), there is the need to generate 
@@ -24,9 +26,58 @@ spec:
 
 ## k9s
 
+We would like to say two words about this great tool which is [k9s](https://github.com/derailed/k9s)
+
+As it is able to handle Custom Resources Definition out of the box, K9s is a perfect tool to dynamically display, modify or delete SKAS resources.
+
+Note than, as User and Group are ambiguous names, which are used also by others API, alias are provided to ensure ambiguous access.
+
+For example, you can access this screen under `skusers` resource name:
+
+![](/images/k9s-1.png)
+
+This one using `groupbindings`:
+
+![](/images/k9s-2.png)
+
+This one using `tokens`:
+
+![](/images/k9s-3.png)
+
+Of course, k9s can't do more than what the launching user is allowed to do. This user can be authenticated using SKAS, but it must have a minimum set of rights to behave correctly.
+
+For example, you can launch k9s under the `admin` user account we have set up in the installation process (Provided it is member of the `system:masters` group).
+
+```shell
+$ kubectl sk login admin
+Password:
+logged successfully..
+
+$ k9s
+....
+```
+
 ## Kubernetes dashboard
 
-## reloader
+Login to the Kubernetes dashboard with SKAS is quite easy.
+
+First, you must be logged using the CLI. Then using the `--all` option of the `kubectl sk whoami` command, you can get your current allocated token:
+
+```shell
+$ kubectl sk login admin
+Password:
+logged successfully..
+
+$ kubectl sk whoami --all
+USER    ID   GROUPS                      AUTH.   TOKEN
+admin   0    skas-admin,system:masters   crd     znitotnewjbqbuolqacckvgxyhptoxsuykznrzdacuvdhimy
+```
+
+Now, you just have to cut and paste the token value in the dashboard login screen:
+
+![](/images/dashboard1.png)
+
+Of course, the set of operation you will be able to perform through the dashboard will be limited by the logged user's permissions.
 
 ## Tricks: Setup a meta helm chart
 

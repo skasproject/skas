@@ -6,7 +6,6 @@ import (
 	"os"
 	"skas/sk-clientgo/internal/httpClient"
 	"skas/sk-clientgo/internal/tokenbag"
-	"skas/sk-common/pkg/misc"
 	"strings"
 	"text/tabwriter"
 )
@@ -34,7 +33,7 @@ var WhoamiCmd = &cobra.Command{
 			tw.Init(os.Stdout, 2, 4, 3, ' ', 0)
 			if all {
 				_, _ = fmt.Fprintf(tw, "USER\tID\tGROUPS\tAUTH.\tTOKEN")
-				_, _ = fmt.Fprintf(tw, "\n%s\t%d\t%s\t%s\t%s", tokenBag.User.Login, tokenBag.User.Uid, strings.Join(tokenBag.User.Groups, ","), tokenBag.Authority, misc.ShortenString(tokenBag.Token))
+				_, _ = fmt.Fprintf(tw, "\n%s\t%d\t%s\t%s\t%s", tokenBag.User.Login, tokenBag.User.Uid, strings.Join(tokenBag.User.Groups, ","), tokenBag.Authority, tokenBag.Token)
 			} else {
 				_, _ = fmt.Fprintf(tw, "USER\tID\tGROUPS")
 				_, _ = fmt.Fprintf(tw, "\n%s\t%d\t%s", tokenBag.User.Login, tokenBag.User.Uid, strings.Join(tokenBag.User.Groups, ","))

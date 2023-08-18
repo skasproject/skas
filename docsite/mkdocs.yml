@@ -10,6 +10,7 @@ nav:
   - "Architecture": architecture.md
   - "Two LDAP servers configuration": twoldapservers.md
   - "Delegated users management": delegated.md
+  - "Clusters federation": clusterfederation.md
   - "DEX integration": dex.md
   - "Tools and Tricks": toolsandtricks.md
 theme:
