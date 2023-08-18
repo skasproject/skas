@@ -24,7 +24,7 @@ In this case, as the second `skLdap` module run in another POD, communication mu
 
 This configuration requires two steps:
 
-- Setup a new Helm deployment for `skLdap2` pod.
+- Setup a new Helm deployment for `skas2` pod.
 - Reconfigure the `skMerge` module of the main SKAS pod to connect to this new IDP.
 
 ![](./images/empty.png){width=700}
@@ -37,7 +37,7 @@ In the following, three variants of this configuration will be described. One wi
 
 Here is a sample values file to configure the auxiliary POD:
 
-??? abstract "values.ldap2.yaml"
+??? abstract "values.skas2.yaml"
 
     ``` { .yaml .copy }
     skAuth:
@@ -98,7 +98,7 @@ At the beginning of the file, we disable all other modules than `skLdap`.
 
 Then there is the connection to the second LDAP server which must be adjusted to your context. Refer to [LDAP Setup](./ldap.md)
 
-Then, there is the `exposure` part, who define how this service will be exposed. (The default configuration is expose to `localhost` in clean text)
+Then, there is the `exposure` part, who define how this service will be exposed. (The default configuration is expose to `localhost` in clear text)
 
 - `exposure.internal.enabled: false` shutdown the HTTP server bound on localhost.
 - `exposure.external.enabled: true` set the HTTP server bound on the POD IP up. This on port 7113 with no SSL.
@@ -112,7 +112,7 @@ Then, there is the `exposure` part, who define how this service will be exposed.
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 skas/skas --values ./values.ldap2.yaml
+helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
 ```
 
 > **Note the `skas2' release name**
@@ -125,7 +125,7 @@ Second step is to reconfigure the main POD
 
 Here is a sample of appropriate configuration:
 
-??? abstract "values.main.yaml"
+??? abstract "values.skas.yaml"
 
     ``` { .yaml .copy }
     skMerge:
@@ -184,10 +184,10 @@ Then, the reconfiguration must be applied:
 
 ```shell
 $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
---values ./values.main.yaml
+--values ./values.skas.yaml
 ```
 
-> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
+> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.skas.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
 > _And don't forget to restart the pod(s). See [Configuration: Pod restart](/configuration#pod-restart)_
 
@@ -218,9 +218,9 @@ It should ne noted than unencrypted passwords will transit through the link betw
 
 ### Auxiliary POD configuration
 
-Here is the modified version for the `skLdap2` pod configuration:
+Here is the modified version for the `skas2` pod configuration:
 
-??? abstract "values.ldap2.yaml"
+??? abstract "values.skas2.yaml"
 
     ``` { .yaml .copy }
     skAuth:
@@ -288,7 +288,7 @@ The differences are the following:
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 skas/skas --values ./values.ldap2.yaml
+helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
 ```
 
 > **Note the `skas2' release name**
@@ -300,7 +300,7 @@ and the `cert-manager.io/v1/Certificate` request.
 
 Here is the modified version for the main SKAS POD configuration:
 
-??? abstract "values.main.yaml"
+??? abstract "values.skas.yaml"
 
     ``` { .yaml .copy }
     skMerge:
@@ -361,7 +361,7 @@ The `providerInfo.ldap2` has been modified for SSL and authenticated connection:
 - `insecureSkipVerify` is set to false, as we want to check certificate validity.
 - `rootCaPath` is set to access the `ca.crt`, the CA validating the `skLdap2` server certificate.
 
-As stated above, during the deployment of the `skLdap2` auxiliary POD, a server certificate has been generated to allow
+As stated above, during the deployment of the `skas2` auxiliary POD, a server certificate has been generated to allow
 SSL enabled services. This certificate is stored in a secret (of type `kubernetes.io/tls`) named `skas2-ldap-cert`.
 Alongside the private/public key pair, it also contains the root Certificate authority under the name`ca.crt`.
 
@@ -372,12 +372,12 @@ Then, the reconfiguration must be applied:
 
 ```shell
 $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
---values ./values.main.yaml
+--values ./values.skas.yaml
 ```
 
-> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
+> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.skas.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md/#pod-restart)_
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](/configuration#pod-restart)_
 
 You can now test again your configuration, as [described above](#test)
 
@@ -392,7 +392,7 @@ The good practice will be to store the secret value in a kubernetes `secret` res
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ldap2-client-secret
+  name: skas2-client-secret
   namespace: skas-system
 data:
   clientSecret: Sk1rbkNyYW5WV1YwR0E5
@@ -405,9 +405,9 @@ Where `data.clientSecret` is the secret encoded in base 64.
 
 ### Auxiliary POD configuration
 
-To use this secret, here is the new modified version for the `skLdap2` POD configuration:
+To use this secret, here is the new modified version for the `skas2` POD configuration:
 
-??? abstract "values.ldap2.yaml"
+??? abstract "values.skas2.yaml"
 
     ``` { .yaml .copy }
     skAuth:
@@ -461,14 +461,14 @@ To use this secret, here is the new modified version for the `skLdap2` POD confi
               disabled: false
               clients:
                 - id: skMerge
-                  secret: ${LDAP2_CLIENT_SECRET}
+                  secret: ${SKAS2_CLIENT_SECRET}
               protected: true
     
       extraEnv:
-        - name: LDAP2_CLIENT_SECRET
+        - name: SKAS2_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: ldap2-client-secret
+              name: skas2-client-secret
               key: clientSecret
     ```
 
@@ -483,7 +483,7 @@ The modifications are the following:
 
 Here is the modified version, with `secret` handling, for the main SKAS pod configuration:
 
-??? abstract "values.main.yaml"
+??? abstract "values.skas.yaml"
 
     ``` { .yaml .copy }
     skMerge:
@@ -505,13 +505,13 @@ Here is the modified version, with `secret` handling, for the main SKAS pod conf
           insecureSkipVerify: false
           clientAuth:
             id: skMerge
-            secret: ${LDAP2_CLIENT_SECRET}
+            secret: ${SKAS2_CLIENT_SECRET}
     
       extraEnv:
-        - name: LDAP2_CLIENT_SECRET
+        - name: SKAS2_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: ldap2-client-secret
+              name: skas2-client-secret
               key: clientSecret
     
       extraSecrets:

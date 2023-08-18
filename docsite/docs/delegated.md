@@ -19,7 +19,7 @@ For the reasons described in [Two LDAP servers configuration](/twoldapservers), 
 
 This configuration requires two steps:
 
-- Setup a new Helm deployment for `skCrd2` pod.
+- Setup a new Helm deployment for `skas2` pod.
 - Reconfigure the `skMerge` module of the main SKAS pod to connect to this new IDP.
 
 ![](./images/empty.png){width=700}
@@ -32,7 +32,7 @@ In the following, three variants of this configuration will be described. One wi
 
 Here is a sample values file to configure the auxiliary POD:
 
-??? abstract "values.skCrd2.yaml"
+??? abstract "values.skas2.yaml"
 
     ``` { .yaml .copy } 
     skAuth:
@@ -82,11 +82,13 @@ Here is a sample values file to configure the auxiliary POD:
 
 - `skCrd.namespace:  dep1-userdb`  define the namespace this IDP will use to manage the user's information.
 
-- Then, we define one adminGroup: `dep1-admin`. The Helm chart will setup RBAC rules to allow members of this group to access SKAS users resources in the namespace set above. 
+- Then, we define one adminGroup: `dep1-admin`. The Helm chart will setup RBAC rules to allow members of this group to 
+access SKAS users resources in the namespace set above. 
 
 - Then, we create an initial admin user `dep1-admin`, belonging to the group `admin`. More on this later.
 
-Then, there is the `exposure` part, who define how this service will be exposed. (The default configuration is expose to `localhost` in clean text)
+Then, there is the `exposure` part, who define how this service will be exposed. (The default configuration is expose 
+to `localhost` in clear text)
 
 - `exposure.internal.enabled: false` shutdown the HTTP server bound on localhost.
 - `exposure.external.enabled: true` set the HTTP server bound on the POD IP up. This on port 7112 with no SSL.
@@ -100,7 +102,7 @@ Then, there is the `exposure` part, who define how this service will be exposed.
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 skas/skas --values ./values.skCrd2.yaml
+helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
 ```
 
 > **Note the `skas2' release name**
@@ -113,7 +115,7 @@ Second step is to reconfigure the main POD
 
 Here is a sample of appropriate configuration:
 
-??? abstract "values.main.yaml"
+??? abstract "values.skas.yaml"
 
     ``` { .yaml .copy }
     skMerge:
@@ -143,7 +145,7 @@ Then, the reconfiguration must be applied:
 
 ```shell
 $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
---values ./values.main.yaml
+--values ./values.skas.yaml
 ```
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.main.yaml` file. Also, if you have others values file, they must be added on each upgrade_
@@ -269,7 +271,7 @@ As stated above, a `dev1-admin` user is not allowed use the `kubectl sk user des
 This control is performed by the `skAuth` module, with a list of allowed groups. 
 Here is a modified version of the values file which allow `dep1-admin` members to perform a user describe subcommand. 
 
-??? abstract "values.main.yaml"
+??? abstract "values.skas.yaml"
 
     ``` { .yaml .copy }
     skAuth:
@@ -311,7 +313,7 @@ dep1-admin   ["DEP1 administrator"]
 fred         ["Fred Astair"]                                   false
 ```
 
-You can remove this binding (and logout/login):
+You can remove this binding (Then logout/login):
 
 ```shell
 $ kubectl sk whoami
@@ -370,9 +372,9 @@ It should ne noted than unencrypted passwords will transit through the link betw
 
 ### Auxiliary POD configuration
 
-Here is the modified version for the `skCrd2` pod configuration:
+Here is the modified version for the `skas2` pod configuration:
 
-??? abstract "values.skCrd2.yaml"
+??? abstract "values.skas2.yaml"
 
     ``` { .yaml .copy } 
     skAuth:
@@ -430,7 +432,7 @@ The differences are the following:
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 skas/skas --values ./values.skCrd2.yaml
+helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
 ```
 
 > **Note the `skas2' release name**
@@ -442,7 +444,7 @@ and the `cert-manager.io/v1/Certificate` request.
 
 Here is the modified version for the main SKAS POD configuration:
 
-??? abstract "values.main.yaml"
+??? abstract "values.skas.yaml"
 
     ``` { .yaml .copy }
     skMerge:
@@ -471,11 +473,11 @@ Here is the modified version for the main SKAS POD configuration:
 The `providerInfo.crd_dep1` has been modified for SSL and authenticated connection:
 
 - `url` begins with `https`.
-- `clientAuth` provides information to authenticated against the `skCrd2` pod.
+- `clientAuth` provides information to authenticated against the `skas2` pod.
 - `insecureSkipVerify` is set to false, as we want to check certificate validity.
-- `rootCaPath` is set to access the `ca.crt`, the CA validating the `skCrd2` server certificate.
+- `rootCaPath` is set to access the `ca.crt`, the CA validating the `skas2` server certificate.
 
-As stated above, during the deployment of the `skCrd2` auxiliary POD, a server certificate has been generated to allow
+As stated above, during the deployment of the `skas2` auxiliary POD, a server certificate has been generated to allow
 SSL enabled services. This certificate is stored in a secret (of type `kubernetes.io/tls`) named `skas2-crd-cert`.
 Alongside the private/public key pair, it also contains the root Certificate authority under the name`ca.crt`.
 
@@ -486,7 +488,7 @@ Then, the reconfiguration must be applied:
 
 ```shell
 $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
---values ./values.main.yaml
+--values ./values.skas.yaml
 ```
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.ldap.yaml` file. Also, if you have others values file, they must be added on each upgrade_
@@ -519,9 +521,9 @@ Where `data.clientSecret` is the secret encoded in base 64.
 
 ### Auxiliary POD configuration
 
-To use this secret, here is the new modified version for the `skCrd2` POD configuration:
+To use this secret, here is the new modified version for the `skas2` POD configuration:
 
-??? abstract "values.skCrd2.yaml"
+??? abstract "values.skas2.yaml"
 
     ``` { .yaml .copy } 
     skAuth:
@@ -588,7 +590,7 @@ The modifications are the following:
 
 Here is the modified version, with `secret` handling, for the main SKAS pod configuration:
 
-??? abstract "values.main.yaml"
+??? abstract "values.skas.yaml"
 
     ``` { .yaml .copy }
     skMerge:
