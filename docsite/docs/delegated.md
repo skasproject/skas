@@ -1,13 +1,13 @@
 
 # Delegated users management
 
-> _As the two configurations are quite similar, there is a lot of redundancy between this chapter and [Two LDAP servers configuration](/twoldapservers) chapter_
+> _As the two configurations are quite similar, there is a lot of redundancy between this chapter and [Two LDAP servers configuration](twoldapservers.md) chapter_
 
 Aim of this configuration is the ability to delegate the management of a certain set of users and/or their group bindings.
 
 But, we want to restrict the rights of the administrator of the delegated space. Especially , we don't want them to be able to promote themself to global system administrator.
 
-![ldap](./images/draw5.png){ align=right width=350}
+![ldap](images/draw5.png){ align=right width=350}
 
 In this sample configuration, we will setup a separate user database for a department 'dep1'.
 
@@ -15,7 +15,7 @@ To achieve this, the solution is to create a specific namespace `dep1-userdb` wh
 
 And to handle this namespace, we need to instantiate a second Identity Provider, of type `skCrd`.
 
-For the reasons described in [Two LDAP servers configuration](/twoldapservers), we need to instantiate this POD as a separate Helm deployment, although using the same Helm Chart
+For the reasons described in [Two LDAP servers configuration](twoldapservers.md), we need to instantiate this POD as a separate Helm deployment, although using the same Helm Chart
 
 This configuration requires two steps:
 
@@ -150,9 +150,9 @@ $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.main.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](/configuration#pod-restart)_
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md#pod-restart)_
 
-If deploying two separate Charts is a constraint for you, you may setup a 'meta chart'. See [here](/toolsandtricks#tricks-setup-a-meta-helm-chart)
+If deploying two separate Charts is a constraint for you, you may setup a 'meta chart'. See [here](toolsandtricks.md#tricks-setup-a-meta-helm-chart)
 
 ## Test and Usage
 
@@ -517,7 +517,7 @@ type: Opaque
 
 Where `data.clientSecret` is the secret encoded in base 64.
 
-> There is several solution to generate such secret value. One can use Helm with some random generator function. Or use a [Secret generator](/toolsandtricks#secret-generator)
+> There is several solution to generate such secret value. One can use Helm with some random generator function. Or use a [Secret generator](toolsandtricks.md#secret-generator)
 
 ### Auxiliary POD configuration
 

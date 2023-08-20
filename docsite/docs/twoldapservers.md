@@ -1,9 +1,10 @@
+# Two LDAP servers configuration
 
-# Adding a second LDAP server
+## Adding a second LDAP server
 
-> _As the two configurations are quite similar, there is a lot of redundancy between this chapter and [Delegated users management](/delegated) chapter_
+> _As the two configurations are quite similar, there is a lot of redundancy between this chapter and [Delegated users management](delegated.md) chapter_
 
-![ldap](./images/draw4.png){ align=right width=300}
+![ldap](images/draw4.png){ align=right width=300}
 
 The obvious solution to add a second LDAP server would be to duplicate the `skLdap` Identity Provider container, hook it under the `skMerge` module and link it to our second LDAP server.
 
@@ -11,9 +12,9 @@ Unfortunately, the provided SKAS helm chart does not allow several instance of w
 
 A possible solution would be to modify the chart by adding this second LDAP IDP. But such specifics forks should be avoided if possible.
 
-![](./images/empty.png){width=700}
+![](images/empty.png){width=700}
 
-![Overview](./images/draw3.png){ align=left width=350}
+![Overview](images/draw3.png){ align=left width=350}
 
 A more convenient solution will be to create another POD hosting only the new LDAP IDP.
 
@@ -189,9 +190,9 @@ $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.skas.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](/configuration#pod-restart)_
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md#pod-restart)_
 
-If deploying two separate Charts is a constraint for you, you may setup a 'meta chart'. See [here](/toolsandtricks#tricks-setup-a-meta-helm-chart)
+If deploying two separate Charts is a constraint for you, you may setup a 'meta chart'. See [here](toolsandtricks.md#tricks-setup-a-meta-helm-chart)
 
 ## Test
 
@@ -377,7 +378,7 @@ $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
 
 > _Don't forget to add the `values.init.yaml`, or to merge it in the `values.skas.yaml` file. Also, if you have others values file, they must be added on each upgrade_
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](/configuration#pod-restart)_
+> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md#pod-restart)_
 
 You can now test again your configuration, as [described above](#test)
 
@@ -401,7 +402,7 @@ type: Opaque
 
 Where `data.clientSecret` is the secret encoded in base 64.
 
-> There is several solution to generate such secret value. One can use Helm with some random generator function. Or use a [Secret generator](/toolsandtricks#secret-generator)
+> There is several solution to generate such secret value. One can use Helm with some random generator function. Or use a [Secret generator](toolsandtricks.md#secret-generator)
 
 ### Auxiliary POD configuration
 

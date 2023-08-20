@@ -6,7 +6,7 @@
 
 Here is the different modules involved for a SKAS authentication, right after installation: 
 
-![Overview](/images/draw1.png){ align=left width=350}
+![Overview](images/draw1.png){ align=left width=350}
 
 SKAS is deployed as a Kubernetes Pod, this pod hosting three containers:
 
@@ -16,7 +16,7 @@ SKAS is deployed as a Kubernetes Pod, this pod hosting three containers:
 
 Arrow figure out the main communication flow between components. All of them are HTTP exchanges.
 
-![](/images/empty.png){width=700}
+![](images/empty.png){width=700}
 
 Here is a summary of exchange for an initial interaction
 
@@ -33,7 +33,7 @@ There is a more detailed description of this interaction as [sequence diagram](.
 
 ### LDAP setup
 
-![ldap](/images/draw2.png){ align=right width=350}
+![ldap](images/draw2.png){ align=right width=350}
 
 This schema describe the architecture when an LDAP server has been configured, as described in a [previous chapter](./ldap.md).
 
@@ -41,7 +41,7 @@ The `skMerge` module is now plugged on two Identity providers: `skCrd` and `skLd
 
 And `skLdap` is connected to an external LDAP server
 
-![](/images/empty.png){width=700}
+![](images/empty.png){width=700}
 
 ## Modules and interfaces
 

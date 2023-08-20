@@ -4,7 +4,7 @@
 
 ## Secret generator
 
-As stated in [Two LDAP servers configuration](/twoldapservers) o [Delegated users management](/delegated), there is the need to generate 
+As stated in [Two LDAP servers configuration](twoldapservers.md) o [Delegated users management](delegated.md), there is the need to generate 
 a random secret in the deployment. For this, one can use [kubernetes-secret-generator](https://github.com/mittwald/kubernetes-secret-generator),
 a custom kubernetes controller.
 
@@ -34,15 +34,15 @@ Note than, as User and Group are ambiguous names, which are used also by others 
 
 For example, you can access this screen under `skusers` resource name:
 
-![](/images/k9s-1.png)
+![](images/k9s-1.png)
 
 This one using `groupbindings`:
 
-![](/images/k9s-2.png)
+![](images/k9s-2.png)
 
 This one using `tokens`:
 
-![](/images/k9s-3.png)
+![](images/k9s-3.png)
 
 Of course, k9s can't do more than what the launching user is allowed to do. This user can be authenticated using SKAS, but it must have a minimum set of rights to behave correctly.
 
@@ -75,13 +75,13 @@ admin   0    skas-admin,system:masters   crd     znitotnewjbqbuolqacckvgxyhptoxs
 
 Now, you just have to cut and paste the token value in the dashboard login screen:
 
-![](/images/dashboard1.png)
+![](images/dashboard1.png)
 
 Of course, the set of operation you will be able to perform through the dashboard will be limited by the logged user's permissions.
 
 ## Tricks: Setup a meta helm chart
 
-In [Two LDAP servers configuration](/twoldapservers) and [Delegated users management](/delegated), we had setup our configuration by performing two closely related Helm deployment.
+In [Two LDAP servers configuration](twoldapservers.md) and [Delegated users management](delegated.md), we had setup our configuration by performing two closely related Helm deployment.
 
 To ease automation, it could be useful to 'package' such kind of deployment by creating a 'meta chart', a chart which will embed other ones as dependencies.
 
@@ -136,7 +136,7 @@ The following will generate the shared secret allowing inter-pods authentication
           length: "15"
     ```
 
-And here is the `values.yaml` file, with one version for the [Two LDAP servers configuration](/twoldapservers):
+And here is the `values.yaml` file, with one version for the [Two LDAP servers configuration](twoldapservers.md):
 
 ??? abstract "values.yaml"
 
@@ -280,7 +280,7 @@ And here is the `values.yaml` file, with one version for the [Two LDAP servers c
                 key: clientSecret
     ```
 
-and one for [Delegated users management](/delegated).
+and one for [Delegated users management](delegated.md).
 
 ??? abstract "values.yaml"
     
