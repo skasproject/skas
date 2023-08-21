@@ -2,7 +2,22 @@
 
 ## reloader
 
+Forgetting to restart a POD after a configuration change is a common source of errors. Fortunately, some tools can 
+help for this. Such as [Reloader](https://github.com/stakater/Reloader)
 
+The SKAS Helm chart add appropriate annotations on the `deployment`:  
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    configmap.reloader.stakater.com/reload: skas-merge-config,skas-auth-config,skas-crd-config,
+```
+
+> _The list of `configMap` is built dynamically by the Helm chart._
+
+Of course, if Reloader is not installed in your cluster, this annotation will have no effect.
 
 ## Secret generator
 
