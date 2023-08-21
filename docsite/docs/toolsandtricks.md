@@ -2,6 +2,8 @@
 
 ## reloader
 
+
+
 ## Secret generator
 
 As stated in [Two LDAP servers configuration](twoldapservers.md) o [Delegated users management](delegated.md), there is the need to generate 
@@ -417,8 +419,8 @@ $ export KUBECONFIG=/tmp/kconfig
 Then you can initialize a new Kubernetes/SKAS context
 
 ```shell
-$ kubectl sk init https://skas.ingress.ksprayX
-Setup new context 'skas@ksprayX' in kubeconfig file '/tmp/kconfig'
+$ kubectl sk init https://skas.ingress.mycluster.internal
+Setup new context 'skas@mycluster.internal' in kubeconfig file '/tmp/kconfig'
 ```
 
 

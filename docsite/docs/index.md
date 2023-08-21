@@ -4,6 +4,8 @@ SKAS is a Kubernetes extension aimed to handle users authentication and authoriz
 
 Its main features are:
 
+![Overview](images/draw0.png){ align=right width=320}
+
 - Provide an Kubernetes authentication webhook and a kubectl extension, for seamless Kubernetes CLI integration (Without browser interaction)
 - Allow definition of Users and Groups as Kubernetes custom resources.
 - Provide a DEX connector to support all OIDC aware applications (Argocd, argo workflow, ...)
