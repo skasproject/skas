@@ -1,0 +1,1493 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../installation/">
+      
+      
+        <link rel="next" href="../configuration/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.19">
+    
+    
+      
+        <title>User guide - SKAS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.eebd395e.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ecc896b0.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#user-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SKAS" class="md-header__button md-logo" aria-label="SKAS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SKAS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              User guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+            
+              <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_2" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+              </label>
+            
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_2">
+            
+              <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+              </label>
+            
+          
+        </form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/skasproject/skas" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SKAS" class="md-nav__button md-logo" aria-label="SKAS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SKAS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/skasproject/skas" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          User guide
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        User guide
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#local-client-configuration" class="md-nav__link">
+    Local client configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Local client configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#got-a-certificate-issue" class="md-nav__link">
+    Got a certificate issue ?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    Basic usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#login-with-default-admin-account" class="md-nav__link">
+    login with default admin account
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logout-and-login" class="md-nav__link">
+    logout and login
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#password-change" class="md-nav__link">
+    Password change
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skas-group-binding" class="md-nav__link">
+    SKAS group binding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#be-a-cluster-admin" class="md-nav__link">
+    Be a cluster admin
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-with-stdin" class="md-nav__link">
+    Issue with stdin
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli-users-management" class="md-nav__link">
+    CLI users management
+  </a>
+  
+    <nav class="md-nav" aria-label="CLI users management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-new-user" class="md-nav__link">
+    Create a new user
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-users" class="md-nav__link">
+    List users
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modify-user" class="md-nav__link">
+    Modify user
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-user" class="md-nav__link">
+    Delete user
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manage-users-groups-and-permissions" class="md-nav__link">
+    Manage user's groups and permissions.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-rbac-referential-integrity" class="md-nav__link">
+    Kubernetes RBAC referential integrity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-manifests-instead-of-cli" class="md-nav__link">
+    Using Manifests instead of CLI
+  </a>
+  
+    <nav class="md-nav" aria-label="Using Manifests instead of CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-resources" class="md-nav__link">
+    User resources
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#groupbinding-resources" class="md-nav__link">
+    GroupBinding resources
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#session-management" class="md-nav__link">
+    Session management
+  </a>
+  
+    <nav class="md-nav" aria-label="Session management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#view-active-sessions" class="md-nav__link">
+    View active sessions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminate-session" class="md-nav__link">
+    Terminate session
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#others-kubectl-sk-commands" class="md-nav__link">
+    Others kubectl sk commands
+  </a>
+  
+    <nav class="md-nav" aria-label="Others kubectl sk commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hash" class="md-nav__link">
+    hash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#init" class="md-nav__link">
+    init
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#login" class="md-nav__link">
+    login
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logout" class="md-nav__link">
+    logout
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#password" class="md-nav__link">
+    password
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whoami" class="md-nav__link">
+    whoami
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version" class="md-nav__link">
+    version
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-provide-to-other-kubernetes-users" class="md-nav__link">
+    What to provide to other Kubernetes users
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ldap/" class="md-nav__link">
+        LDAP Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chaining/" class="md-nav__link">
+        Identity Providers chaining
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        Architecture
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../twoldapservers/" class="md-nav__link">
+        Two LDAP servers configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../delegated/" class="md-nav__link">
+        Delegated users management
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../clusterfederation/" class="md-nav__link">
+        Clusters federation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dex/" class="md-nav__link">
+        DEX integration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../toolsandtricks/" class="md-nav__link">
+        Tools and Tricks
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#local-client-configuration" class="md-nav__link">
+    Local client configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Local client configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#got-a-certificate-issue" class="md-nav__link">
+    Got a certificate issue ?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    Basic usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#login-with-default-admin-account" class="md-nav__link">
+    login with default admin account
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logout-and-login" class="md-nav__link">
+    logout and login
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#password-change" class="md-nav__link">
+    Password change
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skas-group-binding" class="md-nav__link">
+    SKAS group binding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#be-a-cluster-admin" class="md-nav__link">
+    Be a cluster admin
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-with-stdin" class="md-nav__link">
+    Issue with stdin
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli-users-management" class="md-nav__link">
+    CLI users management
+  </a>
+  
+    <nav class="md-nav" aria-label="CLI users management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-new-user" class="md-nav__link">
+    Create a new user
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-users" class="md-nav__link">
+    List users
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modify-user" class="md-nav__link">
+    Modify user
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-user" class="md-nav__link">
+    Delete user
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manage-users-groups-and-permissions" class="md-nav__link">
+    Manage user's groups and permissions.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-rbac-referential-integrity" class="md-nav__link">
+    Kubernetes RBAC referential integrity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-manifests-instead-of-cli" class="md-nav__link">
+    Using Manifests instead of CLI
+  </a>
+  
+    <nav class="md-nav" aria-label="Using Manifests instead of CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-resources" class="md-nav__link">
+    User resources
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#groupbinding-resources" class="md-nav__link">
+    GroupBinding resources
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#session-management" class="md-nav__link">
+    Session management
+  </a>
+  
+    <nav class="md-nav" aria-label="Session management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#view-active-sessions" class="md-nav__link">
+    View active sessions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminate-session" class="md-nav__link">
+    Terminate session
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#others-kubectl-sk-commands" class="md-nav__link">
+    Others kubectl sk commands
+  </a>
+  
+    <nav class="md-nav" aria-label="Others kubectl sk commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hash" class="md-nav__link">
+    hash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#init" class="md-nav__link">
+    init
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#login" class="md-nav__link">
+    login
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logout" class="md-nav__link">
+    logout
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#password" class="md-nav__link">
+    password
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whoami" class="md-nav__link">
+    whoami
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version" class="md-nav__link">
+    version
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-provide-to-other-kubernetes-users" class="md-nav__link">
+    What to provide to other Kubernetes users
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="user-guide">User guide</h1>
+<h2 id="local-client-configuration">Local client configuration</h2>
+<p>It is assumed here than <code>kubectl</code> is installed. (If not, <a href="https://kubernetes.io/docs/tasks/tools/">see here</a>)</p>
+<p>It is also assumed the <code>kubectl-sk</code> CLI extension has been installed (If not, <a href="../installation/#skas-cli-installation">see here</a>)</p>
+<p>For accessing a kubernetes cluster with kubectl, you need a configuration file (By default in <code>&lt;homedir&gt;/.kube/config</code>).</p>
+<p>SKAS provide a mechanism to create or update this user's configuration file.</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>init<span class="w"> </span>https://skas.ingress.mycluster.internal
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Setup<span class="w"> </span>new<span class="w"> </span>context<span class="w"> </span><span class="s1">&#39;skas@mycluster.internal&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>kubeconfig<span class="w"> </span>file<span class="w"> </span><span class="s1">&#39;/Users/john/.kube/config&#39;</span>
+</span></code></pre></div>
+<p>You can validate this new context is now the current one:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>current-context
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>skas@mycluster.internal
+</span></code></pre></div>
+<h3 id="got-a-certificate-issue">Got a certificate issue ?</h3>
+<p>If your system is not configured with the CA which has been used to certify SKAS (cf the <code>clusterIssuer</code> parameter on initial installation), you will encounter an error like:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ERRO<span class="o">[</span><span class="m">0000</span><span class="o">]</span><span class="w"> </span>error<span class="w"> </span>on<span class="w"> </span>GET<span class="w"> </span>kubeconfig<span class="w"> </span>from<span class="w"> </span>remote<span class="w"> </span>server<span class="w">  </span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w"> </span><span class="nv">error</span><span class="o">=</span><span class="s2">&quot;error on http connection: Get \&quot;https://skas.ingress.mycluster.internal/v1/kubeconfig\&quot;: </span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="s2"> tls: failed to verify certificate: x509: certificate signed by unknown authority&quot;</span>
+</span></code></pre></div>
+<p>You may get rid of this error by providing the root CA certificate as a file:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>init<span class="w"> </span>https://skas.ingress.mycluster.internal<span class="w"> </span>--authRootCaPath<span class="o">=</span>./CA.crt
+</span></code></pre></div>
+<p>Provided you are a kubernetes system administrator, here is how you can get this CA.crt file:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>skas-auth-cert<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d<span class="w"> </span>&gt;./CA.crt
+</span></code></pre></div>
+<p>If you are unable to get such CA certificate, you can skip the test by setting a flag:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>init<span class="w"> </span>--authInsecureSkipVerify<span class="o">=</span><span class="nb">true</span><span class="w"> </span>https://skas.ingress.mycluster.internal
+</span></code></pre></div>
+<blockquote>
+<p><em>This is a security breach, as the target site can be a fake one. Use this flag should be limited to initial evaluation context.</em></p>
+</blockquote>
+<h2 id="basic-usage">Basic usage</h2>
+<h3 id="login-with-default-admin-account">login with default admin account</h3>
+<p>SKAS manage a local users database, where users are stored as Kubernetes resources.</p>
+<p>For convenience, a first <code>admin</code> user has been created during the installation.  With password <code>admin</code></p>
+<p>By default, SKAS users are stored in the namespace <code>skas-system</code>.</p>
+<p>You could list them, using standard kubectl commands. If you have configured your client as described above, you now 
+have to be logged to perform any kubectl action. So the login/password interaction</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>users.userdb.skasproject.io
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Login:admin
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>Password:
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>NAME<span class="w">    </span>COMMON<span class="w"> </span>NAMES<span class="w">             </span>EMAILS<span class="w">   </span>UID<span class="w">   </span>COMMENT<span class="w">   </span>DISABLED
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>admin<span class="w">   </span><span class="o">[</span><span class="s2">&quot;SKAS administrator&quot;</span><span class="o">]</span>
+</span></code></pre></div>
+<p>Several remarks:</p>
+<ul>
+<li>Default password is <code>admin</code>. <strong>DON'T FORGET TO CHANGE IT</strong>. See below.</li>
+<li>The <code>admin</code> user has been granted to access SKAS resources in <code>skas-system</code> namespace using kubernetes RBAC</li>
+<li><code>kubectl -n skas-system get users</code> may no works, as <code>users</code> refers also to a standard kubernetes resources.</li>
+</ul>
+<p>To ease SKAS user management, an alias <code>skuser</code> has been defined.</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>skusers
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>NAME<span class="w">    </span>COMMON<span class="w"> </span>NAMES<span class="w">             </span>EMAILS<span class="w">   </span>UID<span class="w">   </span>COMMENT<span class="w">   </span>DISABLED
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>admin<span class="w">   </span><span class="o">[</span><span class="s2">&quot;SKAS administrator&quot;</span><span class="o">]</span>
+</span></code></pre></div>
+<p>Note there is now no login/password interaction. A token has been granted during the first login.
+This token will expire after a delay of inactivity. (Like a Web session). This delay is 30mn by default.</p>
+<h3 id="logout-and-login">logout and login</h3>
+<p>Once logged, you can use <code>kubectl</code> as usual. The token will be transparently used until it expire on inactivity.</p>
+<p>If expired, you will be prompted again to enter login and password.</p>
+<p>You can also logout at any time by using the command:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span><span class="nb">logout</span>
+</span></code></pre></div>
+<p>Note the <code>sk</code> who instruct <code>kubectl</code> to forward the command to the <code>kubectl-sk</code> extension.</p>
+<p>Then, you will be prompted again for your login/password on the next <code>kubectl</code>command. </p>
+<p>You can also use explicit login:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Login:admin
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>Password:
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>logged<span class="w"> </span>successfully..
+</span></code></pre></div>
+<p>or</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>admin
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Password:
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>logged<span class="w"> </span>successfully..
+</span></code></pre></div>
+<p>or</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>admin<span class="w"> </span><span class="si">${</span><span class="nv">ADMIN_PASSWORD</span><span class="si">}</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>logged<span class="w"> </span>successfully..
+</span></code></pre></div>
+<blockquote>
+<p><em><code>sk login</code> perform an <code>sk logout</code> if logged.</em></p>
+</blockquote>
+<h3 id="password-change">Password change</h3>
+<p>As stated above, you must change the password of this account:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>password
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>Will<span class="w"> </span>change<span class="w"> </span>password<span class="w"> </span><span class="k">for</span><span class="w"> </span>user<span class="w"> </span><span class="s1">&#39;admin&#39;</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>Old<span class="w"> </span>password:
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>New<span class="w"> </span>password:
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>Confirm<span class="w"> </span>new<span class="w"> </span>password:
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>Password<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>changed<span class="w"> </span>sucessfully.
+</span></code></pre></div>
+<p>Note the <code>sk</code>, as such command is performed by the SKAS kubectl extension.</p>
+<p>There is a check about password strength. So, you may have such response:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>password
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Will<span class="w"> </span>change<span class="w"> </span>password<span class="w"> </span><span class="k">for</span><span class="w"> </span>user<span class="w"> </span><span class="s1">&#39;admin&#39;</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>Old<span class="w"> </span>password:
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>New<span class="w"> </span>password:
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>Confirm<span class="w"> </span>new<span class="w"> </span>password:
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>Unsatisfactory<span class="w"> </span>password<span class="w"> </span>strength!
+</span></code></pre></div>
+<p>There is no well defined password criteria (such as length, special character, etc...). 
+An algorithm provide a score for the password, and this score must match a minimum (configurable) value.
+There is also a check against a list of commonly used passwords.</p>
+<p>The easiest way to overcome this restriction is to increase your password length.</p>
+<h3 id="skas-group-binding">SKAS group binding</h3>
+<p>In fact, what has been granted to access SKAS resources is not the admin account (It could be), but a group named <code>skas-system</code>.</p>
+<p>And the user <code>admin</code> has been included in the group by another SKAS resources named <code>groupbindings.userdb.skasproject.io</code>, with <code>groupbindings</code>as an alias:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>groupBindings
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>NAME<span class="w">               </span>USER<span class="w">    </span>GROUP
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>admin-skas-admin<span class="w">   </span>admin<span class="w">   </span>skas-admin
+</span></code></pre></div>
+<blockquote>
+<p><em>In kubernetes, a group does not exist as a concrete resources. It only exists as it is referenced by RBAC <code>roleBinding</code> or <code>clusterRoleBindigs</code>. Or by SKAS <code>groupBinding</code></em></p>
+</blockquote>
+<h3 id="be-a-cluster-admin">Be a cluster admin</h3>
+<p>Let's try the following:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>namespaces
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>Error<span class="w"> </span>from<span class="w"> </span>server<span class="w"> </span><span class="o">(</span>Forbidden<span class="o">)</span>:<span class="w"> </span>namespaces<span class="w"> </span>is<span class="w"> </span>forbidden:<span class="w"> </span>User<span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="w"> </span>cannot<span class="w"> </span>list<span class="w"> </span>resource<span class="w"> </span><span class="s2">&quot;namespaces&quot;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>API<span class="w"> </span>group<span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span>at<span class="w"> </span>the<span class="w"> </span>cluster<span class="w"> </span>scope
+</span></code></pre></div>
+<p>It is clear than we are successfully authenticated as <code>admin</code>, but this account has no permissions to perform cluster-wide operation.</p>
+<p>Such permissions can be granted by binding this user to a group having such rights:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>admin<span class="w"> </span>system:masters
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>GroupBinding<span class="w"> </span><span class="s1">&#39;admin.system.masters&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
+</span></code></pre></div>
+<p>For this to be effective, logout and login back:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span><span class="nb">logout</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>Bye!
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>namespaces
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>Login:admin
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>Password:
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>NAME<span class="w">              </span>STATUS<span class="w">   </span>AGE
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>cert-manager<span class="w">      </span>Active<span class="w">   </span>4d21h
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>default<span class="w">           </span>Active<span class="w">   </span>4d21h
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>ingress-nginx<span class="w">     </span>Active<span class="w">   </span>4d21h
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>.....
+</span></code></pre></div>
+<p>You can check the new <code>groupBindings</code> list:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>groupBindings
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>NAME<span class="w">                   </span>USER<span class="w">    </span>GROUP
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>admin-skas-admin<span class="w">       </span>admin<span class="w">   </span>skas-admin
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>admin.system.masters<span class="w">   </span>admin<span class="w">   </span>system:masters
+</span></code></pre></div>
+<p><strong>WARNING: This means any member of the group <code>skas-admin</code> can promote itself as a full cluster administrator. 
+In fact, anybody able to create or modify resources in the <code>skas-admin</code> namespace can take control of the cluster. So, access to this namespace should be strictly controlled</strong>  </p>
+<p>Refer to <a href="">Advanced configuration/Delegated user management</a> to delegate user management without compromise cluster security. </p>
+<h3 id="issue-with-stdin">Issue with <code>stdin</code></h3>
+<p>If you issue a <code>kubectl</code> command which use <code>stdin</code> as input, you may encounter the following error message:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$<span class="w"> </span>cat<span class="w"> </span>mymanifest.yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>Login:
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>Unable<span class="w"> </span>to<span class="w"> </span>access<span class="w"> </span>stdin<span class="w"> </span>to<span class="w"> </span>input<span class="w"> </span>login.<span class="w"> </span>Try<span class="w"> </span>login<span class="w"> </span>with<span class="w"> </span><span class="sb">`</span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="s1">&#39; or &#39;</span>kubectl-sk<span class="w"> </span>login<span class="err">&#39;</span>.<span class="sb">`</span><span class="w"> </span>and<span class="w"> </span>issue<span class="w"> </span>this<span class="w"> </span><span class="nb">command</span><span class="w"> </span>again
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>Unable<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>server:<span class="w"> </span>getting<span class="w"> </span>credentials:<span class="w"> </span>exec:<span class="w"> </span>executable<span class="w"> </span>kubectl-sk<span class="w"> </span>failed<span class="w"> </span>with<span class="w"> </span><span class="nb">exit</span><span class="w"> </span>code<span class="w"> </span><span class="m">18</span>
+</span></code></pre></div>
+<p>This occurs if you token is expired. There is a conflict on <code>stdin</code> usage for entering your login/password.</p>
+<p>Solution is to ensure to be logged before issuing such command:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>Login:oriley
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>Password:
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>logged<span class="w"> </span>successfully..
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="o">[</span>d3<span class="o">]</span><span class="w"> </span>m64:addons<span class="w"> </span>sa$<span class="w"> </span>cat<span class="w"> </span>mymanifest.yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>pod/mypod<span class="w"> </span>created
+</span></code></pre></div>
+<h2 id="cli-users-management">CLI users management</h2>
+<p>The SKAS kubectl extension plugin provide a <code>user</code> command with several subcommands</p>
+<p>You can have a complete list of such subcommands:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>--help
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>.......
+</span></code></pre></div>
+<blockquote>
+<p><em>You must be logged as a member of the group <code>skas-admin</code> to be able to use this command.</em></p>
+</blockquote>
+<h3 id="create-a-new-user">Create a new user</h3>
+<p>Here is an example of user's creation:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>create<span class="w"> </span>luser1<span class="w"> </span>--commonName<span class="w"> </span><span class="s2">&quot;Local user1&quot;</span><span class="w"> </span>--email<span class="w"> </span><span class="s2">&quot;luser1@internal&quot;</span><span class="w"> </span>--password<span class="w"> </span><span class="s2">&quot;RtVksSuMgP5f&quot;</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>User<span class="w"> </span><span class="s1">&#39;luser1&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
+</span></code></pre></div>
+<p>The only mandatory parameters is the user's name:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>create<span class="w"> </span>luser2
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>User<span class="w"> </span><span class="s1">&#39;luser2&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
+</span></code></pre></div>
+<blockquote>
+<p><em>As there is no password provided, login for this user will be impossible</em></p>
+</blockquote>
+<p>A complete list of user's creation options can be displayed: </p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>$ kubectl sk user create --help
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>Create a new user
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>Usage:
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>  kubectl-sk user create &lt;user&gt; [flags]
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>Flags:
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>      --comment string        User&#39;s comment
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>      --commonName string     User&#39;s common name
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a>      --email string          User&#39;s email
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a>      --generatePassword      Generate and display a password
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a>  -h, --help                  help for create
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a>      --inputPassword         Interactive password request
+</span><span id="__span-24-14"><a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a>  -n, --namespace string      User&#39;s DB namespace (default &quot;skas-system&quot;)
+</span><span id="__span-24-15"><a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a>      --password string       User&#39;s password
+</span><span id="__span-24-16"><a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a>      --passwordHash string   User&#39;s password hash (Result of &#39;kubectl skas hash&#39;)
+</span><span id="__span-24-17"><a id="__codelineno-24-17" name="__codelineno-24-17" href="#__codelineno-24-17"></a>      --state string          User&#39;s state (enabled|disabled) (default &quot;enabled&quot;)
+</span><span id="__span-24-18"><a id="__codelineno-24-18" name="__codelineno-24-18" href="#__codelineno-24-18"></a>      --uid int               User&#39;s UID
+</span></code></pre></div>
+<p>Most of the options match a user's properties</p>
+<ul>
+<li><code>comment</code>, <code>commonName</code>, <code>email</code>, <code>uid</code> are just descriptive parameters, inspired from Unix user attributes.</li>
+<li><code>state</code> will allow to temporary disable a user.</li>
+</ul>
+<p>The <code>--namespace</code> allow to store the user resources in another namespace. See <a href="">Advanced configuration/Delegated user management</a></p>
+<p>There is several options related to the password:</p>
+<ul>
+<li><code>--password</code>: The password is provided as a parameter on the command line.</li>
+<li><code>--inputPassword</code>: There will be a <code>Password: / Confirm password:</code> user interaction.</li>
+<li><code>--generatePassword</code>: A random password is generated and displayed.</li>
+<li><code>--passwordHash</code>: Provide the hash of the password, as it will be stored in the resource. 
+  Use <code>kubectl sk hash</code> to generate the value. NB: Doing this way skip the check about password strength. </li>
+</ul>
+<h3 id="list-users">List users</h3>
+<p>Users can be listed using standard <code>kubectl</code> commands:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>skusers
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>NAME<span class="w">     </span>COMMON<span class="w"> </span>NAMES<span class="w">             </span>EMAILS<span class="w">                </span>UID<span class="w">   </span>COMMENT<span class="w">   </span>DISABLED
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>admin<span class="w">    </span><span class="o">[</span><span class="s2">&quot;SKAS administrator&quot;</span><span class="o">]</span>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>luser1<span class="w">   </span><span class="o">[</span><span class="s2">&quot;Local user1&quot;</span><span class="o">]</span><span class="w">          </span><span class="o">[</span><span class="s2">&quot;luser1@internal&quot;</span><span class="o">]</span><span class="w">                   </span><span class="nb">false</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>luser2<span class="w">                                                                  </span><span class="nb">false</span>
+</span></code></pre></div>
+<h3 id="modify-user">Modify user</h3>
+<p>A subcommand <code>patch</code> is provided to modify a user. As an example:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>patch<span class="w"> </span>luser2<span class="w"> </span>--state<span class="o">=</span>disabled
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>User<span class="w"> </span><span class="s1">&#39;luser2&#39;</span><span class="w"> </span>updated<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>skuser<span class="w"> </span>luser2
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>NAME<span class="w">     </span>COMMON<span class="w"> </span>NAMES<span class="w">   </span>EMAILS<span class="w">   </span>UID<span class="w">   </span>COMMENT<span class="w">   </span>DISABLED
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>luser2<span class="w">                                           </span><span class="nb">true</span>
+</span></code></pre></div>
+<p>Most of the options are the same as the <code>user create</code> subcommand. </p>
+<p>There is also a <code>--create</code> option which will allow user creation if it does not exists.</p>
+<h3 id="delete-user">Delete user</h3>
+<p>Users can be deleted using standard <code>kubectl</code> commands:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>delete<span class="w"> </span>skuser<span class="w"> </span>luser2
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>user.userdb.skasproject.io<span class="w"> </span><span class="s2">&quot;luser2&quot;</span><span class="w"> </span>deleted
+</span></code></pre></div>
+<h3 id="manage-users-groups-and-permissions">Manage user's groups and permissions.</h3>
+<p>To illustrate how SKAS interact with Kubernetes RBAC, we will setup a simple example. We will:</p>
+<ul>
+<li>Create a namespace named <code>ldemo</code>.</li>
+<li>Create a role named <code>configurator</code> in this namespace to manage resources of type <code>configMaps</code>.</li>
+<li>Create a roleBinding between this role and a group named <code>ldemo-devs</code>.</li>
+<li>Add the user <code>luser1</code> to this group.</li>
+</ul>
+<p>We assume we are logged as 'admin' to perform theses tasks:</p>
+<p><div class="language-shell highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>ldemo
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>namespace/ldemo<span class="w"> </span>created
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>ldemo<span class="w"> </span>create<span class="w"> </span>role<span class="w"> </span>configurator<span class="w"> </span>--verb<span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="w"> </span>--resource<span class="o">=</span>configMaps
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>role.rbac.authorization.k8s.io/configurator<span class="w"> </span>created
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>ldemo<span class="w"> </span>create<span class="w"> </span>rolebinding<span class="w"> </span>configurator-ldemo-devs<span class="w"> </span>--role<span class="o">=</span>configurator<span class="w"> </span>--group<span class="o">=</span>ldemo-devs
+</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a>rolebinding.rbac.authorization.k8s.io/configurator-ldemo-devs<span class="w"> </span>created
+</span><span id="__span-28-9"><a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>
+</span><span id="__span-28-10"><a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>luser1<span class="w"> </span>ldemo-devs
+</span><span id="__span-28-11"><a id="__codelineno-28-11" name="__codelineno-28-11" href="#__codelineno-28-11"></a>GroupBinding<span class="w"> </span><span class="s1">&#39;luser1.ldemo-devs&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
+</span></code></pre></div>
+Now, we can test. First logout and login under <code>luser1</code>:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span><span class="nb">logout</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>Bye!
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>Login:luser1
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>Password:
+</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a>logged<span class="w"> </span>successfully..
+</span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>
+</span><span id="__span-29-9"><a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>whoami
+</span><span id="__span-29-10"><a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a>USER<span class="w">     </span>ID<span class="w">   </span>GROUPS
+</span><span id="__span-29-11"><a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a>luser1<span class="w">   </span><span class="m">0</span><span class="w">    </span>ldemo-devs
+</span></code></pre></div>
+<p>Now ensure we can create a <code>configMap</code> and view it.:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>ldemo<span class="w"> </span>create<span class="w"> </span>configmap<span class="w"> </span>my-config<span class="w"> </span>--from-literal<span class="o">=</span><span class="nv">key1</span><span class="o">=</span>config1
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>configmap/my-config<span class="w"> </span>created
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>ldemo<span class="w"> </span>get<span class="w"> </span>configmaps<span class="w"> </span>my-config<span class="w"> </span>-o<span class="w"> </span>yaml
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>apiVersion:<span class="w"> </span>v1
+</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>data:
+</span><span id="__span-30-7"><a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="w">  </span>key1:<span class="w"> </span>config1
+</span><span id="__span-30-8"><a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a>kind:<span class="w"> </span>ConfigMap
+</span><span id="__span-30-9"><a id="__codelineno-30-9" name="__codelineno-30-9" href="#__codelineno-30-9"></a>metadata:
+</span><span id="__span-30-10"><a id="__codelineno-30-10" name="__codelineno-30-10" href="#__codelineno-30-10"></a><span class="w">  </span>creationTimestamp:<span class="w"> </span><span class="s2">&quot;2023-07-11T14:56:27Z&quot;</span>
+</span><span id="__span-30-11"><a id="__codelineno-30-11" name="__codelineno-30-11" href="#__codelineno-30-11"></a><span class="w">  </span>name:<span class="w"> </span>my-config
+</span><span id="__span-30-12"><a id="__codelineno-30-12" name="__codelineno-30-12" href="#__codelineno-30-12"></a><span class="w">  </span>namespace:<span class="w"> </span>ldemo
+</span><span id="__span-30-13"><a id="__codelineno-30-13" name="__codelineno-30-13" href="#__codelineno-30-13"></a><span class="w">  </span>resourceVersion:<span class="w"> </span><span class="s2">&quot;257983&quot;</span>
+</span><span id="__span-30-14"><a id="__codelineno-30-14" name="__codelineno-30-14" href="#__codelineno-30-14"></a><span class="w">  </span>uid:<span class="w"> </span>ad55b282-9803-4688-b2df-a1c35f708313
+</span></code></pre></div>
+<p>Also, ensure we can delete it</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>ldemo<span class="w"> </span>delete<span class="w"> </span>configmap<span class="w"> </span>my-config
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>configmap<span class="w"> </span><span class="s2">&quot;my-config&quot;</span><span class="w"> </span>deleted
+</span></code></pre></div>
+<blockquote>
+<p><em>Please, note than <code>roles</code> and <code>roleBindings</code> are namespaced resources while <code>users</code> and <code>groups</code> are cluster-wide resources.</em></p>
+</blockquote>
+<h3 id="kubernetes-rbac-referential-integrity">Kubernetes RBAC referential integrity</h3>
+<p>Kubernetes does not check referential integrity when creating a resource referencing another one. For example, the following will works:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>ldemo<span class="w"> </span>create<span class="w"> </span>rolebinding<span class="w"> </span>missing-integrity<span class="w"> </span>--role<span class="o">=</span>unexisting-role<span class="w"> </span>--group<span class="o">=</span>unexisting-group
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>rolebinding.rbac.authorization.k8s.io/missing-integrity<span class="w"> </span>created
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>unexisting-user<span class="w"> </span>unexisting-group
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>GroupBinding<span class="w"> </span><span class="s1">&#39;unexisting-user.unexisting-group&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
+</span></code></pre></div>
+<p>May be the referenced resource will be created later. Or the link will be useless.</p>
+<p>This is clearly a design choice of Kubernetes. SKAS follow the same logic.</p>
+<h2 id="using-manifests-instead-of-cli">Using Manifests instead of CLI</h2>
+<p>As users ans groups are defined as Kubernetes custom resources, they can be created and managed as any other resources, through manifests. </p>
+<p>By default, all SKAS users and groups resources are stored in the namespace <code>skas-system</code>.</p>
+<p>Kubernetes RBAC has been configured during installation to allow management of such resources by all members of the <code>skas-admin</code> group.</p>
+<h3 id="user-resources">User resources</h3>
+<p>Here is the manifest corresponding to the users we created previously:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="nn">---</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">userdb.skasproject.io/v1alpha1</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">User</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">luser1</span>
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-system</span>
+</span><span id="__span-33-7"><a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-33-8"><a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a><span class="w">  </span><span class="nt">commonNames</span><span class="p">:</span>
+</span><span id="__span-33-9"><a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Local user1</span>
+</span><span id="__span-33-10"><a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a><span class="w">  </span><span class="nt">emails</span><span class="p">:</span>
+</span><span id="__span-33-11"><a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">luser1@internal</span>
+</span><span id="__span-33-12"><a id="__codelineno-33-12" name="__codelineno-33-12" href="#__codelineno-33-12"></a><span class="w">  </span><span class="nt">passwordHash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$2a$10$q6nEVmP.MHo6VLAprTdTBuy6AHPel1uh3NocZdNjt.yh8HDE7Ja.m</span>
+</span></code></pre></div>
+<ul>
+<li>The resources name is the user login.</li>
+<li>The password is stored in a non reversible hash form. The command <code>kubectl sk hash</code> is provided to compute such hash.</li>
+</ul>
+<p>Below is a sample of a user with all properties defined:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="nn">---</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">userdb.skasproject.io/v1alpha1</span>
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">User</span>
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jsmith</span>
+</span><span id="__span-34-6"><a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-system</span>
+</span><span id="__span-34-7"><a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-34-8"><a id="__codelineno-34-8" name="__codelineno-34-8" href="#__codelineno-34-8"></a><span class="w">  </span><span class="nt">commonNames</span><span class="p">:</span><span class="w">  </span>
+</span><span id="__span-34-9"><a id="__codelineno-34-9" name="__codelineno-34-9" href="#__codelineno-34-9"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">John SMITH</span>
+</span><span id="__span-34-10"><a id="__codelineno-34-10" name="__codelineno-34-10" href="#__codelineno-34-10"></a><span class="w">  </span><span class="nt">passwordHash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$2a$10$lnweus6Oe3/XMoRaIImnVOwmxZ.xMp7iRB3X1TOcszzHE8nxfiwJK</span><span class="w">  </span><span class="c1"># Password: &quot;Xderghy12&quot;</span>
+</span><span id="__span-34-11"><a id="__codelineno-34-11" name="__codelineno-34-11" href="#__codelineno-34-11"></a><span class="w">  </span><span class="nt">emails</span><span class="p">:</span><span class="w"> </span>
+</span><span id="__span-34-12"><a id="__codelineno-34-12" name="__codelineno-34-12" href="#__codelineno-34-12"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jsmith@mycompany.com</span>
+</span><span id="__span-34-13"><a id="__codelineno-34-13" name="__codelineno-34-13" href="#__codelineno-34-13"></a><span class="w">  </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100001</span>
+</span><span id="__span-34-14"><a id="__codelineno-34-14" name="__codelineno-34-14" href="#__codelineno-34-14"></a><span class="w">  </span><span class="nt">comment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A sample user</span>
+</span><span id="__span-34-15"><a id="__codelineno-34-15" name="__codelineno-34-15" href="#__codelineno-34-15"></a><span class="w">  </span><span class="nt">disabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span>
+</span></code></pre></div>
+<p>To define such user, save the yaml definition if a file and perform a <code>kubectl apply -f &lt;filaName&gt;</code></p>
+<blockquote>
+<p><em>Unfortunately, when logged using SKAS, it is impossible to use stdin on kubectl. <br>So, <code>cat &lt;filename&gt; | kubectl apply -f -</code> 
+will not work. This is inherent to the way the kubernetes client-go credential plugin works</em></p>
+</blockquote>
+<h3 id="groupbinding-resources">GroupBinding resources</h3>
+<p>The SKAS <code>GroupBinding</code> resources can also be defined as manifest:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="nn">---</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">userdb.skasproject.io/v1alpha1</span>
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GroupBinding</span>
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">luser1.ldemo-devs</span>
+</span><span id="__span-35-6"><a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-system</span>
+</span><span id="__span-35-7"><a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-35-8"><a id="__codelineno-35-8" name="__codelineno-35-8" href="#__codelineno-35-8"></a><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldemo-devs</span>
+</span><span id="__span-35-9"><a id="__codelineno-35-9" name="__codelineno-35-9" href="#__codelineno-35-9"></a><span class="w">  </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">luser1</span>
+</span></code></pre></div>
+<h2 id="session-management">Session management</h2>
+<h3 id="view-active-sessions">View active sessions</h3>
+<p>En each user login, a token is generated. This token will expire after a delay of inactivity. (Like a Web session). This delay is 30mn by default.</p>
+<p>On server side, the SKAS tokens are also stored as Kubernetes custom resources, in the namespace <code>skas-system</code>. 
+And RBAC has been configured to allow access by any member of the <code>skas-admin</code> group.  </p>
+<p>The SKAS tokens can be listed as any other kubernetes resources:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>tokens
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>NAME<span class="w">                                               </span>CLIENT<span class="w">   </span>USER<span class="w"> </span>LOGIN<span class="w">   </span>AUTH.<span class="w">   </span>USER<span class="w"> </span>ID<span class="w">   </span>CREATION<span class="w">               </span>LAST<span class="w"> </span>HIT
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>khrvvqwvpotcufiltvymuumsvrodsbiuwypbzrjiqudzjthg<span class="w">            </span>admin<span class="w">        </span>crd<span class="w">     </span><span class="m">0</span><span class="w">         </span><span class="m">2023</span>-07-12T08:23:36Z<span class="w">   </span><span class="m">2023</span>-07-12T08:32:13Z
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd<span class="w">            </span>luser1<span class="w">       </span>crd<span class="w">     </span><span class="m">0</span><span class="w">         </span><span class="m">2023</span>-07-12T08:27:19Z<span class="w">   </span><span class="m">2023</span>-07-12T08:27:19Z
+</span></code></pre></div>
+<p>Each token represents an active user session. SKAS will remove it automatically after 30 minutes of inactivity by default.</p>
+<p>Also, there is a maximum token duration, which is set to 12 hours by default.</p>
+<p>A detailed view of each token can be displayed:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>tokens<span class="w"> </span>ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd<span class="w"> </span>-o<span class="w"> </span>yaml
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>apiVersion:<span class="w"> </span>session.skasproject.io/v1alpha1
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>kind:<span class="w"> </span>Token
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>metadata:
+</span><span id="__span-37-5"><a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a><span class="w">  </span>creationTimestamp:<span class="w"> </span><span class="s2">&quot;2023-07-12T08:27:19Z&quot;</span>
+</span><span id="__span-37-6"><a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a><span class="w">  </span>generation:<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-37-7"><a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a><span class="w">  </span>name:<span class="w"> </span>ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd
+</span><span id="__span-37-8"><a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a><span class="w">  </span>namespace:<span class="w"> </span>skas-system
+</span><span id="__span-37-9"><a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a><span class="w">  </span>resourceVersion:<span class="w"> </span><span class="s2">&quot;513150&quot;</span>
+</span><span id="__span-37-10"><a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a><span class="w">  </span>uid:<span class="w"> </span>220471a2-2ec1-4b7f-af85-8647c4406343
+</span><span id="__span-37-11"><a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a>spec:
+</span><span id="__span-37-12"><a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a><span class="w">  </span>authority:<span class="w"> </span>crd
+</span><span id="__span-37-13"><a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a><span class="w">  </span>client:<span class="w"> </span><span class="s2">&quot;&quot;</span>
+</span><span id="__span-37-14"><a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a><span class="w">  </span>creation:<span class="w"> </span><span class="s2">&quot;2023-07-12T08:27:19Z&quot;</span>
+</span><span id="__span-37-15"><a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a><span class="w">  </span>user:
+</span><span id="__span-37-16"><a id="__codelineno-37-16" name="__codelineno-37-16" href="#__codelineno-37-16"></a><span class="w">    </span>commonNames:
+</span><span id="__span-37-17"><a id="__codelineno-37-17" name="__codelineno-37-17" href="#__codelineno-37-17"></a><span class="w">    </span>-<span class="w"> </span>Local<span class="w"> </span>user1
+</span><span id="__span-37-18"><a id="__codelineno-37-18" name="__codelineno-37-18" href="#__codelineno-37-18"></a><span class="w">    </span>emails:
+</span><span id="__span-37-19"><a id="__codelineno-37-19" name="__codelineno-37-19" href="#__codelineno-37-19"></a><span class="w">    </span>-<span class="w"> </span>luser1@internal
+</span><span id="__span-37-20"><a id="__codelineno-37-20" name="__codelineno-37-20" href="#__codelineno-37-20"></a><span class="w">    </span>groups:
+</span><span id="__span-37-21"><a id="__codelineno-37-21" name="__codelineno-37-21" href="#__codelineno-37-21"></a><span class="w">    </span>-<span class="w"> </span>ldemo-devs
+</span><span id="__span-37-22"><a id="__codelineno-37-22" name="__codelineno-37-22" href="#__codelineno-37-22"></a><span class="w">    </span>login:<span class="w"> </span>luser1
+</span><span id="__span-37-23"><a id="__codelineno-37-23" name="__codelineno-37-23" href="#__codelineno-37-23"></a><span class="w">    </span>uid:<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-37-24"><a id="__codelineno-37-24" name="__codelineno-37-24" href="#__codelineno-37-24"></a>status:
+</span><span id="__span-37-25"><a id="__codelineno-37-25" name="__codelineno-37-25" href="#__codelineno-37-25"></a><span class="w">  </span>lastHit:<span class="w"> </span><span class="s2">&quot;2023-07-12T08:27:19Z&quot;</span>
+</span></code></pre></div>
+<h3 id="terminate-session">Terminate session</h3>
+<p>To end a session, the corresponding token is to be deleted:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>delete<span class="w"> </span>tokens<span class="w"> </span>ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>token.session.skasproject.io<span class="w"> </span><span class="s2">&quot;ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd&quot;</span><span class="w"> </span>deleted
+</span></code></pre></div>
+<p>Note there is a local cache of 30 seconds on the client side. So the session will remains active on this short (and configurable) delay.</p>
+<h2 id="others-kubectl-sk-commands">Others <code>kubectl sk</code> commands</h2>
+<h3 id="hash">hash</h3>
+<p>This command compute the Hash value of a password. It is intended to be used when creating a user through a manifest.</p>
+<p>Note there is no password strength check doing this way.</p>
+<h3 id="init">init</h3>
+<p>This command has been used at the beginning of this chapter. If you enter <code>kubectl sk init --help</code>, you can see there is some more options:</p>
+<ul>
+<li>Some are related to certificate management and was already mentioned.</li>
+<li>Some allow overriding of values provided by the server.</li>
+<li><code>clientId/Secret</code> is an optional method to restrict access to this command to users provided with these information. To be configured on the server.</li>
+</ul>
+<h3 id="login">login</h3>
+<p>Perform the login/pasword interaction. </p>
+<p>Will also allow providing login and password on the command line. </p>
+<h3 id="logout">logout</h3>
+<p>Logout the user, by deleting locally cached token.</p>
+<h3 id="password">password</h3>
+<p>To change current user password. </p>
+<p>To change the password of another user, use the <code>kubectl sk user patch</code> command. Of course, you need to be member of the group <code>skas-admin</code> to do so.</p>
+<h3 id="whoami">whoami</h3>
+<p>Display the currently logged user and the groups its belong to.</p>
+<h3 id="version">version</h3>
+<p>Display the current version of this SKAS plugin</p>
+<h2 id="what-to-provide-to-other-kubernetes-users">What to provide to other Kubernetes users</h2>
+<p>Here is a small checklist of what to provide to non-admin users to allow them to use kubectl on a SKAS enabled cluster.</p>
+<ul>
+<li>Obviously, instructions to install <code>kubectl</code>.</li>
+<li>Instructions to install <code>kubectl-sk</code></li>
+<li>If needed, the <code>CA.crt</code> certificate file</li>
+<li>The <code>kubectl sk init https://skas.....</code> command line.</li>
+<li>The namespace(s) they are allowed to access</li>
+</ul>
+<p>About this last point: You can instruct them to add the <code>--namespaceOverride</code> option on <code>kubectl sk init ...</code> command.
+This will define the provided namespace as the default one in the <code>~/.kube/config</code> file.</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+    
+  </body>
+</html>

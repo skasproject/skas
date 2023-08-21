@@ -1,0 +1,1128 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../chaining/">
+      
+      
+        <link rel="next" href="../twoldapservers/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.19">
+    
+    
+      
+        <title>Architecture - SKAS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.eebd395e.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ecc896b0.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SKAS" class="md-header__button md-logo" aria-label="SKAS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SKAS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+            
+              <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_2" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+              </label>
+            
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_2">
+            
+              <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+              </label>
+            
+          
+        </form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/skasproject/skas" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SKAS" class="md-nav__button md-logo" aria-label="SKAS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SKAS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/skasproject/skas" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../userguide/" class="md-nav__link">
+        User guide
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ldap/" class="md-nav__link">
+        LDAP Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chaining/" class="md-nav__link">
+        Identity Providers chaining
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Architecture
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Architecture
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initial-deployment" class="md-nav__link">
+    Initial deployment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ldap-setup" class="md-nav__link">
+    LDAP setup
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modules-and-interfaces" class="md-nav__link">
+    Modules and interfaces
+  </a>
+  
+    <nav class="md-nav" aria-label="Modules and interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity-providers-skcrd-skldap-skstatic" class="md-nav__link">
+    Identity providers (skCrd, skLdap, skStatic)
+  </a>
+  
+    <nav class="md-nav" aria-label="Identity providers (skCrd, skLdap, skStatic)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity" class="md-nav__link">
+    Identity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwordchange" class="md-nav__link">
+    PasswordChange
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skmerge" class="md-nav__link">
+    skMerge
+  </a>
+  
+    <nav class="md-nav" aria-label="skMerge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity_1" class="md-nav__link">
+    Identity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwordchange_1" class="md-nav__link">
+    PasswordChange
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skauth" class="md-nav__link">
+    skAuth
+  </a>
+  
+    <nav class="md-nav" aria-label="skAuth">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tokencreate" class="md-nav__link">
+    TokenCreate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tokenrenew" class="md-nav__link">
+    TokenRenew
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwordchange_2" class="md-nav__link">
+    PasswordChange
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubeconfig" class="md-nav__link">
+    Kubeconfig
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity_2" class="md-nav__link">
+    Identity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#login" class="md-nav__link">
+    Login
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tokenreview" class="md-nav__link">
+    TokenReview
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interfaces-exposition" class="md-nav__link">
+    Interfaces exposition
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sequence-diagrams" class="md-nav__link">
+    Sequence diagrams
+  </a>
+  
+    <nav class="md-nav" aria-label="Sequence diagrams">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initial-user-connexion" class="md-nav__link">
+    Initial user connexion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token-renewal" class="md-nav__link">
+    Token renewal
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token-expired" class="md-nav__link">
+    Token expired
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../twoldapservers/" class="md-nav__link">
+        Two LDAP servers configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../delegated/" class="md-nav__link">
+        Delegated users management
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../clusterfederation/" class="md-nav__link">
+        Clusters federation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dex/" class="md-nav__link">
+        DEX integration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../toolsandtricks/" class="md-nav__link">
+        Tools and Tricks
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initial-deployment" class="md-nav__link">
+    Initial deployment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ldap-setup" class="md-nav__link">
+    LDAP setup
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modules-and-interfaces" class="md-nav__link">
+    Modules and interfaces
+  </a>
+  
+    <nav class="md-nav" aria-label="Modules and interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity-providers-skcrd-skldap-skstatic" class="md-nav__link">
+    Identity providers (skCrd, skLdap, skStatic)
+  </a>
+  
+    <nav class="md-nav" aria-label="Identity providers (skCrd, skLdap, skStatic)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity" class="md-nav__link">
+    Identity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwordchange" class="md-nav__link">
+    PasswordChange
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skmerge" class="md-nav__link">
+    skMerge
+  </a>
+  
+    <nav class="md-nav" aria-label="skMerge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity_1" class="md-nav__link">
+    Identity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwordchange_1" class="md-nav__link">
+    PasswordChange
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skauth" class="md-nav__link">
+    skAuth
+  </a>
+  
+    <nav class="md-nav" aria-label="skAuth">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tokencreate" class="md-nav__link">
+    TokenCreate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tokenrenew" class="md-nav__link">
+    TokenRenew
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwordchange_2" class="md-nav__link">
+    PasswordChange
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubeconfig" class="md-nav__link">
+    Kubeconfig
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity_2" class="md-nav__link">
+    Identity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#login" class="md-nav__link">
+    Login
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tokenreview" class="md-nav__link">
+    TokenReview
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interfaces-exposition" class="md-nav__link">
+    Interfaces exposition
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sequence-diagrams" class="md-nav__link">
+    Sequence diagrams
+  </a>
+  
+    <nav class="md-nav" aria-label="Sequence diagrams">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initial-user-connexion" class="md-nav__link">
+    Initial user connexion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token-renewal" class="md-nav__link">
+    Token renewal
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token-expired" class="md-nav__link">
+    Token expired
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="architecture">Architecture</h1>
+<h2 id="overview">Overview</h2>
+<h3 id="initial-deployment">Initial deployment</h3>
+<p>Here is the different modules involved for a SKAS authentication, right after installation: </p>
+<p><img align="left" alt="Overview" src="../images/draw1.png" width="350" /></p>
+<p>SKAS is deployed as a Kubernetes Pod, this pod hosting three containers:</p>
+<ul>
+<li><code>skAuth</code> which is in charge of delivering Kubernetes tokens and validate them.</li>
+<li><code>skmerge</code>, which is in charge of building a consolidated identity from several identity providers. As in this configuration there is a single one, it act as a simple passthrough</li>
+<li><code>skCrd</code>, which is an identity provider storing user's information in the Kubernetes storage, in namesapce <code>skas-admin</code>.</li>
+</ul>
+<p>Arrow figure out the main communication flow between components. All of them are HTTP exchanges.</p>
+<p><img alt="" src="../images/empty.png" width="700" /></p>
+<p>Here is a summary of exchange for an initial interaction</p>
+<ul>
+<li>The user issue a <code>kubectl</code> command (such as <code>kubectl get pods</code>). For this, a token is needed. It will be provided by the <code>kubectl-sk</code> client-go credential plugins.</li>
+<li><code>kubectl-sk</code> prompt the user for login and password, then issue a <code>tokenCreate()</code> request to the <code>skAuth</code> module.</li>
+<li>The <code>skAuth</code> module issue a <code>getIdentity()</code> request with user credential. This request is forwarded to the <code>skCrd</code>module.</li>
+<li>The <code>skCrd</code> module retrieve user's information, check password validity and send information upward, to the <code>skMerge</code> module, which forward them to the <code>skAuth</code> module.</li>
+<li>The <code>skAuth</code> module generate a token and send it back to the <code>kubectl-sk</code> module. Which forward to <code>kubectl</code>.</li>
+<li><code>kubectl</code> send the original request with the token to the Kubernetes API server</li>
+<li>The API Server send a <code>tokenReview()</code> request to the <code>skAuth</code> module, which reply with the user's informations (user id and groups).</li>
+<li>The API Server apply its RBAC rules on user's information to allow or deny requested operation. </li>
+</ul>
+<p>There is a more detailed description of this interaction as <a href="./#sequence-diagrams">sequence diagram</a>.</p>
+<h3 id="ldap-setup">LDAP setup</h3>
+<p><img align="right" alt="ldap" src="../images/draw2.png" width="350" /></p>
+<p>This schema describe the architecture when an LDAP server has been configured, as described in a <a href="../ldap/">previous chapter</a>.</p>
+<p>The <code>skMerge</code> module is now plugged on two Identity providers: <code>skCrd</code> and <code>skLdap</code>.</p>
+<p>And <code>skLdap</code> is connected to an external LDAP server</p>
+<p><img alt="" src="../images/empty.png" width="700" /></p>
+<h2 id="modules-and-interfaces">Modules and interfaces</h2>
+<p>Here is a description of the modules composing SKAS and their interfaces:</p>
+<h3 id="identity-providers-skcrd-skldap-skstatic">Identity providers (skCrd, skLdap, skStatic)</h3>
+<blockquote>
+<p>The <code>skStatic</code> provider host its user database in a configMap. It was used for testing in in primary development stages. 
+It is now deprecated and undocumented.</p>
+</blockquote>
+<p>Under default configuration, interfaces provided by this module are associated to an HTTP server bound on <code>localhost</code>, 
+thus accessible only from another container in the same pod (Typically <code>skMerge</code>).</p>
+<h4 id="identity">Identity</h4>
+<p>These module provides an <code>identity</code> interface. The request contains user login and optionally the user password.</p>
+<p>The response will convey user's information (uid, commonNames, emails, groups) if the user is found and a status:</p>
+<ul>
+<li><code>UserNotFound</code>: If the user does not exists in this provider</li>
+<li><code>PasswordUnchecked</code>: If the password was not provided on the request or if there is no password defined by this provider.</li>
+<li><code>PassswordChecked</code>: If a password was provided in the request and the provider validate it.</li>
+<li><code>PasswordFailed</code>: If a password was provided in the request and the provider does not validate it.</li>
+<li><code>Disabled</code>: The user is found, but its <code>disabled</code> flag is set</li>
+<li><code>Undefined</code>: The provider is out of order (i.e the ldap server is down)</li>
+</ul>
+<h4 id="passwordchange">PasswordChange</h4>
+<p>The <code>skCrd</code> provider also handle another interface: <code>passwordChange</code>, which allow password modification by providing old
+and new password (This last in its hashed form)</p>
+<h3 id="skmerge">skMerge</h3>
+<p>Under default configuration, interfaces provided by this module are associated to an HTTP server bound on <code>localhost</code>,
+thus accessible only from another container in the same pod (Typically <code>skAuth</code>)</p>
+<h4 id="identity_1">Identity</h4>
+<p>The <code>skMerge</code> module support the same <code>identity</code> interface as a provider. Of course, the returned value is the merge of its underlying providers information.</p>
+<p>This module also support is some extension of this <code>identity</code> protocol:</p>
+<ul>
+<li>The returned result also indicate which provider was the 'authority' (The one who validate the password) for this user.</li>
+<li>The request can support a <code>detailed</code> flag. If set, the response will be completed with a detailed list of response from each provider. This is aimed to 
+be displayed by the <code>kubectl-sk user describe</code> CLI command. </li>
+</ul>
+<h4 id="passwordchange_1">PasswordChange</h4>
+<p>The <code>skMerge</code> module also support a <code>passwordChange</code> interface. The request must contains the user's authority which is the target provider to which this message will be forwarded.</p>
+<h3 id="skauth">skAuth</h3>
+<p>Under default configuration, all interfaces provided by this module are exposed to outside world through an ingress controller. 
+They are secured using SSL, from end to end (SSL termination is handled by the module itself, the ingress being configured in SSL passthrough mode).</p>
+<p>Except <code>login</code> and <code>tokenReview</code>, all other interfaces of this module are intended to be called from the <code>kubectl-sk</code> client executable.</p>
+<h4 id="tokencreate">TokenCreate</h4>
+<p>The <code>tokenCreate</code> request contains a user login and password. If the authentication succeed, a token is generated. The response will contains:</p>
+<ul>
+<li>The generated token</li>
+<li>User's information, for <code>whoami</code> subcommand.</li>
+<li>The clientTTL, for expiration of the token in the client local cache.</li>
+<li>The authority, the provider who validate the login/password.</li>
+</ul>
+<h4 id="tokenrenew">TokenRenew</h4>
+<p>The <code>tokenRenew</code> interface check if the token is still valid and renew (touch) it.</p>
+<h4 id="passwordchange_2">PasswordChange</h4>
+<p>This is a simple passthrough, which forward the request to the underlying <code>skMerge</code> provider.</p>
+<h4 id="kubeconfig">Kubeconfig</h4>
+<p>This interface provide a set of informations allowing <code>kubectl-sk</code> to create an entry in the client config file (typically <code>~/.kube/config</code>), 
+to access the targeted SKAS enabled cluster. This to allow automatic client side configuration.</p>
+<h4 id="identity_2">Identity</h4>
+<p>This interface is intended to be called for a <code>kubectl-sk user describe</code> operation. It forward the request to the underlying <code>skMerge</code> protocol.
+But, as this operation is reserved the the SKAS administrator, the caller must provide authentication information (typically its token) to ensure he has such rights.</p>
+<h4 id="login">Login</h4>
+<p>This interface check user credentials. If successful, user's information is provided in the response. It is intended to be use by others applications, such as the DEX connector.</p>
+<p>This interface is diabled in the default configuration</p>
+<h4 id="tokenreview">TokenReview</h4>
+<p>This interface is aimed to support the <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#webhook-token-authentication">Webhook Token Authentication</a>.
+It will be called by the Kubernetes API server to validate a token and retrieve associated user attributes.</p>
+<h2 id="interfaces-exposition">Interfaces exposition</h2>
+<p>Each interface can be exposed at three levels:</p>
+<ul>
+<li>On localhost, accessible only from other containers in the same pod.</li>
+<li>Inside Kubernetes, by adding a kubernetes Service.</li>
+<li>Outside Kubernetes, by adding a kubernetes ingress controller.</li>
+</ul>
+<p>For each module, every exposed API can be accessed on two ports:</p>
+<ul>
+<li>One associated to a server bound on localhost, for intra-pod communication</li>
+<li>One associated to a server bound on pod interface, to be exposed as a service or through an ingress. Always using SSL encrypted communication</li>
+</ul>
+<p>Depending of the configuration, only one or both server can be activated.</p>
+<p>For the default configuration, only the server bound on localhost is activated for the <code>skCrd</code>, <code>skLdap</code> and
+<code>skMerge</code> module. </p>
+<p>And only the server bound on the pod interface is activated for the <code>skAuth</code> module</p>
+<h2 id="sequence-diagrams">Sequence diagrams</h2>
+<h3 id="initial-user-connexion">Initial user connexion</h3>
+<p>Here is the sequence for a successful initial connexion.</p>
+<pre class="mermaid"><code>sequenceDiagram
+  participant User
+  participant kubectl
+  participant kubectl-sk
+  participant skAuth
+  participant Api server
+  autonumber
+  User-&gt;&gt;kubectl: User issue a&lt;br&gt;kubectl command
+  kubectl-&gt;&gt;kubectl-sk: kubectl launch&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
+  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookup&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;NO in this case
+  kubectl-sk-&gt;&gt;User: kubectl-sk prompt&lt;br&gt;for login and password
+  User--&gt;&gt;kubectl-sk: User provides its credential
+  kubectl-sk-&gt;&gt;skAuth: HTTP GET REQ:&lt;br&gt;getToken()
+  skAuth-&gt;&gt;skAuth: skAuth call&lt;br&gt;skMerge which&lt;br&gt;validate user&lt;br&gt;credentials and return&lt;br&gt;user's information&lt;br&gt;A token is generated.
+  skAuth--&gt;&gt;kubectl-sk: Token in&lt;br&gt;HTTP response
+  kubectl-sk--&gt;&gt;kubectl: kubectl-sk return&lt;br&gt;the token to kubectl&lt;br&gt;by printing it on&lt;br&gt;stdout and exit.
+  kubectl-&gt;&gt;Api server: kubectl issue the appropriate API call&lt;br&gt;with the provided bearer token
+  Api server-&gt;&gt;skAuth: The API Server&lt;br&gt;issue an&lt;br&gt;HTTP POST&lt;br&gt;with a&lt;br&gt;TokenReview&lt;br&gt;command
+  skAuth--&gt;&gt;Api server: skAuth validate&lt;br&gt;the token and &lt;br&gt;provide user's&lt;br&gt;name and groups&lt;br&gt;in the response.
+  Api server-&gt;&gt;Api server: API Server validate&lt;br&gt;if user is allowed by&lt;br&gt;RBAC to perform&lt;br&gt;the requested action
+  Api server--&gt;&gt;kubectl: API Server return the action result
+  kubectl--&gt;&gt;User: kubectl display&lt;br&gt;the result and exits</code></pre>
+<h3 id="token-renewal">Token renewal</h3>
+<p>Here is the sequence when a valid token is already present in client local cache:</p>
+<pre class="mermaid"><code>sequenceDiagram
+  participant User
+  participant kubectl
+  participant kubectl-sk
+  participant skAuth
+  participant Api server
+  autonumber
+  User-&gt;&gt;kubectl: User issue a&lt;br&gt;kubectl command
+  kubectl-&gt;&gt;kubectl-sk: kubectl launch&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
+  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookup&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;YES in this case
+  kubectl-sk-&gt;&gt;kubectl-sk: Is the token still&lt;br&gt;valid against the&lt;br&gt;clientTokenTTL&lt;br&gt;YES in this case
+  kubectl-sk--&gt;&gt;kubectl: kubectl-sk return&lt;br&gt;the token to kubectl&lt;br&gt;by printing it on&lt;br&gt;stdout and exit.
+  kubectl-&gt;&gt;Api server: kubectl issue the appropriate API call&lt;br&gt;with the provided bearer token
+  Api server-&gt;&gt;skAuth: The API Server&lt;br&gt;issue an&lt;br&gt;HTTP POST&lt;br&gt;with a&lt;br&gt;TokenReview&lt;br&gt;command
+  skAuth--&gt;&gt;Api server: skAuth validate&lt;br&gt;the token and &lt;br&gt;provide user's&lt;br&gt;name and groups&lt;br&gt;in the response.
+  Api server-&gt;&gt;Api server: API Server validate&lt;br&gt;if user is allowed by&lt;br&gt;RBAC to perform&lt;br&gt;the requested action
+  Api server--&gt;&gt;kubectl: API Server return the action result
+  kubectl--&gt;&gt;User: kubectl display&lt;br&gt;the result and exits</code></pre>
+<p>Here is the sequence when a token is still valid, but the local cache (which is short lived) has expired:</p>
+<pre class="mermaid"><code>sequenceDiagram
+  participant User
+  participant kubectl
+  participant kubectl-sk
+  participant skAuth
+  participant Api server
+  autonumber
+  User-&gt;&gt;kubectl: User issue a&lt;br&gt;kubectl command
+  kubectl-&gt;&gt;kubectl-sk: kubectl launch&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
+  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookup&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;YES in this case
+  kubectl-sk-&gt;&gt;kubectl-sk: Is the token still&lt;br&gt;valid against the&lt;br&gt;clientTokenTTL&lt;br&gt;NO in this case
+  kubectl-sk-&gt;&gt;skAuth: HTTP GET REQ:&lt;br&gt;validateToken()
+  skAuth-&gt;&gt;skAuth: skAuth check&lt;br&gt;if token is still valid.&lt;br&gt;Yes in this case
+  skAuth--&gt;&gt;kubectl-sk: tokenValid response
+  kubectl-sk--&gt;&gt;kubectl: kubectl-sk return&lt;br&gt;the token to kubectl&lt;br&gt;by printing it on&lt;br&gt;stdout and exit.
+  kubectl-&gt;&gt;Api server: kubectl issue the appropriate API call&lt;br&gt;with the provided bearer token
+  Api server-&gt;&gt;skAuth: The API Server&lt;br&gt;issue an&lt;br&gt;HTTP POST&lt;br&gt;with a&lt;br&gt;TokenReview&lt;br&gt;command
+  skAuth--&gt;&gt;Api server: skAuth validate&lt;br&gt;the token and &lt;br&gt;provide user's&lt;br&gt;name and groups&lt;br&gt;in the response.
+  Api server-&gt;&gt;Api server: API Server validate&lt;br&gt;if user is allowed by&lt;br&gt;RBAC to perform&lt;br&gt;the requested action
+  Api server--&gt;&gt;kubectl: API Server return the action result
+  kubectl--&gt;&gt;User: kubectl display&lt;br&gt;the result and exits</code></pre>
+<h3 id="token-expired">Token expired</h3>
+<p>And here is the sequence when a token has expired:</p>
+<pre class="mermaid"><code>sequenceDiagram
+  participant User
+  participant kubectl
+  participant kubectl-sk
+  participant skAuth
+  participant Api server
+  autonumber
+  User-&gt;&gt;kubectl: User issue a&lt;br&gt;kubectl command
+  kubectl-&gt;&gt;kubectl-sk: kubectl launch&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
+  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookup&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;YES in this case
+  kubectl-sk-&gt;&gt;kubectl-sk: Is the token still&lt;br&gt;valid against the&lt;br&gt;clientTokenTTL&lt;br&gt;NO in this case
+  kubectl-sk-&gt;&gt;skAuth: HTTP GET REQ:&lt;br&gt;validateToken()
+  skAuth-&gt;&gt;skAuth: skAuth check&lt;br&gt;if token is still valid.&lt;br&gt;NO in this case
+  skAuth--&gt;&gt;kubectl-sk: tokenInvalid&lt;br&gt;response
+  kubectl-sk-&gt;&gt;User: kubectl-sk prompt&lt;br&gt;for login and password</code></pre>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+    
+  </body>
+</html>
