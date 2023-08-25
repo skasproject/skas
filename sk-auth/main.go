@@ -145,7 +145,7 @@ func main() {
 		// ---------------------------------------------------- Login service
 		if !serverConfig.Services.Login.Disabled {
 			hdl := &handlers.LoginHandler{
-				ClientManager:  clientauth.New(serverConfig.Services.Kubeconfig.Clients, false),
+				ClientManager:  clientauth.New(serverConfig.Services.Login.Clients, false),
 				IdentityGetter: identityGetter,
 				Protector:      protector.New(serverConfig.Services.Login.Protected, context.Background(), config.Log.WithName("sk-auth.login.protector")),
 			}
@@ -175,7 +175,7 @@ func main() {
 		// ---------------------------------------------------- PasswordStrength service
 		if !serverConfig.Services.PasswordStrength.Disabled {
 			hdl := &handlers.PasswordStrengthHandler{
-				ClientManager: clientauth.New(serverConfig.Services.Kubeconfig.Clients, false),
+				ClientManager: clientauth.New(serverConfig.Services.PasswordStrength.Clients, false),
 			}
 			server.AddHandler(proto.PasswordStrengthMeta, hdl)
 			config.Log.Info("passwordStrength config", "forbidCommon", config.Conf.PasswordStrength.ForbidCommon, "minimumScore", config.Conf.PasswordStrength.MinimumScore)

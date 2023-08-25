@@ -153,24 +153,24 @@ var InitCmd = &cobra.Command{
 					"auth",
 				},
 				Env: []api.ExecEnvVar{
-					api.ExecEnvVar{
-						Name:  skclient.SK_CLIENT_URL,
+					{
+						Name:  httpClient.SK_CLIENT_URL,
 						Value: skConfig.Url,
 					},
-					api.ExecEnvVar{
-						Name:  skclient.SK_CLIENT_ROOT_CA_DATA,
+					{
+						Name:  httpClient.SK_CLIENT_ROOT_CA_DATA,
 						Value: skConfig.RootCaData,
 					},
-					api.ExecEnvVar{
-						Name:  skclient.SK_CLIENT_INSECURE_SKIP_VERIFY,
+					{
+						Name:  httpClient.SK_CLIENT_INSECURE_SKIP_VERIFY,
 						Value: strconv.FormatBool(skConfig.InsecureSkipVerify),
 					},
-					api.ExecEnvVar{
-						Name:  skclient.SK_CLIENT_AUTH_ID,
+					{
+						Name:  httpClient.SK_CLIENT_AUTH_ID,
 						Value: skConfig.ClientAuth.Id,
 					},
-					api.ExecEnvVar{
-						Name:  skclient.SK_CLIENT_AUTH_SECRET,
+					{
+						Name:  httpClient.SK_CLIENT_AUTH_SECRET,
 						Value: skConfig.ClientAuth.Secret,
 					},
 				},

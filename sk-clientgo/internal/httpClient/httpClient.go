@@ -9,6 +9,14 @@ import (
 	"strconv"
 )
 
+// Config can also be saved in environment variables
+
+const SK_CLIENT_URL = "SK_CLIENT_URL"
+const SK_CLIENT_ROOT_CA_DATA = "SK_CLIENT_ROOT_CA_DATA"
+const SK_CLIENT_INSECURE_SKIP_VERIFY = "SK_CLIENT_INSECURE_SKIP_VERIFY"
+const SK_CLIENT_AUTH_ID = "SK_CLIENT_AUTH_ID"
+const SK_CLIENT_AUTH_SECRET = "SK_CLIENT_AUTH_SECRET"
+
 func NewForInit(config *skclient.Config) (skclient.SkClient, error) {
 	return skclient.New(config, "", "")
 }
@@ -16,17 +24,17 @@ func NewForInit(config *skclient.Config) (skclient.SkClient, error) {
 func New() (skclient.SkClient, error) {
 	skConfig := &skclient.Config{}
 	// First, lookup in environment
-	skConfig.Url = os.Getenv(skclient.SK_CLIENT_URL)
+	skConfig.Url = os.Getenv(SK_CLIENT_URL)
 	var err error
 	if skConfig.Url != "" {
 		// Must fetch all remaining variables from env
-		skConfig.InsecureSkipVerify, err = strconv.ParseBool(os.Getenv(skclient.SK_CLIENT_INSECURE_SKIP_VERIFY))
+		skConfig.InsecureSkipVerify, err = strconv.ParseBool(os.Getenv(SK_CLIENT_INSECURE_SKIP_VERIFY))
 		if err != nil {
-			return nil, fmt.Errorf("error in kubconfig: Unable to parse '%s' as boolean for '%s'. Try kubectl sk init --force https://..... ", os.Getenv(skclient.SK_CLIENT_INSECURE_SKIP_VERIFY), skclient.SK_CLIENT_INSECURE_SKIP_VERIFY)
+			return nil, fmt.Errorf("error in kubconfig: Unable to parse '%s' as boolean for '%s'. Try kubectl sk init --force https://..... ", os.Getenv(SK_CLIENT_INSECURE_SKIP_VERIFY), SK_CLIENT_INSECURE_SKIP_VERIFY)
 		}
-		skConfig.RootCaData = os.Getenv(skclient.SK_CLIENT_ROOT_CA_DATA)
-		skConfig.ClientAuth.Id = os.Getenv(skclient.SK_CLIENT_AUTH_ID)
-		skConfig.ClientAuth.Secret = os.Getenv(skclient.SK_CLIENT_AUTH_SECRET)
+		skConfig.RootCaData = os.Getenv(SK_CLIENT_ROOT_CA_DATA)
+		skConfig.ClientAuth.Id = os.Getenv(SK_CLIENT_AUTH_ID)
+		skConfig.ClientAuth.Secret = os.Getenv(SK_CLIENT_AUTH_SECRET)
 	} else {
 		// Must dig directly in the kubernetes config file
 		loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -57,14 +65,14 @@ func New() (skclient.SkClient, error) {
 		for _, execEnvVar := range user.Exec.Env {
 			varFromName[execEnvVar.Name] = execEnvVar.Value
 		}
-		skConfig.Url = varFromName[skclient.SK_CLIENT_URL]
-		skConfig.InsecureSkipVerify, err = strconv.ParseBool(varFromName[skclient.SK_CLIENT_INSECURE_SKIP_VERIFY])
+		skConfig.Url = varFromName[SK_CLIENT_URL]
+		skConfig.InsecureSkipVerify, err = strconv.ParseBool(varFromName[SK_CLIENT_INSECURE_SKIP_VERIFY])
 		if err != nil {
-			return nil, fmt.Errorf("error in kubconfig: Unable to parse '%s' as boolean for '%s'. Try kubectl sk init --force https://...... ", varFromName[skclient.SK_CLIENT_INSECURE_SKIP_VERIFY], skclient.SK_CLIENT_INSECURE_SKIP_VERIFY)
+			return nil, fmt.Errorf("error in kubconfig: Unable to parse '%s' as boolean for '%s'. Try kubectl sk init --force https://...... ", varFromName[SK_CLIENT_INSECURE_SKIP_VERIFY], SK_CLIENT_INSECURE_SKIP_VERIFY)
 		}
-		skConfig.RootCaData = varFromName[skclient.SK_CLIENT_ROOT_CA_DATA]
-		skConfig.ClientAuth.Id = varFromName[skclient.SK_CLIENT_AUTH_ID]
-		skConfig.ClientAuth.Secret = varFromName[skclient.SK_CLIENT_AUTH_SECRET]
+		skConfig.RootCaData = varFromName[SK_CLIENT_ROOT_CA_DATA]
+		skConfig.ClientAuth.Id = varFromName[SK_CLIENT_AUTH_ID]
+		skConfig.ClientAuth.Secret = varFromName[SK_CLIENT_AUTH_SECRET]
 	}
 	return skclient.New(skConfig, "", "")
 }

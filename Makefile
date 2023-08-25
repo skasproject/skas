@@ -77,6 +77,10 @@ doc: ## Generate doc index
 	doctoc docs/installation.md --github --title '## Index'
 	doctoc docs/usage.md --github --title '## Index'
 
+.PHONY: docsite
+docsite: ## Publish documentation
+	cd docsite && . ./setup/activate.sh && mkdocs gh-deploy
+
 # ----------------------------------------------------------------------Docker local config
 
 .PHONY: docker-set-multiplatform-builder
