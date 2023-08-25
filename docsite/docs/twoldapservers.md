@@ -32,6 +32,8 @@ This configuration requires two steps:
 
 In the following, three variants of this configuration will be described. One with the connection in clear text, and two secured, with network encryption and inter-pod authentication.
 
+> _Even if your target is a fully secured configuration, we suggest you first implement the unsecured, simplest variant, and then modify it incrementally, as described._
+
 ## Clear text connection
 
 ### Auxiliary POD configuration
@@ -113,7 +115,7 @@ Then, there is the `exposure` part, who define how this service will be exposed.
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
+$ helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
 ```
 
 > **Note the `skas2' release name**
@@ -213,6 +215,8 @@ ldap2      userNotFound   0
 You can check than both ldap server are taken in account. This also ensure connection to both LDAP server are effective,
 as a provider is `critical` by default (Refers to the [IDP chaining: Provider configuration](chaining.md#provider-configuration) chapter).
 
+Of course, another test will be to describe some users existing in your LDAP servers.
+
 ## Securing connection
 
 It should ne noted than unencrypted passwords will transit through the link between the two pods. So, setting up encryption is a must have.
@@ -289,7 +293,7 @@ The differences are the following:
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
+$ helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
 ```
 
 > **Note the `skas2' release name**

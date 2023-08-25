@@ -26,6 +26,8 @@ This configuration requires two steps:
 
 In the following, three variants of this configuration will be described. One with the connection in clear text, and two secured, with network encryption and inter-pod authentication.
 
+> _Even if your target is a fully secured configuration, we suggest you first implement the unsecured, simplest variant, and then modify it incrementally, as described._
+
 ## Clear text connection
 
 ### Auxiliary POD configuration
@@ -102,7 +104,7 @@ to `localhost` in clear text)
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
+$ helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
 ```
 
 > **Note the `skas2' release name**
@@ -244,7 +246,7 @@ Unauthorized!
 Providing the namespace to each command can be tedious. It can be set as the default one for both `kubectl` and `kubectl-sk` subcommands:
 
 ```shell
-kubectl config set-context --current --namespace=dep1-userdb
+$ kubectl config set-context --current --namespace=dep1-userdb
 ``` 
 
 Then:
@@ -259,7 +261,7 @@ fred         ["Fred Astair"]                                   false
 Or it can be set with an environment variable:
 
 ```shell
-export SKAS_NAMESPACE="dep1-userdb"
+$ export SKAS_NAMESPACE="dep1-userdb"
 ``` 
 
 **But this last method will apply only on `kubectl-sk` subcommands**
@@ -432,7 +434,7 @@ The differences are the following:
 To deploy this configuration:
 
 ```shell
-helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
+$ helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
 ```
 
 > **Note the `skas2' release name**

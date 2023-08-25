@@ -11,7 +11,7 @@ nav:
   - "Two LDAP servers configuration": twoldapservers.md
   - "Delegated users management": delegated.md
   - "Clusters federation": clusterfederation.md
-  - "DEX integration": dex.md
+  - "DEX and Argo CD": dexandargocd.md
   - "Tools and Tricks": toolsandtricks.md
 theme:
 #  name: readthedocs
