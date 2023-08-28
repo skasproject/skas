@@ -25,6 +25,11 @@ skAuth:
 EOF
 ```
 
+SKAS is a very flexible product and, as such, there is a lot of variables in the default `values.yaml` of the helm chart.
+Fortunately, default values are appropriate in most case.
+
+We will not describe in this chapter all the variables (You can refer to comments in the file) but will explicit some typical configuration variation.
+
 To apply a modified file, the `helm upgrade` command should be used.
 
 ```shell
@@ -41,11 +46,6 @@ deployment.apps/skas restarted
 ```
 
 > _There is some solution to perform an automatic restart. See [reloader](toolsandtricks.md/#reloader)_
-
-SKAS is a very flexible product and, as such, there is a lot of variables in the default `values.yaml` of the helm chart. 
-Fortunately, default values are appropriate in most case. 
-
-We will not describe in this chapter all the variables (You can refer to comments in the file) but will explicit some typical configuration variation. 
 
 
 ## Skas behavior

@@ -147,8 +147,9 @@ Each interface can be exposed at three levels:
 
 For each module, every exposed API can be accessed on two ports:
 
-- One associated to a server bound on localhost, for intra-pod communication
-- One associated to a server bound on pod interface, to be exposed as a service or through an ingress. Always using SSL encrypted communication
+- One associated to a server bound on localhost, for intra-pod communication. In configuration files, this interface is named the `ìnternal` one.
+- One associated to a server bound on pod interface, to be exposed as a service or through an ingress. 
+Always using SSL encrypted communication. In configuration files, this interface is named the `external` one.
 
 Depending of the configuration, only one or both server can be activated.
 

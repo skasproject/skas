@@ -1,11 +1,7 @@
 
-# DEX and Argo CD
+# Argo CD integration with DEX
 
-## Standalone DEX
-
-## DEX embedded in ArgoCD
-
-Argo CD fully embed an instance of DEX. It will take care its deployment and most if its configuration. 
+Argo CD embed an instance of DEX. It will take care its deployment and most if its configuration. 
 In fact, only the `connectors:` part of the DEX config still remains to setup.
 
 For this reason, the installation process described here will assume there is an Argo CD instance deployed in a 
@@ -17,7 +13,7 @@ Then it should be proceeded to:
 - The deployment of SKAS, with the configuration of a `login` service, for the use of the DEX instance embedded in Argo CD
 - The configuration of this DEX instance, by patching the existing deployment.
 
-### SKAS deployment
+## SKAS deployment
 
 SKAS must be (re)configured to activate a `login` services. Here is the appropriate values file:
 
@@ -47,7 +43,7 @@ $ helm -n skas-system upgrade -i skas skas/skas --values ./values.init.yaml --va
 
 > _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md#pod-restart)_
 
-### Patching argo CD
+## Patching argo CD
 
 Next step is the patch the Argo CD deployment. In fact, there is two patches:
 
@@ -62,7 +58,7 @@ Here is the patch file for the DEX image (It is a JSON RFC 6902 Patch):
     [
       { "op": "replace",
         "path": "/spec/template/spec/containers/0/image",
-        "value": "ghcr.io/skasproject/dex:v2.35.3-skas-0.2.1"
+        "value": "ghcr.io/skasproject/dex:v2.37.0-skas-0.2.1"
       }
     ]
     ```
@@ -103,19 +99,19 @@ You must adjust:
 
 - The `url: https://argocd.ingress.mycluster.internal` to point to your Argo CD server UI.
 - The `admin.enabled` if you want to still be able to use the local Argo CD `admin` account.
-- The `rootCaData:`. To find the appropriate value:
-
+- The `rootCaData:` is populated with the Certificate Authority of the
+  `skAuth` service. To find its value, we can dig inside its certificate, which include its authority:
     ```shell
     $ kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}'
     ```
 
-This patch can be applied with the following command:
+Then, this patch can be applied with the following command:
 
 ```shell
 $ kubectl -n argocd patch configMap argocd-cm --type strategic --patch-file ./argocd-cm-patch.yaml
 ```
 
-#### Restart
+### Restart Pods
 
 For the patch to be effective, some Argo CD pod should be restarted:
 
@@ -124,7 +120,7 @@ $ kubectl -n argocd rollout restart deployment argocd-dex-server && \
 kubectl -n argocd rollout restart deployment argocd-server
 ```
 
-### Test
+## Test
 
 Open your browser on the Argo CD UI. You should land with something like:
 
@@ -144,3 +140,4 @@ Click on the `User info` menu entry on the left to ensure we got the correct use
 
 We can see the groups are correct. The Argo CD web UI choose to display the user's email in the Username field.
 Our current user has no email defined, so the blank field.  
+
