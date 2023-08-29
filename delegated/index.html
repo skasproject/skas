@@ -491,11 +491,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use-a-kubernetes-secrets" class="md-nav__link">
-    Use a Kubernetes secrets
+  <a href="#using-a-kubernetes-secrets" class="md-nav__link">
+    Using a Kubernetes secrets
   </a>
   
-    <nav class="md-nav" aria-label="Use a Kubernetes secrets">
+    <nav class="md-nav" aria-label="Using a Kubernetes secrets">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -514,6 +514,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-a-meta-helm-chart" class="md-nav__link">
+    Setup a meta helm chart
+  </a>
   
 </li>
       
@@ -550,6 +557,21 @@
     <li class="md-nav__item">
       <a href="../dex/" class="md-nav__link">
         DEX integration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../argocd/" class="md-nav__link">
+        Argo CD integration
       </a>
     </li>
   
@@ -692,11 +714,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use-a-kubernetes-secrets" class="md-nav__link">
-    Use a Kubernetes secrets
+  <a href="#using-a-kubernetes-secrets" class="md-nav__link">
+    Using a Kubernetes secrets
   </a>
   
-    <nav class="md-nav" aria-label="Use a Kubernetes secrets">
+    <nav class="md-nav" aria-label="Using a Kubernetes secrets">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -715,6 +737,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-a-meta-helm-chart" class="md-nav__link">
+    Setup a meta helm chart
+  </a>
   
 </li>
       
@@ -754,6 +783,9 @@
 </ul>
 <p><img alt="" src="../images/empty.png" width="700" /></p>
 <p>In the following, three variants of this configuration will be described. One with the connection in clear text, and two secured, with network encryption and inter-pod authentication.</p>
+<blockquote>
+<p><em>Even if your target is a fully secured configuration, we suggest you first implement the unsecured, simplest variant, and then modify it incrementally, as described.</em></p>
+</blockquote>
 <h2 id="clear-text-connection">Clear text connection</h2>
 <h3 id="auxiliary-pod-configuration">Auxiliary POD configuration</h3>
 <p>Here is a sample values file to configure the auxiliary POD:</p>
@@ -832,7 +864,7 @@ to <code>localhost</code> in clear text)</p>
 </li>
 </ul>
 <p>To deploy this configuration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
 </span></code></pre></div>
 <blockquote>
 <p><strong>Note the `skas2' release name</strong></p>
@@ -872,7 +904,6 @@ to <code>localhost</code> in clear text)</p>
 <p><em>Don't forget to add the <code>values.init.yaml</code>, or to merge it in the <code>values.main.yaml</code> file. Also, if you have others values file, they must be added on each upgrade</em></p>
 <p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
 </blockquote>
-<p>If deploying two separate Charts is a constraint for you, you may setup a 'meta chart'. See <a href="../toolsandtricks/#tricks-setup-a-meta-helm-chart">here</a></p>
 <h2 id="test-and-usage">Test and Usage</h2>
 <p>Then, you can now test your configuration:</p>
 <p>You can login using the dep1-admin user that has been created by the previous deployment:</p>
@@ -939,7 +970,7 @@ This is the result of  <code>groupPattern: "dep1-%s"</code> configuration above.
 </span></code></pre></div>
 <h3 id="default-namespace">Default namespace</h3>
 <p>Providing the namespace to each command can be tedious. It can be set as the default one for both <code>kubectl</code> and <code>kubectl-sk</code> subcommands:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>kubectl<span class="w"> </span>config<span class="w"> </span>set-context<span class="w"> </span>--current<span class="w"> </span>--namespace<span class="o">=</span>dep1-userdb
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>set-context<span class="w"> </span>--current<span class="w"> </span>--namespace<span class="o">=</span>dep1-userdb
 </span></code></pre></div>
 <p>Then:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>skusers
@@ -948,7 +979,7 @@ This is the result of  <code>groupPattern: "dep1-%s"</code> configuration above.
 </span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>fred<span class="w">         </span><span class="o">[</span><span class="s2">&quot;Fred Astair&quot;</span><span class="o">]</span><span class="w">                                   </span><span class="nb">false</span>
 </span></code></pre></div>
 <p>Or it can be set with an environment variable:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SKAS_NAMESPACE</span><span class="o">=</span><span class="s2">&quot;dep1-userdb&quot;</span>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">SKAS_NAMESPACE</span><span class="o">=</span><span class="s2">&quot;dep1-userdb&quot;</span>
 </span></code></pre></div>
 <p><strong>But this last method will apply only on <code>kubectl-sk</code> subcommands</strong></p>
 <h3 id="user-describe">User describe</h3>
@@ -1046,7 +1077,7 @@ editing users and groupBinding out of their initial namespace. </p>
 </span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="nt">skLdap</span><span class="p">:</span>
 </span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>
-</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster-issuer1</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
 </span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>
 </span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="nt">skCrd</span><span class="p">:</span>
 </span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -1091,7 +1122,7 @@ editing users and groupBinding out of their initial namespace. </p>
 <li>The <code>service.identity.clients</code> authentication is also activated. The <code>id</code> and <code>secret</code> values will have to be provided by the <code>skMerge</code> client.</li>
 </ul>
 <p>To deploy this configuration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
 </span></code></pre></div>
 <blockquote>
 <p><strong>Note the `skas2' release name</strong></p>
@@ -1146,7 +1177,7 @@ The property <code>skMerge.providerInfo.crd_dep1.rootCaPath</code> can now refer
 <p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
 </blockquote>
 <p>You can now test again your configuration, as <a href="#test-and-usage">described above</a></p>
-<h2 id="use-a-kubernetes-secrets">Use a Kubernetes secrets</h2>
+<h2 id="using-a-kubernetes-secrets">Using a Kubernetes secrets</h2>
 <p>There is still a security issue, as the shared secret (<code>aSharedSecret</code>) is in clear text in both values file. As such it may ends up in some version control system.</p>
 <p>The good practice will be to store the secret value in a kubernetes <code>secret</code> resource, such as:</p>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nn">---</span>
@@ -1161,7 +1192,7 @@ The property <code>skMerge.providerInfo.crd_dep1.rootCaPath</code> can now refer
 </span></code></pre></div>
 <p>Where <code>data.clientSecret</code> is the secret encoded in base 64.</p>
 <blockquote>
-<p>There is several solution to generate such secret value. One can use Helm with some random generator function. Or use a <a href="../toolsandtricks/#secret-generator">Secret generator</a></p>
+<p>There is several solutions to generate such secret value. One can use Helm with some random generator function. Or use a <a href="../toolsandtricks/#secret-generator">Secret generator</a></p>
 </blockquote>
 <h3 id="auxiliary-pod-configuration_2">Auxiliary POD configuration</h3>
 <p>To use this secret, here is the new modified version for the <code>skas2</code> POD configuration:</p>
@@ -1174,7 +1205,7 @@ The property <code>skMerge.providerInfo.crd_dep1.rootCaPath</code> can now refer
 </span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="nt">skLdap</span><span class="p">:</span>
 </span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>
-</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster-issuer1</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
 </span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>
 </span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="nt">skCrd</span><span class="p">:</span>
 </span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -1221,8 +1252,8 @@ The property <code>skMerge.providerInfo.crd_dep1.rootCaPath</code> can now refer
 </details>
 <p>The modifications are the following:</p>
 <ul>
-<li>The <code>skLdap.extraEnv</code> subsection inject the secret value as an environment variable in the container.</li>
-<li>the <code>exposure.external.services.identity.clients[0].secret</code> fetch its value through this environment variable.</li>
+<li>The <code>skCrd.extraEnv</code> subsection inject the secret value as an environment variable in the container.</li>
+<li>the <code>skCrd.exposure.external.services.identity.clients[0].secret</code> fetch its value through this environment variable.</li>
 </ul>
 <blockquote>
 <p>Most of the values provided by the helm chart ends up inside a configMap, which is then loaded by the SKAS executable. The environment variable interpolation occurs during this load.</p>
@@ -1261,7 +1292,163 @@ The property <code>skMerge.providerInfo.crd_dep1.rootCaPath</code> can now refer
 </span><span id="__span-24-28"><a id="__codelineno-24-28" name="__codelineno-24-28" href="#__codelineno-24-28"></a><span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/cert/skas2</span>
 </span></code></pre></div>
 </details>
-<p>The modifications are the same as the SKAS2 POD</p>
+<p>The modifications are the same as the SKAS2 POD, but on the <code>skMerge</code> module</p>
+<h2 id="setup-a-meta-helm-chart">Setup a meta helm chart</h2>
+<p>Up to now, we had setup our configuration by performing two closely related Helm deployment.</p>
+<p>To ease automation, it could be useful to 'package' such kind of deployment by creating a 'meta chart', a chart which will embed other ones as dependencies.</p>
+<p>Such chart will have the following layout.</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>$<span class="w"> </span>tree
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>.
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="p">|</span>--<span class="w"> </span>Chart.yaml
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="p">|</span>--<span class="w"> </span>templates
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="p">|</span><span class="w">   </span><span class="sb">`</span>--<span class="w"> </span>stringsecret.yaml
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="sb">`</span>--<span class="w"> </span>values.yaml
+</span></code></pre></div>
+<blockquote>
+<p>This example will implement encryption and inter-pod authentication.</p>
+</blockquote>
+<p>The <code>Chart.yaml</code> file define the meta-chart <code>skas-skas2-meta</code>.There is two dependencies deploying the same helm chart,
+but with different values (See below). Note the <code>alias: skas2</code> on the second deployment.</p>
+<details class="abstract">
+<summary>Chart.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-skas2-meta</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="nt">dependencies</span><span class="p">:</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2.1</span>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skasproject.github.io/skas-charts</span>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas</span>
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a><span class="w">  </span><span class="nt">alias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas2</span>
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2.1</span>
+</span><span id="__span-26-12"><a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a><span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skasproject.github.io/skas-charts</span>
+</span></code></pre></div>
+</details>
+<p>The following will generate the shared secret allowing inter-pods authentication</p>
+<details class="abstract">
+<summary> templates/stringsecret.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="nn">---</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secretgenerator.mittwald.de/v1alpha1&quot;</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;StringSecret&quot;</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas2-client-secret</span>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-system</span>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="w">  </span><span class="nt">fields</span><span class="p">:</span>
+</span><span id="__span-27-9"><a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">fieldName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;clientSecret&quot;</span>
+</span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a><span class="w">      </span><span class="nt">encoding</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;base64&quot;</span>
+</span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a><span class="w">      </span><span class="nt">length</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;15&quot;</span>
+</span></code></pre></div>
+</details>
+<p>And here is the global <code>values.yaml</code> file:</p>
+<details class="abstract">
+<summary>values.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nt">skas</span><span class="p">:</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="w">  </span><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="w">    </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="w">      </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="w">        </span><span class="nt">ingress</span><span class="p">:</span>
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a><span class="w">          </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas.ingress.kspray6</span>
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="w">    </span><span class="nt">kubeconfig</span><span class="p">:</span>
+</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="w">      </span><span class="nt">context</span><span class="p">:</span>
+</span><span id="__span-28-9"><a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas@kspray6</span>
+</span><span id="__span-28-10"><a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a><span class="w">      </span><span class="nt">cluster</span><span class="p">:</span>
+</span><span id="__span-28-11"><a id="__codelineno-28-11" name="__codelineno-28-11" href="#__codelineno-28-11"></a><span class="w">        </span><span class="nt">apiServerUrl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://kubernetes.ingress.kspray6</span>
+</span><span id="__span-28-12"><a id="__codelineno-28-12" name="__codelineno-28-12" href="#__codelineno-28-12"></a>
+</span><span id="__span-28-13"><a id="__codelineno-28-13" name="__codelineno-28-13" href="#__codelineno-28-13"></a><span class="w">  </span><span class="nt">skMerge</span><span class="p">:</span>
+</span><span id="__span-28-14"><a id="__codelineno-28-14" name="__codelineno-28-14" href="#__codelineno-28-14"></a><span class="w">    </span><span class="nt">providers</span><span class="p">:</span>
+</span><span id="__span-28-15"><a id="__codelineno-28-15" name="__codelineno-28-15" href="#__codelineno-28-15"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crd</span>
+</span><span id="__span-28-16"><a id="__codelineno-28-16" name="__codelineno-28-16" href="#__codelineno-28-16"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crd_dep1</span>
+</span><span id="__span-28-17"><a id="__codelineno-28-17" name="__codelineno-28-17" href="#__codelineno-28-17"></a><span class="w">        </span><span class="nt">groupPattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dep1-%s&quot;</span>
+</span><span id="__span-28-18"><a id="__codelineno-28-18" name="__codelineno-28-18" href="#__codelineno-28-18"></a>
+</span><span id="__span-28-19"><a id="__codelineno-28-19" name="__codelineno-28-19" href="#__codelineno-28-19"></a><span class="w">    </span><span class="nt">providerInfo</span><span class="p">:</span>
+</span><span id="__span-28-20"><a id="__codelineno-28-20" name="__codelineno-28-20" href="#__codelineno-28-20"></a><span class="w">      </span><span class="nt">crd</span><span class="p">:</span>
+</span><span id="__span-28-21"><a id="__codelineno-28-21" name="__codelineno-28-21" href="#__codelineno-28-21"></a><span class="w">        </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:7012</span>
+</span><span id="__span-28-22"><a id="__codelineno-28-22" name="__codelineno-28-22" href="#__codelineno-28-22"></a><span class="w">      </span><span class="nt">crd_dep1</span><span class="p">:</span>
+</span><span id="__span-28-23"><a id="__codelineno-28-23" name="__codelineno-28-23" href="#__codelineno-28-23"></a><span class="w">        </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skas-skas2-crd.skas-system.svc</span><span class="w"> </span><span class="c1"># Was https://skas2-crd.skas-system.svc</span>
+</span><span id="__span-28-24"><a id="__codelineno-28-24" name="__codelineno-28-24" href="#__codelineno-28-24"></a><span class="w">        </span><span class="nt">rootCaPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/cert/skas2/ca.crt</span>
+</span><span id="__span-28-25"><a id="__codelineno-28-25" name="__codelineno-28-25" href="#__codelineno-28-25"></a><span class="w">        </span><span class="nt">insecureSkipVerify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-28-26"><a id="__codelineno-28-26" name="__codelineno-28-26" href="#__codelineno-28-26"></a><span class="w">        </span><span class="nt">clientAuth</span><span class="p">:</span>
+</span><span id="__span-28-27"><a id="__codelineno-28-27" name="__codelineno-28-27" href="#__codelineno-28-27"></a><span class="w">          </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skMerge</span>
+</span><span id="__span-28-28"><a id="__codelineno-28-28" name="__codelineno-28-28" href="#__codelineno-28-28"></a><span class="w">          </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${SKAS2_CLIENT_SECRET}</span>
+</span><span id="__span-28-29"><a id="__codelineno-28-29" name="__codelineno-28-29" href="#__codelineno-28-29"></a>
+</span><span id="__span-28-30"><a id="__codelineno-28-30" name="__codelineno-28-30" href="#__codelineno-28-30"></a><span class="w">    </span><span class="nt">extraEnv</span><span class="p">:</span>
+</span><span id="__span-28-31"><a id="__codelineno-28-31" name="__codelineno-28-31" href="#__codelineno-28-31"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SKAS2_CLIENT_SECRET</span>
+</span><span id="__span-28-32"><a id="__codelineno-28-32" name="__codelineno-28-32" href="#__codelineno-28-32"></a><span class="w">        </span><span class="nt">valueFrom</span><span class="p">:</span>
+</span><span id="__span-28-33"><a id="__codelineno-28-33" name="__codelineno-28-33" href="#__codelineno-28-33"></a><span class="w">          </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+</span><span id="__span-28-34"><a id="__codelineno-28-34" name="__codelineno-28-34" href="#__codelineno-28-34"></a><span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas2-client-secret</span>
+</span><span id="__span-28-35"><a id="__codelineno-28-35" name="__codelineno-28-35" href="#__codelineno-28-35"></a><span class="w">            </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clientSecret</span>
+</span><span id="__span-28-36"><a id="__codelineno-28-36" name="__codelineno-28-36" href="#__codelineno-28-36"></a>
+</span><span id="__span-28-37"><a id="__codelineno-28-37" name="__codelineno-28-37" href="#__codelineno-28-37"></a><span class="w">    </span><span class="nt">extraSecrets</span><span class="p">:</span>
+</span><span id="__span-28-38"><a id="__codelineno-28-38" name="__codelineno-28-38" href="#__codelineno-28-38"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-skas2-crd-cert</span><span class="w">  </span><span class="c1"># Was skas2-crd-cert</span>
+</span><span id="__span-28-39"><a id="__codelineno-28-39" name="__codelineno-28-39" href="#__codelineno-28-39"></a><span class="w">        </span><span class="nt">volume</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas2-cert</span>
+</span><span id="__span-28-40"><a id="__codelineno-28-40" name="__codelineno-28-40" href="#__codelineno-28-40"></a><span class="w">        </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/cert/skas2</span>
+</span><span id="__span-28-41"><a id="__codelineno-28-41" name="__codelineno-28-41" href="#__codelineno-28-41"></a>
+</span><span id="__span-28-42"><a id="__codelineno-28-42" name="__codelineno-28-42" href="#__codelineno-28-42"></a>
+</span><span id="__span-28-43"><a id="__codelineno-28-43" name="__codelineno-28-43" href="#__codelineno-28-43"></a><span class="nt">skas2</span><span class="p">:</span>
+</span><span id="__span-28-44"><a id="__codelineno-28-44" name="__codelineno-28-44" href="#__codelineno-28-44"></a><span class="w">  </span><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-28-45"><a id="__codelineno-28-45" name="__codelineno-28-45" href="#__codelineno-28-45"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-28-46"><a id="__codelineno-28-46" name="__codelineno-28-46" href="#__codelineno-28-46"></a><span class="w">  </span><span class="nt">skMerge</span><span class="p">:</span>
+</span><span id="__span-28-47"><a id="__codelineno-28-47" name="__codelineno-28-47" href="#__codelineno-28-47"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-28-48"><a id="__codelineno-28-48" name="__codelineno-28-48" href="#__codelineno-28-48"></a><span class="w">  </span><span class="nt">skLdap</span><span class="p">:</span>
+</span><span id="__span-28-49"><a id="__codelineno-28-49" name="__codelineno-28-49" href="#__codelineno-28-49"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-28-50"><a id="__codelineno-28-50" name="__codelineno-28-50" href="#__codelineno-28-50"></a>
+</span><span id="__span-28-51"><a id="__codelineno-28-51" name="__codelineno-28-51" href="#__codelineno-28-51"></a><span class="w">  </span><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
+</span><span id="__span-28-52"><a id="__codelineno-28-52" name="__codelineno-28-52" href="#__codelineno-28-52"></a>
+</span><span id="__span-28-53"><a id="__codelineno-28-53" name="__codelineno-28-53" href="#__codelineno-28-53"></a><span class="w">  </span><span class="nt">skCrd</span><span class="p">:</span>
+</span><span id="__span-28-54"><a id="__codelineno-28-54" name="__codelineno-28-54" href="#__codelineno-28-54"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-28-55"><a id="__codelineno-28-55" name="__codelineno-28-55" href="#__codelineno-28-55"></a><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dep1-userdb</span>
+</span><span id="__span-28-56"><a id="__codelineno-28-56" name="__codelineno-28-56" href="#__codelineno-28-56"></a>
+</span><span id="__span-28-57"><a id="__codelineno-28-57" name="__codelineno-28-57" href="#__codelineno-28-57"></a><span class="w">    </span><span class="nt">adminGroups</span><span class="p">:</span>
+</span><span id="__span-28-58"><a id="__codelineno-28-58" name="__codelineno-28-58" href="#__codelineno-28-58"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dep1-admin</span>
+</span><span id="__span-28-59"><a id="__codelineno-28-59" name="__codelineno-28-59" href="#__codelineno-28-59"></a>
+</span><span id="__span-28-60"><a id="__codelineno-28-60" name="__codelineno-28-60" href="#__codelineno-28-60"></a><span class="w">    </span><span class="nt">initialUser</span><span class="p">:</span>
+</span><span id="__span-28-61"><a id="__codelineno-28-61" name="__codelineno-28-61" href="#__codelineno-28-61"></a><span class="w">      </span><span class="nt">login</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dep1-admin</span>
+</span><span id="__span-28-62"><a id="__codelineno-28-62" name="__codelineno-28-62" href="#__codelineno-28-62"></a><span class="w">      </span><span class="nt">passwordHash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G</span><span class="w">  </span><span class="c1"># admin</span>
+</span><span id="__span-28-63"><a id="__codelineno-28-63" name="__codelineno-28-63" href="#__codelineno-28-63"></a><span class="w">      </span><span class="nt">commonNames</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;DEP1</span><span class="nv"> </span><span class="s">administrator&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+</span><span id="__span-28-64"><a id="__codelineno-28-64" name="__codelineno-28-64" href="#__codelineno-28-64"></a><span class="w">      </span><span class="nt">groups</span><span class="p">:</span>
+</span><span id="__span-28-65"><a id="__codelineno-28-65" name="__codelineno-28-65" href="#__codelineno-28-65"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
+</span><span id="__span-28-66"><a id="__codelineno-28-66" name="__codelineno-28-66" href="#__codelineno-28-66"></a>
+</span><span id="__span-28-67"><a id="__codelineno-28-67" name="__codelineno-28-67" href="#__codelineno-28-67"></a><span class="w">    </span><span class="c1"># By default, only internal (localhost) server is activated, to be called by another container running in the same pod.</span>
+</span><span id="__span-28-68"><a id="__codelineno-28-68" name="__codelineno-28-68" href="#__codelineno-28-68"></a><span class="w">    </span><span class="c1"># Optionally, another server (external) can be activated, which can be accessed through a kubernetes service</span>
+</span><span id="__span-28-69"><a id="__codelineno-28-69" name="__codelineno-28-69" href="#__codelineno-28-69"></a><span class="w">    </span><span class="c1"># In such case:</span>
+</span><span id="__span-28-70"><a id="__codelineno-28-70" name="__codelineno-28-70" href="#__codelineno-28-70"></a><span class="w">    </span><span class="c1"># - A Client list should be provided to control access.</span>
+</span><span id="__span-28-71"><a id="__codelineno-28-71" name="__codelineno-28-71" href="#__codelineno-28-71"></a><span class="w">    </span><span class="c1"># - ssl: true is strongly recommended.</span>
+</span><span id="__span-28-72"><a id="__codelineno-28-72" name="__codelineno-28-72" href="#__codelineno-28-72"></a><span class="w">    </span><span class="c1"># - And protection against BFA should be activated (protected: true)</span>
+</span><span id="__span-28-73"><a id="__codelineno-28-73" name="__codelineno-28-73" href="#__codelineno-28-73"></a><span class="w">    </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-28-74"><a id="__codelineno-28-74" name="__codelineno-28-74" href="#__codelineno-28-74"></a><span class="w">      </span><span class="nt">internal</span><span class="p">:</span>
+</span><span id="__span-28-75"><a id="__codelineno-28-75" name="__codelineno-28-75" href="#__codelineno-28-75"></a><span class="w">        </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-28-76"><a id="__codelineno-28-76" name="__codelineno-28-76" href="#__codelineno-28-76"></a><span class="w">      </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-28-77"><a id="__codelineno-28-77" name="__codelineno-28-77" href="#__codelineno-28-77"></a><span class="w">        </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-28-78"><a id="__codelineno-28-78" name="__codelineno-28-78" href="#__codelineno-28-78"></a><span class="w">        </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7112</span>
+</span><span id="__span-28-79"><a id="__codelineno-28-79" name="__codelineno-28-79" href="#__codelineno-28-79"></a><span class="w">        </span><span class="nt">ssl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-28-80"><a id="__codelineno-28-80" name="__codelineno-28-80" href="#__codelineno-28-80"></a><span class="w">        </span><span class="nt">services</span><span class="p">:</span>
+</span><span id="__span-28-81"><a id="__codelineno-28-81" name="__codelineno-28-81" href="#__codelineno-28-81"></a><span class="w">          </span><span class="nt">identity</span><span class="p">:</span>
+</span><span id="__span-28-82"><a id="__codelineno-28-82" name="__codelineno-28-82" href="#__codelineno-28-82"></a><span class="w">            </span><span class="nt">disabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-28-83"><a id="__codelineno-28-83" name="__codelineno-28-83" href="#__codelineno-28-83"></a><span class="w">            </span><span class="nt">clients</span><span class="p">:</span>
+</span><span id="__span-28-84"><a id="__codelineno-28-84" name="__codelineno-28-84" href="#__codelineno-28-84"></a><span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;skMerge&quot;</span>
+</span><span id="__span-28-85"><a id="__codelineno-28-85" name="__codelineno-28-85" href="#__codelineno-28-85"></a><span class="w">                </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${SKAS2_CLIENT_SECRET}</span>
+</span><span id="__span-28-86"><a id="__codelineno-28-86" name="__codelineno-28-86" href="#__codelineno-28-86"></a><span class="w">            </span><span class="nt">protected</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-28-87"><a id="__codelineno-28-87" name="__codelineno-28-87" href="#__codelineno-28-87"></a>
+</span><span id="__span-28-88"><a id="__codelineno-28-88" name="__codelineno-28-88" href="#__codelineno-28-88"></a><span class="w">    </span><span class="nt">extraEnv</span><span class="p">:</span>
+</span><span id="__span-28-89"><a id="__codelineno-28-89" name="__codelineno-28-89" href="#__codelineno-28-89"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SKAS2_CLIENT_SECRET</span>
+</span><span id="__span-28-90"><a id="__codelineno-28-90" name="__codelineno-28-90" href="#__codelineno-28-90"></a><span class="w">        </span><span class="nt">valueFrom</span><span class="p">:</span>
+</span><span id="__span-28-91"><a id="__codelineno-28-91" name="__codelineno-28-91" href="#__codelineno-28-91"></a><span class="w">          </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+</span><span id="__span-28-92"><a id="__codelineno-28-92" name="__codelineno-28-92" href="#__codelineno-28-92"></a><span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas2-client-secret</span>
+</span><span id="__span-28-93"><a id="__codelineno-28-93" name="__codelineno-28-93" href="#__codelineno-28-93"></a><span class="w">            </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clientSecret</span>
+</span></code></pre></div>
+</details>
+<p>There is two blocks: <code>skas</code> and <code>skas2</code>, matching the name or alias in the <code>Chart.yaml</code> file.</p>
+<p>These two block hold the same definition than the ones defined in the original configuration. With two differences:</p>
+<ul>
+<li><code>skas.skMerge.providerInfo.crd_dep1.url: https://skas-skas2-crd.skas-system.svc</code></li>
+<li><code>skas.skMerge.extraSecrets[0].secret: skas-skas2-crd-cert</code></li>
+</ul>
+<p>This to accommodate service and secret name change, due to aliasing of the second dependency.</p>
+<p>Then, to launch the deployment, in the same folder as <code>Chart.yaml</code>, execute:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>$<span class="w"> </span>helm<span class="w"> </span>dependency<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>.
+</span></code></pre></div>
 
 
 

@@ -449,11 +449,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use-a-kubernetes-secrets" class="md-nav__link">
-    Use a Kubernetes secrets
+  <a href="#using-a-kubernetes-secrets" class="md-nav__link">
+    Using a Kubernetes secrets
   </a>
   
-    <nav class="md-nav" aria-label="Use a Kubernetes secrets">
+    <nav class="md-nav" aria-label="Using a Kubernetes secrets">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -472,6 +472,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-a-meta-helm-chart" class="md-nav__link">
+    Setup a meta helm chart
+  </a>
   
 </li>
       
@@ -523,6 +530,21 @@
     <li class="md-nav__item">
       <a href="../dex/" class="md-nav__link">
         DEX integration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../argocd/" class="md-nav__link">
+        Argo CD integration
       </a>
     </li>
   
@@ -638,11 +660,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use-a-kubernetes-secrets" class="md-nav__link">
-    Use a Kubernetes secrets
+  <a href="#using-a-kubernetes-secrets" class="md-nav__link">
+    Using a Kubernetes secrets
   </a>
   
-    <nav class="md-nav" aria-label="Use a Kubernetes secrets">
+    <nav class="md-nav" aria-label="Using a Kubernetes secrets">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -661,6 +683,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-a-meta-helm-chart" class="md-nav__link">
+    Setup a meta helm chart
+  </a>
   
 </li>
       
@@ -704,6 +733,9 @@ In this case, as the second <code>skLdap</code> module run in another POD, commu
 </ul>
 <p><img alt="" src="../images/empty.png" width="700" /></p>
 <p>In the following, three variants of this configuration will be described. One with the connection in clear text, and two secured, with network encryption and inter-pod authentication.</p>
+<blockquote>
+<p><em>Even if your target is a fully secured configuration, we suggest you first implement the unsecured, simplest variant, and then modify it incrementally, as described.</em></p>
+</blockquote>
 <h2 id="clear-text-connection">Clear text connection</h2>
 <h3 id="auxiliary-pod-configuration">Auxiliary POD configuration</h3>
 <p>Here is a sample values file to configure the auxiliary POD:</p>
@@ -779,7 +811,7 @@ In this case, as the second <code>skLdap</code> module run in another POD, commu
 </li>
 </ul>
 <p>To deploy this configuration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
 </span></code></pre></div>
 <blockquote>
 <p><strong>Note the `skas2' release name</strong></p>
@@ -848,7 +880,6 @@ In this case, as the second <code>skLdap</code> module run in another POD, commu
 <p><em>Don't forget to add the <code>values.init.yaml</code>, or to merge it in the <code>values.skas.yaml</code> file. Also, if you have others values file, they must be added on each upgrade</em></p>
 <p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
 </blockquote>
-<p>If deploying two separate Charts is a constraint for you, you may setup a 'meta chart'. See <a href="../toolsandtricks/#tricks-setup-a-meta-helm-chart">here</a></p>
 <h2 id="test">Test</h2>
 <p>Then, you can now test your configuration:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>nobody<span class="w">  </span>--explain
@@ -863,6 +894,7 @@ In this case, as the second <code>skLdap</code> module run in another POD, commu
 </span></code></pre></div>
 <p>You can check than both ldap server are taken in account. This also ensure connection to both LDAP server are effective,
 as a provider is <code>critical</code> by default (Refers to the <a href="../chaining/#provider-configuration">IDP chaining: Provider configuration</a> chapter).</p>
+<p>Of course, another test will be to describe some users existing in your LDAP servers.</p>
 <h2 id="securing-connection">Securing connection</h2>
 <p>It should ne noted than unencrypted passwords will transit through the link between the two pods. So, setting up encryption is a must have.</p>
 <h3 id="auxiliary-pod-configuration_1">Auxiliary POD configuration</h3>
@@ -932,7 +964,7 @@ as a provider is <code>critical</code> by default (Refers to the <a href="../cha
 <li>The <code>service.identity.clients</code> authentication is also activated. The <code>id</code> and <code>secret</code> values will have to be provided by the <code>skMerge</code> client.</li>
 </ul>
 <p>To deploy this configuration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
 </span></code></pre></div>
 <blockquote>
 <p><strong>Note the `skas2' release name</strong></p>
@@ -1015,7 +1047,7 @@ The property <code>skMerge.providerInfo.ldap2.rootCaPath</code> can now refer to
 <p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
 </blockquote>
 <p>You can now test again your configuration, as <a href="#test">described above</a></p>
-<h2 id="use-a-kubernetes-secrets">Use a Kubernetes secrets</h2>
+<h2 id="using-a-kubernetes-secrets">Using a Kubernetes secrets</h2>
 <p>There is still a security issue, as the shared secret (<code>aSharedSecret</code>) is in clear text in both values file. As such it may ends up in some version control system.</p>
 <p>The good practice will be to store the secret value in a kubernetes <code>secret</code> resource, such as:</p>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nn">---</span>
@@ -1030,7 +1062,7 @@ The property <code>skMerge.providerInfo.ldap2.rootCaPath</code> can now refer to
 </span></code></pre></div>
 <p>Where <code>data.clientSecret</code> is the secret encoded in base 64.</p>
 <blockquote>
-<p>There is several solution to generate such secret value. One can use Helm with some random generator function. Or use a <a href="../toolsandtricks/#secret-generator">Secret generator</a></p>
+<p>There is several solutions to generate such secret value. One can use Helm with some random generator function. Or use a <a href="../toolsandtricks/#secret-generator">Secret generator</a></p>
 </blockquote>
 <h3 id="auxiliary-pod-configuration_2">Auxiliary POD configuration</h3>
 <p>To use this secret, here is the new modified version for the <code>skas2</code> POD configuration:</p>
@@ -1101,7 +1133,7 @@ The property <code>skMerge.providerInfo.ldap2.rootCaPath</code> can now refer to
 <p>The modifications are the following:</p>
 <ul>
 <li>The <code>skLdap.extraEnv</code> subsection inject the secret value as an environment variable in the container.</li>
-<li>the <code>exposure.external.services.identity.clients[0].secret</code> fetch its value through this environment variable.</li>
+<li>the <code>skLdap.exposure.external.services.identity.clients[0].secret</code> fetch its value through this environment variable.</li>
 </ul>
 <blockquote>
 <p>Most of the values provided by the helm chart ends up inside a configMap, which is then loaded by the SKAS executable. The environment variable interpolation occurs during this load.</p>
@@ -1168,7 +1200,207 @@ The property <code>skMerge.providerInfo.ldap2.rootCaPath</code> can now refer to
 </span><span id="__span-11-56"><a id="__codelineno-11-56" name="__codelineno-11-56" href="#__codelineno-11-56"></a><span class="w">      </span><span class="nt">numericalIdAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uidNumber</span>
 </span></code></pre></div>
 </details>
-<p>The modifications are the same as the SKAS2 POD</p>
+<p>The modifications are the same as the SKAS2 POD, but on the <code>skMerge</code> module.</p>
+<h2 id="setup-a-meta-helm-chart">Setup a meta helm chart</h2>
+<p>Up to now, we had setup our configuration by performing two closely related Helm deployment.</p>
+<p>To ease automation, it could be useful to 'package' such kind of deployment by creating a 'meta chart', a chart which will embed other ones as dependencies.</p>
+<p>Such chart will have the following layout.</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span>tree
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>.
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="p">|</span>--<span class="w"> </span>Chart.yaml
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="p">|</span>--<span class="w"> </span>templates
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="p">|</span><span class="w">   </span><span class="sb">`</span>--<span class="w"> </span>stringsecret.yaml
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="sb">`</span>--<span class="w"> </span>values.yaml
+</span></code></pre></div>
+<blockquote>
+<p>This example will implement encryption and inter-pod authentication.</p>
+</blockquote>
+<p>The <code>Chart.yaml</code> file define the meta-chart <code>skas-skas2-meta</code>.There is two dependencies deploying the same helm chart,
+but with different values (See below). Note the <code>alias: skas2</code> on the second deployment.</p>
+<details class="abstract" open="open">
+<summary>Chart.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-skas2-meta</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="nt">dependencies</span><span class="p">:</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2.1</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skasproject.github.io/skas-charts</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">  </span><span class="nt">alias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas2</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2.1</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skasproject.github.io/skas-charts</span>
+</span></code></pre></div>
+</details>
+<p>The following will generate the shared secret allowing inter-pods authentication</p>
+<details class="abstract">
+<summary> templates/stringsecret.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nn">---</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secretgenerator.mittwald.de/v1alpha1&quot;</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;StringSecret&quot;</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas2-client-secret</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-system</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">  </span><span class="nt">fields</span><span class="p">:</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">fieldName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;clientSecret&quot;</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">      </span><span class="nt">encoding</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;base64&quot;</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">      </span><span class="nt">length</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;15&quot;</span>
+</span></code></pre></div>
+</details>
+<p>And here is the global <code>values.yaml</code> file: </p>
+<details class="abstract">
+<summary>values.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># ======================================================== Main SKAS Pod configuration</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nt">skas</span><span class="p">:</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">  </span><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">  </span><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">    </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">      </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">        </span><span class="nt">ingress</span><span class="p">:</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="w">          </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas.ingress.kspray6</span>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">    </span><span class="nt">kubeconfig</span><span class="p">:</span>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="w">      </span><span class="nt">context</span><span class="p">:</span>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas@kspray6</span>
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="w">      </span><span class="nt">cluster</span><span class="p">:</span>
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="w">        </span><span class="nt">apiServerUrl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://kubernetes.ingress.kspray6</span>
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a><span class="w">  </span><span class="nt">skMerge</span><span class="p">:</span>
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="w">    </span><span class="nt">providers</span><span class="p">:</span>
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crd</span>
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap1</span>
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="w">        </span><span class="nt">groupPattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dep1_%s&quot;</span>
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap2</span>
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a><span class="w">        </span><span class="nt">groupPattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dep2_%s&quot;</span>
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>
+</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a><span class="w">    </span><span class="nt">providerInfo</span><span class="p">:</span>
+</span><span id="__span-15-25"><a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a><span class="w">      </span><span class="nt">crd</span><span class="p">:</span>
+</span><span id="__span-15-26"><a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a><span class="w">        </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:7012</span>
+</span><span id="__span-15-27"><a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a><span class="w">      </span><span class="nt">ldap1</span><span class="p">:</span>
+</span><span id="__span-15-28"><a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a><span class="w">        </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:7013</span>
+</span><span id="__span-15-29"><a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a><span class="w">      </span><span class="nt">ldap2</span><span class="p">:</span>
+</span><span id="__span-15-30"><a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a><span class="w">        </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skas-skas2-ldap.skas-system.svc</span><span class="w"> </span><span class="c1"># Was https://skas2-ldap.skas-system.svc</span>
+</span><span id="__span-15-31"><a id="__codelineno-15-31" name="__codelineno-15-31" href="#__codelineno-15-31"></a><span class="w">        </span><span class="nt">rootCaPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/cert/ldap2/ca.crt</span>
+</span><span id="__span-15-32"><a id="__codelineno-15-32" name="__codelineno-15-32" href="#__codelineno-15-32"></a><span class="w">        </span><span class="nt">insecureSkipVerify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-15-33"><a id="__codelineno-15-33" name="__codelineno-15-33" href="#__codelineno-15-33"></a><span class="w">        </span><span class="nt">clientAuth</span><span class="p">:</span>
+</span><span id="__span-15-34"><a id="__codelineno-15-34" name="__codelineno-15-34" href="#__codelineno-15-34"></a><span class="w">          </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skMerge</span>
+</span><span id="__span-15-35"><a id="__codelineno-15-35" name="__codelineno-15-35" href="#__codelineno-15-35"></a><span class="w">          </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${LDAP2_CLIENT_SECRET}</span>
+</span><span id="__span-15-36"><a id="__codelineno-15-36" name="__codelineno-15-36" href="#__codelineno-15-36"></a>
+</span><span id="__span-15-37"><a id="__codelineno-15-37" name="__codelineno-15-37" href="#__codelineno-15-37"></a><span class="w">    </span><span class="nt">extraEnv</span><span class="p">:</span>
+</span><span id="__span-15-38"><a id="__codelineno-15-38" name="__codelineno-15-38" href="#__codelineno-15-38"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LDAP2_CLIENT_SECRET</span>
+</span><span id="__span-15-39"><a id="__codelineno-15-39" name="__codelineno-15-39" href="#__codelineno-15-39"></a><span class="w">        </span><span class="nt">valueFrom</span><span class="p">:</span>
+</span><span id="__span-15-40"><a id="__codelineno-15-40" name="__codelineno-15-40" href="#__codelineno-15-40"></a><span class="w">          </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+</span><span id="__span-15-41"><a id="__codelineno-15-41" name="__codelineno-15-41" href="#__codelineno-15-41"></a><span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap2-client-secret</span>
+</span><span id="__span-15-42"><a id="__codelineno-15-42" name="__codelineno-15-42" href="#__codelineno-15-42"></a><span class="w">            </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clientSecret</span>
+</span><span id="__span-15-43"><a id="__codelineno-15-43" name="__codelineno-15-43" href="#__codelineno-15-43"></a>
+</span><span id="__span-15-44"><a id="__codelineno-15-44" name="__codelineno-15-44" href="#__codelineno-15-44"></a><span class="w">    </span><span class="nt">extraSecrets</span><span class="p">:</span>
+</span><span id="__span-15-45"><a id="__codelineno-15-45" name="__codelineno-15-45" href="#__codelineno-15-45"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-skas2-ldap-cert</span><span class="w"> </span><span class="c1"># Was skas2-ldap-cert</span>
+</span><span id="__span-15-46"><a id="__codelineno-15-46" name="__codelineno-15-46" href="#__codelineno-15-46"></a><span class="w">        </span><span class="nt">volume</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap2-cert</span>
+</span><span id="__span-15-47"><a id="__codelineno-15-47" name="__codelineno-15-47" href="#__codelineno-15-47"></a><span class="w">        </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/cert/ldap2</span>
+</span><span id="__span-15-48"><a id="__codelineno-15-48" name="__codelineno-15-48" href="#__codelineno-15-48"></a>
+</span><span id="__span-15-49"><a id="__codelineno-15-49" name="__codelineno-15-49" href="#__codelineno-15-49"></a><span class="w">  </span><span class="nt">skLdap</span><span class="p">:</span>
+</span><span id="__span-15-50"><a id="__codelineno-15-50" name="__codelineno-15-50" href="#__codelineno-15-50"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-15-51"><a id="__codelineno-15-51" name="__codelineno-15-51" href="#__codelineno-15-51"></a><span class="w">    </span><span class="c1"># --------------------------------- LDAP configuration</span>
+</span><span id="__span-15-52"><a id="__codelineno-15-52" name="__codelineno-15-52" href="#__codelineno-15-52"></a><span class="w">    </span><span class="nt">ldap</span><span class="p">:</span>
+</span><span id="__span-15-53"><a id="__codelineno-15-53" name="__codelineno-15-53" href="#__codelineno-15-53"></a><span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap1.mydomain.internal</span>
+</span><span id="__span-15-54"><a id="__codelineno-15-54" name="__codelineno-15-54" href="#__codelineno-15-54"></a><span class="w">      </span><span class="nt">insecureNoSSL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-15-55"><a id="__codelineno-15-55" name="__codelineno-15-55" href="#__codelineno-15-55"></a><span class="w">      </span><span class="nt">rootCaData</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K&quot;</span>
+</span><span id="__span-15-56"><a id="__codelineno-15-56" name="__codelineno-15-56" href="#__codelineno-15-56"></a><span class="w">      </span><span class="nt">bindDN</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cn=Manager,dc=mydomain1,dc=internal</span>
+</span><span id="__span-15-57"><a id="__codelineno-15-57" name="__codelineno-15-57" href="#__codelineno-15-57"></a><span class="w">      </span><span class="nt">bindPW</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin123</span>
+</span><span id="__span-15-58"><a id="__codelineno-15-58" name="__codelineno-15-58" href="#__codelineno-15-58"></a><span class="w">      </span><span class="nt">groupSearch</span><span class="p">:</span>
+</span><span id="__span-15-59"><a id="__codelineno-15-59" name="__codelineno-15-59" href="#__codelineno-15-59"></a><span class="w">        </span><span class="nt">baseDN</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ou=Groups,dc=mydomain1,dc=internal</span>
+</span><span id="__span-15-60"><a id="__codelineno-15-60" name="__codelineno-15-60" href="#__codelineno-15-60"></a><span class="w">        </span><span class="nt">filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(objectClass=posixgroup)</span>
+</span><span id="__span-15-61"><a id="__codelineno-15-61" name="__codelineno-15-61" href="#__codelineno-15-61"></a><span class="w">        </span><span class="nt">linkGroupAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memberUid</span>
+</span><span id="__span-15-62"><a id="__codelineno-15-62" name="__codelineno-15-62" href="#__codelineno-15-62"></a><span class="w">        </span><span class="nt">linkUserAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uid</span>
+</span><span id="__span-15-63"><a id="__codelineno-15-63" name="__codelineno-15-63" href="#__codelineno-15-63"></a><span class="w">        </span><span class="nt">nameAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cn</span>
+</span><span id="__span-15-64"><a id="__codelineno-15-64" name="__codelineno-15-64" href="#__codelineno-15-64"></a><span class="w">      </span><span class="nt">timeoutSec</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</span><span id="__span-15-65"><a id="__codelineno-15-65" name="__codelineno-15-65" href="#__codelineno-15-65"></a><span class="w">      </span><span class="nt">userSearch</span><span class="p">:</span>
+</span><span id="__span-15-66"><a id="__codelineno-15-66" name="__codelineno-15-66" href="#__codelineno-15-66"></a><span class="w">        </span><span class="nt">baseDN</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ou=Users,dc=mydomain,dc=internal</span>
+</span><span id="__span-15-67"><a id="__codelineno-15-67" name="__codelineno-15-67" href="#__codelineno-15-67"></a><span class="w">        </span><span class="nt">cnAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cn</span>
+</span><span id="__span-15-68"><a id="__codelineno-15-68" name="__codelineno-15-68" href="#__codelineno-15-68"></a><span class="w">        </span><span class="nt">emailAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mail</span>
+</span><span id="__span-15-69"><a id="__codelineno-15-69" name="__codelineno-15-69" href="#__codelineno-15-69"></a><span class="w">        </span><span class="nt">filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(objectClass=inetOrgPerson)</span>
+</span><span id="__span-15-70"><a id="__codelineno-15-70" name="__codelineno-15-70" href="#__codelineno-15-70"></a><span class="w">        </span><span class="nt">loginAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uid</span>
+</span><span id="__span-15-71"><a id="__codelineno-15-71" name="__codelineno-15-71" href="#__codelineno-15-71"></a><span class="w">        </span><span class="nt">numericalIdAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uidNumber</span>
+</span><span id="__span-15-72"><a id="__codelineno-15-72" name="__codelineno-15-72" href="#__codelineno-15-72"></a>
+</span><span id="__span-15-73"><a id="__codelineno-15-73" name="__codelineno-15-73" href="#__codelineno-15-73"></a><span class="c1"># ======================================================== SKAS2 Pod configuration</span>
+</span><span id="__span-15-74"><a id="__codelineno-15-74" name="__codelineno-15-74" href="#__codelineno-15-74"></a><span class="nt">skas2</span><span class="p">:</span>
+</span><span id="__span-15-75"><a id="__codelineno-15-75" name="__codelineno-15-75" href="#__codelineno-15-75"></a><span class="w">  </span><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-15-76"><a id="__codelineno-15-76" name="__codelineno-15-76" href="#__codelineno-15-76"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-15-77"><a id="__codelineno-15-77" name="__codelineno-15-77" href="#__codelineno-15-77"></a>
+</span><span id="__span-15-78"><a id="__codelineno-15-78" name="__codelineno-15-78" href="#__codelineno-15-78"></a><span class="w">  </span><span class="nt">skMerge</span><span class="p">:</span>
+</span><span id="__span-15-79"><a id="__codelineno-15-79" name="__codelineno-15-79" href="#__codelineno-15-79"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-15-80"><a id="__codelineno-15-80" name="__codelineno-15-80" href="#__codelineno-15-80"></a>
+</span><span id="__span-15-81"><a id="__codelineno-15-81" name="__codelineno-15-81" href="#__codelineno-15-81"></a><span class="w">  </span><span class="nt">skCrd</span><span class="p">:</span>
+</span><span id="__span-15-82"><a id="__codelineno-15-82" name="__codelineno-15-82" href="#__codelineno-15-82"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-15-83"><a id="__codelineno-15-83" name="__codelineno-15-83" href="#__codelineno-15-83"></a>
+</span><span id="__span-15-84"><a id="__codelineno-15-84" name="__codelineno-15-84" href="#__codelineno-15-84"></a><span class="w">  </span><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
+</span><span id="__span-15-85"><a id="__codelineno-15-85" name="__codelineno-15-85" href="#__codelineno-15-85"></a>
+</span><span id="__span-15-86"><a id="__codelineno-15-86" name="__codelineno-15-86" href="#__codelineno-15-86"></a><span class="w">  </span><span class="nt">skLdap</span><span class="p">:</span>
+</span><span id="__span-15-87"><a id="__codelineno-15-87" name="__codelineno-15-87" href="#__codelineno-15-87"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-15-88"><a id="__codelineno-15-88" name="__codelineno-15-88" href="#__codelineno-15-88"></a><span class="w">    </span><span class="c1"># --------------------------------- LDAP configuration</span>
+</span><span id="__span-15-89"><a id="__codelineno-15-89" name="__codelineno-15-89" href="#__codelineno-15-89"></a><span class="w">    </span><span class="nt">ldap</span><span class="p">:</span>
+</span><span id="__span-15-90"><a id="__codelineno-15-90" name="__codelineno-15-90" href="#__codelineno-15-90"></a><span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap2.mydomain.internal</span>
+</span><span id="__span-15-91"><a id="__codelineno-15-91" name="__codelineno-15-91" href="#__codelineno-15-91"></a><span class="w">      </span><span class="nt">insecureNoSSL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-15-92"><a id="__codelineno-15-92" name="__codelineno-15-92" href="#__codelineno-15-92"></a><span class="w">      </span><span class="nt">rootCaData</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K&quot;</span>
+</span><span id="__span-15-93"><a id="__codelineno-15-93" name="__codelineno-15-93" href="#__codelineno-15-93"></a><span class="w">      </span><span class="nt">bindDN</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cn=Manager,dc=mydomain2,dc=internal</span>
+</span><span id="__span-15-94"><a id="__codelineno-15-94" name="__codelineno-15-94" href="#__codelineno-15-94"></a><span class="w">      </span><span class="nt">bindPW</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin123</span>
+</span><span id="__span-15-95"><a id="__codelineno-15-95" name="__codelineno-15-95" href="#__codelineno-15-95"></a><span class="w">      </span><span class="nt">groupSearch</span><span class="p">:</span>
+</span><span id="__span-15-96"><a id="__codelineno-15-96" name="__codelineno-15-96" href="#__codelineno-15-96"></a><span class="w">        </span><span class="nt">baseDN</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ou=Groups,dc=mydomain2,dc=internal</span>
+</span><span id="__span-15-97"><a id="__codelineno-15-97" name="__codelineno-15-97" href="#__codelineno-15-97"></a><span class="w">        </span><span class="nt">filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(objectClass=posixgroup)</span>
+</span><span id="__span-15-98"><a id="__codelineno-15-98" name="__codelineno-15-98" href="#__codelineno-15-98"></a><span class="w">        </span><span class="nt">linkGroupAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memberUid</span>
+</span><span id="__span-15-99"><a id="__codelineno-15-99" name="__codelineno-15-99" href="#__codelineno-15-99"></a><span class="w">        </span><span class="nt">linkUserAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uid</span>
+</span><span id="__span-15-100"><a id="__codelineno-15-100" name="__codelineno-15-100" href="#__codelineno-15-100"></a><span class="w">        </span><span class="nt">nameAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cn</span>
+</span><span id="__span-15-101"><a id="__codelineno-15-101" name="__codelineno-15-101" href="#__codelineno-15-101"></a><span class="w">      </span><span class="nt">timeoutSec</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</span><span id="__span-15-102"><a id="__codelineno-15-102" name="__codelineno-15-102" href="#__codelineno-15-102"></a><span class="w">      </span><span class="nt">userSearch</span><span class="p">:</span>
+</span><span id="__span-15-103"><a id="__codelineno-15-103" name="__codelineno-15-103" href="#__codelineno-15-103"></a><span class="w">        </span><span class="nt">baseDN</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ou=Users,dc=mydomain,dc=internal</span>
+</span><span id="__span-15-104"><a id="__codelineno-15-104" name="__codelineno-15-104" href="#__codelineno-15-104"></a><span class="w">        </span><span class="nt">cnAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cn</span>
+</span><span id="__span-15-105"><a id="__codelineno-15-105" name="__codelineno-15-105" href="#__codelineno-15-105"></a><span class="w">        </span><span class="nt">emailAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mail</span>
+</span><span id="__span-15-106"><a id="__codelineno-15-106" name="__codelineno-15-106" href="#__codelineno-15-106"></a><span class="w">        </span><span class="nt">filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(objectClass=inetOrgPerson)</span>
+</span><span id="__span-15-107"><a id="__codelineno-15-107" name="__codelineno-15-107" href="#__codelineno-15-107"></a><span class="w">        </span><span class="nt">loginAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uid</span>
+</span><span id="__span-15-108"><a id="__codelineno-15-108" name="__codelineno-15-108" href="#__codelineno-15-108"></a><span class="w">      </span><span class="w w-Error"> </span><span class="nt">numericalIdAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uidNumber</span>
+</span><span id="__span-15-109"><a id="__codelineno-15-109" name="__codelineno-15-109" href="#__codelineno-15-109"></a>
+</span><span id="__span-15-110"><a id="__codelineno-15-110" name="__codelineno-15-110" href="#__codelineno-15-110"></a>
+</span><span id="__span-15-111"><a id="__codelineno-15-111" name="__codelineno-15-111" href="#__codelineno-15-111"></a><span class="w">    </span><span class="c1"># By default, only internal (localhost) server is activated, to be called by another container running in the same pod.</span>
+</span><span id="__span-15-112"><a id="__codelineno-15-112" name="__codelineno-15-112" href="#__codelineno-15-112"></a><span class="w">    </span><span class="c1"># Optionally, another server (external) can be activated, which can be accessed through a kubernetes service</span>
+</span><span id="__span-15-113"><a id="__codelineno-15-113" name="__codelineno-15-113" href="#__codelineno-15-113"></a><span class="w">    </span><span class="c1"># In such case:</span>
+</span><span id="__span-15-114"><a id="__codelineno-15-114" name="__codelineno-15-114" href="#__codelineno-15-114"></a><span class="w">    </span><span class="c1"># - A Client list should be provided to control access.</span>
+</span><span id="__span-15-115"><a id="__codelineno-15-115" name="__codelineno-15-115" href="#__codelineno-15-115"></a><span class="w">    </span><span class="c1"># - ssl: true is strongly recommended.</span>
+</span><span id="__span-15-116"><a id="__codelineno-15-116" name="__codelineno-15-116" href="#__codelineno-15-116"></a><span class="w">    </span><span class="c1"># - And protection against BFA should be activated (protected: true)</span>
+</span><span id="__span-15-117"><a id="__codelineno-15-117" name="__codelineno-15-117" href="#__codelineno-15-117"></a><span class="w">    </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-15-118"><a id="__codelineno-15-118" name="__codelineno-15-118" href="#__codelineno-15-118"></a><span class="w">      </span><span class="nt">internal</span><span class="p">:</span>
+</span><span id="__span-15-119"><a id="__codelineno-15-119" name="__codelineno-15-119" href="#__codelineno-15-119"></a><span class="w">        </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-15-120"><a id="__codelineno-15-120" name="__codelineno-15-120" href="#__codelineno-15-120"></a><span class="w">      </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-15-121"><a id="__codelineno-15-121" name="__codelineno-15-121" href="#__codelineno-15-121"></a><span class="w">        </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-15-122"><a id="__codelineno-15-122" name="__codelineno-15-122" href="#__codelineno-15-122"></a><span class="w">        </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7113</span>
+</span><span id="__span-15-123"><a id="__codelineno-15-123" name="__codelineno-15-123" href="#__codelineno-15-123"></a><span class="w">        </span><span class="nt">ssl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-15-124"><a id="__codelineno-15-124" name="__codelineno-15-124" href="#__codelineno-15-124"></a><span class="w">        </span><span class="nt">services</span><span class="p">:</span>
+</span><span id="__span-15-125"><a id="__codelineno-15-125" name="__codelineno-15-125" href="#__codelineno-15-125"></a><span class="w">          </span><span class="nt">identity</span><span class="p">:</span>
+</span><span id="__span-15-126"><a id="__codelineno-15-126" name="__codelineno-15-126" href="#__codelineno-15-126"></a><span class="w">            </span><span class="nt">disabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-15-127"><a id="__codelineno-15-127" name="__codelineno-15-127" href="#__codelineno-15-127"></a><span class="w">            </span><span class="nt">clients</span><span class="p">:</span>
+</span><span id="__span-15-128"><a id="__codelineno-15-128" name="__codelineno-15-128" href="#__codelineno-15-128"></a><span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skMerge</span>
+</span><span id="__span-15-129"><a id="__codelineno-15-129" name="__codelineno-15-129" href="#__codelineno-15-129"></a><span class="w">                </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${LDAP2_CLIENT_SECRET}</span>
+</span><span id="__span-15-130"><a id="__codelineno-15-130" name="__codelineno-15-130" href="#__codelineno-15-130"></a><span class="w">            </span><span class="nt">protected</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-15-131"><a id="__codelineno-15-131" name="__codelineno-15-131" href="#__codelineno-15-131"></a>
+</span><span id="__span-15-132"><a id="__codelineno-15-132" name="__codelineno-15-132" href="#__codelineno-15-132"></a><span class="w">    </span><span class="nt">extraEnv</span><span class="p">:</span>
+</span><span id="__span-15-133"><a id="__codelineno-15-133" name="__codelineno-15-133" href="#__codelineno-15-133"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LDAP2_CLIENT_SECRET</span>
+</span><span id="__span-15-134"><a id="__codelineno-15-134" name="__codelineno-15-134" href="#__codelineno-15-134"></a><span class="w">        </span><span class="nt">valueFrom</span><span class="p">:</span>
+</span><span id="__span-15-135"><a id="__codelineno-15-135" name="__codelineno-15-135" href="#__codelineno-15-135"></a><span class="w">          </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+</span><span id="__span-15-136"><a id="__codelineno-15-136" name="__codelineno-15-136" href="#__codelineno-15-136"></a><span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap2-client-secret</span>
+</span><span id="__span-15-137"><a id="__codelineno-15-137" name="__codelineno-15-137" href="#__codelineno-15-137"></a><span class="w">            </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clientSecret</span>
+</span></code></pre></div>
+</details>
+<p>There is two blocks: <code>skas</code> and <code>skas2</code>, matching the name or alias in the <code>Chart.yaml</code> file.</p>
+<p>These two block hold the same definition than the ones defined in the original configuration. With two differences:</p>
+<ul>
+<li><code>skas.skMerge.providerInfo.ldap2.url: https://skas-skas2-ldap.skas-system.svc</code></li>
+<li><code>skas.skMerge.extraSecrets[0].secret: skas-skas2-ldap-cert</code></li>
+</ul>
+<p>This to accommodate service and secret name change, due to aliasing of the second dependency.</p>
+<p>Then, to launch the deployment, in the same folder as <code>Chart.yaml</code>, execute:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>helm<span class="w"> </span>dependency<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>.
+</span></code></pre></div>
 
 
 

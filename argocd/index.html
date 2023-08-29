@@ -9,15 +9,17 @@
       
       
       
-        <link rel="prev" href="../argocd/">
+        <link rel="prev" href="../dex/">
       
+      
+        <link rel="next" href="../toolsandtricks/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.19">
     
     
       
-        <title>Tools and Tricks - SKAS</title>
+        <title>Argo CD integration - SKAS</title>
       
     
     
@@ -69,7 +71,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tools-and-tricks" class="md-skip">
+        <a href="#argo-cd-integration-with-dex" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +106,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Tools and Tricks
+              Argo CD integration
             
           </span>
         </div>
@@ -403,21 +405,6 @@
 
   
   
-  
-    <li class="md-nav__item">
-      <a href="../argocd/" class="md-nav__link">
-        Argo CD integration
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
     
   
   
@@ -430,12 +417,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Tools and Tricks
+          Argo CD integration
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Tools and Tricks
+        Argo CD integration
       </a>
       
         
@@ -454,36 +441,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#reloader" class="md-nav__link">
-    reloader
+  <a href="#skas-deployment" class="md-nav__link">
+    SKAS deployment
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#secret-generator" class="md-nav__link">
-    Secret generator
+  <a href="#patching-argo-cd" class="md-nav__link">
+    Patching argo CD
   </a>
+  
+    <nav class="md-nav" aria-label="Patching argo CD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#restart-pods" class="md-nav__link">
+    Restart Pods
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#k9s" class="md-nav__link">
-    k9s
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#kubernetes-dashboard" class="md-nav__link">
-    Kubernetes dashboard
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tricks-handle-two-different-sessions" class="md-nav__link">
-    Tricks: Handle two different sessions
+  <a href="#test" class="md-nav__link">
+    Test
   </a>
   
 </li>
@@ -492,6 +478,21 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../toolsandtricks/" class="md-nav__link">
+        Tools and Tricks
+      </a>
     </li>
   
 
@@ -523,36 +524,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#reloader" class="md-nav__link">
-    reloader
+  <a href="#skas-deployment" class="md-nav__link">
+    SKAS deployment
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#secret-generator" class="md-nav__link">
-    Secret generator
+  <a href="#patching-argo-cd" class="md-nav__link">
+    Patching argo CD
   </a>
+  
+    <nav class="md-nav" aria-label="Patching argo CD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#restart-pods" class="md-nav__link">
+    Restart Pods
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#k9s" class="md-nav__link">
-    k9s
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#kubernetes-dashboard" class="md-nav__link">
-    Kubernetes dashboard
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tricks-handle-two-different-sessions" class="md-nav__link">
-    Tricks: Handle two different sessions
+  <a href="#test" class="md-nav__link">
+    Test
   </a>
   
 </li>
@@ -575,85 +575,111 @@
   
 
 
-<h1 id="tools-and-tricks">Tools and Tricks</h1>
-<h2 id="reloader">reloader</h2>
-<p>Forgetting to restart a POD after a configuration change is a common source of errors. Fortunately, some tools can 
-help for this. Such as <a href="https://github.com/stakater/Reloader">Reloader</a></p>
-<p>The SKAS Helm chart add appropriate annotations on the <code>deployment</code>:  </p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>apiVersion: apps/v1
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>kind: Deployment
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>metadata:
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  annotations:
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    configmap.reloader.stakater.com/reload: skas-merge-config,skas-auth-config,skas-crd-config,
+<h1 id="argo-cd-integration-with-dex">Argo CD integration with DEX</h1>
+<p>Argo CD embed an instance of DEX. It will take care its deployment and most if its configuration. 
+In fact, only the <code>connectors:</code> part of the DEX config still remains to setup.</p>
+<p>For this reason, the installation process described here will assume there is an Argo CD instance deployed in a 
+'standard' way, with UI and ingress. (Such deployment is out of the scope of this documentation. Refer to the Argo CD 
+documentation or/and use the <a href="https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd">Argo CD helm chart</a>) </p>
+<p>Then it should be proceeded to:</p>
+<ul>
+<li>The deployment of SKAS, with the configuration of a <code>login</code> service, for the use of the DEX instance embedded in Argo CD</li>
+<li>The configuration of this DEX instance, by patching the existing deployment.</li>
+</ul>
+<h2 id="skas-deployment">SKAS deployment</h2>
+<p>SKAS must be (re)configured to activate a <code>login</code> services. Here is the appropriate values file:</p>
+<details class="abstract" open="open">
+<summary>values.skas2.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">services</span><span class="p">:</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="nt">login</span><span class="p">:</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">          </span><span class="nt">disabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">          </span><span class="nt">clients</span><span class="p">:</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex-argocd</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">              </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;aSharedSecret&quot;</span>
+</span></code></pre></div>
+</details>
+<p>Note a client authentication has been setup, with a couple id/secret.</p>
+<p>To apply this configuration:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span>--values<span class="w"> </span>./values.skas.login.yaml
 </span></code></pre></div>
 <blockquote>
-<p><em>The list of <code>configMap</code> is built dynamically by the Helm chart.</em></p>
+<p><em>Don't forget to add the values.init.yaml, or to merge it in the values.skas.yaml file. Also, if you have others values file, they must be added on each upgrade</em></p>
+<p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
 </blockquote>
-<p>Of course, if Reloader is not installed in your cluster, this annotation will have no effect.</p>
-<h2 id="secret-generator">Secret generator</h2>
-<p>As stated in <a href="../twoldapservers/">Two LDAP servers configuration</a> o <a href="../delegated/">Delegated users management</a>, there is the need to generate 
-a random secret in the deployment. For this, one can use <a href="https://github.com/mittwald/kubernetes-secret-generator">kubernetes-secret-generator</a>,
-a custom kubernetes controller.</p>
-<p>Here is a manifest which, once applied, will create the secret <code>skas2-client-secret</code> used the authenticate the communication between the two PODs of the two LDAP configuration referenced above.  </p>
-<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nn">---</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secretgenerator.mittwald.de/v1alpha1&quot;</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;StringSecret&quot;</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nt">metadata</span><span class="p">:</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas2-client-secret</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-system</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nt">spec</span><span class="p">:</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span><span class="nt">fields</span><span class="p">:</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">fieldName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;clientSecret&quot;</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">      </span><span class="nt">encoding</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;base64&quot;</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="nt">length</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;15&quot;</span>
+<h2 id="patching-argo-cd">Patching argo CD</h2>
+<p>Next step is the patch the Argo CD deployment. In fact, there is two patches:</p>
+<ul>
+<li>One to use the SKAS specific DEX image. (As DEX does not provide some extension mechanism to add connectors externally, a specific SKAS DEX image with a SKAS connector must be used).</li>
+<li>One to configure the <code>configMap</code> storing the DEX configuration.</li>
+</ul>
+<p>Here is the patch file for the DEX image (It is a JSON RFC 6902 Patch): </p>
+<details class="abstract" open="open">
+<summary>dex-server-patch.json</summary>
+<div class="language-json copy highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">[</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;op&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replace&quot;</span><span class="p">,</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/spec/template/spec/containers/0/image&quot;</span><span class="p">,</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ghcr.io/skasproject/dex:v2.37.0-skas-0.2.1&quot;</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">]</span>
 </span></code></pre></div>
-<h2 id="k9s">k9s</h2>
-<p>We would like to say two words about this great tool which is <a href="https://github.com/derailed/k9s">k9s</a></p>
-<p>As it is able to handle Custom Resources Definition out of the box, K9s is a perfect tool to dynamically display, modify or delete SKAS resources.</p>
-<p>Note than, as User and Group are ambiguous names, which are used also by others API, alias are provided to ensure ambiguous access.</p>
-<p>For example, you can access this screen under <code>skusers</code> resource name:</p>
-<p><img alt="" src="../images/k9s-1.png" /></p>
-<p>This one using <code>groupbindings</code>:</p>
-<p><img alt="" src="../images/k9s-2.png" /></p>
-<p>This one using <code>tokens</code>:</p>
-<p><img alt="" src="../images/k9s-3.png" /></p>
-<p>Of course, k9s can't do more than what the launching user is allowed to do. This user can be authenticated using SKAS, but it must have a minimum set of rights to behave correctly.</p>
-<p>For example, you can launch k9s under the <code>admin</code> user account we have set up in the installation process (Provided it is member of the <code>system:masters</code> group).</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>admin
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Password:
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>logged<span class="w"> </span>successfully..
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>$<span class="w"> </span>k9s
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>....
+</details>
+<p>To be applied with the following command:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>patch<span class="w"> </span>deployment<span class="w"> </span>argocd-dex-server<span class="w"> </span>--type<span class="w"> </span>json<span class="w"> </span>--patch-file<span class="w"> </span>./dex-server-patch.json
 </span></code></pre></div>
-<h2 id="kubernetes-dashboard">Kubernetes dashboard</h2>
-<p>Login to the Kubernetes dashboard with SKAS is quite easy.</p>
-<p>First, you must be logged using the CLI. Then using the <code>--all</code> option of the <code>kubectl sk whoami</code> command, you can get your current allocated token:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>admin
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Password:
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>logged<span class="w"> </span>successfully..
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>whoami<span class="w"> </span>--all
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>USER<span class="w">    </span>ID<span class="w">   </span>GROUPS<span class="w">                      </span>AUTH.<span class="w">   </span>TOKEN
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>admin<span class="w">   </span><span class="m">0</span><span class="w">    </span>skas-admin,system:masters<span class="w">   </span>crd<span class="w">     </span>znitotnewjbqbuolqacckvgxyhptoxsuykznrzdacuvdhimy
+<p>And here is the DEX configuration patch (It is a <a href="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/#use-a-strategic-merge-patch-to-update-a-deployment">Strategic Merge patch</a>):</p>
+<details class="abstract" open="open">
+<summary>argocd-cm-patch.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">data</span><span class="p">:</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">admin.enabled</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;false&quot;</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://argocd.ingress.mycluster.internal</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">dex.config</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="no">connectors:</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="no">- type: skas</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">      </span><span class="no">id: skas</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">      </span><span class="no">name: SKAS</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">      </span><span class="no">config:</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">        </span><span class="no">loginPrompt: &quot;User&quot;</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">        </span><span class="no">loginProvider:</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">          </span><span class="no">url: https://skas-auth.skas-system.svc</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">          </span><span class="no">rootCaData: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0......................09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K&quot;</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">          </span><span class="no">insecureSkipVerify: false</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">          </span><span class="no">clientAuth:</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">            </span><span class="no">id: &quot;dex-argocd&quot;</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">            </span><span class="no">secret: &quot;aSharedSecret&quot;</span>
 </span></code></pre></div>
-<p>Now, you just have to cut and paste the token value in the dashboard login screen:</p>
-<p><img alt="" src="../images/dashboard1.png" /></p>
-<p>Of course, the set of operation you will be able to perform through the dashboard will be limited by the logged user's permissions.</p>
-<h2 id="tricks-handle-two-different-sessions">Tricks: Handle two different sessions</h2>
-<p>When working on user permissions, it could be useful to have separate session, at least one as admin, and one as a user to test its capability.</p>
-<p>But the default Kubernetes configuration is not bound to a terminal session, but to a user. 
-So, any modification (<code>kubectl config ....</code>) of the local configuration will have effect on all session.</p>
-<p>The solution is to change the location of the kubernetes configuration for a given session, by modifying the <code>KUBECONFIG</code> environment variable: </p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">KUBECONFIG</span><span class="o">=</span>/tmp/kconfig
+</details>
+<p>The DEX <code>connectors:</code> config is similar to the one in DEX standalone configuration.</p>
+<p>You must adjust:</p>
+<ul>
+<li>The <code>url: https://argocd.ingress.mycluster.internal</code> to point to your Argo CD server UI.</li>
+<li>The <code>admin.enabled</code> if you want to still be able to use the local Argo CD <code>admin</code> account.</li>
+<li>The <code>rootCaData:</code> is populated with the Certificate Authority of the
+  <code>skAuth</code> service. To find its value, we can dig inside its certificate, which include its authority:
+    <div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>skas-auth-cert<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span>
+</span></code></pre></div></li>
+</ul>
+<p>Then, this patch can be applied with the following command:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>patch<span class="w"> </span>configMap<span class="w"> </span>argocd-cm<span class="w"> </span>--type<span class="w"> </span>strategic<span class="w"> </span>--patch-file<span class="w"> </span>./argocd-cm-patch.yaml
 </span></code></pre></div>
-<blockquote>
-<p><code>/tmp/kconfig</code> may be an empty or un-existing file</p>
-</blockquote>
-<p>Then you can initialize a new Kubernetes/SKAS context</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>init<span class="w"> </span>https://skas.ingress.mycluster.internal
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Setup<span class="w"> </span>new<span class="w"> </span>context<span class="w"> </span><span class="s1">&#39;skas@mycluster.internal&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>kubeconfig<span class="w"> </span>file<span class="w"> </span><span class="s1">&#39;/tmp/kconfig&#39;</span>
+<h3 id="restart-pods">Restart Pods</h3>
+<p>For the patch to be effective, some Argo CD pod should be restarted:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>argocd-dex-server<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>argocd-server
 </span></code></pre></div>
+<h2 id="test">Test</h2>
+<p>Open your browser on the Argo CD UI. You should land with something like:</p>
+<p><img alt="" src="../images/argocd1.png" /></p>
+<p>Click on the <code>LOG IN VIA SKAS</code> button. You should land on the DEX login page. Enter the a valid user login and password:</p>
+<p><img alt="" src="../images/argocd2.png" /></p>
+<p>And you should land on the usual Argo CD Applications page. </p>
+<p><img alt="" src="../images/argocd3.png" /></p>
+<p>Click on the <code>User info</code> menu entry on the left to ensure we got the correct user information:</p>
+<p><img alt="" src="../images/argocd4.png" /></p>
+<p>We can see the groups are correct. The Argo CD web UI choose to display the user's email in the Username field.
+Our current user has no email defined, so the blank field.  </p>
 
 
 

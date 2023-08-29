@@ -638,6 +638,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../argocd/" class="md-nav__link">
+        Argo CD integration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../toolsandtricks/" class="md-nav__link">
         Tools and Tricks
       </a>
@@ -990,8 +1005,9 @@ It will be called by the Kubernetes API server to validate a token and retrieve 
 </ul>
 <p>For each module, every exposed API can be accessed on two ports:</p>
 <ul>
-<li>One associated to a server bound on localhost, for intra-pod communication</li>
-<li>One associated to a server bound on pod interface, to be exposed as a service or through an ingress. Always using SSL encrypted communication</li>
+<li>One associated to a server bound on localhost, for intra-pod communication. In configuration files, this interface is named the <code>ìnternal</code> one.</li>
+<li>One associated to a server bound on pod interface, to be exposed as a service or through an ingress. 
+Always using SSL encrypted communication. In configuration files, this interface is named the <code>external</code> one.</li>
 </ul>
 <p>Depending of the configuration, only one or both server can be activated.</p>
 <p>For the default configuration, only the server bound on localhost is activated for the <code>skCrd</code>, <code>skLdap</code> and

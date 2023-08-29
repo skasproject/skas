@@ -475,6 +475,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../argocd/" class="md-nav__link">
+        Argo CD integration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../toolsandtricks/" class="md-nav__link">
         Tools and Tricks
       </a>
@@ -580,6 +595,9 @@ the default <a href="https://github.com/skasproject/skas/blob/main/helm/skas/val
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="s">      apiServerUrl: https://kubernetes.ingress.mycluster.internal</span>
 </span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="s">EOF</span>
 </span></code></pre></div>
+<p>SKAS is a very flexible product and, as such, there is a lot of variables in the default <code>values.yaml</code> of the helm chart.
+Fortunately, default values are appropriate in most case.</p>
+<p>We will not describe in this chapter all the variables (You can refer to comments in the file) but will explicit some typical configuration variation.</p>
 <p>To apply a modified file, the <code>helm upgrade</code> command should be used.</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml
 </span></code></pre></div>
@@ -591,9 +609,6 @@ the default <a href="https://github.com/skasproject/skas/blob/main/helm/skas/val
 <blockquote>
 <p><em>There is some solution to perform an automatic restart. See <a href="../toolsandtricks/#reloader">reloader</a></em></p>
 </blockquote>
-<p>SKAS is a very flexible product and, as such, there is a lot of variables in the default <code>values.yaml</code> of the helm chart. 
-Fortunately, default values are appropriate in most case. </p>
-<p>We will not describe in this chapter all the variables (You can refer to comments in the file) but will explicit some typical configuration variation. </p>
 <h2 id="skas-behavior">Skas behavior</h2>
 <p>Here is a values file which redefine the most common variable related to SKAS behavior:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$ cat &gt;./values.behavior.yaml &lt;&lt;&quot;EOF&quot;

@@ -12,7 +12,7 @@
         <link rel="prev" href="../clusterfederation/">
       
       
-        <link rel="next" href="../toolsandtricks/">
+        <link rel="next" href="../argocd/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.19">
@@ -426,16 +426,110 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
-    Configuration
+  <a href="#clear-text-connection" class="md-nav__link">
+    Clear text connection
   </a>
+  
+    <nav class="md-nav" aria-label="Clear text connection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skas-reconfiguration" class="md-nav__link">
+    SKAS reconfiguration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dex-deployment" class="md-nav__link">
+    DEX deployment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    Testing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-argocd" class="md-nav__link">
-    Example: ArgoCD
+  <a href="#securing-connection" class="md-nav__link">
+    Securing connection
   </a>
+  
+    <nav class="md-nav" aria-label="Securing connection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skas-reconfiguration_1" class="md-nav__link">
+    SKAS reconfiguration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dex-deployment_1" class="md-nav__link">
+    DEX deployment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing_1" class="md-nav__link">
+    Testing
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#got-a-certificate-issue" class="md-nav__link">
+    Got a certificate issue ?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-a-kubernetes-secret" class="md-nav__link">
+    Using a Kubernetes secret
+  </a>
+  
+    <nav class="md-nav" aria-label="Using a Kubernetes secret">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skas-reconfiguration_2" class="md-nav__link">
+    SKAS reconfiguration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dex-deployment_2" class="md-nav__link">
+    DEX deployment
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -443,6 +537,21 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../argocd/" class="md-nav__link">
+        Argo CD integration
+      </a>
     </li>
   
 
@@ -489,16 +598,110 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
-    Configuration
+  <a href="#clear-text-connection" class="md-nav__link">
+    Clear text connection
   </a>
+  
+    <nav class="md-nav" aria-label="Clear text connection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skas-reconfiguration" class="md-nav__link">
+    SKAS reconfiguration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dex-deployment" class="md-nav__link">
+    DEX deployment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    Testing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-argocd" class="md-nav__link">
-    Example: ArgoCD
+  <a href="#securing-connection" class="md-nav__link">
+    Securing connection
   </a>
+  
+    <nav class="md-nav" aria-label="Securing connection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skas-reconfiguration_1" class="md-nav__link">
+    SKAS reconfiguration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dex-deployment_1" class="md-nav__link">
+    DEX deployment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing_1" class="md-nav__link">
+    Testing
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#got-a-certificate-issue" class="md-nav__link">
+    Got a certificate issue ?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-a-kubernetes-secret" class="md-nav__link">
+    Using a Kubernetes secret
+  </a>
+  
+    <nav class="md-nav" aria-label="Using a Kubernetes secret">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skas-reconfiguration_2" class="md-nav__link">
+    SKAS reconfiguration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dex-deployment_2" class="md-nav__link">
+    DEX deployment
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -521,8 +724,500 @@
 
 
 <h1 id="dex-integration">DEX integration</h1>
-<h2 id="configuration">Configuration</h2>
-<h2 id="example-argocd">Example: ArgoCD</h2>
+<p><a href="https://dexidp.io/">DEX</a> is an OpenID Connect provider. As such, will serve OpenID Connect clients to provide Single Sign On services.</p>
+<p>It does not host any user identity information by itself, but rely on other Identity Provider for this, through configurable <code>connectors</code>.</p>
+<p>A connector has been developed for SKAS. As DEX does not provide some extension mechanism, adding a connector requires 
+to patch the code. So, a specific DEX image with a SKAS connector has been build.</p>
+<p>Deploying DEX in standalone mode require to operation:</p>
+<ul>
+<li>Reconfigure SKAS to open a service for the usage of DEX (<code>login</code> service)</li>
+<li>Deploying DEX itself, with the proper connector configuration.</li>
+</ul>
+<p>In the following, three variants of this configuration will be described. One with the connection in clear text, and two secured, with network encryption and inter-pod authentication.</p>
+<blockquote>
+<p><em>Even if your target is a fully secured configuration, we suggest you first implement the unsecured, simplest variant, and then modify it incrementally, as described.</em></p>
+</blockquote>
+<h2 id="clear-text-connection">Clear text connection</h2>
+<h3 id="skas-reconfiguration">SKAS reconfiguration</h3>
+<p>The login service is provided by the <code>skAuth</code> SKAS module. It is disabled by default and must be enabled to be used. 
+Refer to <a href="../architecture/#modules-and-interfaces">Architecture/Modules and interface</a> for more information</p>
+<p>Here is a values file to enable this service: </p>
+<details class="abstract" open="open">
+<summary>values.skas.login.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">services</span><span class="p">:</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="nt">login</span><span class="p">:</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">          </span><span class="nt">disabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span></code></pre></div>
+</details>
+<p>Note than, by default, the <code>skAuth</code> module provide only SSL encrypted service. This will be the case of our <code>login</code> service.</p>
+<p>To deploy this configuration:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>../../values.init.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>--values<span class="w"> </span>./values.skas.login.yaml
+</span></code></pre></div>
+<blockquote>
+<p><em>Don't forget to add the <code>values.init.yaml</code>, or to merge it in the <code>values.skas.yaml</code> file. Also, if you have others values file, they must be added on each upgrade</em></p>
+<p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
+</blockquote>
+<h3 id="dex-deployment">DEX deployment</h3>
+<p>For this sample, we will use the official <a href="https://github.com/dexidp/helm-charts/tree/master/charts/dex">DEX Helm chart</a>. 
+This will require some configuration, by providing a specific value file.</p>
+<p>Here is such file (Some value will need to be adjusted to your context)</p>
+<details class="abstract">
+<summary>values.dex.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">image</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/skasproject/dex</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2.37.0-skas-0.2.1</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://dex.ingress.mycluster.internal</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="nt">storage</span><span class="p">:</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">      </span><span class="nt">inCluster</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span><span class="nt">web</span><span class="p">:</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="nt">http</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0:5556</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">  </span><span class="nt">logger</span><span class="p">:</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">info</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">  </span><span class="nt">oauth2</span><span class="p">:</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="nt">skipApprovalScreen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">  </span><span class="nt">connectors</span><span class="p">:</span>
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas</span>
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas</span>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SKAS</span>
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">      </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">        </span><span class="nt">loginPrompt</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;User&quot;</span>
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">        </span><span class="nt">loginProvider</span><span class="p">:</span>
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">          </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skas-auth.skas-system.svc</span>
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">          </span><span class="nt">insecureSkipVerify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>
+</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">  </span><span class="nt">staticClients</span><span class="p">:</span>
+</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-app</span>
+</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">      </span><span class="nt">redirectURIs</span><span class="p">:</span>
+</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;http://127.0.0.1:5555/callback&#39;</span>
+</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Example</span><span class="nv"> </span><span class="s">App&#39;</span>
+</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ZXhhbXBsZS1hcHAtc2VjcmV0</span>
+</span><span id="__span-2-34"><a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>
+</span><span id="__span-2-35"><a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="nt">securityContext</span><span class="p">:</span>
+</span><span id="__span-2-36"><a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">  </span><span class="nt">allowPrivilegeEscalation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-2-37"><a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">  </span><span class="nt">capabilities</span><span class="p">:</span>
+</span><span id="__span-2-38"><a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">    </span><span class="nt">drop</span><span class="p">:</span>
+</span><span id="__span-2-39"><a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ALL</span>
+</span><span id="__span-2-40"><a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">  </span><span class="nt">readOnlyRootFilesystem</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-2-41"><a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a><span class="w">  </span><span class="nt">runAsNonRoot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-2-42"><a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="w">  </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+</span><span id="__span-2-43"><a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a><span class="w">  </span><span class="nt">seccompProfile</span><span class="p">:</span>
+</span><span id="__span-2-44"><a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RuntimeDefault</span>
+</span><span id="__span-2-45"><a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>
+</span><span id="__span-2-46"><a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a><span class="nt">ingress</span><span class="p">:</span>
+</span><span id="__span-2-47"><a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-2-48"><a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a><span class="w">  </span><span class="nt">className</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+</span><span id="__span-2-49"><a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a><span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+</span><span id="__span-2-50"><a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex.ingress.mycluster.internal</span>
+</span><span id="__span-2-51"><a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a><span class="w">      </span><span class="nt">paths</span><span class="p">:</span>
+</span><span id="__span-2-52"><a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span>
+</span><span id="__span-2-53"><a id="__codelineno-2-53" name="__codelineno-2-53" href="#__codelineno-2-53"></a><span class="w">          </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ImplementationSpecific</span>
+</span><span id="__span-2-54"><a id="__codelineno-2-54" name="__codelineno-2-54" href="#__codelineno-2-54"></a><span class="w">          </span><span class="nt">backend</span><span class="p">:</span>
+</span><span id="__span-2-55"><a id="__codelineno-2-55" name="__codelineno-2-55" href="#__codelineno-2-55"></a><span class="w">            </span><span class="nt">service</span><span class="p">:</span>
+</span><span id="__span-2-56"><a id="__codelineno-2-56" name="__codelineno-2-56" href="#__codelineno-2-56"></a><span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex</span>
+</span><span id="__span-2-57"><a id="__codelineno-2-57" name="__codelineno-2-57" href="#__codelineno-2-57"></a><span class="w">              </span><span class="nt">port</span><span class="p">:</span>
+</span><span id="__span-2-58"><a id="__codelineno-2-58" name="__codelineno-2-58" href="#__codelineno-2-58"></a><span class="w">                </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5556</span>
+</span></code></pre></div>
+</details>
+<p>Here are some comment about this values file:</p>
+<ul>
+<li>The <code>image</code> section target the SKAS patched image of DEX.</li>
+<li>The <code>config</code> section is the DEX configuration file. Refer to the 
+<a href="https://github.com/dexidp/dex/blob/master/examples/config-dev.yaml">sample DEX config file</a> for more explanation.</li>
+<li>The <code>config.issuer</code> value must be adjusted to your local DNS name. Note it is an unsecured URL.</li>
+<li>The <code>config.connnectors[0]</code> is the SKAS specific section. </li>
+<li>The <code>config.connnectors[0].config.loginProvider.url</code> value targets the <code>skAuth</code> service. A noted above, 
+this is an SSL encrypted service.</li>
+<li>The <code>config.connnectors[0].config.loginProvider.insecureSkipVerify</code> is set to <code>true</code>. As the targeted service is 
+using HTTPS, we skip the certificate authority validation for this first sample.</li>
+<li>the <code>staticClients</code> section define a first OIDC client with parameter compatible with the <code>example-app</code> described below. </li>
+<li>The <code>securityContext</code> section explicit some security constraints. This may be useful if your cluster implements 
+some security restriction on running PODs. </li>
+<li>The <code>ingress</code> section should be adjusted, at least for the <code>host:</code> url and maybe more if you use another ingress controller than nginx.  </li>
+</ul>
+<p>As we will use the public DEX helm chart, its repo must first be defined:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>dex<span class="w"> </span>https://charts.dexidp.io
+</span></code></pre></div>
+<p>Then we can proceed to the DEX deployment:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>dex<span class="w"> </span>dex/dex<span class="w"> </span>--values<span class="w"> </span>./values.dex.yaml
+</span></code></pre></div>
+<p>If everything is OK, you should have two PODs running:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>pods
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>NAME<span class="w">                    </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>dex-54b4698bcd-9wbz6<span class="w">    </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>5h5m
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>skas-5cc75b8ff9-pw7nd<span class="w">   </span><span class="m">3</span>/3<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>6h23m
+</span></code></pre></div>
+<p>In case of problems, you may be want to check the resulting configuration. Unfortunately, this Helm chart store it in 
+a secret. This means the configuration values are encoded en base64.</p>
+<p>To display it, you can type:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>dex<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{ </span>$<span class="s2">.data.config\.yaml }&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d
+</span></code></pre></div>
+<p>If you modify some value in the <code>values.skas.login.yaml</code> file, execute again the Helm deployment command and restart the DEX Pod:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>dex
+</span></code></pre></div>
+<h3 id="testing">Testing</h3>
+<p>By convention all OIDC provider must provide a <code>well-known</code> endpoint which describe its other endpoints and other configuration values.</p>
+<p>You can test this endpoint with the following command: </p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>curl<span class="w"> </span>http://dex.ingress.mycluster.internal/.well-known/openid-configuration
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="o">{</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="s2">&quot;issuer&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal&quot;</span>,
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="s2">&quot;authorization_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal/auth&quot;</span>,
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span><span class="s2">&quot;token_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal/token&quot;</span>,
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span><span class="s2">&quot;jwks_uri&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal/keys&quot;</span>,
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span>....
+</span></code></pre></div>
+<p>This will ensure at least DEX is started and you ingress is functional.</p>
+<blockquote>
+<p><em>Of course, you must adjust the URL to your context.</em> </p>
+</blockquote>
+<p>To go further, DEX provide a raw <a href="https://github.com/dexidp/dex/tree/master/examples/example-app">example-app</a>.
+The main purpose of this application is to provide a starting point for developer to integrate an OIDC client in their 
+code. But it also provide an interactive tool to test an OIDC service.</p>
+<p>For your convenience, we have setup a <a href="https://github.com/skasproject/dex-example-app/releases/tag/2.37.0">repository to host binaries of this application, for several OS and processor</a>.</p>
+<p>For example, to download/install this binary for a Mac Intel:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/tmp
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>$<span class="w"> </span>curl<span class="w"> </span>-L<span class="w"> </span>https://github.com/skasproject/dex-example-app/releases/download/2.37.0/example-app_2.37.0_darwin_amd64<span class="w"> </span>-o<span class="w"> </span>./example-app
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>$<span class="w"> </span>sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>example-app
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>$<span class="w"> </span>sudo<span class="w"> </span>mv<span class="w"> </span>example-app<span class="w"> </span>/usr/local/bin
+</span></code></pre></div>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>example-app<span class="w"> </span>--issuer<span class="w">  </span>http://dex.ingress.mycluster.internal
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="m">2023</span>/08/28<span class="w"> </span><span class="m">18</span>:50:07<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://127.0.0.1:5555
+</span></code></pre></div>
+<p>Now, launch your browser to this provided link (<code>http://127.0.0.1:5555</code>). You should land on a page like this:</p>
+<p><img alt="" src="../images/example-app1.png" /></p>
+<p>Click on the <code>Login</code> button. You should then land on a login page:</p>
+<p><img alt="" src="../images/example-app2.png" /></p>
+<p>Enter a valid SKAS user account ('admin' for example) and you should land on a page like this:</p>
+<p><img alt="" src="../images/example-app3.png" /></p>
+<p>This is not really 'user friendly', but it is a test application.</p>
+<p>You can have a look on the log of SKAS and DEX logs. Also, you can test an invalid login.</p>
+<blockquote>
+<p>Of course, for this to work, you must fully preserve the configuration of <code>staticClients</code> in the DEX config file</p>
+</blockquote>
+<p>DEX github repo also provide this <code>example-app</code> as a container. You can launch it as:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">5555</span>:5555<span class="w"> </span>ghcr.io/dexidp/example-app:latest<span class="w">  </span>example-app<span class="w"> </span>--issuer<span class="w">  </span>http://dex.ingress.kspray6<span class="w"> </span>--listen<span class="w"> </span>http://0.0.0.0:5555
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="m">2023</span>/08/28<span class="w"> </span><span class="m">17</span>:29:04<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://0.0.0.0:5555
+</span></code></pre></div>
+<h2 id="securing-connection">Securing connection</h2>
+<p>The previous configuration has a major security issue: The login and password information are entered through a clear text connection. </p>
+<p>This following configuration will fix this point and also add authentication between DEX and SKAS and validate the SKAS certificate.</p>
+<h3 id="skas-reconfiguration_1">SKAS reconfiguration</h3>
+<p>Here is the modified values file for SKAS reconfiguration.</p>
+<details class="abstract" open="open">
+<summary>values.skas.login.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">      </span><span class="nt">services</span><span class="p">:</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">        </span><span class="nt">login</span><span class="p">:</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">          </span><span class="nt">disabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">          </span><span class="nt">clients</span><span class="p">:</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">              </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;aSharedSecret&quot;</span>
+</span></code></pre></div>
+</details>
+<p>The service authentication has been activated.</p>
+<p>To deploy this configuration, use the same command as previously:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>../../values.init.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>--values<span class="w"> </span>./values.skas.login.yaml
+</span></code></pre></div>
+<blockquote>
+<p><em>And restart the POD</em></p>
+</blockquote>
+<h3 id="dex-deployment_1">DEX deployment</h3>
+<p>And here is the modified values file for DEX deployment</p>
+<details class="abstract">
+<summary>values.dex.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nt">image</span><span class="p">:</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/skasproject/dex</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2.37.0-skas-0.2.1</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://dex.ingress.mycluster.internal</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">  </span><span class="nt">storage</span><span class="p">:</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">    </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">      </span><span class="nt">inCluster</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">  </span><span class="nt">web</span><span class="p">:</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">    </span><span class="nt">http</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0:5556</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">  </span><span class="nt">logger</span><span class="p">:</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">info</span>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">    </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">  </span><span class="nt">oauth2</span><span class="p">:</span>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">    </span><span class="nt">skipApprovalScreen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">  </span><span class="nt">connectors</span><span class="p">:</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas</span>
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas</span>
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SKAS</span>
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="w">      </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="w">        </span><span class="nt">loginPrompt</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;User&quot;</span>
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="w">        </span><span class="nt">loginProvider</span><span class="p">:</span>
+</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="w">          </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skas-auth.skas-system.svc</span>
+</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="w">          </span><span class="nt">rootCaPath</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a><span class="w">          </span><span class="nt">rootCaData</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LS0tLS1CRUdJTiBDRVJU.......................ENFUlRJRklDQVRFLS0tLS0K&quot;</span>
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a><span class="w">          </span><span class="nt">insecureSkipVerify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w">          </span><span class="nt">clientAuth</span><span class="p">:</span>
+</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dex&quot;</span>
+</span><span id="__span-14-31"><a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a><span class="w">            </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;aSharedSecret&quot;</span>
+</span><span id="__span-14-32"><a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a>
+</span><span id="__span-14-33"><a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a><span class="w">  </span><span class="nt">staticClients</span><span class="p">:</span>
+</span><span id="__span-14-34"><a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-app</span>
+</span><span id="__span-14-35"><a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a><span class="w">      </span><span class="nt">redirectURIs</span><span class="p">:</span>
+</span><span id="__span-14-36"><a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;http://127.0.0.1:5555/callback&#39;</span>
+</span><span id="__span-14-37"><a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Example</span><span class="nv"> </span><span class="s">App&#39;</span>
+</span><span id="__span-14-38"><a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a><span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ZXhhbXBsZS1hcHAtc2VjcmV0</span>
+</span><span id="__span-14-39"><a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a>
+</span><span id="__span-14-40"><a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a><span class="nt">securityContext</span><span class="p">:</span>
+</span><span id="__span-14-41"><a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a><span class="w">  </span><span class="nt">allowPrivilegeEscalation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-14-42"><a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a><span class="w">  </span><span class="nt">capabilities</span><span class="p">:</span>
+</span><span id="__span-14-43"><a id="__codelineno-14-43" name="__codelineno-14-43" href="#__codelineno-14-43"></a><span class="w">    </span><span class="nt">drop</span><span class="p">:</span>
+</span><span id="__span-14-44"><a id="__codelineno-14-44" name="__codelineno-14-44" href="#__codelineno-14-44"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ALL</span>
+</span><span id="__span-14-45"><a id="__codelineno-14-45" name="__codelineno-14-45" href="#__codelineno-14-45"></a><span class="w">  </span><span class="nt">readOnlyRootFilesystem</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-14-46"><a id="__codelineno-14-46" name="__codelineno-14-46" href="#__codelineno-14-46"></a><span class="w">  </span><span class="nt">runAsNonRoot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-14-47"><a id="__codelineno-14-47" name="__codelineno-14-47" href="#__codelineno-14-47"></a><span class="w">  </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+</span><span id="__span-14-48"><a id="__codelineno-14-48" name="__codelineno-14-48" href="#__codelineno-14-48"></a><span class="w">  </span><span class="nt">seccompProfile</span><span class="p">:</span>
+</span><span id="__span-14-49"><a id="__codelineno-14-49" name="__codelineno-14-49" href="#__codelineno-14-49"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RuntimeDefault</span>
+</span><span id="__span-14-50"><a id="__codelineno-14-50" name="__codelineno-14-50" href="#__codelineno-14-50"></a>
+</span><span id="__span-14-51"><a id="__codelineno-14-51" name="__codelineno-14-51" href="#__codelineno-14-51"></a><span class="nt">ingress</span><span class="p">:</span>
+</span><span id="__span-14-52"><a id="__codelineno-14-52" name="__codelineno-14-52" href="#__codelineno-14-52"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-14-53"><a id="__codelineno-14-53" name="__codelineno-14-53" href="#__codelineno-14-53"></a><span class="w">  </span><span class="nt">className</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+</span><span id="__span-14-54"><a id="__codelineno-14-54" name="__codelineno-14-54" href="#__codelineno-14-54"></a><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+</span><span id="__span-14-55"><a id="__codelineno-14-55" name="__codelineno-14-55" href="#__codelineno-14-55"></a><span class="w">    </span><span class="nt">cert-manager.io/cluster-issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
+</span><span id="__span-14-56"><a id="__codelineno-14-56" name="__codelineno-14-56" href="#__codelineno-14-56"></a><span class="w">    </span><span class="nt">nginx.ingress.kubernetes.io/force-ssl-redirect</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
+</span><span id="__span-14-57"><a id="__codelineno-14-57" name="__codelineno-14-57" href="#__codelineno-14-57"></a><span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+</span><span id="__span-14-58"><a id="__codelineno-14-58" name="__codelineno-14-58" href="#__codelineno-14-58"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex.ingress.mycluster.internal</span>
+</span><span id="__span-14-59"><a id="__codelineno-14-59" name="__codelineno-14-59" href="#__codelineno-14-59"></a><span class="w">      </span><span class="nt">paths</span><span class="p">:</span>
+</span><span id="__span-14-60"><a id="__codelineno-14-60" name="__codelineno-14-60" href="#__codelineno-14-60"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span>
+</span><span id="__span-14-61"><a id="__codelineno-14-61" name="__codelineno-14-61" href="#__codelineno-14-61"></a><span class="w">          </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ImplementationSpecific</span>
+</span><span id="__span-14-62"><a id="__codelineno-14-62" name="__codelineno-14-62" href="#__codelineno-14-62"></a><span class="w">  </span><span class="nt">tls</span><span class="p">:</span>
+</span><span id="__span-14-63"><a id="__codelineno-14-63" name="__codelineno-14-63" href="#__codelineno-14-63"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex-server-tls</span>
+</span><span id="__span-14-64"><a id="__codelineno-14-64" name="__codelineno-14-64" href="#__codelineno-14-64"></a><span class="w">      </span><span class="nt">hosts</span><span class="p">:</span>
+</span><span id="__span-14-65"><a id="__codelineno-14-65" name="__codelineno-14-65" href="#__codelineno-14-65"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex.ingress.kspray6</span>
+</span></code></pre></div>
+</details>
+<p>The modification are the following:</p>
+<ul>
+<li>The <code>config.issuer</code> endpoint is now using HTTPS.</li>
+<li>The <code>config.connectors[0].config.loginProvider.rootCaData</code> is populated with the Certificate Authority of the 
+  <code>skAuth</code> service. To find its value, we can dig inside its certificate, which include its authority:
+  <div class="language-shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>skas-auth-cert<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span>
+</span></code></pre></div></li>
+<li>The <code>config.connectors[0].config.loginProvider.clientAuth</code> is set to authenticate with the id/secret defined above for <code>skAuth</code> login service.</li>
+<li>The <code>ingress</code> is now configured to handle SSL connection (And force SSL for non-SSL connection)</li>
+</ul>
+<p>To apply this new configuration, use the same command as previously:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>dex<span class="w"> </span>dex/dex<span class="w"> </span>--values<span class="w"> </span>./values.dex.yaml
+</span></code></pre></div>
+<p>And restart the POD:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>dex
+</span></code></pre></div>
+<blockquote>
+<p>Another security improvement would be to configure the ingress in SSL passthroughs and to configure the DEX Pod to
+handle SSL itself. This would ensure real end to end encryption. Unfortunately, this is not possible with the current
+Helm Chart and refactoring it is out of the scope of this documentation.</p>
+</blockquote>
+<h3 id="testing_1">Testing</h3>
+<p>You can test again this endpoint with the following command. Note the https:// now on URLs</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$<span class="w"> </span>curl<span class="w"> </span>https://dex.ingress.mycluster.internal/.well-known/openid-configuration
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="o">{</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span><span class="s2">&quot;issuer&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal&quot;</span>,
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="s2">&quot;authorization_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/auth&quot;</span>,
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">  </span><span class="s2">&quot;token_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/token&quot;</span>,
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">  </span><span class="s2">&quot;jwks_uri&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/keys&quot;</span>,
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">  </span><span class="s2">&quot;userinfo_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/userinfo&quot;</span>,<span class="w"> </span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="w">  </span>....
+</span></code></pre></div>
+<p>And use again the <code>example-app</code> application. Note the 'https://' on the issuer.</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$<span class="w"> </span>example-app<span class="w"> </span>--issuer<span class="w">  </span>https://dex.ingress.mycluster.internal
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="m">2023</span>/08/28<span class="w"> </span><span class="m">18</span>:50:07<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://127.0.0.1:5555
+</span></code></pre></div>
+<h4 id="got-a-certificate-issue">Got a certificate issue ?</h4>
+<p>You may get the following on the curl request:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$<span class="w"> </span>curl<span class="w"> </span>https://dex.ingress.mycluster.internal/.well-known/openid-configuration
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>curl:<span class="w"> </span><span class="o">(</span><span class="m">60</span><span class="o">)</span><span class="w"> </span>SSL<span class="w"> </span>certificate<span class="w"> </span>problem:<span class="w"> </span>unable<span class="w"> </span>to<span class="w"> </span>get<span class="w"> </span><span class="nb">local</span><span class="w"> </span>issuer<span class="w"> </span>certificate
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>More<span class="w"> </span>details<span class="w"> </span>here:<span class="w"> </span>https://curl.haxx.se/docs/sslcerts.html
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>....
+</span></code></pre></div>
+<p>This is the case if the DEX issuers certificate has been signed by an authority which is not recognized by your workstation.</p>
+<p>Solution is to retrieve this certificate:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>dex-server-tls<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d<span class="w"> </span>&gt;./CA.crt
+</span></code></pre></div>
+<p>And to provide it to the Curl command:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span>curl<span class="w"> </span>https://dex.ingress.mycluster.internal/.well-known/openid-configuration<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>--cacert<span class="w"> </span>./CA.crt
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="o">{</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w">  </span><span class="s2">&quot;issuer&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal&quot;</span>,
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="w">  </span><span class="s2">&quot;authorization_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/auth&quot;</span>,
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="w">  </span><span class="s2">&quot;token_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/token&quot;</span>,
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="w">  </span><span class="s2">&quot;jwks_uri&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/keys&quot;</span>,
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="w">  </span><span class="s2">&quot;userinfo_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/userinfo&quot;</span>,<span class="w"> </span>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="w">  </span>....
+</span></code></pre></div>
+<p>You will encounter the same issue with the <code>example-app</code> test application. Here also, provide the certificate:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>$<span class="w"> </span>example-app<span class="w"> </span>--issuer<span class="w"> </span>https://dex.ingress.kspray6<span class="w"> </span>--issuer-root-ca<span class="w"> </span>./CA.crt
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="m">2023</span>/08/29<span class="w"> </span><span class="m">09</span>:31:53<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://127.0.0.1:5555
+</span></code></pre></div>
+<h2 id="using-a-kubernetes-secret">Using a Kubernetes secret</h2>
+<p>There is still a security issue, as two shared secreta (aSharedSecret and the staticClients secret) are in clear text 
+in both values file. As such, they may ends up in some version control system.</p>
+<p>So, let's store these values in Kubernetes secrets and access them using environment variables.</p>
+<p>Here is a secret aimed to be shared between DEX and SKAS. Its value can be randomly generated, as it is accessed by both party. </p>
+<details class="abstract" open="open">
+<summary>dex-client-secret.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Opaque</span>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex-client-secret</span>
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-system</span>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="nt">data</span><span class="p">:</span>
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="w">  </span><span class="nt">DEX_CLIENT_SECRET</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cGZRM3lXSTBBN2M3aGJE</span>
+</span></code></pre></div>
+</details>
+<blockquote>
+<p>There is several solutions to generate such secret value. One can use Helm with some random generator function. Or use a <a href="../toolsandtricks/#secret-generator">Secret generator</a></p>
+</blockquote>
+<p>And here is the secret shared between DEX (In <code>config.staticClients[0]</code> and the <code>example-app</code> application binary)</p>
+<details class="abstract" open="open">
+<summary>example-app-secret.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Opaque</span>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-app-secret</span>
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-system</span>
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="nt">data</span><span class="p">:</span>
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="w">  </span><span class="nt">EXAMPLE_APP_SECRET</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">WlhoaGJYQnNaUzFoY0hBdGMyVmpjbVYw</span><span class="w">    </span><span class="c1"># Result of printf &quot;ZXhhbXBsZS1hcHAtc2VjcmV0&quot; | base64</span>
+</span></code></pre></div>
+</details>
+<blockquote>
+<p><em>Its value is hard-coded in <code>example-app</code>, so must not be changed (Or you must pass the new value as <code>--client-secret</code> parameter on launch).</em></p>
+<p><em>Note than both secret are formatted in a way compatible with <code>spec.containers[X].envFrom</code>. This is required by the DEX Helm chart.</em></p>
+</blockquote>
+<h3 id="skas-reconfiguration_2">SKAS reconfiguration</h3>
+<p>Here is the modified values file for SKAS reconfiguration.</p>
+<details class="abstract">
+<summary>values.skas.login.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="w">  </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="w">    </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="w">      </span><span class="nt">services</span><span class="p">:</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="w">        </span><span class="nt">login</span><span class="p">:</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a><span class="w">          </span><span class="nt">disabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="w">          </span><span class="nt">clients</span><span class="p">:</span>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex</span>
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a><span class="w">              </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DEX_CLIENT_SECRET}</span>
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a>
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a><span class="w">  </span><span class="nt">extraEnv</span><span class="p">:</span>
+</span><span id="__span-26-12"><a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEX_CLIENT_SECRET</span>
+</span><span id="__span-26-13"><a id="__codelineno-26-13" name="__codelineno-26-13" href="#__codelineno-26-13"></a><span class="w">      </span><span class="nt">valueFrom</span><span class="p">:</span>
+</span><span id="__span-26-14"><a id="__codelineno-26-14" name="__codelineno-26-14" href="#__codelineno-26-14"></a><span class="w">        </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+</span><span id="__span-26-15"><a id="__codelineno-26-15" name="__codelineno-26-15" href="#__codelineno-26-15"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex-client-secret</span>
+</span><span id="__span-26-16"><a id="__codelineno-26-16" name="__codelineno-26-16" href="#__codelineno-26-16"></a><span class="w">          </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEX_CLIENT_SECRET</span>
+</span></code></pre></div>
+</details>
+<p>The modifications are the following:</p>
+<ul>
+<li>The <code>skAuth.extraEnv</code> subsection inject the secret value as an environment variable in the container.</li>
+<li>the <code>skAuth.exposure.external.services.identity.clients[0].secret</code> fetch its value through this environment variable.</li>
+</ul>
+<blockquote>
+<p>Most of the values provided by the helm chart ends up inside a configMap, which is then loaded by the SKAS executable.
+The environment variable interpolation occurs during this load.</p>
+</blockquote>
+<h3 id="dex-deployment_2">DEX deployment</h3>
+<p>And here is the modified values file for DEX deployment</p>
+<details class="abstract">
+<summary>values.dex.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="nt">image</span><span class="p">:</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/skasproject/dex</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="w">  </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2.37.0-skas-0.2.1</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a><span class="w">  </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://dex.ingress.mycluster.internal</span>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="w">  </span><span class="nt">storage</span><span class="p">:</span>
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes</span>
+</span><span id="__span-27-9"><a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a><span class="w">    </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a><span class="w">      </span><span class="nt">inCluster</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a><span class="w">  </span><span class="nt">web</span><span class="p">:</span>
+</span><span id="__span-27-12"><a id="__codelineno-27-12" name="__codelineno-27-12" href="#__codelineno-27-12"></a><span class="w">    </span><span class="nt">http</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0.0.0:5556</span>
+</span><span id="__span-27-13"><a id="__codelineno-27-13" name="__codelineno-27-13" href="#__codelineno-27-13"></a><span class="w">  </span><span class="nt">logger</span><span class="p">:</span>
+</span><span id="__span-27-14"><a id="__codelineno-27-14" name="__codelineno-27-14" href="#__codelineno-27-14"></a><span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">info</span>
+</span><span id="__span-27-15"><a id="__codelineno-27-15" name="__codelineno-27-15" href="#__codelineno-27-15"></a><span class="w">    </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+</span><span id="__span-27-16"><a id="__codelineno-27-16" name="__codelineno-27-16" href="#__codelineno-27-16"></a><span class="w">  </span><span class="nt">oauth2</span><span class="p">:</span>
+</span><span id="__span-27-17"><a id="__codelineno-27-17" name="__codelineno-27-17" href="#__codelineno-27-17"></a><span class="w">    </span><span class="nt">skipApprovalScreen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-27-18"><a id="__codelineno-27-18" name="__codelineno-27-18" href="#__codelineno-27-18"></a><span class="w">  </span><span class="nt">connectors</span><span class="p">:</span>
+</span><span id="__span-27-19"><a id="__codelineno-27-19" name="__codelineno-27-19" href="#__codelineno-27-19"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas</span>
+</span><span id="__span-27-20"><a id="__codelineno-27-20" name="__codelineno-27-20" href="#__codelineno-27-20"></a><span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas</span>
+</span><span id="__span-27-21"><a id="__codelineno-27-21" name="__codelineno-27-21" href="#__codelineno-27-21"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SKAS</span>
+</span><span id="__span-27-22"><a id="__codelineno-27-22" name="__codelineno-27-22" href="#__codelineno-27-22"></a><span class="w">      </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-27-23"><a id="__codelineno-27-23" name="__codelineno-27-23" href="#__codelineno-27-23"></a><span class="w">        </span><span class="nt">loginPrompt</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;User&quot;</span>
+</span><span id="__span-27-24"><a id="__codelineno-27-24" name="__codelineno-27-24" href="#__codelineno-27-24"></a><span class="w">        </span><span class="nt">loginProvider</span><span class="p">:</span>
+</span><span id="__span-27-25"><a id="__codelineno-27-25" name="__codelineno-27-25" href="#__codelineno-27-25"></a><span class="w">          </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skas-auth.skas-system.svc</span>
+</span><span id="__span-27-26"><a id="__codelineno-27-26" name="__codelineno-27-26" href="#__codelineno-27-26"></a><span class="w">          </span><span class="nt">rootCaPath</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+</span><span id="__span-27-27"><a id="__codelineno-27-27" name="__codelineno-27-27" href="#__codelineno-27-27"></a><span class="w">          </span><span class="nt">rootCaData</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUdTekNDQkRPZ0F3SUJBZ0lKQU4zclBySE5JRmZBTUEwR0NTcUdTSWIzRFFFQkN3VUFNSFV4Q3pBSkJnTlYKQkFZVEFrWlNNUTR3REFZRFZRUUlEQVZRWVhKcGN6RU9NQXdHQTFVRUJ3d0ZVR0Z5YVhNeEdUQVhCZ05WQkFvTQpFRTl3Wlc1RVlYUmhVR3hoZEdadmNtMHhGakFVQmdOVkJBc01EVWxVSUVSbGNHRnlkRzFsYm5ReEV6QVJCZ05WCkJBTU1DbU5oTG05a2NDNWpiMjB3SGhjTk1qRXdPREU0TURreU16QTFXaGNOTXpFd09ERTJNRGt5TXpBMVdqQjEKTVFzd0NRWURWUVFHRXdKR1VqRU9NQXdHQTFVRUNBd0ZVR0Z5YVhNeERqQU1CZ05WQkFjTUJWQmhjbWx6TVJrdwpGd1lEVlFRS0RCQlBjR1Z1UkdGMFlWQnNZWFJtYjNKdE1SWXdGQVlEVlFRTERBMUpWQ0JFWlhCaGNuUnRaVzUwCk1STXdFUVlEVlFRRERBcGpZUzV2WkhBdVkyOXRNSUlDSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQWc4QU1JSUMKQ2dLQ0FnRUE2cFBqejVCb1FYczZ2NE02NHBwc1JvTEFBeHMxQmovRmJGZTBzVzIycG9XL1d0L1NHSWVVVTdCUgpmZUhJOUdNbE53WmlkSXV0ZEU5d0N1a2pIbVVLbVhmRUx4MXlhamdTSm5PSmR1cWdCZHBHNTVwLzhtQ2lubVk2Cm1Pdis2V0hGMHFIYjVEZjZTTHhpSFNkTEZQVWtwV3IrbmI2T0JxaERsZ2JNUjA5WVZwV1ZHTlFqalQvSWdhbmIKRG12S1Z2S0VXTEk2cGZGVDhxWW5rTnNxamQ3T1NiZGdaVlRPTGh4YVJIZ2xVUlc3dGNvaXIyYW8rWFRNSkJaVAo4elRmS1BOVmcwK3c5ODBmVVY0dCtSZElFdXREbTdFa1JCcXBXNkZtZktFOFlhb2thWHJxMjgrVUFWSFpMd1BxCk1jVnFTeVNzaVR0bTBSYXhjcG9aYUQ5SjdWWlB1UGxlOUluUE1sNTJYaE1pZHBlNG9SYW1JRjJlUnNOZExkVTYKQklPcTBtNHRaTkk1QnRwbXBTZVlMOXBBMmtGL3UwT2Z1VWNUbVZTSlBGMkMybVJETVpmMVMxVFVGYnVIK1N2ZgoraTQ4bFVoSjIvajlURVkxRk1DM0oxMkVBUXk0YXpBa0FXWkdKUDBBdzBpdFBjUkJVMkJ0ZXV1VWhhQlNWTU9JCkxxSGFhTXRhZzJCUXcwblBhTDhabFNRcVJyakF0NnRaUDhqTnNpRFBxSE9SOVFDb29EbGZoWUJ5T3l2Ry9FWHEKWXpVUUV3NXF2NkdiSzJLYWs5U0s0ckhqRGF6V1l3a0Mza1grbkxiREFmcUNMNkhpWUMyL0ZiQzVwVmlyM0o5RwppM0JIVFBTRk9rQ2t3QkJMNGE4ZWxDRWRmajEvTlRxNDYzNzRiQU1jSHcvV2dqdzhCT0VDQXdFQUFhT0IzVENCCjJqQVBCZ05WSFJNQkFmOEVCVEFEQVFIL01CMEdBMVVkRGdRV0JCUk90dmNMS0E4UFhOUGs1bmRFL0Y5SldKb3gKbWpDQnB3WURWUjBqQklHZk1JR2NnQlJPdHZjTEtBOFBYTlBrNW5kRS9GOUpXSm94bXFGNXBIY3dkVEVMTUFrRwpBMVVFQmhNQ1JsSXhEakFNQmdOVkJBZ01CVkJoY21sek1RNHdEQVlEVlFRSERBVlFZWEpwY3pFWk1CY0dBMVVFCkNnd1FUM0JsYmtSaGRHRlFiR0YwWm05eWJURVdNQlFHQTFVRUN3d05TVlFnUkdWd1lYSjBiV1Z1ZERFVE1CRUcKQTFVRUF3d0tZMkV1YjJSd0xtTnZiWUlKQU4zclBySE5JRmZBTUEwR0NTcUdTSWIzRFFFQkN3VUFBNElDQVFESgpxZGI3Myt4cWFqclNuaHoxOTlWZGR3RUVvWGVSTi9jbkY0ZUdQODk0dURBSCtvcWYvVDNhUExZaWxHdnVoZElwCmUrUFk4Z2dsdUJRa3hzd1pDQjFzSFNGUFVHOFZPWmNQVU1SZGV1TVVqTUczcEhRT3J4N2VMV1hYRXNnblJ3MTcKcjIvei92L3VVVmovaW15Z0cwQWRkV0t2Y2ZEZ3AwcHNlUFRMY0xaRkdURU1nN3Y2RWswWFRLMXlEdlhzWmliUQpWcTdVMEE1SE5nNm40SzByNFBycTNQTTdCZWVpQnpkY21yaDR4MkIzcXkvWDY3SXF5K2pTMFZZS2NmVFkwQ25FClR1KzE5cjJlSGY0ZGM4VXIzbzJSamptQUJ5cHBHYVQ0RDdkZ0g0a0hkeDJoN2NmMWhTeVozU3lMang4VkZFdzIKbmhFVjcrUVBXM2g1RExDaXMwelcyY2pyRFhKblIxT3dpR3NqWmgyWUZlMytiUUNiQU5sV0F0dVNaZTg0ZkVlLwpJeHRqLzhBMlAvd0thaitWeGIrWFZKd3l0YzJJbUhYUTdMcjZ6MlMzcFJUTmcyREQ3V2d2WkZvVk5WWkllR0xaCmJDYkVjdmpPQkdDSU1DK0tyV0dMYlQzaTFlMUxpY2k5MWFxWGNIcDlyRVpTbE8va1BHZjVnWDZGSmNqNmpWbzcKUDZLQ2xCbUloVllITXVlb3JIN09VRmw4bWRzVmF5eE1COGR6bHI0OXlRUXpocWlmM3l3TEpRRXBDbENzYnEvZApKMkQ5M0JUQTh6NWN0bzRJNW9DdGZRMkdqbGtmRUpHODYzZ2NJVC8zaWV1M0FJLytMQVRGTzcrVFlWcVlZOFNJCndEUVZ4czF3T3BIWk9FZWtmTzRmS1cxMkJRK2YrSzltK2owSVNGelVDQT09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K&quot;</span>
+</span><span id="__span-27-28"><a id="__codelineno-27-28" name="__codelineno-27-28" href="#__codelineno-27-28"></a><span class="w">          </span><span class="nt">insecureSkipVerify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-27-29"><a id="__codelineno-27-29" name="__codelineno-27-29" href="#__codelineno-27-29"></a><span class="w">          </span><span class="nt">clientAuth</span><span class="p">:</span>
+</span><span id="__span-27-30"><a id="__codelineno-27-30" name="__codelineno-27-30" href="#__codelineno-27-30"></a><span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dex&quot;</span>
+</span><span id="__span-27-31"><a id="__codelineno-27-31" name="__codelineno-27-31" href="#__codelineno-27-31"></a><span class="w">            </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DEX_CLIENT_SECRET}</span>
+</span><span id="__span-27-32"><a id="__codelineno-27-32" name="__codelineno-27-32" href="#__codelineno-27-32"></a>
+</span><span id="__span-27-33"><a id="__codelineno-27-33" name="__codelineno-27-33" href="#__codelineno-27-33"></a><span class="w">  </span><span class="nt">staticClients</span><span class="p">:</span>
+</span><span id="__span-27-34"><a id="__codelineno-27-34" name="__codelineno-27-34" href="#__codelineno-27-34"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-app</span>
+</span><span id="__span-27-35"><a id="__codelineno-27-35" name="__codelineno-27-35" href="#__codelineno-27-35"></a><span class="w">      </span><span class="nt">redirectURIs</span><span class="p">:</span>
+</span><span id="__span-27-36"><a id="__codelineno-27-36" name="__codelineno-27-36" href="#__codelineno-27-36"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;http://127.0.0.1:5555/callback&#39;</span>
+</span><span id="__span-27-37"><a id="__codelineno-27-37" name="__codelineno-27-37" href="#__codelineno-27-37"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Example</span><span class="nv"> </span><span class="s">App&#39;</span>
+</span><span id="__span-27-38"><a id="__codelineno-27-38" name="__codelineno-27-38" href="#__codelineno-27-38"></a><span class="w">      </span><span class="nt">secretEnv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EXAMPLE_APP_SECRET</span>
+</span><span id="__span-27-39"><a id="__codelineno-27-39" name="__codelineno-27-39" href="#__codelineno-27-39"></a>
+</span><span id="__span-27-40"><a id="__codelineno-27-40" name="__codelineno-27-40" href="#__codelineno-27-40"></a><span class="nt">envFrom</span><span class="p">:</span>
+</span><span id="__span-27-41"><a id="__codelineno-27-41" name="__codelineno-27-41" href="#__codelineno-27-41"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secretRef</span><span class="p">:</span>
+</span><span id="__span-27-42"><a id="__codelineno-27-42" name="__codelineno-27-42" href="#__codelineno-27-42"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex-client-secret</span>
+</span><span id="__span-27-43"><a id="__codelineno-27-43" name="__codelineno-27-43" href="#__codelineno-27-43"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secretRef</span><span class="p">:</span>
+</span><span id="__span-27-44"><a id="__codelineno-27-44" name="__codelineno-27-44" href="#__codelineno-27-44"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-app-secret</span>
+</span><span id="__span-27-45"><a id="__codelineno-27-45" name="__codelineno-27-45" href="#__codelineno-27-45"></a>
+</span><span id="__span-27-46"><a id="__codelineno-27-46" name="__codelineno-27-46" href="#__codelineno-27-46"></a>
+</span><span id="__span-27-47"><a id="__codelineno-27-47" name="__codelineno-27-47" href="#__codelineno-27-47"></a><span class="nt">securityContext</span><span class="p">:</span>
+</span><span id="__span-27-48"><a id="__codelineno-27-48" name="__codelineno-27-48" href="#__codelineno-27-48"></a><span class="w">  </span><span class="nt">allowPrivilegeEscalation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-27-49"><a id="__codelineno-27-49" name="__codelineno-27-49" href="#__codelineno-27-49"></a><span class="w">  </span><span class="nt">capabilities</span><span class="p">:</span>
+</span><span id="__span-27-50"><a id="__codelineno-27-50" name="__codelineno-27-50" href="#__codelineno-27-50"></a><span class="w">    </span><span class="nt">drop</span><span class="p">:</span>
+</span><span id="__span-27-51"><a id="__codelineno-27-51" name="__codelineno-27-51" href="#__codelineno-27-51"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ALL</span>
+</span><span id="__span-27-52"><a id="__codelineno-27-52" name="__codelineno-27-52" href="#__codelineno-27-52"></a><span class="w">  </span><span class="nt">readOnlyRootFilesystem</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-27-53"><a id="__codelineno-27-53" name="__codelineno-27-53" href="#__codelineno-27-53"></a><span class="w">  </span><span class="nt">runAsNonRoot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-27-54"><a id="__codelineno-27-54" name="__codelineno-27-54" href="#__codelineno-27-54"></a><span class="w">  </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+</span><span id="__span-27-55"><a id="__codelineno-27-55" name="__codelineno-27-55" href="#__codelineno-27-55"></a><span class="w">  </span><span class="nt">seccompProfile</span><span class="p">:</span>
+</span><span id="__span-27-56"><a id="__codelineno-27-56" name="__codelineno-27-56" href="#__codelineno-27-56"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RuntimeDefault</span>
+</span><span id="__span-27-57"><a id="__codelineno-27-57" name="__codelineno-27-57" href="#__codelineno-27-57"></a>
+</span><span id="__span-27-58"><a id="__codelineno-27-58" name="__codelineno-27-58" href="#__codelineno-27-58"></a><span class="nt">ingress</span><span class="p">:</span>
+</span><span id="__span-27-59"><a id="__codelineno-27-59" name="__codelineno-27-59" href="#__codelineno-27-59"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-27-60"><a id="__codelineno-27-60" name="__codelineno-27-60" href="#__codelineno-27-60"></a><span class="w">  </span><span class="nt">className</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+</span><span id="__span-27-61"><a id="__codelineno-27-61" name="__codelineno-27-61" href="#__codelineno-27-61"></a><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+</span><span id="__span-27-62"><a id="__codelineno-27-62" name="__codelineno-27-62" href="#__codelineno-27-62"></a><span class="w">    </span><span class="nt">cert-manager.io/cluster-issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
+</span><span id="__span-27-63"><a id="__codelineno-27-63" name="__codelineno-27-63" href="#__codelineno-27-63"></a><span class="w">    </span><span class="nt">nginx.ingress.kubernetes.io/force-ssl-redirect</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
+</span><span id="__span-27-64"><a id="__codelineno-27-64" name="__codelineno-27-64" href="#__codelineno-27-64"></a><span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
+</span><span id="__span-27-65"><a id="__codelineno-27-65" name="__codelineno-27-65" href="#__codelineno-27-65"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex.ingress.kspray6</span>
+</span><span id="__span-27-66"><a id="__codelineno-27-66" name="__codelineno-27-66" href="#__codelineno-27-66"></a><span class="w">      </span><span class="nt">paths</span><span class="p">:</span>
+</span><span id="__span-27-67"><a id="__codelineno-27-67" name="__codelineno-27-67" href="#__codelineno-27-67"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span>
+</span><span id="__span-27-68"><a id="__codelineno-27-68" name="__codelineno-27-68" href="#__codelineno-27-68"></a><span class="w">          </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ImplementationSpecific</span>
+</span><span id="__span-27-69"><a id="__codelineno-27-69" name="__codelineno-27-69" href="#__codelineno-27-69"></a><span class="w">  </span><span class="nt">tls</span><span class="p">:</span>
+</span><span id="__span-27-70"><a id="__codelineno-27-70" name="__codelineno-27-70" href="#__codelineno-27-70"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex-server-tls</span>
+</span><span id="__span-27-71"><a id="__codelineno-27-71" name="__codelineno-27-71" href="#__codelineno-27-71"></a><span class="w">      </span><span class="nt">hosts</span><span class="p">:</span>
+</span><span id="__span-27-72"><a id="__codelineno-27-72" name="__codelineno-27-72" href="#__codelineno-27-72"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex.ingress.mycluster.internal</span>
+</span></code></pre></div>
+</details>
+<p>DEX handle environment variable extension in two different ways, depending of the subsection:</p>
+<ul>
+<li>Environment variable are expanded the usual way in the <code>connectors</code> definition.</li>
+<li>This is not the case for other parts of the configuration, such as <code>staticClients</code>. So two new attributes have been
+added in a staticClient definition: <code>idEnv</code> and <code>secretEnv</code>. Only this last is used in our case.</li>
+</ul>
+<p>Both secret values are injected in the Pod by the <code>envFrom:</code> subsection</p>
 
 
 
