@@ -154,8 +154,6 @@ $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
 
 > _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md#pod-restart)_
 
-If deploying two separate Charts is a constraint for you, you may setup a 'meta chart'. See [here](toolsandtricks.md#tricks-setup-a-meta-helm-chart)
-
 ## Test and Usage
 
 Then, you can now test your configuration:
@@ -627,4 +625,176 @@ Here is the modified version, with `secret` handling, for the main SKAS pod conf
 
 The modifications are the same as the SKAS2 POD, but on the `skMerge` module
 
+
+## Setup a meta helm chart
+
+Up to now, we had setup our configuration by performing two closely related Helm deployment.
+
+To ease automation, it could be useful to 'package' such kind of deployment by creating a 'meta chart', a chart which will embed other ones as dependencies.
+
+Such chart will have the following layout.
+
+```shell
+$ tree
+.
+|-- Chart.yaml
+|-- templates
+|   `-- stringsecret.yaml
+`-- values.yaml
+```
+
+> This example will implement encryption and inter-pod authentication.
+
+The `Chart.yaml` file define the meta-chart `skas-skas2-meta`.There is two dependencies deploying the same helm chart,
+but with different values (See below). Note the `alias: skas2` on the second deployment.
+
+??? abstract "Chart.yaml"
+
+    ``` { .yaml .copy }
+    apiVersion: v2
+    name: skas-skas2-meta
+    version: 0.1.0
+    dependencies:
+    - name: skas
+      version: 0.2.1
+      repository: https://skasproject.github.io/skas-charts
+    
+    - name: skas
+      alias: skas2
+      version: 0.2.1
+      repository: https://skasproject.github.io/skas-charts
+    ```
+
+The following will generate the shared secret allowing inter-pods authentication
+
+??? abstract " templates/stringsecret.yaml"
+
+    ``` { .yaml .copy }
+    ---
+    apiVersion: "secretgenerator.mittwald.de/v1alpha1"
+    kind: "StringSecret"
+    metadata:
+      name: skas2-client-secret
+      namespace: skas-system
+    spec:
+      fields:
+        - fieldName: "clientSecret"
+          encoding: "base64"
+          length: "15"
+    ```
+
+And here is the global `values.yaml` file:
+
+??? abstract "values.yaml"
+
+    ``` { .yaml .copy }
+    skas:
+      skAuth:
+        exposure:
+          external:
+            ingress:
+              host: skas.ingress.kspray6
+        kubeconfig:
+          context:
+            name: skas@kspray6
+          cluster:
+            apiServerUrl: https://kubernetes.ingress.kspray6
+
+      skMerge:
+        providers:
+          - name: crd
+          - name: crd_dep1
+            groupPattern: "dep1-%s"
+    
+        providerInfo:
+          crd:
+            url: http://localhost:7012
+          crd_dep1:
+            url: https://skas-skas2-crd.skas-system.svc # Was https://skas2-crd.skas-system.svc
+            rootCaPath: /tmp/cert/skas2/ca.crt
+            insecureSkipVerify: false
+            clientAuth:
+              id: skMerge
+              secret: ${SKAS2_CLIENT_SECRET}
+    
+        extraEnv:
+          - name: SKAS2_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: skas2-client-secret
+                key: clientSecret
+    
+        extraSecrets:
+          - secret: skas-skas2-crd-cert  # Was skas2-crd-cert
+            volume: skas2-cert
+            mountPath: /tmp/cert/skas2
+    
+    
+    skas2:
+      skAuth:
+        enabled: false
+      skMerge:
+        enabled: false
+      skLdap:
+        enabled: false
+    
+      clusterIssuer: your-cluster-issuer
+    
+      skCrd:
+        enabled: true
+        namespace: dep1-userdb
+    
+        adminGroups:
+          - dep1-admin
+    
+        initialUser:
+          login: dep1-admin
+          passwordHash: $2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G  # admin
+          commonNames: [ "DEP1 administrator" ]
+          groups:
+            - admin
+    
+        # By default, only internal (localhost) server is activated, to be called by another container running in the same pod.
+        # Optionally, another server (external) can be activated, which can be accessed through a kubernetes service
+        # In such case:
+        # - A Client list should be provided to control access.
+        # - ssl: true is strongly recommended.
+        # - And protection against BFA should be activated (protected: true)
+        exposure:
+          internal:
+            enabled: false
+          external:
+            enabled: true
+            port: 7112
+            ssl: true
+            services:
+              identity:
+                disabled: false
+                clients:
+                  - id: "skMerge"
+                    secret: ${SKAS2_CLIENT_SECRET}
+                protected: true
+    
+        extraEnv:
+          - name: SKAS2_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: skas2-client-secret
+                key: clientSecret
+    ```
+
+There is two blocks: `skas` and `skas2`, matching the name or alias in the `Chart.yaml` file.
+
+These two block hold the same definition than the ones defined in the original configuration. With two differences:
+
+- `skas.skMerge.providerInfo.crd_dep1.url: https://skas-skas2-crd.skas-system.svc`
+- `skas.skMerge.extraSecrets[0].secret: skas-skas2-crd-cert`
+
+This to accommodate service and secret name change, due to aliasing of the second dependency.
+
+Then, to launch the deployment, in the same folder as `Chart.yaml`, execute:
+
+```shell
+$ helm dependency build && helm -n skas-system upgrade -i skas .
+```
 
