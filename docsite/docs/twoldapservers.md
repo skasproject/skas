@@ -386,7 +386,7 @@ $ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
 
 You can now test again your configuration, as [described above](#test)
 
-## Use a Kubernetes secrets
+## Using a Kubernetes secrets
 
 There is still a security issue, as the shared secret (`aSharedSecret`) is in clear text in both values file. As such it may ends up in some version control system.
 
@@ -406,7 +406,7 @@ type: Opaque
 
 Where `data.clientSecret` is the secret encoded in base 64.
 
-> There is several solution to generate such secret value. One can use Helm with some random generator function. Or use a [Secret generator](toolsandtricks.md#secret-generator)
+> There is several solutions to generate such secret value. One can use Helm with some random generator function. Or use a [Secret generator](toolsandtricks.md#secret-generator)
 
 ### Auxiliary POD configuration
 
@@ -480,7 +480,7 @@ To use this secret, here is the new modified version for the `skas2` POD configu
 The modifications are the following:
 
 - The `skLdap.extraEnv` subsection inject the secret value as an environment variable in the container.
-- the `exposure.external.services.identity.clients[0].secret` fetch its value through this environment variable.
+- the `skLdap.exposure.external.services.identity.clients[0].secret` fetch its value through this environment variable.
 
 > Most of the values provided by the helm chart ends up inside a configMap, which is then loaded by the SKAS executable. The environment variable interpolation occurs during this load.
 
@@ -549,5 +549,5 @@ Here is the modified version, with `secret` handling, for the main SKAS pod conf
           numericalIdAttr: uidNumber
     ```
 
-The modifications are the same as the SKAS2 POD
+The modifications are the same as the SKAS2 POD, but on the `skMerge` module.
 

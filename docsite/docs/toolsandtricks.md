@@ -160,7 +160,7 @@ And here is the `values.yaml` file, with one version for the [Two LDAP servers c
     ``` { .yaml .copy }
     # ======================================================== Main SKAS Pod configuration
     skas:
-      clusterIssuer: cluster-issuer1
+      clusterIssuer: your-cluster-issuer
     
       skAuth:
         exposure:
@@ -241,7 +241,7 @@ And here is the `values.yaml` file, with one version for the [Two LDAP servers c
       skCrd:
         enabled: false
     
-      clusterIssuer: cluster-issuer1
+      clusterIssuer: your-cluster-issuer
     
       skLdap:
         enabled: true
@@ -352,7 +352,7 @@ and one for [Delegated users management](delegated.md).
       skLdap:
         enabled: false
     
-      clusterIssuer: cluster-issuer1
+      clusterIssuer: your-cluster-issuer
     
       skCrd:
         enabled: true
