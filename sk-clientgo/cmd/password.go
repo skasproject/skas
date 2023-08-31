@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"skas/sk-clientgo/httpClient"
 	"skas/sk-clientgo/internal/global"
+	"skas/sk-clientgo/internal/httpClient"
 	"skas/sk-clientgo/internal/tokenbag"
 	"skas/sk-clientgo/internal/utils"
 	"skas/sk-common/proto/v1/proto"
@@ -26,7 +26,8 @@ var PasswordCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client, err := httpClient.New()
 		if err != nil {
-			global.Log.Error(err, "error on http client init")
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: %s\n", err.Error())
+			//global.Log.Error(err, "error on http client init")
 			os.Exit(10)
 		}
 		tokenBag := tokenbag.Retrieve(client)
@@ -46,12 +47,18 @@ var PasswordCmd = &cobra.Command{
 				os.Exit(2)
 			}
 		}
+		acceptable := utils.PasswordCheck(client, newPassword, &tokenBag.User, []string{oldPassword})
+		if !acceptable {
+			fmt.Printf("Unsatisfactory password strength!\n")
+			os.Exit(2)
+		}
+		newPasswordHash := utils.Hash(newPassword)
 		passwordChangeRequest := &proto.PasswordChangeRequest{
-			ClientAuth:  client.GetClientAuth(),
-			Provider:    tokenBag.Authority,
-			Login:       tokenBag.User.Login,
-			OldPassword: oldPassword,
-			NewPassword: newPassword,
+			ClientAuth:      client.GetClientAuth(),
+			Provider:        tokenBag.Authority,
+			Login:           tokenBag.User.Login,
+			OldPassword:     oldPassword,
+			NewPasswordHash: newPasswordHash,
 		}
 		resp := proto.PasswordChangeResponse{}
 		err = client.Do(proto.PasswordChangeMeta, passwordChangeRequest, &resp, nil)

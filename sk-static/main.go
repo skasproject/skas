@@ -6,6 +6,7 @@ import (
 	"github.com/pior/runnable"
 	"os"
 	"skas/sk-common/pkg/clientauth"
+	cconfig "skas/sk-common/pkg/config"
 	"skas/sk-common/pkg/datawatcher"
 	"skas/sk-common/pkg/datawatcher/cmwatcher"
 	"skas/sk-common/pkg/datawatcher/filewatcher"
@@ -45,7 +46,7 @@ func main() {
 	}
 	runnableMgr.Add(watcher)
 	content := watcher.Get().(*users.Content)
-	config.Log.Info("sk-static start", "version", config.Version, "nbUsers", len(content.UserByLogin), "nbrGroupBindings", content.GroupBindingCount, "logLevel", config.Conf.Log.Level)
+	config.Log.Info("sk-static start", "version", cconfig.Version, "build", cconfig.BuildTs, "nbUsers", len(content.UserByLogin), "nbrGroupBindings", content.GroupBindingCount, "logLevel", config.Conf.Log.Level)
 
 	identityGetter := identitygetter.New(watcher, config.Log.WithName("staticProvider"))
 

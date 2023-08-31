@@ -1,0 +1,85 @@
+{{- if .Values.skAuth.enabled }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: "{{ include "skAuth.roleName" . }}"
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+rules:
+  - apiGroups: ["session.skasproject.io"]
+    resources:
+      - tokens
+      - tokens/status
+    verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "{{ include "skAuth.roleName" . }}-{{ include "skas.serviceAccountName" . }}"
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "skas.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: "{{ include "skAuth.roleName" . }}"
+
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: "{{ include "skAuth.editorRoleName" . }}"
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+rules:
+  - apiGroups: ["session.skasproject.io"]
+    resources:
+      - tokens
+      - tokens/status
+    verbs: ["*"]
+
+{{ if .Values.skAuth.adminGroups }}
+{{ if gt (len .Values.skAuth.adminGroups)  0 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "{{ include "skAuth.editorRoleName" . }}-groups"
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+subjects:
+{{- range .Values.skAuth.adminGroups }}
+  - kind: Group
+    name: {{ . }}
+{{- end }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: "{{ include "skAuth.editorRoleName" . }}"
+{{- end }}
+{{- end }}
+
+{{- end }}

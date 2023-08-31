@@ -2,9 +2,10 @@
 before:
   hooks:
     - sh -c "cd sk-clientgo && go mod download"
-    - sh -c "cd helm && rm -r dist"
-    - sh -c "cd helm && helm package -d ./dist skas"
-    - sh -c "cd helm && helm package -d ./dist skusers"
+    - sh -c "cd extra && rm -rf dist"
+    - sh -c "cd extra/helm && helm package -d ../dist skas"
+    - sh -c "cd extra/helm && helm package -d ../dist skusers"
+    - sh -c "cd extra/ansible/roles && tar cvzf ../../dist/skas-apiserver-role-{{ .Tag }}.tgz skas-apiserver/"
 builds:
   - id: sk-clientgo
     binary: kubectl-sk
@@ -21,7 +22,7 @@ builds:
 release:
   prerelease: true
   extra_files:
-    - glob: helm/dist/*
+    - glob: extra/dist/*
 archives:
   - format: binary
     rlcp: true

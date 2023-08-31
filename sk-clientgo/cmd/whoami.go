@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"skas/sk-clientgo/httpClient"
-	"skas/sk-clientgo/internal/global"
+	"skas/sk-clientgo/internal/httpClient"
 	"skas/sk-clientgo/internal/tokenbag"
-	"skas/sk-common/pkg/misc"
 	"strings"
 	"text/tabwriter"
 )
@@ -25,7 +23,8 @@ var WhoamiCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client, err := httpClient.New()
 		if err != nil {
-			global.Log.Error(err, "error on http client init")
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: %s\n", err.Error())
+			//global.Log.Error(err, "error on http client init")
 			os.Exit(10)
 		}
 		tokenBag := tokenbag.Retrieve(client)
@@ -34,7 +33,7 @@ var WhoamiCmd = &cobra.Command{
 			tw.Init(os.Stdout, 2, 4, 3, ' ', 0)
 			if all {
 				_, _ = fmt.Fprintf(tw, "USER\tID\tGROUPS\tAUTH.\tTOKEN")
-				_, _ = fmt.Fprintf(tw, "\n%s\t%d\t%s\t%s\t%s", tokenBag.User.Login, tokenBag.User.Uid, strings.Join(tokenBag.User.Groups, ","), tokenBag.Authority, misc.ShortenString(tokenBag.Token))
+				_, _ = fmt.Fprintf(tw, "\n%s\t%d\t%s\t%s\t%s", tokenBag.User.Login, tokenBag.User.Uid, strings.Join(tokenBag.User.Groups, ","), tokenBag.Authority, tokenBag.Token)
 			} else {
 				_, _ = fmt.Fprintf(tw, "USER\tID\tGROUPS")
 				_, _ = fmt.Fprintf(tw, "\n%s\t%d\t%s", tokenBag.User.Login, tokenBag.User.Uid, strings.Join(tokenBag.User.Groups, ","))

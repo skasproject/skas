@@ -19,11 +19,13 @@ import (
 	"skas/sk-auth/internal/tokenstore/memory"
 	"skas/sk-auth/k8sapis/session/v1alpha1"
 	"skas/sk-common/pkg/clientauth"
+	cconfig "skas/sk-common/pkg/config"
 	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/pkg/skserver/protector"
 	"skas/sk-common/proto/v1/proto"
+	"strings"
 	"time"
 )
 
@@ -40,7 +42,9 @@ func main() {
 		os.Exit(2)
 	}
 
-	config.Log.Info("sk-auth start", "version", config.Version, "logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.Token.StorageType)
+	config.Log.Info("sk-auth start", "version", cconfig.Version, "build", cconfig.BuildTs,
+		"logLevel", config.Conf.Log.Level, "tokenstore", config.Conf.Token.StorageType, "namespace", config.Conf.Namespace,
+		"adminGroups", strings.Join(config.Conf.AdminGroups, ","))
 
 	var tokenStore tokenstore.TokenStore
 	var mgr manager.Manager
@@ -59,7 +63,7 @@ func main() {
 			HealthProbeBindAddress: config.Conf.ProbeAddr,
 			LeaderElection:         false,
 			Logger:                 config.Log.WithName("manager"),
-			Namespace:              config.Conf.Token.Namespace,
+			Namespace:              config.Conf.Namespace,
 		})
 		time.Sleep(time.Second)
 		if err != nil {
@@ -141,7 +145,7 @@ func main() {
 		// ---------------------------------------------------- Login service
 		if !serverConfig.Services.Login.Disabled {
 			hdl := &handlers.LoginHandler{
-				ClientManager:  clientauth.New(serverConfig.Services.Kubeconfig.Clients, false),
+				ClientManager:  clientauth.New(serverConfig.Services.Login.Clients, false),
 				IdentityGetter: identityGetter,
 				Protector:      protector.New(serverConfig.Services.Login.Protected, context.Background(), config.Log.WithName("sk-auth.login.protector")),
 			}
@@ -168,6 +172,17 @@ func main() {
 		} else {
 			config.Log.Info("'identity' service disabled")
 		}
+		// ---------------------------------------------------- PasswordStrength service
+		if !serverConfig.Services.PasswordStrength.Disabled {
+			hdl := &handlers.PasswordStrengthHandler{
+				ClientManager: clientauth.New(serverConfig.Services.PasswordStrength.Clients, false),
+			}
+			server.AddHandler(proto.PasswordStrengthMeta, hdl)
+			config.Log.Info("passwordStrength config", "forbidCommon", config.Conf.PasswordStrength.ForbidCommon, "minimumScore", config.Conf.PasswordStrength.MinimumScore)
+		} else {
+			config.Log.Info("'passwordStrength' service disabled")
+		}
+		// -----------------------------------------------------------------------------------
 		if config.Conf.Token.StorageType == "memory" {
 			runnableMgr.Add(server)
 		} else {

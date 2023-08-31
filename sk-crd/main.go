@@ -12,6 +12,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	userdbv1alpha1 "skas/sk-common/k8sapis/userdb/v1alpha1"
 	"skas/sk-common/pkg/clientauth"
+	cconfig "skas/sk-common/pkg/config"
 	"skas/sk-common/pkg/skserver"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"skas/sk-common/pkg/skserver/protector"
@@ -34,7 +35,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	config.Log.Info("sk-crd start", "userDbNamespace", config.Conf.Namespace, "version", config.Version, "logLevel", config.Conf.Log.Level)
+	config.Log.Info("sk-crd start", "userDbNamespace", config.Conf.Namespace, "version", cconfig.Version, "build", cconfig.BuildTs, "logLevel", config.Conf.Log.Level)
 
 	//config.Config.Log.V(0).Info("Log V0")
 	//config.Config.Log.V(1).Info("Log V1")

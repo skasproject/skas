@@ -74,6 +74,10 @@ func (c skClient) Do(meta *proto.RequestMeta, request proto.RequestPayload, resp
 		}
 	}
 	resp, err := c.httpClient.Do(req)
+	if resp != nil {
+		// https://medium.easyread.co/avoiding-memory-leak-in-golang-api-1843ef45fca8
+		defer func() { _ = resp.Body.Close() }()
+	}
 	if err != nil {
 		return fmt.Errorf("error on http connection: %w", err)
 	}

@@ -1,0 +1,105 @@
+
+{{/*
+Expand skAuth container
+*/}}
+{{- define "container.skAuth" -}}
+- name: sk-auth
+  command:
+    - /sk-auth
+  args:
+    - --configFile
+    - /config.yaml
+    {{-  range .Values.skAuth.additionalArgs }}
+    - {{ . }}
+    {{- end }}
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+  {{- if eq .Values.skAuth.tokenConfig.storageType "crd" }}
+  livenessProbe:
+    httpGet:
+      path: /readyz
+      port: {{ .Values.skAuth.probe.port }}
+      scheme: {{ .Values.skAuth.probe.scheme }}
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: {{ .Values.skAuth.probe.port }}
+      scheme: {{ .Values.skAuth.probe.scheme }}
+  {{- end }}
+  {{- with .Values.skAuth.extraEnv }}
+  env:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.skAuth.resources }}
+  resources:
+  {{- toYaml . | nindent 4 }}
+  {{ end }}
+  securityContext:
+    {{- toYaml .Values.commonContainerSecurityContext | nindent 4 }}
+    {{- with .Values.skAuth.securityContext }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  ports:
+    {{- if .Values.skAuth.exposure.internal.enabled }}
+    - containerPort: {{ .Values.skAuth.exposure.internal.port }}
+      name: internal
+      protocol: TCP
+    {{- end }}
+    {{- if .Values.skAuth.exposure.external.enabled }}
+    - containerPort: {{ .Values.skAuth.exposure.external.port }}
+      name: external
+      protocol: TCP
+    {{- end }}
+    {{- if eq .Values.skAuth.tokenConfig.storageType "crd" }}
+    - containerPort: {{ .Values.skAuth.metric.port }}
+      name: metrics
+      protocol: TCP
+    {{- end }}
+  volumeMounts:
+    - mountPath: /config.yaml
+      name: sk-auth-config
+      subPath: config.yaml
+    {{ if and .Values.skAuth.exposure.external.enabled .Values.skAuth.exposure.external.ssl }}
+    - mountPath: /tmp/cert/server
+      name: sk-auth-server-cert
+      readOnly: true
+    {{ end }}
+    {{- range .Values.skAuth.extraConfigMaps }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+    {{- range .Values.skAuth.extraSecrets }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+{{- end }}
+
+{{/*
+Expand skAuth volumes in pod
+*/}}
+{{- define "volumes.skAuth" -}}
+- name: sk-auth-config
+  configMap:
+    name: {{ include "skAuth.configmapName" . }}
+{{- if and .Values.skAuth.exposure.external.enabled .Values.skAuth.exposure.external.ssl }}
+- name: sk-auth-server-cert
+  secret:
+    defaultMode: 420
+    secretName: {{ include "skAuth.certificateSecretName" . }}
+{{- end }}
+{{- range .Values.skAuth.extraConfigMaps }}
+- name: {{ .volume }}
+  configMap:
+    name: {{ .configMap }}
+{{- end }}
+{{- range .Values.skAuth.extraSecrets }}
+- name: {{ .volume }}
+  secret:
+    secretName: {{ .secret }}
+    defaultMode: 420
+{{- end }}
+
+{{- end }}

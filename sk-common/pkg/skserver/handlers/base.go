@@ -29,9 +29,9 @@ func (h *BaseHandler) ServeJSON(response http.ResponseWriter, payload proto.Resp
 
 func (h *BaseHandler) HttpSendError(response http.ResponseWriter, message string, httpCode int) {
 	if h.Logger.V(1).Enabled() {
-		h.Logger.V(1).Info("<----- httpError", "message", message, "httpCode", httpCode)
+		h.Logger.V(1).Error(nil, "<----- httpError", "message", message, "httpCode", httpCode)
 	} else {
-		h.Logger.Info("!!! http error", "message", message, "httpCode", httpCode)
+		h.Logger.Error(nil, "!!! http error", "message", message, "httpCode", httpCode)
 	}
 	http.Error(response, message, httpCode)
 }

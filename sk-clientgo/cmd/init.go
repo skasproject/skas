@@ -7,29 +7,38 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 	"os"
-	"skas/sk-clientgo/httpClient"
 	"skas/sk-clientgo/internal/global"
+	"skas/sk-clientgo/internal/httpClient"
+	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/proto/v1/proto"
 	"strconv"
+	"strings"
 )
 
 var contextNameOverride string
 var apiServerUrlOverride string
-var authServerUrlOverride string
 var namespaceOverride string
 var command string
 var noContextSwitch bool
 var force bool
+var authRootCaPath string
+var clientId string
+var clientSecret string
+var authInsecureSkipVerify bool
 
 func init() {
 	InitCmd.PersistentFlags().StringVar(&contextNameOverride, "contextNameOverride", "", "Override context name. (Will be used as base for cluster and user name)")
 	InitCmd.PersistentFlags().StringVar(&apiServerUrlOverride, "apiServerUrlOverride", "", "Override K8s API server URL")
-	InitCmd.PersistentFlags().StringVar(&authServerUrlOverride, "authServerUrlOverride", "", "Override skas auth server URL")
 	InitCmd.PersistentFlags().StringVar(&namespaceOverride, "namespaceOverride", "", "Override namespace")
 	InitCmd.PersistentFlags().StringVar(&command, "command", "kubectl-sk", "The skas kubectl plugin executable")
 	InitCmd.PersistentFlags().BoolVar(&noContextSwitch, "noContextSwitch", false, "Do not set default context to the newly create one.")
 	InitCmd.PersistentFlags().BoolVar(&force, "force", false, "Override any already existing context")
-	httpClient.AddFlags(InitCmd)
+
+	InitCmd.PersistentFlags().StringVar(&authRootCaPath, "authRootCaPath", "", "Path to a trusted root CA file for client connection to skas auth server")
+	InitCmd.PersistentFlags().StringVar(&clientId, "clientId", "", "Client ID for authentication server")
+	InitCmd.PersistentFlags().StringVar(&clientSecret, "clientSecret", "", "Client secret")
+	InitCmd.PersistentFlags().BoolVar(&authInsecureSkipVerify, "authInsecureSkipVerify", false, "Skip skas auth server certificate validation")
+
 }
 
 var InitCmd = &cobra.Command{
@@ -37,7 +46,27 @@ var InitCmd = &cobra.Command{
 	Short: "Add a new context in Kubeconfig file for skas access",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client, err := httpClient.NewForInit(args[0])
+		// Build client config from parameters
+		url := args[0]
+		if !(strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://")) {
+			url = "https://" + url
+		}
+		skConfig := &skclient.Config{
+			Url:                url,
+			InsecureSkipVerify: authInsecureSkipVerify,
+		}
+		skConfig.ClientAuth.Id = clientId
+		skConfig.ClientAuth.Secret = clientSecret
+		if authRootCaPath != "" && !authInsecureSkipVerify {
+			rootCaBytes, err := os.ReadFile(authRootCaPath)
+			if err != nil {
+				_, _ = fmt.Fprintf(os.Stderr, "ERROR: Unable to read CA file: %s\n", err.Error())
+				os.Exit(15)
+			}
+			skConfig.RootCaData = base64.StdEncoding.EncodeToString(rootCaBytes)
+		}
+
+		client, err := httpClient.NewForInit(skConfig)
 		if err != nil {
 			global.Log.Error(err, "error on InitHttpClient()")
 			os.Exit(10)
@@ -55,9 +84,6 @@ var InitCmd = &cobra.Command{
 		// ---------------------------------------------------- Override parameters
 		if contextNameOverride != "" {
 			kubeConfigResponse.Context.Name = contextNameOverride
-		}
-		if authServerUrlOverride != "" {
-			kubeConfigResponse.User.AuthServerUrl = authServerUrlOverride
 		}
 		if apiServerUrlOverride != "" {
 			kubeConfigResponse.Cluster.ApiServerUrl = apiServerUrlOverride
@@ -122,14 +148,31 @@ var InitCmd = &cobra.Command{
 			Exec: &api.ExecConfig{
 				APIVersion:      "client.authentication.k8s.io/v1",
 				Command:         command,
-				InteractiveMode: "Always",
+				InteractiveMode: "IfAvailable",
 				Args: []string{
 					"auth",
-					"--authServerUrl=" + kubeConfigResponse.User.AuthServerUrl,
-					"--authInsecureSkipVerify=" + strconv.FormatBool(kubeConfigResponse.User.InsecureSkipVerify),
-					"--clientId=" + kubeConfigResponse.User.ClientAuth.Id,
-					"--clientSecret=" + kubeConfigResponse.User.ClientAuth.Secret,
-					"--reset",
+				},
+				Env: []api.ExecEnvVar{
+					{
+						Name:  httpClient.SK_CLIENT_URL,
+						Value: skConfig.Url,
+					},
+					{
+						Name:  httpClient.SK_CLIENT_ROOT_CA_DATA,
+						Value: skConfig.RootCaData,
+					},
+					{
+						Name:  httpClient.SK_CLIENT_INSECURE_SKIP_VERIFY,
+						Value: strconv.FormatBool(skConfig.InsecureSkipVerify),
+					},
+					{
+						Name:  httpClient.SK_CLIENT_AUTH_ID,
+						Value: skConfig.ClientAuth.Id,
+					},
+					{
+						Name:  httpClient.SK_CLIENT_AUTH_SECRET,
+						Value: skConfig.ClientAuth.Secret,
+					},
 				},
 			},
 		}

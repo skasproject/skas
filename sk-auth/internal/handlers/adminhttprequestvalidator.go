@@ -31,7 +31,7 @@ func (a *AdminHttpRequestValidator) Validate(request *http.Request, response htt
 		response.Header().Set("WWW-Authenticate", "Basic realm=\"/skas\"")
 		return misc.NewHttpError("Need to authenticate", http.StatusUnauthorized)
 	}
-	if !userInGroup(user, config.Conf.AdminGroup) {
+	if !userInGroups(user, config.Conf.AdminGroups) {
 		return misc.NewHttpError("User has no admin rights", http.StatusUnauthorized)
 	}
 	return nil
@@ -50,14 +50,16 @@ func getBearerToken(request *http.Request) string {
 	return ""
 }
 
-func userInGroup(user *proto.User, group string) bool {
-	//fmt.Printf("userInGroup() user:%v  groups:%s", user, group)
-	if user.Groups == nil {
+func userInGroups(user *proto.User, groups []string) bool {
+	//fmt.Printf("userInGroups() user:%v  groups:%v", user, groups)
+	if user.Groups == nil || groups == nil {
 		return false
 	}
 	for _, grp := range user.Groups {
-		if grp == group {
-			return true
+		for _, g2 := range groups {
+			if grp == g2 {
+				return true
+			}
 		}
 	}
 	return false

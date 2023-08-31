@@ -69,20 +69,19 @@ func (p *PasswordChangeHandler) ServeHTTP(response http.ResponseWriter, request 
 		p.ServeJSON(response, responsePayload)
 		return
 	}
-	// Check provided new password
-	if len(requestPayload.NewPassword) < 3 {
-		p.Logger.V(0).Info("Invalid new password", "user", requestPayload.Login)
-		responsePayload.Status = proto.InvalidNewPassword
-		p.ServeJSON(response, responsePayload)
+	if requestPayload.NewPasswordHash == "" {
+		// We are called from a 0.2.0 client
+		p.HttpSendError(response, "Protocol error. Please, update your kubectl-sk client", http.StatusBadRequest)
 		return
 	}
-	// Create new password
-	hash, err := bcrypt.GenerateFromPassword([]byte(requestPayload.NewPassword), bcrypt.DefaultCost)
-	if err != nil {
-		p.HttpSendError(response, err.Error(), http.StatusInternalServerError)
+	// Test if NewPasswordHash look like a hash
+	err = bcrypt.CompareHashAndPassword([]byte(requestPayload.NewPasswordHash), []byte("xxxxx"))
+	if err != nil && err != bcrypt.ErrMismatchedHashAndPassword {
+		p.HttpSendError(response, "Protocol error. Invalid password hash", http.StatusBadRequest)
 		return
 	}
-	usr.Spec.PasswordHash = string(hash)
+
+	usr.Spec.PasswordHash = requestPayload.NewPasswordHash
 	err = p.KubeClient.Update(context.Background(), usr)
 	if err != nil {
 		p.HttpSendError(response, err.Error(), http.StatusInternalServerError)

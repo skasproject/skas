@@ -1,0 +1,93 @@
+
+
+# ---------------------------------------------------------------------------
+- name: API server configuration
+  block:
+  - name: Ensure target folder
+    file:
+      state: directory
+      path: /etc/kubernetes/skas
+
+
+  - name: Wait for certificate to be generated
+    k8s_info:
+      api_version: v1
+      kind: Secret
+      name: "{{ skas_auth_cert_name }}"
+      namespace: "{{ skas_namespace }}"
+    register: k8s_result
+    retries: 3
+    delay: 10
+    until: k8s_result.resources is defined and k8s_result.resources|length > 0
+
+#  - debug: var=k8s_result
+
+  - name: Decode the certificate
+    set_fact:
+      cacert: "{{k8s_result.resources[0].data['ca.crt']|b64decode}}"
+
+#  - debug: var=cacert
+
+  - name: And generate the certificate file
+    copy:
+      content: "{{cacert}}"
+      dest: /etc/kubernetes/skas/skas_auth_ca.crt
+      force: yes
+
+  - name: "Copy skas_auth_ca.crt locally"
+    fetch:
+      src: /etc/kubernetes/skas/skas_auth_ca.crt
+      dest: ./skas_auth_ca.crt
+      flat: yes
+    run_once: true
+
+  - name: Copy authentication webhook config file
+    template:
+      src: hookconfig.yaml
+      dest: /etc/kubernetes/skas/hookconfig.yaml
+
+  - name: Configure kube api server (1/4)
+    blockinfile:
+      path: /etc/kubernetes/manifests/kube-apiserver.yaml
+      insertafter: "^.*volumeMounts:.*"
+      marker: "# Ansible skas config 1/4 hacking {mark}"
+      block: |2
+            - mountPath: /etc/kubernetes/skas
+              name: skas-config
+
+  - name: Configure kube api server (2/4)
+    blockinfile:
+      path: /etc/kubernetes/manifests/kube-apiserver.yaml
+      insertafter: "^.*volumes:.*"
+      marker: "# Ansible skas config 2/4 hacking {mark}"
+      block: |2
+          - hostPath:
+              path: /etc/kubernetes/skas
+              type: ""
+            name: skas-config
+
+  - name: Configure kube api server(3/4)
+    lineinfile:
+      path: /etc/kubernetes/manifests/kube-apiserver.yaml
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+      insertafter: '^.*- kube-apiserver'
+    with_items:
+    - { line: '    - --authentication-token-webhook-config-file=/etc/kubernetes/skas/hookconfig.yaml', regexp: '^.*authentication-token-webhook-config-file.*' }
+    - { line: '    - --authentication-token-webhook-cache-ttl=30s', regexp: '^.*authentication-token-webhook-cache-ttl.*' }
+
+  - name: Configure kube api server(4/4)
+    lineinfile:
+      path: /etc/kubernetes/manifests/kube-apiserver.yaml
+      regexp: "^.*dnsPolicy:.*"
+      line: '  dnsPolicy: ClusterFirstWithHostNet'
+      insertafter: '^.*hostNetwork:.*'
+
+  - name: Wait for api server to be back again
+    wait_for:
+      port: 6443
+      state: started
+      timeout: 300
+      delay: 15
+
+

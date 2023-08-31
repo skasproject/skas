@@ -18,22 +18,6 @@ func fetchClusterCa() string {
 	return base64.StdEncoding.EncodeToString(buf)
 }
 
-func fetchAuthCa(path string) string {
-	p := path
-	if p == "" {
-		p = "/tmp/cert/server/ca.crt"
-	}
-	buf, err := os.ReadFile(p)
-	if err != nil {
-		if path != "" {
-			// We have provided a path, but it is invalid. Display a message
-			Log.Error(err, "Error while loading 'auth' server CA file", "path", path)
-		}
-		return ""
-	}
-	return base64.StdEncoding.EncodeToString(buf)
-}
-
 func isHttps(url string) bool {
 	return strings.HasPrefix(strings.ToLower(url), "https://")
 }
@@ -52,19 +36,6 @@ func initKubeconfig(kc *proto.KubeconfigConfig) error {
 			if kc.Cluster.RootCaData == "" {
 				return fmt.Errorf("cluster.rootCaData is a required parameter (Or set cluster.insecureSkipVerify)")
 			}
-		}
-	}
-	// User section
-	if kc.User.AuthServerUrl == "" {
-		return fmt.Errorf("user.authServerUrl is a required parameter")
-	}
-	if isHttps(kc.User.AuthServerUrl) && !kc.User.InsecureSkipVerify {
-		if kc.User.RootCaData == "" {
-			kc.User.RootCaData = fetchAuthCa(kc.User.RootCaPath)
-			if kc.User.RootCaData == "" {
-				return fmt.Errorf("user.rootCaData is a required parameter (Or set user.insecureSkipVerify)")
-			}
-			kc.User.RootCaPath = "" // We don't want client to see this (As the path is inside pod server
 		}
 	}
 

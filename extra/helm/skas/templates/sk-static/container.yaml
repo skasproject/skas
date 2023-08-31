@@ -1,0 +1,93 @@
+
+{{/*
+Expand skStatic container
+*/}}
+{{- define "container.skStatic" -}}
+- name: sk-static
+  command:
+    - /sk-static
+  args:
+    - --configFile
+    - /config.yaml
+    {{-  range .Values.skStatic.additionalArgs }}
+    - {{ . }}
+    {{- end }}
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  imagePullPolicy: {{ .Values.image.pullPolicy }}
+  {{- with .Values.skStatic.extraEnv }}
+  env:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.skStatic.resources }}
+  resources:
+  {{- toYaml . | nindent 4 }}
+  {{ end }}
+  securityContext:
+    {{- toYaml .Values.commonContainerSecurityContext | nindent 4 }}
+    {{- with .Values.skStatic.securityContext }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  ports:
+    {{- if .Values.skStatic.exposure.internal.enabled }}
+    - containerPort: {{ .Values.skStatic.exposure.internal.port }}
+      name: internal
+      protocol: TCP
+    {{- end }}
+    {{- if .Values.skStatic.exposure.external.enabled }}
+    - containerPort: {{ .Values.skStatic.exposure.external.port }}
+      name: external
+      protocol: TCP
+    {{- end }}
+  volumeMounts:
+    - mountPath: /config.yaml
+      name: sk-static-config
+      subPath: config.yaml
+    - mountPath: /users.yaml
+      name: sk-static-users
+      subPath: users.yaml
+    {{ if and .Values.skStatic.exposure.external.enabled .Values.skStatic.exposure.external.ssl }}
+    - mountPath: /tmp/cert/server
+      name: sk-static-server-cert
+      readOnly: true
+    {{ end }}
+    {{- range .Values.skStatic.extraConfigMaps }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+    {{- range .Values.skStatic.extraSecrets }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+{{- end }}
+
+{{/*
+Expand skStatic volumes in pod
+*/}}
+{{- define "volumes.skStatic" -}}
+- name: sk-static-config
+  configMap:
+    name: {{ include "skStatic.configmapName" . }}
+- name: sk-static-users
+  configMap:
+    name: {{ include "skStatic.usersDbName" . }}
+{{- if and .Values.skStatic.exposure.external.enabled .Values.skStatic.exposure.external.ssl }}
+- name: sk-static-server-cert
+  secret:
+    defaultMode: 420
+    secretName: {{ include "skStatic.certificateSecretName" . }}
+{{- end }}
+{{- range .Values.skStatic.extraConfigMaps }}
+- name: {{ .volume }}
+  configMap:
+    name: {{ .configMap }}
+{{- end }}
+{{- range .Values.skStatic.extraSecrets }}
+- name: {{ .volume }}
+  secret:
+    secretName: {{ .secret }}
+    defaultMode: 420
+{{- end }}
+
+{{- end }}

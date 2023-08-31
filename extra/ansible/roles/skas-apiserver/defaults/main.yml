@@ -1,0 +1,8 @@
+
+
+skas_state: present   # present or absent
+
+skas_auth_webhook_url:  https://skas-auth.skas-system.svc/v1/tokenReview
+skas_auth_cert_name: skas-auth-cert
+skas_namespace: skas-system
+

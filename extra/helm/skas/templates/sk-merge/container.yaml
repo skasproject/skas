@@ -1,0 +1,88 @@
+
+{{/*
+Expand skMerge container
+*/}}
+{{- define "container.skMerge" -}}
+- name: sk-merge
+  command:
+    - /sk-merge
+  args:
+    - --configFile
+    - /config.yaml
+    {{-  range .Values.skMerge.additionalArgs }}
+    - {{ . }}
+    {{- end }}
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  imagePullPolicy: {{ .Values.image.pullPolicy }}
+  {{- with .Values.skMerge.extraEnv }}
+  env:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.skMerge.resources }}
+  resources:
+  {{- toYaml . | nindent 4 }}
+  {{ end }}
+  securityContext:
+    {{- toYaml .Values.commonContainerSecurityContext | nindent 4 }}
+    {{- with .Values.skMerge.securityContext }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  ports:
+    {{- if .Values.skMerge.exposure.internal.enabled }}
+    - containerPort: {{ .Values.skMerge.exposure.internal.port }}
+      name: internal
+      protocol: TCP
+    {{- end }}
+    {{- if .Values.skMerge.exposure.external.enabled }}
+    - containerPort: {{ .Values.skMerge.exposure.external.port }}
+      name: external
+      protocol: TCP
+    {{- end }}
+  volumeMounts:
+    - mountPath: /config.yaml
+      name: sk-merge-config
+      subPath: config.yaml
+    {{ if and .Values.skMerge.exposure.external.enabled .Values.skMerge.exposure.external.ssl }}
+    - mountPath: /tmp/cert/server
+      name: sk-merge-server-cert
+      readOnly: true
+    {{ end }}
+    {{- range .Values.skMerge.extraConfigMaps }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+    {{- range .Values.skMerge.extraSecrets }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+{{- end }}
+
+
+{{/*
+Expand slMerge volumes in pod
+*/}}
+{{- define "volumes.skMerge" -}}
+- name: sk-merge-config
+  configMap:
+    name: {{ include "skMerge.configmapName" . }}
+{{- if and .Values.skMerge.exposure.external.enabled .Values.skMerge.exposure.external.ssl }}
+- name: sk-merge-server-cert
+  secret:
+    defaultMode: 420
+    secretName: {{ include "skMerge.certificateSecretName" . }}
+{{- end }}
+{{- range .Values.skMerge.extraConfigMaps }}
+- name: {{ .volume }}
+  configMap:
+    name: {{ .configMap }}
+{{- end }}
+{{- range .Values.skMerge.extraSecrets }}
+- name: {{ .volume }}
+  secret:
+    secretName: {{ .secret }}
+    defaultMode: 420
+{{- end }}
+
+{{- end }}

@@ -1,0 +1,10 @@
+
+
+- include_tasks: install.yml
+  when: skas_state == 'present'
+  
+- include_tasks: remove.yml
+  when: skas_state == 'absent'
+  
+  
+  

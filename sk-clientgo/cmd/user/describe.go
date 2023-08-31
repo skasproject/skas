@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"skas/sk-clientgo/httpClient"
 	"skas/sk-clientgo/internal/global"
+	"skas/sk-clientgo/internal/httpClient"
 	"skas/sk-clientgo/internal/tokenbag"
 	"skas/sk-clientgo/internal/utils"
 	"skas/sk-common/pkg/skclient"
@@ -32,7 +32,8 @@ var DescribeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client, err := httpClient.New()
 		if err != nil {
-			global.Log.Error(err, "error on InitHttpClient()")
+			_, _ = fmt.Fprintf(os.Stderr, "ERROR: %s\n", err.Error())
+			//global.Log.Error(err, "error on InitHttpClient()")
 			os.Exit(10)
 		}
 		tokenBag := tokenbag.Retrieve(client)

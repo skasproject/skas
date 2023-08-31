@@ -4,17 +4,13 @@ import (
 	"encoding/json"
 	"github.com/spf13/cobra"
 	"os"
-	"skas/sk-clientgo/httpClient"
 	"skas/sk-clientgo/internal/global"
+	"skas/sk-clientgo/internal/httpClient"
 	"skas/sk-clientgo/internal/tokenbag"
 )
 
-// This is intended to be used as client-go exc plugin. It communicates by a json printed on stdout.
+// This is intended to be used as client-go exec plugin. It communicates by a json printed on stdout.
 // So, not other print to stdout should be performed. Use stderr to display messages to the user
-
-func init() {
-	httpClient.AddFlags(authCmd)
-}
 
 var authCmd = &cobra.Command{
 	Use:    "auth",

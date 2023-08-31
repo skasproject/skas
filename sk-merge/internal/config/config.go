@@ -14,7 +14,7 @@ var (
 	Log  logr.Logger
 )
 
-// NB: All RootCA will be cumulated
+// NB: All RootCa will be cumulated
 
 type ProviderConfig struct {
 	Name                string `yaml:"name"`

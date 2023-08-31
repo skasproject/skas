@@ -177,10 +177,18 @@ func (p *protector) TokenNotFound() {
 	p.failure(UnknownToken)
 }
 
+//func (p *protector) ProtectLoginResult(login string, status proto.Status) {
+//	if status == proto.UserNotFound {
+//		p.failure(UnknownUser)
+//	} else if status == proto.PasswordFail || status == proto.InvalidOldPassword {
+//		p.failure(login)
+//	}
+//}
+
+// We removed protection against UserNotFound, as this is a normal case in a multi-provider context
+
 func (p *protector) ProtectLoginResult(login string, status proto.Status) {
-	if status == proto.UserNotFound {
-		p.failure(UnknownUser)
-	} else if status == proto.PasswordFail || status == proto.InvalidOldPassword {
+	if status == proto.PasswordFail || status == proto.InvalidOldPassword {
 		p.failure(login)
 	}
 }

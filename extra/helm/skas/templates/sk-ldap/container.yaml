@@ -1,0 +1,87 @@
+
+{{/*
+Expand skLdap container
+*/}}
+{{- define "container.skLdap" -}}
+- name: sk-ldap
+  command:
+    - /sk-ldap
+  args:
+    - --configFile
+    - /config.yaml
+    {{-  range .Values.skLdap.additionalArgs }}
+    - {{ . }}
+    {{- end }}
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  imagePullPolicy: {{ .Values.image.pullPolicy }}
+  {{- with .Values.skLdap.extraEnv }}
+  env:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.skLdap.resources }}
+  resources:
+  {{- toYaml . | nindent 4 }}
+  {{ end }}
+  securityContext:
+    {{- toYaml .Values.commonContainerSecurityContext | nindent 4 }}
+    {{- with .Values.skLdap.securityContext }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  ports:
+    {{- if .Values.skLdap.exposure.internal.enabled }}
+    - containerPort: {{ .Values.skLdap.exposure.internal.port }}
+      name: internal
+      protocol: TCP
+    {{- end }}
+    {{- if .Values.skLdap.exposure.external.enabled }}
+    - containerPort: {{ .Values.skLdap.exposure.external.port }}
+      name: external
+      protocol: TCP
+    {{- end }}
+  volumeMounts:
+    - mountPath: /config.yaml
+      name: sk-ldap-config
+      subPath: config.yaml
+    {{- if and .Values.skLdap.exposure.external.enabled .Values.skLdap.exposure.external.ssl }}
+    - mountPath: /tmp/cert/server
+      name: sk-ldap-server-cert
+      readOnly: true
+    {{- end }}
+    {{- range .Values.skLdap.extraConfigMaps }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+    {{- range .Values.skLdap.extraSecrets }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+{{- end }}
+
+{{/*
+Expand skLdap volumes in pod
+*/}}
+{{- define "volumes.skLdap" -}}
+- name: sk-ldap-config
+  configMap:
+    name: {{ include "skLdap.configmapName" . }}
+{{- if and .Values.skLdap.exposure.external.enabled .Values.skLdap.exposure.external.ssl }}
+- name: sk-ldap-server-cert
+  secret:
+    defaultMode: 420
+    secretName: {{ include "skLdap.certificateSecretName" . }}
+{{- end }}
+{{- range .Values.skLdap.extraConfigMaps }}
+- name: {{ .volume }}
+  configMap:
+    name: {{ .configMap }}
+{{- end }}
+{{- range .Values.skLdap.extraSecrets }}
+- name: {{ .volume }}
+  secret:
+    secretName: {{ .secret }}
+    defaultMode: 420
+{{- end }}
+
+{{- end }}

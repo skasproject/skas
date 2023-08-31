@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/pflag"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -23,7 +24,21 @@ func AdjustConfigString(flagSet *pflag.FlagSet, inConfig *string, param string) 
 		*inConfig = flagSet.Lookup(param).DefValue
 		//fmt.Printf("param(%s).Default: value: %s\n",param, *inConfig)
 	}
+}
 
+func AdjustConfigStringArray(flagSet *pflag.FlagSet, inConfig *[]string, param string) {
+	if pflag.Lookup(param).Changed {
+		var s string
+		var err error
+		if s, err = flagSet.GetString(param); err != nil {
+			panic(err)
+		}
+		*inConfig = strings.Split(s, ",")
+		//fmt.Printf("param(%s).Changed: value: %s\n",param, *inConfig)
+	} else if len(*inConfig) == 0 {
+		*inConfig = strings.Split(flagSet.Lookup(param).DefValue, ",")
+		//fmt.Printf("param(%s).Default: value: %s\n",param, *inConfig)
+	}
 }
 
 func AdjustConfigDuration(flagSet *pflag.FlagSet, inConfig **time.Duration, param string) {

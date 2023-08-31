@@ -1,0 +1,54 @@
+{{ if .Values.skCrd.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "skCrd.configmapName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  config.yaml: |
+    log:
+      mode: {{ default .Values.log.mode .Values.skCrd.log.mode }}
+      level: {{ default .Values.log.level .Values.skCrd.log.level }}
+    metricAddr: ":{{ .Values.skCrd.metric.port }}"
+    probeAddr: ":{{ .Values.skCrd.probe.port }}"
+    namespace: "{{ .Values.skCrd.namespace }}"
+    servers:
+      {{- if .Values.skCrd.exposure.internal.enabled }}
+      - port: {{ .Values.skCrd.exposure.internal.port }}
+        interface: "127.0.0.1"
+        ssl: false
+        services:
+          identity:
+            disabled: {{ .Values.skCrd.exposure.internal.services.identity.disabled }}
+            clients: {{ .Values.skCrd.exposure.internal.services.identity.clients | toJson }}
+            protected: {{ .Values.skCrd.exposure.internal.services.identity.protected }}
+          passwordChange:
+            disabled: {{ .Values.skCrd.exposure.internal.services.passwordChange.disabled}}
+            clients: {{ .Values.skCrd.exposure.internal.services.passwordChange.clients | toJson }}
+            protected: {{ .Values.skCrd.exposure.internal.services.passwordChange.protected }}
+      {{- end }}
+      {{- if .Values.skCrd.exposure.external.enabled}}
+      - port: {{ .Values.skCrd.exposure.external.port }}
+        interface: "0.0.0.0"
+        ssl: {{ .Values.skCrd.exposure.external.ssl }}
+        {{- if .Values.skCrd.exposure.external.ssl }}
+        certDir: /tmp/cert/server
+        {{- end }}
+        services:
+          identity:
+            disabled: {{ .Values.skCrd.exposure.external.services.identity.disabled }}
+            clients: {{ .Values.skCrd.exposure.external.services.identity.clients  | toJson }}
+            protected: {{ .Values.skCrd.exposure.external.services.identity.protected }}
+          passwordChange:
+            disabled: {{ .Values.skCrd.exposure.external.services.passwordChange.disabled }}
+            clients: {{ .Values.skCrd.exposure.external.services.passwordChange.clients  | toJson }}
+            protected: {{ .Values.skCrd.exposure.external.services.passwordChange.protected }}
+      {{- end }}
+{{ end }}
+

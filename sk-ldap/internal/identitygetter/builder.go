@@ -57,24 +57,24 @@ func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (commonHa
 	// WARNING: This is a global variable
 	ldap.DefaultTimeout = time.Duration(ldapGetter.TimeoutSec) * time.Second
 
-	//ldapGetter.logger.V(2).Info("paths", "configFolder", configFolder, "RootCA", ldapGetter.RootCA, "ClientCert", ldapGetter.ClientCert, "ClientKey", ldapGetter.ClientKey)
-	ldapGetter.RootCA = adjustPath(configFolder, ldapGetter.RootCA)
+	//ldapGetter.logger.V(2).Info("paths", "configFolder", configFolder, "RootCA", ldapGetter.RootCaPath, "ClientCert", ldapGetter.ClientCert, "ClientKey", ldapGetter.ClientKey)
+	ldapGetter.RootCaPath = adjustPath(configFolder, ldapGetter.RootCaPath)
 	ldapGetter.ClientCert = adjustPath(configFolder, ldapGetter.ClientCert)
 	ldapGetter.ClientKey = adjustPath(configFolder, ldapGetter.ClientKey)
-	//ldapGetter.logger.V(2).Info("adjusted paths", "RootCA", ldapGetter.RootCA, "ClientCert", ldapGetter.ClientCert, "ClientKey", ldapGetter.ClientKey)
+	//ldapGetter.logger.V(2).Info("adjusted paths", "RootCA", ldapGetter.RootCaPath, "ClientCert", ldapGetter.ClientCert, "ClientKey", ldapGetter.ClientKey)
 
 	ldapGetter.tlsConfig = &tls.Config{ServerName: ldapGetter.Host, InsecureSkipVerify: ldapGetter.InsecureSkipVerify}
-	if ldapGetter.RootCA != "" || len(ldapGetter.RootCAData) != 0 {
+	if ldapGetter.RootCaPath != "" || len(ldapGetter.RootCaData) != 0 {
 		var data []byte
-		if len(ldapGetter.RootCAData) != 0 {
-			data = make([]byte, base64.StdEncoding.DecodedLen(len(ldapGetter.RootCAData)))
-			_, err := base64.StdEncoding.Decode(data, []byte(ldapGetter.RootCAData))
+		if len(ldapGetter.RootCaData) != 0 {
+			data = make([]byte, base64.StdEncoding.DecodedLen(len(ldapGetter.RootCaData)))
+			_, err := base64.StdEncoding.Decode(data, []byte(ldapGetter.RootCaData))
 			if err != nil {
-				return &ldapGetter, fmt.Errorf("error while parsing RootCAData : %w", err)
+				return &ldapGetter, fmt.Errorf("error while parsing RootCaData : %w", err)
 			}
 		} else {
 			var err error
-			if data, err = os.ReadFile(ldapGetter.RootCA); err != nil {
+			if data, err = os.ReadFile(ldapGetter.RootCaPath); err != nil {
 				return &ldapGetter, fmt.Errorf("error while reading CA file: %w", err)
 			}
 		}
