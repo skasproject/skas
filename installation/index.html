@@ -486,21 +486,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../clusterfederation/" class="md-nav__link">
-        Clusters federation
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../dex/" class="md-nav__link">
         DEX integration
       </a>
@@ -518,6 +503,21 @@
     <li class="md-nav__item">
       <a href="../argocd/" class="md-nav__link">
         Argo CD integration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../clusterfederation/" class="md-nav__link">
+        Clusters federation
       </a>
     </li>
   
@@ -683,8 +683,10 @@
 <p>With the following values, adjusted to your context:</p>
 <ul>
 <li><code>clusterIssuer</code>: The Certificate Manager <code>ClusterIssuer</code> used to generate the certificate for all ingress access.</li>
-<li><code>skAuth.exposure.external.ingress.host</code>: The ingress hostname used to access the SKAS service from outside of the cluster. 
-  You will also have to define this name in your DNS.</li>
+<li><code>skAuth.exposure.external.ingress.host</code>: The ingress hostname used to access the SKAS service from outside of the cluster. <blockquote>
+<p><em>You will also have to define this hostname in your DNS.</em></p>
+</blockquote>
+</li>
 </ul>
 <p>The two following values will be used on generation of user's k8s config files:</p>
 <ul>

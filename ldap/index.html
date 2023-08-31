@@ -465,21 +465,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../clusterfederation/" class="md-nav__link">
-        Clusters federation
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../dex/" class="md-nav__link">
         DEX integration
       </a>
@@ -497,6 +482,21 @@
     <li class="md-nav__item">
       <a href="../argocd/" class="md-nav__link">
         Argo CD integration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../clusterfederation/" class="md-nav__link">
+        Clusters federation
       </a>
     </li>
   
@@ -765,8 +765,8 @@ How these two sources are merged is the object of the next chapter. </p>
 </span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>      numericalIdAttr: uidNumber
 </span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>EOF
 </span></code></pre></div>
-<p>Note that, as the connection is using SSL, there is a need to provide a Certificate Authority. 
-Such CA is provided here in <code>skLdap.ldap.rootCaData</code>, as a base64 encoded certificate file.</p>
+<p>Note that, as the connection is using SSL, there is a need to provide the Certificate Authority of the LDAP Server. 
+Such CA can be provided in the field <code>skLdap.ldap.rootCaData</code>, as a base64 encoded certificate file.</p>
 <p>And here is a sample of configuration, aimed to connect to an FreeIPA LDAP server</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$ cat &gt;./values.ldap.yaml &lt;&lt;&quot;EOF&quot;
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>skMerge:
