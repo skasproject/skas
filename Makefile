@@ -79,7 +79,7 @@ doc: ## Generate doc index
 
 .PHONY: docsite
 docsite: ## Publish documentation
-	cd docsite && . ./setup/activate.sh && mkdocs gh-deploy --clean
+	cd docsite && . ./setup/activate.sh && mkdocs gh-deploy --clean --force
 
 # ----------------------------------------------------------------------Docker local config
 

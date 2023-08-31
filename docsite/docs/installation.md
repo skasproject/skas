@@ -278,7 +278,7 @@ SKAS provide a CLI interface as an [extension of kubectl](https://kubernetes.io/
 
 Installation is straightforward:
 
-- Download the executable **for your OS/Architecture**
+- Download the executable for your OS/Architecture [at this location](https://github.com/skasproject/skas/releases/tag/0.2.1)
 - Name it `kubectl-sk` (To comply to the naming convention of kubectl extension)
 - Make it executable
 - Move it to a folder accessed by your PATH.
