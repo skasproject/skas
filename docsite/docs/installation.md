@@ -38,7 +38,7 @@ With the following values, adjusted to your context:
 
 - `clusterIssuer`: The Certificate Manager `ClusterIssuer` used to generate the certificate for all ingress access.
 - `skAuth.exposure.external.ingress.host`: The ingress hostname used to access the SKAS service from outside of the cluster. 
-  You will also have to define this name in your DNS.
+  > _You will also have to define this hostname in your DNS._
 
 The two following values will be used on generation of user's k8s config files:
 

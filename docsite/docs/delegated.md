@@ -87,7 +87,7 @@ Here is a sample values file to configure the auxiliary POD:
 - Then, we define one adminGroup: `dep1-admin`. The Helm chart will setup RBAC rules to allow members of this group to 
 access SKAS users resources in the namespace set above. 
 
-- Then, we create an initial admin user `dep1-admin`, belonging to the group `admin`. More on this later.
+- Then, we create an initial admin user `dep1-admin`, belonging to the group `admin` (Not `dep1-admin`. More on this later).
 
 Then, there is the `exposure` part, who define how this service will be exposed. (The default configuration is expose 
 to `localhost` in clear text)

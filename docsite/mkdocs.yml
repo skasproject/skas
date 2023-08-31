@@ -10,9 +10,9 @@ nav:
   - "Architecture": architecture.md
   - "Two LDAP servers configuration": twoldapservers.md
   - "Delegated users management": delegated.md
-  - "Clusters federation": clusterfederation.md
   - "DEX integration": dex.md
   - "Argo CD integration": argocd.md
+  - "Clusters federation": clusterfederation.md
   - "Tools and Tricks": toolsandtricks.md
 theme:
 #  name: readthedocs

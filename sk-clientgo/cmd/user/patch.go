@@ -142,7 +142,7 @@ func handlePasswordHash(client skclient.SkClient) string {
 			b[i] = letterBytes[rand.Intn(len(letterBytes))]
 		}
 		p := string(b)
-		fmt.Printf("The follwing password has been generated: '%s'\n(Save it as it will not be accessible anymore).\n", p)
+		fmt.Printf("The following password has been generated: '%s'\n(Save it as it will not be accessible anymore).\n", p)
 		return utils.Hash(p)
 	}
 	if userFlagsVars.inputPassword {

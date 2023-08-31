@@ -168,8 +168,8 @@ skLdap:
 EOF
 ```
 
-Note that, as the connection is using SSL, there is a need to provide a Certificate Authority. 
-Such CA is provided here in `skLdap.ldap.rootCaData`, as a base64 encoded certificate file.
+Note that, as the connection is using SSL, there is a need to provide the Certificate Authority of the LDAP Server. 
+Such CA can be provided in the field `skLdap.ldap.rootCaData`, as a base64 encoded certificate file.
 
 And here is a sample of configuration, aimed to connect to an FreeIPA LDAP server
 
