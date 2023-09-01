@@ -275,7 +275,7 @@ Here is a modified version of the values file which allow `dep1-admin` members t
 
     ``` { .yaml .copy }
     skAuth:
-      # Members of these group will be allowed to perform 'kubectl_sk user describe'
+      # Members of these group will be allowed to perform 'kubectl-sk user describe'
       # Also, they will be granted by RBAC to access token resources
       adminGroups:
         - skas-admin

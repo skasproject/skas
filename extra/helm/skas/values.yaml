@@ -107,7 +107,7 @@ skAuth:
   metric:
     port: 8084
 
-  # Members of these group will be allowed to perform 'kubectl_sk user describe'
+  # Members of these group will be allowed to perform 'kubectl-sk user describe'
   # Also, they will be granted by RBAC to access token resources
   adminGroups:
   - skas-admin

@@ -331,7 +331,7 @@ Here is a sample of values file for `cluster2` deployment:
         cluster:
           apiServerUrl: https://kubernetes.ingress.cluster2
     
-      # Members of these group will be allowed to perform 'kubectl_sk user describe'
+      # Members of these group will be allowed to perform 'kubectl-sk user describe'
       # Also, they will be granted by RBAC to access token resources
       adminGroups:
         - skas-admin
@@ -377,7 +377,7 @@ Then:
 - `skMerge.providerInfo.cluster0` is the same as for `cluster1`, except of course the `clientAuth` part.
 - An initial user (`cluster2-skas-system`) is created as local admin. This account will only be valid on this cluster.
 - The list of `adminGroups` must be defined twice:
-    - One in the `skAuth` module. This to allow `kubectl_sk user describe` command for members of these groups. 
+    - One in the `skAuth` module. This to allow `kubectl-sk user describe` command for members of these groups. 
     - One in the `skCrd` module. This to setup RBAC rules to allow SKAS resources (skusers, groupBindings, tokens) to be managed by members of theses groups.
 
 To apply this configuration, enter:
@@ -456,7 +456,6 @@ cluster2user1   0    cluster2grp1
 
 $ kubectl get ns
 Error from server (Forbidden): namespaces is forbidden: User "cluster2user1" cannot list resource "namespaces" in API group "" at the cluster scope
-
 ```
 
 > _The same operations can be performed under the `admin` account. This because it is member of the `skas-admin` group 
