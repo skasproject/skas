@@ -76,15 +76,10 @@ helm -n skas-system install skas skas/skas --values ./values.init.yaml
 
 After a successful installation, verify the SKAS server pod is running:
 
-```{.shell .copy}
-kubectl -n skas-system get pods
-```
-
-You should see an output like this:
-
 ```{.shell}
-NAME                    READY   STATUS    RESTARTS   AGE
-skas-746c54dc75-v8v2f   3/3     Running   0          25s
+$ kubectl -n skas-system get pods
+> NAME                    READY   STATUS    RESTARTS   AGE
+> skas-746c54dc75-v8v2f   3/3     Running   0          25s
 ```
 
 ### Use another ingress controller instead of nginx
@@ -174,13 +169,11 @@ kubectl -n skas-system get secret skas-auth-cert \
 
 Inspect the folder's contents:
  
-```{.shell .copy}
-ls -l /etc/kubernetes/skas
-```
-```
-total 8
--rw-r--r--. 1 root root  620 May 11 12:36 hookconfig.yaml
--rw-r--r--. 1 root root 1220 May 11 12:58 skas_auth_ca.crt
+```{.shell}
+$ ls -l /etc/kubernetes/skas
+> total 8
+> -rw-r--r--. 1 root root  620 May 11 12:36 hookconfig.yaml
+> -rw-r--r--. 1 root root 1220 May 11 12:58 skas_auth_ca.crt
 ```
 
 Now, you need to modify the API Server manifest file located at `/etc/kubernetes/manifests/kube-apiserver.yaml` to include the `hookconfig.yaml` file:"
