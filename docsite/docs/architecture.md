@@ -178,21 +178,21 @@ sequenceDiagram
   participant skAuth
   participant Api server
   autonumber
-  User->>kubectl: User issue a<br>kubectl command
-  kubectl->>kubectl-sk: kubectl launch<br>the kubectl-sk<br>credential plugin
-  kubectl-sk->>kubectl-sk: kubeclt-sk lookup<br>for token in its <br>local cache.<br>NO in this case
-  kubectl-sk->>User: kubectl-sk prompt<br>for login and password
+  User->>kubectl: The user issues a<br>kubectl command
+  kubectl->>kubectl-sk: kubectl launches<br>the kubectl-sk<br>credential plugin
+  kubectl-sk->>kubectl-sk: kubectl-sk searches for<br>a token in its local cache.<br> Not found in this case.
+  kubectl-sk->>User: kubectl-sk prompts<br>for login and password
   User-->>kubectl-sk: User provides its credential
   kubectl-sk->>skAuth: HTTP GET REQ:<br>getToken()
-  skAuth->>skAuth: skAuth call<br>skMerge which<br>validate user<br>credentials and return<br>user's information<br>A token is generated.
+  skAuth->>skAuth: skAuth calls<br>skMerge which<br>validates the user's<br>credentials and returns<br>user's information<br>Subsequently, a token is generated.
   skAuth-->>kubectl-sk: Token in<br>HTTP response
-  kubectl-sk-->>kubectl: kubectl-sk return<br>the token to kubectl<br>by printing it on<br>stdout and exit.
-  kubectl->>Api server: kubectl issue the appropriate API call<br>with the provided bearer token
-  Api server->>skAuth: The API Server<br>issue an<br>HTTP POST<br>with a<br>TokenReview<br>command
-  skAuth-->>Api server: skAuth validate<br>the token and <br>provide user's<br>name and groups<br>in the response.
-  Api server->>Api server: API Server validate<br>if user is allowed by<br>RBAC to perform<br>the requested action
-  Api server-->>kubectl: API Server return the action result
-  kubectl-->>User: kubectl display<br>the result and exits
+  kubectl-sk-->>kubectl: kubectl-sk returns<br>the token to kubectl<br>by printing it on<br>stdout and exits.
+  kubectl->>Api server: kubectl issues the appropriate API call<br>with the provided bearer token
+  Api server->>skAuth: The API Server<br>issues an<br>HTTP POST<br>with a<br>TokenReview<br>command
+  skAuth-->>Api server: skAuth validates<br>the token and <br>provides user's<br>name and groups<br>in the response.
+  Api server->>Api server: API Server validates<br>if user is allowed by<br>RBAC to perform<br>the requested action
+  Api server-->>kubectl: API Server returns the action result
+  kubectl-->>User: kubectl displays<br>the result and exits
 ```
 
 ### Token renewal
@@ -207,17 +207,17 @@ sequenceDiagram
   participant skAuth
   participant Api server
   autonumber
-  User->>kubectl: User issue a<br>kubectl command
-  kubectl->>kubectl-sk: kubectl launch<br>the kubectl-sk<br>credential plugin
-  kubectl-sk->>kubectl-sk: kubeclt-sk lookup<br>for token in its <br>local cache.<br>YES in this case
+  User->>kubectl: The user issues a<br>kubectl command
+  kubectl->>kubectl-sk: kubectl launches<br>the kubectl-sk<br>credential plugin
+  kubectl-sk->>kubectl-sk: kubeclt-sk lookups<br>for token in its <br>local cache.<br>Found in this case
   kubectl-sk->>kubectl-sk: Is the token still<br>valid against the<br>clientTokenTTL<br>YES in this case
-  kubectl-sk-->>kubectl: kubectl-sk return<br>the token to kubectl<br>by printing it on<br>stdout and exit.
-  kubectl->>Api server: kubectl issue the appropriate API call<br>with the provided bearer token
-  Api server->>skAuth: The API Server<br>issue an<br>HTTP POST<br>with a<br>TokenReview<br>command
-  skAuth-->>Api server: skAuth validate<br>the token and <br>provide user's<br>name and groups<br>in the response.
-  Api server->>Api server: API Server validate<br>if user is allowed by<br>RBAC to perform<br>the requested action
-  Api server-->>kubectl: API Server return the action result
-  kubectl-->>User: kubectl display<br>the result and exits
+  kubectl-sk-->>kubectl: kubectl-sk returns<br>the token to kubectl<br>by printing it on<br>stdout and exits.
+  kubectl->>Api server: kubectl issues the appropriate API call<br>with the provided bearer token
+  Api server->>skAuth: The API Server<br>issues an<br>HTTP POST<br>with a<br>TokenReview<br>command
+  skAuth-->>Api server: skAuth validates<br>the token and <br>provides user's<br>name and groups<br>in the response.
+  Api server->>Api server: API Server validates<br>if user is allowed by<br>RBAC to perform<br>the requested action
+  Api server-->>kubectl: API Server returns the action result
+  kubectl-->>User: kubectl displays<br>the result and exits
 ```
 
 Here is the sequence when a token is still valid, but the short-lived local cache has expired.
@@ -230,20 +230,20 @@ sequenceDiagram
   participant skAuth
   participant Api server
   autonumber
-  User->>kubectl: User issue a<br>kubectl command
-  kubectl->>kubectl-sk: kubectl launch<br>the kubectl-sk<br>credential plugin
-  kubectl-sk->>kubectl-sk: kubeclt-sk lookup<br>for token in its <br>local cache.<br>YES in this case
+  User->>kubectl: The user issues a<br>kubectl command
+  kubectl->>kubectl-sk: kubectl launches<br>the kubectl-sk<br>credential plugin
+  kubectl-sk->>kubectl-sk: kubeclt-sk lookups<br>for token in its <br>local cache.<br>Found in this case
   kubectl-sk->>kubectl-sk: Is the token still<br>valid against the<br>clientTokenTTL<br>NO in this case
   kubectl-sk->>skAuth: HTTP GET REQ:<br>validateToken()
   skAuth->>skAuth: skAuth check<br>if token is still valid.<br>Yes in this case
   skAuth-->>kubectl-sk: tokenValid response
-  kubectl-sk-->>kubectl: kubectl-sk return<br>the token to kubectl<br>by printing it on<br>stdout and exit.
-  kubectl->>Api server: kubectl issue the appropriate API call<br>with the provided bearer token
-  Api server->>skAuth: The API Server<br>issue an<br>HTTP POST<br>with a<br>TokenReview<br>command
-  skAuth-->>Api server: skAuth validate<br>the token and <br>provide user's<br>name and groups<br>in the response.
-  Api server->>Api server: API Server validate<br>if user is allowed by<br>RBAC to perform<br>the requested action
-  Api server-->>kubectl: API Server return the action result
-  kubectl-->>User: kubectl display<br>the result and exits
+  kubectl-sk-->>kubectl: kubectl-sk returns<br>the token to kubectl<br>by printing it on<br>stdout and exits.
+  kubectl->>Api server: kubectl issues the appropriate API call<br>with the provided bearer token
+  Api server->>skAuth: The API Server<br>issues an<br>HTTP POST<br>with a<br>TokenReview<br>command
+  skAuth-->>Api server: skAuth validates<br>the token and <br>provides user's<br>name and groups<br>in the response.
+  Api server->>Api server: API Server validates<br>if user is allowed by<br>RBAC to perform<br>the requested action
+  Api server-->>kubectl: API Server returns the action result
+  kubectl-->>User: kubectl displays<br>the result and exits
 ```
 
 ### Token expired
@@ -258,14 +258,14 @@ sequenceDiagram
   participant skAuth
   participant Api server
   autonumber
-  User->>kubectl: User issue a<br>kubectl command
-  kubectl->>kubectl-sk: kubectl launch<br>the kubectl-sk<br>credential plugin
-  kubectl-sk->>kubectl-sk: kubeclt-sk lookup<br>for token in its <br>local cache.<br>YES in this case
+  User->>kubectl: The user issues a<br>kubectl command
+  kubectl->>kubectl-sk: kubectl launches<br>the kubectl-sk<br>credential plugin
+  kubectl-sk->>kubectl-sk: kubeclt-sk lookups<br>for token in its <br>local cache.<br>Found in this case
   kubectl-sk->>kubectl-sk: Is the token still<br>valid against the<br>clientTokenTTL<br>NO in this case
   kubectl-sk->>skAuth: HTTP GET REQ:<br>validateToken()
   skAuth->>skAuth: skAuth check<br>if token is still valid.<br>NO in this case
   skAuth-->>kubectl-sk: tokenInvalid<br>response
-  kubectl-sk->>User: kubectl-sk prompt<br>for login and password
+  kubectl-sk->>User: kubectl-sk prompts<br>for login and password
 ```
 
 
