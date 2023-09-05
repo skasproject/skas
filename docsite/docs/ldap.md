@@ -134,7 +134,7 @@ Additionally, if you have other custom values files, make sure to include them i
 
 > _Remember to restart the SKAS pod(s) after applying any configuration changes. See [Configuration: Pod restart](configuration.md/#pod-restart)_
 
-n this configuration, there are two sources of identity: our original `skas-system` user database and the newly added 
+In this configuration, there are two sources of identity: our original `skas-system` user database and the newly added 
 `ldap` server. Merging multiple sources of identity is an important aspect of SKAS identity management. 
 The [next chapter](chaining.md) will delve into this topic.
 
