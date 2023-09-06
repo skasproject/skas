@@ -579,200 +579,206 @@
 
 <h1 id="identity-providers-chaining">Identity Providers chaining</h1>
 <h2 id="overview">Overview</h2>
-<p>In the previous chapter, a configuration has been setup with two Identity Providers:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>skMerge:
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  providers:
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    - name: crd
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    - name: ldap
+<p>In the previous chapter, a configuration has been set up with two Identity Providers:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">skMerge</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">providers</span><span class="p">:</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crd</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap</span>
 </span></code></pre></div>
 <p>The <code>crd</code> provider refers to the user database stored in the <code>skas-namespace</code> while the <code>ldap</code> refers to a connected LDAP server.</p>
-<p>The function of the <code>skMerge</code> module is to make this chain of provider acting as a single one. </p>
-<p>By default, user information are consolidated the following way: </p>
+<p>The function of the <code>skMerge</code> module is to unify this chain of providers, allowing them to function as a single entity.. </p>
+<p>By default, user information is consolidated in the following manner:</p>
 <ul>
 <li>
-<p>If a given user exits only in one provider, this one is the authoritative one.</p>
+<p>If a given user exists in only one provider, that provider is considered the authoritative source for that user.</p>
 </li>
 <li>
 <p>If a given user exists in several providers:</p>
 <ul>
-<li>The resulting group set is the union of all groups of all providers hosting this user.</li>
-<li>The resulting email set is the union of all emails of all providers hosting this user.</li>
-<li>The resulting commonName set is the union of all commonNames of all providers hosting this user.</li>
-<li>The first provider hosting this user in the chain will be the authoritative one for the password validation.<ul>
-<li>This imply there can't be two valid passwords for a single user.</li>
-<li>This also imply providers order is important in the list.</li>
-<li>There is an exception on this rule: If a user has no password defined (This is a valid case for our 
-  <code>crd</code> provider), then the authoritative one is the next in the list. </li>
+<li>The resulting group set is the union of all groups from all providers hosting this user.</li>
+<li>The resulting email set is the union of all emails from all providers hosting this user.</li>
+<li>The resulting commonName set is the union of all commonNames from all providers hosting this user.</li>
+<li>The first provider in the chain hosting this user will be the authoritative one for password validation.<ul>
+<li>This means that there can't be two valid passwords for a single user.</li>
+<li>This also implies that the order of providers in the list is important.</li>
+<li>There is one exception to this rule: If a user has no password defined (this is a valid case for our <code>crd</code> provider), then the authoritative one is the next provider in the list.</li>
 </ul>
 </li>
-<li>The UID will be defined by the authoritative provider.</li>
+<li>The UID will be defined by the authoritative provider. (The one who validate the password)</li>
 </ul>
 </li>
 </ul>
 <h2 id="cli-user-management">CLI user management</h2>
-<p>Of course, all <code>kubctl sk user ...</code> operation such as <code>create</code>, <code>patch</code>, <code>bind/unbind</code> can only modify resources in the <code>crd</code> provider. They have no impact on <code>ldap</code> or other external provider.</p>
+<p>Of course, all <code>kubectl sk user ...</code> operation such as <code>create</code>, <code>patch</code>, <code>bind/unbind</code> can only modify resources in 
+the <code>crd</code> provider. They have no impact on <code>ldap</code> or other external provider.</p>
 <blockquote>
-<p><em>From the SKAS perspective, LDAP is 'Read Only'</em></p>
+<p><em>From the SKAS perspective, LDAP is 'Read-Only'.</em></p>
 </blockquote>
 <p>A specific <code>kubectl sk user describe</code> subcommand will display consolidated information for any user. For example:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$ kubectl sk user describe jsmith
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>USER     STATUS              UID      GROUPS             EMAILS                                          COMMON NAMES   AUTH
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>jsmith   passwordUnchecked   100001   devs,itdep,staff   john.smith@mycompany.com,jsmith@mycompany.com   John SMITH     crd
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>&gt; USER     STATUS              UID      GROUPS             EMAILS                                          COMMON NAMES   AUTH
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>&gt; jsmith   passwordUnchecked   100001   devs,itdep,staff   john.smith@mycompany.com,jsmith@mycompany.com   John SMITH     crd
 </span></code></pre></div>
-<p>Note the last column, which indicate which provider is authoritative for this user.</p>
+<p>Note the last column, which indicates the authoritative provider for each user.</p>
 <blockquote>
-<p><em>Access to this subcommand is reserved to the members of the <code>skas-admin</code> group.</em></p>
+<p><em>Access to this subcommand is restricted to members of the <code>skas-admin</code> group.</em></p>
 </blockquote>
-<p>The flag <code>--explain</code> will allow to understand from where user's information are sourced:</p>
+<p>The flag <code>--explain</code> will help you understand where user's information is sourced from:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$ kubectl sk user describe jsmith --explain
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>USER     STATUS              UID      GROUPS             EMAILS                                          COMMON NAMES   AUTH
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>jsmith   passwordUnchecked   100001   devs,itdep,staff   john.smith@mycompany.com,jsmith@mycompany.com   John SMITH     crd
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>&gt; USER     STATUS              UID      GROUPS             EMAILS                                          COMMON NAMES   AUTH
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>&gt; jsmith   passwordUnchecked   100001   devs,itdep,staff   john.smith@mycompany.com,jsmith@mycompany.com   John SMITH     crd
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Detail:
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>PROVIDER   STATUS              UID          GROUPS        EMAILS                     COMMON NAMES
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>crd        passwordUnchecked   100001       devs          jsmith@mycompany.com       John SMITH
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>ldap       passwordUnchecked   1148400004   staff,itdep   john.smith@mycompany.com   John SMITH
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>&gt; Detail:
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>&gt; PROVIDER   STATUS              UID          GROUPS        EMAILS                     COMMON NAMES
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>&gt; crd        passwordUnchecked   100001       devs          jsmith@mycompany.com       John SMITH
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>&gt; ldap       passwordUnchecked   1148400004   staff,itdep   john.smith@mycompany.com   John SMITH
 </span></code></pre></div>
-<p>There is also two flags (<code>--password</code> or <code>ìnputPassword</code>) for the administrator to validate a password, if it know it:</p>
+<p>There are also two flags (<code>--password</code> or <code>ìnputPassword</code>) for the administrator to validate a password, if they know it:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$ kubectl sk user describe jsmith --explain --inputPassword
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Password for user &#39;jsmith&#39;:
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>USER     STATUS            UID      GROUPS             EMAILS                                          COMMON NAMES   AUTH
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>jsmith   passwordChecked   100001   devs,itdep,staff   john.smith@mycompany.com,jsmith@mycompany.com   John SMITH     crd
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>&gt; Password for user &#39;jsmith&#39;:
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>&gt; USER     STATUS            UID      GROUPS             EMAILS                                          COMMON NAMES   AUTH
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>&gt; jsmith   passwordChecked   100001   devs,itdep,staff   john.smith@mycompany.com,jsmith@mycompany.com   John SMITH     crd
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>Detail:
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>PROVIDER   STATUS            UID          GROUPS        EMAILS                     COMMON NAMES
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>crd        passwordChecked   100001       devs          jsmith@mycompany.com       John SMITH
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>ldap       passwordFail      1148400004   staff,itdep   john.smith@mycompany.com   John SMITH
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>&gt; Detail:
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>&gt; PROVIDER   STATUS            UID          GROUPS        EMAILS                     COMMON NAMES
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>&gt; crd        passwordChecked   100001       devs          jsmith@mycompany.com       John SMITH
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>&gt; ldap       passwordFail      1148400004   staff,itdep   john.smith@mycompany.com   John SMITH
 </span></code></pre></div>
 <h2 id="group-bindings">Group bindings</h2>
-<p>In the Admin guide, it as been explained how to bind a group to a user from the <code>crd</code> provider.
-This capability is also possible for any user, whatever his provider is. </p>
-<p>For example, let say we have a user <code>oriley</code> in the LDAP server (While not defined in our <code>crd</code> provider):</p>
+<p>In the <a href="../userguide/#skas-group-binding">User guide</a>, it has been explained how to bind a group to a user from the <code>crd</code> provider. 
+This capability is also possible for any user, regardless of their provider. </p>
+<p>For example, let's say we have a user <code>oriley</code> in the LDAP server (although not defined in our <code>crd</code> provider):"</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$ kubectl sk user describe oriley --explain
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>USER     STATUS              UID          GROUPS        EMAILS                 COMMON NAMES   AUTH
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>oriley   passwordUnchecked   1148400003   itdep,staff   oriley@mycompany.com   Oliver RILEY   ldap
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>&gt; USER     STATUS              UID          GROUPS        EMAILS                 COMMON NAMES   AUTH
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>&gt; oriley   passwordUnchecked   1148400003   itdep,staff   oriley@mycompany.com   Oliver RILEY   ldap
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Detail:
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>PROVIDER   STATUS              UID          GROUPS        EMAILS                 COMMON NAMES
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>crd        userNotFound        0
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>ldap       passwordUnchecked   1148400003   staff,itdep   oriley@mycompany.com   Oliver RILEY
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>&gt; Detail:
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>&gt; PROVIDER   STATUS              UID          GROUPS        EMAILS                 COMMON NAMES
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>&gt; crd        userNotFound        0
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>&gt; ldap       passwordUnchecked   1148400003   staff,itdep   oriley@mycompany.com   Oliver RILEY
 </span></code></pre></div>
-<p>Let's say we want this user to able to ba an admin for SKAS and also for the Kubernetes cluster. For this, we need to setup two GroupBindings:</p>
+<p>Let's say we want this user to be able to be an admin for SKAS and also for the Kubernetes cluster. For this, we need to set up two GroupBindings:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$ kubectl sk user bind oriley system:masters
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>GroupBinding &#39;oriley.system.masters&#39; created in namespace &#39;skas-system&#39;.
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>$ kubectl sk user bind oriley skas-admin
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>GroupBinding &#39;oriley.skas-admin&#39; created in namespace &#39;skas-system&#39;.
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>$ $ kubectl sk user describe oriley --explain
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>USER     STATUS              UID          GROUPS                                  EMAILS                 COMMON NAMES   AUTH
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>oriley   passwordUnchecked   1148400003   itdep,skas-admin,staff,system:masters   oriley@mycompany.com   Oliver RILEY   ldap
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>Detail:
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>PROVIDER   STATUS              UID          GROUPS                      EMAILS                 COMMON NAMES
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>crd        userNotFound        0            system:masters,skas-admin
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>ldap       passwordUnchecked   1148400003   staff,itdep                 oriley@mycompany.com   Oliver RILEY
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>&gt; GroupBinding &#39;oriley.system.masters&#39; created in namespace &#39;skas-system&#39;.
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>$ kubectl sk user bind oriley skas-admin
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>&gt; GroupBinding &#39;oriley.skas-admin&#39; created in namespace &#39;skas-system&#39;.
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>$ $ kubectl sk user describe oriley --explain
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>&gt; USER     STATUS              UID          GROUPS                                  EMAILS                 COMMON NAMES   AUTH
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>&gt; oriley   passwordUnchecked   1148400003   itdep,skas-admin,staff,system:masters   oriley@mycompany.com   Oliver RILEY   ldap
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>&gt; Detail:
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>&gt; PROVIDER   STATUS              UID          GROUPS                      EMAILS                 COMMON NAMES
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>&gt; crd        userNotFound        0            system:masters,skas-admin
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>&gt; ldap       passwordUnchecked   1148400003   staff,itdep                 oriley@mycompany.com   Oliver RILEY
 </span></code></pre></div>
-<p>Of course, this group binding could have been performed on the LDAP server. But this imply to have some Write access on it. 
-And it could be a best practice to manage cluster authorization at cluster level. 
-(We will see later a way to centralize authorization in a multi-clusters context).</p>
+<p>Of course, this group binding could have been performed on the LDAP server. However, this would require having some 
+write access on the LDAP server. It is often considered a best practice to manage cluster authorization at the cluster
+level. (We will explore a way to centralize authorization in a multi-cluster context later on).</p>
 <h2 id="role-binding">Role binding</h2>
-<p>As it is possible to bind a group to a user defined in whatever provider, it is possible to bind a Kubernetes <code>role</code> 
-(or <code>clusterRole</code>) to a group defined in the LDAP provider:</p>
+<p>As it is possible to bind a group to a user defined in whatever provider, it is also possible to bind a Kubernetes 
+<code>role</code> (or <code>clusterRole</code>) to a group defined in the LDAP provider:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$ kubectl -n ldemo create rolebinding configurator-itdep --role=configurator --group=itdep
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>rolebinding.rbac.authorization.k8s.io/configurator-itdep created
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>&gt; rolebinding.rbac.authorization.k8s.io/configurator-itdep created
 </span></code></pre></div>
-<p>(See the Admin Guide for the <code>configurator</code> role definition)</p>
+<blockquote>
+<p><em>See the <a href="../userguide/#manage-user-groups-and-permissions">User guide</a> for a sample, including the <code>configurator</code> role definition.</em></p>
+</blockquote>
 <h2 id="provider-configuration">Provider configuration.</h2>
-<p>Up to now, in the configuration, the providers chain has been defined as below:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>skMerge:
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  providers:
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    - name: crd
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    - name: ldap
+<p>Up to this point, the configuration has defined the provider chain as follows:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">skMerge</span><span class="p">:</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">providers</span><span class="p">:</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crd</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap</span>
 </span></code></pre></div>
-<p>But each provider can support some optional attributes. Here is a snippet with all attributes with their default values:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>skMerge:
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  providers:
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    - name: crd
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>      credentialAuthority: true
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>      groupAuthority: true
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>      critical: true
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>      groupPattern: &quot;%s&quot;
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>      uidOffset: 0
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    - name: ldap
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>      credentialAuthority: true
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>      groupAuthority: true
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>      critical: true
-</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>      groupPattern: &quot;%s&quot;
-</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>      uidOffset: 0
+<p>Each provider can support optional attributes. Here is a snippet with all the attributes and their default values:</p>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">skMerge</span><span class="p">:</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">providers</span><span class="p">:</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crd</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">      </span><span class="nt">credentialAuthority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">      </span><span class="nt">groupAuthority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">      </span><span class="nt">critical</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">      </span><span class="nt">groupPattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;%s&quot;</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">      </span><span class="nt">uidOffset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">      </span><span class="nt">credentialAuthority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">      </span><span class="nt">groupAuthority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">      </span><span class="nt">critical</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">      </span><span class="nt">groupPattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;%s&quot;</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">      </span><span class="nt">uidOffset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </span></code></pre></div>
 <ul>
-<li><code>credentialAuthority</code>: Setting false on this attribute will prevent this provider to authenticate any user.</li>
-<li><code>groupAuthority</code>: Setting <code>false</code> on this attribute will prevent the groups of this provider to be added to each user.</li>
-<li><code>critical</code>: Define the behavior of the chain if this provider is out or order. (i.e LDAP server is down). If set, then all authentication will fail in such case.</li>
-<li><code>groupPattern</code>: Will allow to 'decorate' all groups provided by this provider. See example below.</li>
+<li><code>credentialAuthority</code>:  Setting this attribute to 'false' will prevent this provider from authenticating any user.</li>
+<li><code>groupAuthority</code>: Setting this attribute to <code>false</code> will prevent the groups of this provider from being added to each user.</li>
+<li><code>critical</code>: Defines the behavior of the chain if this provider is down or out of order (e.g., LDAP server is down). 
+If set, then all authentication will fail in such a case.</li>
+<li><code>groupPattern</code>: Allows you to 'decorate' all groups provided by this provider. See the example below.</li>
 <li><code>uidOffset</code>: This will be added to the UID value if this provider is the authority for this user.</li>
 </ul>
 <p>For example:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>skMerge:
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  providers:
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    - name: crd
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>      credentialAuthority: false
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>      groupAuthority: true
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>      critical: true
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>      groupPattern: &quot;%s&quot;
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>      uidOffset: 0
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    - name: ldap
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>      credentialAuthority: true
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>      groupAuthority: true
-</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>      critical: true
-</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>      groupPattern: &quot;dep1_%s&quot;
-</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>      uidOffset: 0
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">skMerge</span><span class="p">:</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">providers</span><span class="p">:</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crd</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">      </span><span class="nt">credentialAuthority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">      </span><span class="nt">groupAuthority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">      </span><span class="nt">critical</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">      </span><span class="nt">groupPattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;%s&quot;</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">      </span><span class="nt">uidOffset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">      </span><span class="nt">credentialAuthority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">      </span><span class="nt">groupAuthority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">      </span><span class="nt">critical</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">      </span><span class="nt">groupPattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dep1_%s&quot;</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">      </span><span class="nt">uidOffset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </span></code></pre></div>
-<p>The <code>crd</code> provider will not be able to authenticate any user (<code>credentialAuthority</code> is <code>false</code>). This means we have 'lost' our initial <code>admin</code> user.</p>
+<p>The <code>crd</code> provider will not be able to authenticate any user (<code>credentialAuthority</code> is set to <code>false</code>). This means we have 'lost' our initial <code>admin</code> user.</p>
 <p>Fortunately, we previously granted <code>oriley</code> with full admin rights. </p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$ kubectl sk login oriley
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Password:
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>logged successfully..
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>&gt; Password:
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>&gt; logged successfully..
 </span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
 </span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>$ kubectl sk whoami
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>USER     ID           GROUPS
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>oriley   1148400003   dep1_itdep,dep1_staff,skas-admin,system:masters
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>&gt; USER     ID           GROUPS
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>&gt; oriley   1148400003   dep1_itdep,dep1_staff,skas-admin,system:masters
 </span></code></pre></div>
 <p>We can check here that this user still belong to the kubernetes admin groups (<code>skas-admin</code>, <code>system:masters</code>) but 
 the groups of the <code>ldap</code> provider has been renamed with the <code>dep1_</code> prefix.</p>
-<p>A deeper view on this user:</p>
+<p>We can see here that this user still belongs to the Kubernetes admin groups (<code>skas-admin</code> and <code>system:masters</code>), 
+but the groups from the <code>ldap</code> provider have been prefixed with  <code>dep1_</code>.</p>
+<p>Let's take a closer look at this user:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$ kubectl sk user describe oriley --explain
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>USER     STATUS              UID          GROUPS                                            EMAILS                 COMMON NAMES   AUTH
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>oriley   passwordUnchecked   1148400003   dep1_itdep,dep1_staff,skas-admin,system:masters   oriley@mycompany.com   Oliver RILEY   ldap
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>&gt; USER     STATUS              UID          GROUPS                                            EMAILS                 COMMON NAMES   AUTH
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>&gt; oriley   passwordUnchecked   1148400003   dep1_itdep,dep1_staff,skas-admin,system:masters   oriley@mycompany.com   Oliver RILEY   ldap
 </span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>Detail:
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>PROVIDER   STATUS              UID          GROUPS                      EMAILS                 COMMON NAMES
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>crd        userNotFound        0            system:masters,skas-admin
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>ldap       passwordUnchecked   1148400003   staff,itdep                 oriley@mycompany.com   Oliver RILEY
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>&gt; Detail:
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>&gt; PROVIDER   STATUS              UID          GROUPS                      EMAILS                 COMMON NAMES
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>&gt; crd        userNotFound        0            system:masters,skas-admin
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>&gt; ldap       passwordUnchecked   1148400003   staff,itdep                 oriley@mycompany.com   Oliver RILEY
 </span></code></pre></div>
-<p>What about the <code>admin</code> user:</p>
+<p>Now, let's check the <code>admin</code> user:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$ kubectl sk user describe admin --explain
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>USER    STATUS            UID   GROUPS                      EMAILS   COMMON NAMES         AUTH
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>admin   passwordMissing   0     skas-admin,system:masters            SKAS administrator
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>&gt; USER    STATUS            UID   GROUPS                      EMAILS   COMMON NAMES         AUTH
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>&gt; admin   passwordMissing   0     skas-admin,system:masters            SKAS administrator
 </span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>Detail:
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>PROVIDER   STATUS            UID   GROUPS                      EMAILS   COMMON NAMES
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>crd        passwordMissing   0     skas-admin,system:masters            SKAS administrator
-</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>ldap       userNotFound      0
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>&gt; Detail:
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>&gt; PROVIDER   STATUS            UID   GROUPS                      EMAILS   COMMON NAMES
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>&gt; crd        passwordMissing   0     skas-admin,system:masters            SKAS administrator
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>&gt; ldap       userNotFound      0
 </span></code></pre></div>
-<p>The fact we denied <code>credentialAuthority</code> will translate to <code>passwordMissing</code> (While in fact the password is still physically present in the storage.) </p>
-<p>Such configuration is aimed to comply with some overall management policies:</p>
+<p>The fact that we denied <code>credentialAuthority</code> will translate to <code>passwordMissing</code> (While, in fact, the password is still physically present in the storage.) </p>
+<p>Such a configuration aims to comply with certain overarching management policies:</p>
 <ul>
-<li>A corporate policy that requires all users should be referenced in a central LDAP server. This constraint is fulfilled, 
-as, although a user can still be created in the <code>crd</code> provider, its corresponding credentials will not be activated.</li>
-<li>As Kubernetes cluster administrator, we want to have exclusive control of who can manage the cluster. By adding a group
-decorator (<code>groupPattern: "dep1_%s"</code>), we prevent a malicious LDAP administrator to grant access to critical groups 
-(<code>skas-admin</code>, <code>system:master</code>, ....) to any LDAP users. </li>
+<li>A corporate policy that requires all users to be referenced in a central LDAP server. This constraint is fulfilled, 
+as even though a user can still be created in the<code>crd</code> provider, their corresponding credentials will not be activated.</li>
+<li>As Kubernetes cluster administrators, we want to have exclusive control over who can manage the cluster. By adding 
+a group decorator (<code>groupPattern: "dep1_%s"</code>), we prevent a malicious LDAP administrator from granting access to
+critical groups (<code>skas-admin</code>, <code>system:master</code>, ...) to any LDAP users."</li>
 </ul>
 <p>Two complementary remarks:</p>
 <ul>
-<li>There still may be a interest to create a user in the <code>crd</code> provider. It is to add more information such as email or commonName on a user existing in the <code>ldap</code> provider.</li>
-<li>Group binding of the user <code>admin</code> should be removed. Otherwise, an LDAP administrator may create a user with such name to have full kubernetes access.</li>
+<li>There may still be an interest in creating a user in the <code>crd</code> provider. This is done to add more information, such as an email or commonName, to a user existing in the <code>ldap</code> provider.</li>
+<li>The <code>crd</code> provider must be the first in the list. Otherwise, an LDAP administrator may create a user with the same name as an existing administrator and gain authority over its password, to gain full Kubernetes access.</li>
 </ul>
 
 

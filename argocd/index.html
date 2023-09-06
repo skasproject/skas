@@ -576,18 +576,18 @@
 
 
 <h1 id="argo-cd-integration-with-dex">Argo CD integration with DEX</h1>
-<p>Argo CD embed an instance of DEX. It will take care its deployment and most if its configuration. 
-In fact, only the <code>connectors:</code> part of the DEX config still remains to setup.</p>
-<p>For this reason, the installation process described here will assume there is an Argo CD instance deployed in a 
-'standard' way, with UI and ingress. (Such deployment is out of the scope of this documentation. Refer to the Argo CD 
-documentation or/and use the <a href="https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd">Argo CD helm chart</a>) </p>
-<p>Then it should be proceeded to:</p>
+<p>Argo CD integrates with DEX, embedding an instance of DEX within it. Argo CD takes care of deploying DEX and most of
+its configuration. The only part of the DEX configuration that you'll need to set up is the <code>connectors:</code> section.</p>
+<p>To follow this installation process, it's assumed that you already have an Argo CD instance deployed in a 
+'standard' way, complete with a user interface and ingress. Deploying Argo CD in this manner is outside the scope 
+of this documentation, so please refer to the Argo CD documentation or use <a href="https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd">Argo CD helm chart</a>.</p>
+<p>Once you have Argo CD set up, you should proceed with:</p>
 <ul>
-<li>The deployment of SKAS, with the configuration of a <code>login</code> service, for the use of the DEX instance embedded in Argo CD</li>
-<li>The configuration of this DEX instance, by patching the existing deployment.</li>
+<li>Deploying SKAS, configuring a <code>login</code> service to be used by the embedded DEX instance in Argo CD.</li>
+<li>Configuring this embedded DEX instance by patching the existing deployment."</li>
 </ul>
 <h2 id="skas-deployment">SKAS deployment</h2>
-<p>SKAS must be (re)configured to activate a <code>login</code> services. Here is the appropriate values file:</p>
+<p>SKAS needs to be (re)configured to activate a <code>login</code> service. Below is the appropriate values file for this configuration:</p>
 <details class="abstract" open="open">
 <summary>values.skas2.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">skAuth</span><span class="p">:</span>
@@ -601,21 +601,24 @@ documentation or/and use the <a href="https://github.com/argoproj/argo-helm/tree
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">              </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;aSharedSecret&quot;</span>
 </span></code></pre></div>
 </details>
-<p>Note a client authentication has been setup, with a couple id/secret.</p>
+<p>Note that client authentication has been set up with a pair of id/secret. </p>
 <p>To apply this configuration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span>--values<span class="w"> </span>./values.skas.login.yaml
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span>--values<span class="w"> </span>./values.skas.login.yaml
 </span></code></pre></div>
 <blockquote>
-<p><em>Don't forget to add the values.init.yaml, or to merge it in the values.skas.yaml file. Also, if you have others values file, they must be added on each upgrade</em></p>
-<p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
+<p><em>Don't forget to include the <code>values.init.yaml</code> file or merge it into the <code>values.skas.yaml</code> file. Additionally,
+if you have other values files, make sure to include them in each upgrade.</em></p>
+<p><em>Also, remember to restart the pod(s) after making these configuration changes. You can find more information on how
+to do this in the <a href="../configuration/#pod-restart">Configuration: Pod restart</a> section.</em></p>
 </blockquote>
 <h2 id="patching-argo-cd">Patching argo CD</h2>
-<p>Next step is the patch the Argo CD deployment. In fact, there is two patches:</p>
+<p>The next step is to patch the Argo CD deployment. In fact, there are two patches required:</p>
 <ul>
-<li>One to use the SKAS specific DEX image. (As DEX does not provide some extension mechanism to add connectors externally, a specific SKAS DEX image with a SKAS connector must be used).</li>
-<li>One to configure the <code>configMap</code> storing the DEX configuration.</li>
+<li>One to use the SKAS-specific DEX image. DEX does not provide an extension mechanism to add connectors externally, 
+so a specific SKAS DEX image with a SKAS connector must be used.</li>
+<li>Another to configure the <code>configMap</code> storing the DEX configuration.</li>
 </ul>
-<p>Here is the patch file for the DEX image (It is a JSON RFC 6902 Patch): </p>
+<p>Here is the patch file for the DEX image (It is a JSON RFC 6902 Patch):</p>
 <details class="abstract" open="open">
 <summary>dex-server-patch.json</summary>
 <div class="language-json copy highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">[</span>
@@ -626,10 +629,10 @@ documentation or/and use the <a href="https://github.com/argoproj/argo-helm/tree
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">]</span>
 </span></code></pre></div>
 </details>
-<p>To be applied with the following command:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>patch<span class="w"> </span>deployment<span class="w"> </span>argocd-dex-server<span class="w"> </span>--type<span class="w"> </span>json<span class="w"> </span>--patch-file<span class="w"> </span>./dex-server-patch.json
+<p>To apply these patches, use the following command:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>patch<span class="w"> </span>deployment<span class="w"> </span>argocd-dex-server<span class="w"> </span>--type<span class="w"> </span>json<span class="w"> </span>--patch-file<span class="w"> </span>./dex-server-patch.json
 </span></code></pre></div>
-<p>And here is the DEX configuration patch (It is a <a href="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/#use-a-strategic-merge-patch-to-update-a-deployment">Strategic Merge patch</a>):</p>
+<p>Here is the DEX configuration patch (It is a <a href="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/#use-a-strategic-merge-patch-to-update-a-deployment">Strategic Merge patch</a>):</p>
 <details class="abstract" open="open">
 <summary>argocd-cm-patch.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">data</span><span class="p">:</span>
@@ -656,30 +659,31 @@ documentation or/and use the <a href="https://github.com/argoproj/argo-helm/tree
 <ul>
 <li>The <code>url: https://argocd.ingress.mycluster.internal</code> to point to your Argo CD server UI.</li>
 <li>The <code>admin.enabled</code> if you want to still be able to use the local Argo CD <code>admin</code> account.</li>
-<li>The <code>rootCaData:</code> is populated with the Certificate Authority of the
-  <code>skAuth</code> service. To find its value, we can dig inside its certificate, which include its authority:
-    <div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>skas-auth-cert<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span>
+<li>The <code>rootCaData:</code> field is populated with the Certificate Authority of the <code>skAuth</code> kubernetes service. 
+  To find its value, you can extract it from the service's certificate.<br>You can retrieve it with the following command:
+    <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="l l-Scalar l-Scalar-Plain">kubectl -n skas-system get secret skas-auth-cert -o=jsonpath=&#39;{.data.ca\.crt}&#39;</span>
 </span></code></pre></div></li>
 </ul>
-<p>Then, this patch can be applied with the following command:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>patch<span class="w"> </span>configMap<span class="w"> </span>argocd-cm<span class="w"> </span>--type<span class="w"> </span>strategic<span class="w"> </span>--patch-file<span class="w"> </span>./argocd-cm-patch.yaml
+<p>Then, you must apply this patch using the following command:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>patch<span class="w"> </span>configMap<span class="w"> </span>argocd-cm<span class="w"> </span>--type<span class="w"> </span>strategic<span class="w"> </span>--patch-file<span class="w"> </span>./argocd-cm-patch.yaml
 </span></code></pre></div>
 <h3 id="restart-pods">Restart Pods</h3>
-<p>For the patch to be effective, some Argo CD pod should be restarted:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>argocd-dex-server<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<p>For the patch to take effect, you will need to restart some of the Argo CD pods:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>argocd-dex-server<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>argocd<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>argocd-server
 </span></code></pre></div>
 <h2 id="test">Test</h2>
-<p>Open your browser on the Argo CD UI. You should land with something like:</p>
+<p>Open your browser and navigate to the Argo CD UI. You should see a page similar to this:</p>
 <p><img alt="" src="../images/argocd1.png" /></p>
-<p>Click on the <code>LOG IN VIA SKAS</code> button. You should land on the DEX login page. Enter the a valid user login and password:</p>
+<p>Click on the <code>LOG IN VIA SKAS</code> button. You should be redirected to the DEX login page. Enter a valid user login and 
+password:</p>
 <p><img alt="" src="../images/argocd2.png" /></p>
-<p>And you should land on the usual Argo CD Applications page. </p>
+<p>And you should land on the usual Argo CD Applications page:</p>
 <p><img alt="" src="../images/argocd3.png" /></p>
-<p>Click on the <code>User info</code> menu entry on the left to ensure we got the correct user information:</p>
+<p>Click on the <code>User info</code> menu entry on the left to ensure you have the correct user information:</p>
 <p><img alt="" src="../images/argocd4.png" /></p>
-<p>We can see the groups are correct. The Argo CD web UI choose to display the user's email in the Username field.
-Our current user has no email defined, so the blank field.  </p>
+<p>We can see the groups are correct. The Argo CD web UI chooses to display the user's email in the Username field. If 
+our current user has no email defined, the field will appear blank.</p>
 
 
 

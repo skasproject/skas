@@ -904,118 +904,125 @@
 <h1 id="architecture">Architecture</h1>
 <h2 id="overview">Overview</h2>
 <h3 id="initial-deployment">Initial deployment</h3>
-<p>Here is the different modules involved for a SKAS authentication, right after installation: </p>
+<p>Here are the different modules involved in SKAS authentication right after base installation:</p>
 <p><img align="left" alt="Overview" src="../images/draw1.png" width="350" /></p>
-<p>SKAS is deployed as a Kubernetes Pod, this pod hosting three containers:</p>
+<p>SKAS is deployed as a Kubernetes Pod, hosting three containers:</p>
 <ul>
-<li><code>skAuth</code> which is in charge of delivering Kubernetes tokens and validate them.</li>
-<li><code>skmerge</code>, which is in charge of building a consolidated identity from several identity providers. As in this configuration there is a single one, it act as a simple passthrough</li>
-<li><code>skCrd</code>, which is an identity provider storing user's information in the Kubernetes storage, in namesapce <code>skas-admin</code>.</li>
+<li><code>skAuth</code> which is responsible for delivering Kubernetes tokens and validating them.</li>
+<li><code>skmerge</code>, which is responsible for building a consolidated identity from several Identity Providers. In this 
+configuration, with only one provider, it acts as a simple passthrough.</li>
+<li><code>skCrd</code>, which is an Identity Provider storing user's information in the Kubernetes storage, in the namespace <code>skas-admin</code>.</li>
 </ul>
-<p>Arrow figure out the main communication flow between components. All of them are HTTP exchanges.</p>
+<p>In this schema, the arrows represent the main communication flow between the components, all of which involve HTTP exchanges.</p>
 <p><img alt="" src="../images/empty.png" width="700" /></p>
-<p>Here is a summary of exchange for an initial interaction</p>
+<p>Here is a summary of the exchange for an initial interaction:</p>
 <ul>
-<li>The user issue a <code>kubectl</code> command (such as <code>kubectl get pods</code>). For this, a token is needed. It will be provided by the <code>kubectl-sk</code> client-go credential plugins.</li>
-<li><code>kubectl-sk</code> prompt the user for login and password, then issue a <code>tokenCreate()</code> request to the <code>skAuth</code> module.</li>
-<li>The <code>skAuth</code> module issue a <code>getIdentity()</code> request with user credential. This request is forwarded to the <code>skCrd</code>module.</li>
-<li>The <code>skCrd</code> module retrieve user's information, check password validity and send information upward, to the <code>skMerge</code> module, which forward them to the <code>skAuth</code> module.</li>
-<li>The <code>skAuth</code> module generate a token and send it back to the <code>kubectl-sk</code> module. Which forward to <code>kubectl</code>.</li>
-<li><code>kubectl</code> send the original request with the token to the Kubernetes API server</li>
-<li>The API Server send a <code>tokenReview()</code> request to the <code>skAuth</code> module, which reply with the user's informations (user id and groups).</li>
-<li>The API Server apply its RBAC rules on user's information to allow or deny requested operation. </li>
+<li>The user issues a <code>kubectl</code> command (such as <code>kubectl get pods</code>). For this, a token is needed. It will be provided by the <code>kubectl-sk</code> client-go credential plugins.</li>
+<li><code>kubectl-sk</code> prompts the user for login and password, then issues a <code>tokenCreate()</code> request to the <code>skAuth</code> module.</li>
+<li>The <code>skAuth</code> module issues a <code>getIdentity()</code> request with user credentials. This request is forwarded to the <code>skCrd</code> module.</li>
+<li>The <code>skCrd</code> module retrieves the user's information, checks password validity, and sends the information upward to the <code>skMerge</code> module, which forwards them to the <code>skAuth</code> module.</li>
+<li>The <code>skAuth</code> module generates a token and sends it back to the <code>kubectl-sk</code> module, which forwards it to <code>kubectl</code>.</li>
+<li><code>kubectl</code> sends the original request with the token to the Kubernetes API server.</li>
+<li>The API Server sends a <code>tokenReview()</code> request to the <code>skAuth</code> module, which replies with the user's information (user id and groups).</li>
+<li>The API Server applies its RBAC rules on user's information to allow or deny the requested operation.</li>
 </ul>
-<p>There is a more detailed description of this interaction as <a href="./#sequence-diagrams">sequence diagram</a>.</p>
+<p>For a more detailed description of this interaction, you can refer to the <a href="#sequence-diagrams">sequence diagram</a>.</p>
 <h3 id="ldap-setup">LDAP setup</h3>
-<p><img align="right" alt="ldap" src="../images/draw2.png" width="350" /></p>
-<p>This schema describe the architecture when an LDAP server has been configured, as described in a <a href="../ldap/">previous chapter</a>.</p>
-<p>The <code>skMerge</code> module is now plugged on two Identity providers: <code>skCrd</code> and <code>skLdap</code>.</p>
-<p>And <code>skLdap</code> is connected to an external LDAP server</p>
+<p><img align="right" alt="ldap" src="../images/draw2.png" width="400" /></p>
+<p>This schema describes the architecture when an LDAP server has been configured, as detailed in the <a href="../ldap/">previous chapter</a>.</p>
+<p>The <code>skMerge</code> module is now connected to two identity providers: <code>skCrd</code> and <code>skLdap</code>, with <code>skLdap</code> being linked to an external LDAP server.</p>
 <p><img alt="" src="../images/empty.png" width="700" /></p>
 <h2 id="modules-and-interfaces">Modules and interfaces</h2>
-<p>Here is a description of the modules composing SKAS and their interfaces:</p>
+<p>Here is a description of the modules comprising SKAS and their interfaces:</p>
 <h3 id="identity-providers-skcrd-skldap-skstatic">Identity providers (skCrd, skLdap, skStatic)</h3>
 <blockquote>
-<p>The <code>skStatic</code> provider host its user database in a configMap. It was used for testing in in primary development stages. 
+<p>The <code>skStatic</code> provider hosts its user database in a configMap. It was used for testing during the primary development stages.
 It is now deprecated and undocumented.</p>
 </blockquote>
-<p>Under default configuration, interfaces provided by this module are associated to an HTTP server bound on <code>localhost</code>, 
-thus accessible only from another container in the same pod (Typically <code>skMerge</code>).</p>
+<p>Under the default configuration, interfaces provided by these modules are associated with an HTTP server bound to <code>localhost</code>,
+making them accessible only from another container in the same pod (typically <code>skMerge</code>).</p>
 <h4 id="identity">Identity</h4>
-<p>These module provides an <code>identity</code> interface. The request contains user login and optionally the user password.</p>
-<p>The response will convey user's information (uid, commonNames, emails, groups) if the user is found and a status:</p>
+<p>These modules provide an <code>identity</code> interface. The request contains the user's login and optionally the user's password.</p>
+<p>The response will convey the user's information (UID, common names, emails, groups) if the user is found, along with a status:</p>
 <ul>
-<li><code>UserNotFound</code>: If the user does not exists in this provider</li>
-<li><code>PasswordUnchecked</code>: If the password was not provided on the request or if there is no password defined by this provider.</li>
-<li><code>PassswordChecked</code>: If a password was provided in the request and the provider validate it.</li>
-<li><code>PasswordFailed</code>: If a password was provided in the request and the provider does not validate it.</li>
-<li><code>Disabled</code>: The user is found, but its <code>disabled</code> flag is set</li>
-<li><code>Undefined</code>: The provider is out of order (i.e the ldap server is down)</li>
+<li><code>UserNotFound</code>: If the user does not exist in this provider.</li>
+<li><code>PasswordUnchecked</code>: If the password was not provided in the request or if there is no password defined by this provider.</li>
+<li><code>PassswordChecked</code>: If a password was provided in the request and the provider validates it.</li>
+<li><code>PasswordFailed</code>:  If a password was provided in the request and the provider does not validate it.</li>
+<li><code>Disabled</code>:  If the user is found but its <code>disabled</code> flag is set.</li>
+<li><code>Undefined</code>: If the provider is out of order (for example, if the LDAP server is down).</li>
 </ul>
 <h4 id="passwordchange">PasswordChange</h4>
-<p>The <code>skCrd</code> provider also handle another interface: <code>passwordChange</code>, which allow password modification by providing old
-and new password (This last in its hashed form)</p>
+<p>The <code>skCrd</code> provider also handles another interface: <code>passwordChange</code>, which allows password modification by providing the old
+and new password (the latter in its hashed form).</p>
 <h3 id="skmerge">skMerge</h3>
-<p>Under default configuration, interfaces provided by this module are associated to an HTTP server bound on <code>localhost</code>,
-thus accessible only from another container in the same pod (Typically <code>skAuth</code>)</p>
+<p>Under the default configuration, the interfaces provided by this module are associated with an HTTP server bound
+to <code>localhost</code>, making them accessible only from another container in the same pod (typically <code>skAuth</code>)."</p>
 <h4 id="identity_1">Identity</h4>
-<p>The <code>skMerge</code> module support the same <code>identity</code> interface as a provider. Of course, the returned value is the merge of its underlying providers information.</p>
-<p>This module also support is some extension of this <code>identity</code> protocol:</p>
+<p>The <code>skMerge</code> module supports the same <code>identity</code> interface as a provider. Of course, the returned value is the merge of information from its underlying providers.</p>
+<p>This module also supports some extensions of this <code>identity</code> protocol:</p>
 <ul>
-<li>The returned result also indicate which provider was the 'authority' (The one who validate the password) for this user.</li>
-<li>The request can support a <code>detailed</code> flag. If set, the response will be completed with a detailed list of response from each provider. This is aimed to 
-be displayed by the <code>kubectl-sk user describe</code> CLI command. </li>
+<li>The returned result also indicates which provider was the 'authority' (the one that validates the password) for this user.</li>
+<li>The request can include a <code>detailed</code> flag. If set, the response will include a detailed list of responses from each 
+provider. This is intended to be displayed by the <code>kubectl-sk user describe</code> CLI command."</li>
 </ul>
 <h4 id="passwordchange_1">PasswordChange</h4>
-<p>The <code>skMerge</code> module also support a <code>passwordChange</code> interface. The request must contains the user's authority which is the target provider to which this message will be forwarded.</p>
+<p>The <code>skMerge</code> module also supports a <code>passwordChange</code> interface. The request must contain the user's authority, which is the target provider to which this message will be forwarded.</p>
 <h3 id="skauth">skAuth</h3>
-<p>Under default configuration, all interfaces provided by this module are exposed to outside world through an ingress controller. 
-They are secured using SSL, from end to end (SSL termination is handled by the module itself, the ingress being configured in SSL passthrough mode).</p>
-<p>Except <code>login</code> and <code>tokenReview</code>, all other interfaces of this module are intended to be called from the <code>kubectl-sk</code> client executable.</p>
+<p>Under the default configuration, all interfaces provided by this module are exposed to the outside world through an 
+ingress controller. They are secured using end-to-end SSL, with SSL termination handled by the module itself, and the 
+ingress configured in SSL passthrough mode.</p>
+<p>Except for the <code>login</code> and <code>tokenReview</code> interfaces, all others in this module are designed to be called from the <code>kubectl-sk</code> client executable.</p>
 <h4 id="tokencreate">TokenCreate</h4>
-<p>The <code>tokenCreate</code> request contains a user login and password. If the authentication succeed, a token is generated. The response will contains:</p>
+<p>The <code>tokenCreate</code> request contains a user's login and password. If the authentication is successful, a token is generated. The response will include:</p>
 <ul>
-<li>The generated token</li>
-<li>User's information, for <code>whoami</code> subcommand.</li>
-<li>The clientTTL, for expiration of the token in the client local cache.</li>
-<li>The authority, the provider who validate the login/password.</li>
+<li>The generated token.</li>
+<li>User information for the <code>whoami</code> subcommand.</li>
+<li>The clientTTL for token expiration in the client's local cache.</li>
+<li>The authority, indicating the provider that validated the login/password.</li>
 </ul>
 <h4 id="tokenrenew">TokenRenew</h4>
-<p>The <code>tokenRenew</code> interface check if the token is still valid and renew (touch) it.</p>
+<p>The <code>tokenRenew</code> interface check if the token is still valid and renew (touch) it.
+The <code>tokenRenew</code> interface checks if the token is still valid and renews (touch) it.</p>
 <h4 id="passwordchange_2">PasswordChange</h4>
-<p>This is a simple passthrough, which forward the request to the underlying <code>skMerge</code> provider.</p>
+<p>This is a simple passthrough that forwards the request to the underlying <code>skMerge</code> provider.</p>
 <h4 id="kubeconfig">Kubeconfig</h4>
-<p>This interface provide a set of informations allowing <code>kubectl-sk</code> to create an entry in the client config file (typically <code>~/.kube/config</code>), 
-to access the targeted SKAS enabled cluster. This to allow automatic client side configuration.</p>
+<p>This interface provides a set of information that allows <code>kubectl-sk</code> to create an entry in the client config file, 
+typically located at <code>~/.kube/config</code>, for accessing the targeted SKAS-enabled cluster. This enables automatic client-side configuration.</p>
 <h4 id="identity_2">Identity</h4>
-<p>This interface is intended to be called for a <code>kubectl-sk user describe</code> operation. It forward the request to the underlying <code>skMerge</code> protocol.
-But, as this operation is reserved the the SKAS administrator, the caller must provide authentication information (typically its token) to ensure he has such rights.</p>
+<p>This interface is intended to be called for a <code>kubectl-sk user describe</code> operation. It forwards the request to the 
+underlying <code>skMerge</code> module. However, since this operation is reserved for the SKAS administrator, the caller must 
+provide authentication credentials, typically its token, to ensure they have the necessary rights</p>
 <h4 id="login">Login</h4>
-<p>This interface check user credentials. If successful, user's information is provided in the response. It is intended to be use by others applications, such as the DEX connector.</p>
-<p>This interface is diabled in the default configuration</p>
+<p>This interface checks user credentials. If successful, the user's information is provided in the response. It is intended to be used by other applications, such as the DEX connector.</p>
+<p>This interface is disabled by default in the configuration.</p>
 <h4 id="tokenreview">TokenReview</h4>
-<p>This interface is aimed to support the <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#webhook-token-authentication">Webhook Token Authentication</a>.
-It will be called by the Kubernetes API server to validate a token and retrieve associated user attributes.</p>
+<p>This interface is designed to support <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#webhook-token-authentication">Webhook Token Authentication</a>. 
+It will be invoked by the Kubernetes API server to validate a token and retrieve associated user attributes.</p>
 <h2 id="interfaces-exposition">Interfaces exposition</h2>
 <p>Each interface can be exposed at three levels:</p>
 <ul>
-<li>On localhost, accessible only from other containers in the same pod.</li>
-<li>Inside Kubernetes, by adding a kubernetes Service.</li>
-<li>Outside Kubernetes, by adding a kubernetes ingress controller.</li>
+<li>Locally, accessible only from other containers in the same pod.</li>
+<li>Internally within Kubernetes, by creating a Kubernetes Service.</li>
+<li>Externally outside Kubernetes, by configuring a Kubernetes ingress controller.</li>
 </ul>
 <p>For each module, every exposed API can be accessed on two ports:</p>
 <ul>
-<li>One associated to a server bound on localhost, for intra-pod communication. In configuration files, this interface is named the <code>ìnternal</code> one.</li>
-<li>One associated to a server bound on pod interface, to be exposed as a service or through an ingress. 
-Always using SSL encrypted communication. In configuration files, this interface is named the <code>external</code> one.</li>
+<li>One is associated with a server bound to localhost, enabling intra-pod communication. In configuration files, 
+this interface is referred to as the <code>internal</code> one.</li>
+<li>The other is associated with a server bound to the pod interface, designed to be exposed as a service or through an 
+ingress. Communication on this interface is always encrypted using SSL. In configuration files, this interface is 
+referred to as the <code>external</code> one.</li>
 </ul>
-<p>Depending of the configuration, only one or both server can be activated.</p>
-<p>For the default configuration, only the server bound on localhost is activated for the <code>skCrd</code>, <code>skLdap</code> and
-<code>skMerge</code> module. </p>
-<p>And only the server bound on the pod interface is activated for the <code>skAuth</code> module</p>
+<p>Depending on the configuration, either one or both ports can be activated.</p>
+<p>In the default configuration:</p>
+<ul>
+<li>Only the port bound to localhost is activated for the <code>skCrd</code>, <code>skLdap</code>, and <code>skMerge</code> modules. </li>
+<li>For the <code>skAuth</code> module, only the port bound to the pod interface is activated.</li>
+</ul>
 <h2 id="sequence-diagrams">Sequence diagrams</h2>
 <h3 id="initial-user-connexion">Initial user connexion</h3>
-<p>Here is the sequence for a successful initial connexion.</p>
+<p>Below is the sequence of events for a successful initial connection:</p>
 <pre class="mermaid"><code>sequenceDiagram
   participant User
   participant kubectl
@@ -1023,23 +1030,23 @@ Always using SSL encrypted communication. In configuration files, this interface
   participant skAuth
   participant Api server
   autonumber
-  User-&gt;&gt;kubectl: User issue a&lt;br&gt;kubectl command
-  kubectl-&gt;&gt;kubectl-sk: kubectl launch&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
-  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookup&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;NO in this case
-  kubectl-sk-&gt;&gt;User: kubectl-sk prompt&lt;br&gt;for login and password
+  User-&gt;&gt;kubectl: The user issues a&lt;br&gt;kubectl command
+  kubectl-&gt;&gt;kubectl-sk: kubectl launches&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
+  kubectl-sk-&gt;&gt;kubectl-sk: kubectl-sk searches for&lt;br&gt;a token in its local cache.&lt;br&gt; Not found in this case.
+  kubectl-sk-&gt;&gt;User: kubectl-sk prompts&lt;br&gt;for login and password
   User--&gt;&gt;kubectl-sk: User provides its credential
   kubectl-sk-&gt;&gt;skAuth: HTTP GET REQ:&lt;br&gt;getToken()
-  skAuth-&gt;&gt;skAuth: skAuth call&lt;br&gt;skMerge which&lt;br&gt;validate user&lt;br&gt;credentials and return&lt;br&gt;user's information&lt;br&gt;A token is generated.
+  skAuth-&gt;&gt;skAuth: skAuth calls&lt;br&gt;skMerge which&lt;br&gt;validates the user's&lt;br&gt;credentials and returns&lt;br&gt;user's information&lt;br&gt;Subsequently, a token is generated.
   skAuth--&gt;&gt;kubectl-sk: Token in&lt;br&gt;HTTP response
-  kubectl-sk--&gt;&gt;kubectl: kubectl-sk return&lt;br&gt;the token to kubectl&lt;br&gt;by printing it on&lt;br&gt;stdout and exit.
-  kubectl-&gt;&gt;Api server: kubectl issue the appropriate API call&lt;br&gt;with the provided bearer token
-  Api server-&gt;&gt;skAuth: The API Server&lt;br&gt;issue an&lt;br&gt;HTTP POST&lt;br&gt;with a&lt;br&gt;TokenReview&lt;br&gt;command
-  skAuth--&gt;&gt;Api server: skAuth validate&lt;br&gt;the token and &lt;br&gt;provide user's&lt;br&gt;name and groups&lt;br&gt;in the response.
-  Api server-&gt;&gt;Api server: API Server validate&lt;br&gt;if user is allowed by&lt;br&gt;RBAC to perform&lt;br&gt;the requested action
-  Api server--&gt;&gt;kubectl: API Server return the action result
-  kubectl--&gt;&gt;User: kubectl display&lt;br&gt;the result and exits</code></pre>
+  kubectl-sk--&gt;&gt;kubectl: kubectl-sk returns&lt;br&gt;the token to kubectl&lt;br&gt;by printing it on&lt;br&gt;stdout and exits.
+  kubectl-&gt;&gt;Api server: kubectl issues the appropriate API call&lt;br&gt;with the provided bearer token
+  Api server-&gt;&gt;skAuth: The API Server&lt;br&gt;issues an&lt;br&gt;HTTP POST&lt;br&gt;with a&lt;br&gt;TokenReview&lt;br&gt;command
+  skAuth--&gt;&gt;Api server: skAuth validates&lt;br&gt;the token and &lt;br&gt;provides user's&lt;br&gt;name and groups&lt;br&gt;in the response.
+  Api server-&gt;&gt;Api server: API Server validates&lt;br&gt;if user is allowed by&lt;br&gt;RBAC to perform&lt;br&gt;the requested action
+  Api server--&gt;&gt;kubectl: API Server returns the action result
+  kubectl--&gt;&gt;User: kubectl displays&lt;br&gt;the result and exits</code></pre>
 <h3 id="token-renewal">Token renewal</h3>
-<p>Here is the sequence when a valid token is already present in client local cache:</p>
+<p>Here is the sequence when a valid token is already present in the client's local cache.</p>
 <pre class="mermaid"><code>sequenceDiagram
   participant User
   participant kubectl
@@ -1047,18 +1054,18 @@ Always using SSL encrypted communication. In configuration files, this interface
   participant skAuth
   participant Api server
   autonumber
-  User-&gt;&gt;kubectl: User issue a&lt;br&gt;kubectl command
-  kubectl-&gt;&gt;kubectl-sk: kubectl launch&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
-  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookup&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;YES in this case
+  User-&gt;&gt;kubectl: The user issues a&lt;br&gt;kubectl command
+  kubectl-&gt;&gt;kubectl-sk: kubectl launches&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
+  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookups&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;Found in this case
   kubectl-sk-&gt;&gt;kubectl-sk: Is the token still&lt;br&gt;valid against the&lt;br&gt;clientTokenTTL&lt;br&gt;YES in this case
-  kubectl-sk--&gt;&gt;kubectl: kubectl-sk return&lt;br&gt;the token to kubectl&lt;br&gt;by printing it on&lt;br&gt;stdout and exit.
-  kubectl-&gt;&gt;Api server: kubectl issue the appropriate API call&lt;br&gt;with the provided bearer token
-  Api server-&gt;&gt;skAuth: The API Server&lt;br&gt;issue an&lt;br&gt;HTTP POST&lt;br&gt;with a&lt;br&gt;TokenReview&lt;br&gt;command
-  skAuth--&gt;&gt;Api server: skAuth validate&lt;br&gt;the token and &lt;br&gt;provide user's&lt;br&gt;name and groups&lt;br&gt;in the response.
-  Api server-&gt;&gt;Api server: API Server validate&lt;br&gt;if user is allowed by&lt;br&gt;RBAC to perform&lt;br&gt;the requested action
-  Api server--&gt;&gt;kubectl: API Server return the action result
-  kubectl--&gt;&gt;User: kubectl display&lt;br&gt;the result and exits</code></pre>
-<p>Here is the sequence when a token is still valid, but the local cache (which is short lived) has expired:</p>
+  kubectl-sk--&gt;&gt;kubectl: kubectl-sk returns&lt;br&gt;the token to kubectl&lt;br&gt;by printing it on&lt;br&gt;stdout and exits.
+  kubectl-&gt;&gt;Api server: kubectl issues the appropriate API call&lt;br&gt;with the provided bearer token
+  Api server-&gt;&gt;skAuth: The API Server&lt;br&gt;issues an&lt;br&gt;HTTP POST&lt;br&gt;with a&lt;br&gt;TokenReview&lt;br&gt;command
+  skAuth--&gt;&gt;Api server: skAuth validates&lt;br&gt;the token and &lt;br&gt;provides user's&lt;br&gt;name and groups&lt;br&gt;in the response.
+  Api server-&gt;&gt;Api server: API Server validates&lt;br&gt;if user is allowed by&lt;br&gt;RBAC to perform&lt;br&gt;the requested action
+  Api server--&gt;&gt;kubectl: API Server returns the action result
+  kubectl--&gt;&gt;User: kubectl displays&lt;br&gt;the result and exits</code></pre>
+<p>Here is the sequence when a token is still valid, but the short-lived local cache has expired.</p>
 <pre class="mermaid"><code>sequenceDiagram
   participant User
   participant kubectl
@@ -1066,22 +1073,22 @@ Always using SSL encrypted communication. In configuration files, this interface
   participant skAuth
   participant Api server
   autonumber
-  User-&gt;&gt;kubectl: User issue a&lt;br&gt;kubectl command
-  kubectl-&gt;&gt;kubectl-sk: kubectl launch&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
-  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookup&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;YES in this case
+  User-&gt;&gt;kubectl: The user issues a&lt;br&gt;kubectl command
+  kubectl-&gt;&gt;kubectl-sk: kubectl launches&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
+  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookups&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;Found in this case
   kubectl-sk-&gt;&gt;kubectl-sk: Is the token still&lt;br&gt;valid against the&lt;br&gt;clientTokenTTL&lt;br&gt;NO in this case
   kubectl-sk-&gt;&gt;skAuth: HTTP GET REQ:&lt;br&gt;validateToken()
   skAuth-&gt;&gt;skAuth: skAuth check&lt;br&gt;if token is still valid.&lt;br&gt;Yes in this case
   skAuth--&gt;&gt;kubectl-sk: tokenValid response
-  kubectl-sk--&gt;&gt;kubectl: kubectl-sk return&lt;br&gt;the token to kubectl&lt;br&gt;by printing it on&lt;br&gt;stdout and exit.
-  kubectl-&gt;&gt;Api server: kubectl issue the appropriate API call&lt;br&gt;with the provided bearer token
-  Api server-&gt;&gt;skAuth: The API Server&lt;br&gt;issue an&lt;br&gt;HTTP POST&lt;br&gt;with a&lt;br&gt;TokenReview&lt;br&gt;command
-  skAuth--&gt;&gt;Api server: skAuth validate&lt;br&gt;the token and &lt;br&gt;provide user's&lt;br&gt;name and groups&lt;br&gt;in the response.
-  Api server-&gt;&gt;Api server: API Server validate&lt;br&gt;if user is allowed by&lt;br&gt;RBAC to perform&lt;br&gt;the requested action
-  Api server--&gt;&gt;kubectl: API Server return the action result
-  kubectl--&gt;&gt;User: kubectl display&lt;br&gt;the result and exits</code></pre>
+  kubectl-sk--&gt;&gt;kubectl: kubectl-sk returns&lt;br&gt;the token to kubectl&lt;br&gt;by printing it on&lt;br&gt;stdout and exits.
+  kubectl-&gt;&gt;Api server: kubectl issues the appropriate API call&lt;br&gt;with the provided bearer token
+  Api server-&gt;&gt;skAuth: The API Server&lt;br&gt;issues an&lt;br&gt;HTTP POST&lt;br&gt;with a&lt;br&gt;TokenReview&lt;br&gt;command
+  skAuth--&gt;&gt;Api server: skAuth validates&lt;br&gt;the token and &lt;br&gt;provides user's&lt;br&gt;name and groups&lt;br&gt;in the response.
+  Api server-&gt;&gt;Api server: API Server validates&lt;br&gt;if user is allowed by&lt;br&gt;RBAC to perform&lt;br&gt;the requested action
+  Api server--&gt;&gt;kubectl: API Server returns the action result
+  kubectl--&gt;&gt;User: kubectl displays&lt;br&gt;the result and exits</code></pre>
 <h3 id="token-expired">Token expired</h3>
-<p>And here is the sequence when a token has expired:</p>
+<p>Here is the sequence when a token has expired.</p>
 <pre class="mermaid"><code>sequenceDiagram
   participant User
   participant kubectl
@@ -1089,14 +1096,14 @@ Always using SSL encrypted communication. In configuration files, this interface
   participant skAuth
   participant Api server
   autonumber
-  User-&gt;&gt;kubectl: User issue a&lt;br&gt;kubectl command
-  kubectl-&gt;&gt;kubectl-sk: kubectl launch&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
-  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookup&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;YES in this case
+  User-&gt;&gt;kubectl: The user issues a&lt;br&gt;kubectl command
+  kubectl-&gt;&gt;kubectl-sk: kubectl launches&lt;br&gt;the kubectl-sk&lt;br&gt;credential plugin
+  kubectl-sk-&gt;&gt;kubectl-sk: kubeclt-sk lookups&lt;br&gt;for token in its &lt;br&gt;local cache.&lt;br&gt;Found in this case
   kubectl-sk-&gt;&gt;kubectl-sk: Is the token still&lt;br&gt;valid against the&lt;br&gt;clientTokenTTL&lt;br&gt;NO in this case
   kubectl-sk-&gt;&gt;skAuth: HTTP GET REQ:&lt;br&gt;validateToken()
   skAuth-&gt;&gt;skAuth: skAuth check&lt;br&gt;if token is still valid.&lt;br&gt;NO in this case
   skAuth--&gt;&gt;kubectl-sk: tokenInvalid&lt;br&gt;response
-  kubectl-sk-&gt;&gt;User: kubectl-sk prompt&lt;br&gt;for login and password</code></pre>
+  kubectl-sk-&gt;&gt;User: kubectl-sk prompts&lt;br&gt;for login and password</code></pre>
 
 
 

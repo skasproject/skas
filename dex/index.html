@@ -471,18 +471,12 @@
     Testing
   </a>
   
-    <nav class="md-nav" aria-label="Testing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#got-a-certificate-issue" class="md-nav__link">
-    Got a certificate issue ?
-  </a>
-  
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#encountering-a-certificate-issue" class="md-nav__link">
+    Encountering a certificate issue?
+  </a>
   
 </li>
         
@@ -658,18 +652,12 @@
     Testing
   </a>
   
-    <nav class="md-nav" aria-label="Testing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#got-a-certificate-issue" class="md-nav__link">
-    Got a certificate issue ?
-  </a>
-  
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#encountering-a-certificate-issue" class="md-nav__link">
+    Encountering a certificate issue?
+  </a>
   
 </li>
         
@@ -724,14 +712,14 @@
 
 
 <h1 id="dex-integration">DEX integration</h1>
-<p><a href="https://dexidp.io/">DEX</a> is an OpenID Connect provider. As such, will serve OpenID Connect clients to provide Single Sign On services.</p>
-<p>It does not host any user identity information by itself, but rely on other Identity Provider for this, through configurable <code>connectors</code>.</p>
-<p>A connector has been developed for SKAS. As DEX does not provide some extension mechanism, adding a connector requires 
-to patch the code. So, a specific DEX image with a SKAS connector has been build.</p>
-<p>Deploying DEX in standalone mode require to operation:</p>
+<p><a href="https://dexidp.io/">DEX</a> is an OpenID Connect provider. As such, it will serve OpenID Connect clients to provide Single Sign-On services.</p>
+<p>DEX does not host any user identity information by itself but relies on other Identity Providers for this through configurable <code>connectors</code>.</p>
+<p>A connector has been developed for SKAS. As DEX does not provide an extension mechanism, adding a connector requires 
+patching the code. So, a specific DEX image with a SKAS connector has been built.</p>
+<p>Deploying DEX in standalone mode requires two operations:</p>
 <ul>
-<li>Reconfigure SKAS to open a service for the usage of DEX (<code>login</code> service)</li>
-<li>Deploying DEX itself, with the proper connector configuration.</li>
+<li>Reconfiguring SKAS to open a service for the usage of DEX (the <code>login</code> service).</li>
+<li>Deploying DEX itself with the proper connector configuration.</li>
 </ul>
 <p>In the following, three variants of this configuration will be described. One with the connection in clear text, and two secured, with network encryption and inter-pod authentication.</p>
 <blockquote>
@@ -739,9 +727,10 @@ to patch the code. So, a specific DEX image with a SKAS connector has been build
 </blockquote>
 <h2 id="clear-text-connection">Clear text connection</h2>
 <h3 id="skas-reconfiguration">SKAS reconfiguration</h3>
-<p>The login service is provided by the <code>skAuth</code> SKAS module. It is disabled by default and must be enabled to be used. 
-Refer to <a href="../architecture/#modules-and-interfaces">Architecture/Modules and interface</a> for more information</p>
-<p>Here is a values file to enable this service: </p>
+<p>The <code>login</code> service is provided by the <code>skAuth</code> module in SKAS. By default, this service is disabled and must be 
+enabled to be used. You can find more information about SKAS modules and interfaces in the 
+<a href="../architecture/#modules-and-interfaces">Architecture/Modules and interface</a> section.</p>
+<p>Below is a sample values file that enables the login service:</p>
 <details class="abstract" open="open">
 <summary>values.skas.login.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">skAuth</span><span class="p">:</span>
@@ -752,19 +741,20 @@ Refer to <a href="../architecture/#modules-and-interfaces">Architecture/Modules 
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">          </span><span class="nt">disabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span></code></pre></div>
 </details>
-<p>Note than, by default, the <code>skAuth</code> module provide only SSL encrypted service. This will be the case of our <code>login</code> service.</p>
+<p>Please note that by default, the <code>skAuth</code> module provides only SSL-encrypted services. This includes our login service.</p>
 <p>To deploy this configuration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>../../values.init.yaml<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>--values<span class="w"> </span>./values.skas.login.yaml
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span>--values<span class="w"> </span>./values.skas.login.yaml
 </span></code></pre></div>
 <blockquote>
-<p><em>Don't forget to add the <code>values.init.yaml</code>, or to merge it in the <code>values.skas.yaml</code> file. Also, if you have others values file, they must be added on each upgrade</em></p>
-<p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
+<p><em>Don't forget to include the <code>values.init.yaml</code> file or merge it into the <code>values.skas.yaml</code> file. Additionally,
+if you have other values files, make sure to include them in each upgrade.</em></p>
+<p><em>Also, remember to restart the pod(s) after making these configuration changes. You can find more information on how
+to do this in the <a href="../configuration/#pod-restart">Configuration: Pod restart</a> section.</em></p>
 </blockquote>
 <h3 id="dex-deployment">DEX deployment</h3>
-<p>For this sample, we will use the official <a href="https://github.com/dexidp/helm-charts/tree/master/charts/dex">DEX Helm chart</a>. 
-This will require some configuration, by providing a specific value file.</p>
-<p>Here is such file (Some value will need to be adjusted to your context)</p>
+<p>For this example, we will use the official <a href="https://github.com/dexidp/helm-charts/tree/master/charts/dex">DEX Helm chart</a>. 
+However, this will require some configuration adjustments by providing a specific value file.</p>
+<p>Here is such sample file (Please note that some values may need to be customized to match your specific context):</p>
 <details class="abstract">
 <summary>values.dex.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">image</span><span class="p">:</span>
@@ -827,90 +817,102 @@ This will require some configuration, by providing a specific value file.</p>
 </span><span id="__span-2-58"><a id="__codelineno-2-58" name="__codelineno-2-58" href="#__codelineno-2-58"></a><span class="w">                </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5556</span>
 </span></code></pre></div>
 </details>
-<p>Here are some comment about this values file:</p>
+<p>Here are some comments about this values file:</p>
 <ul>
-<li>The <code>image</code> section target the SKAS patched image of DEX.</li>
-<li>The <code>config</code> section is the DEX configuration file. Refer to the 
-<a href="https://github.com/dexidp/dex/blob/master/examples/config-dev.yaml">sample DEX config file</a> for more explanation.</li>
-<li>The <code>config.issuer</code> value must be adjusted to your local DNS name. Note it is an unsecured URL.</li>
+<li>The <code>image</code> section is used to specify the SKAS patched image of DEX.</li>
+<li>The <code>config</code> section represents the DEX configuration file. For a more detailed explanation, please refer to the
+  <a href="https://github.com/dexidp/dex/blob/master/examples/config-dev.yaml">sample DEX config file</a>.</li>
+<li>The <code>config.issuer</code> value needs to be adjusted according to your local domain name. Note that it is an unsecured URL.</li>
 <li>The <code>config.connnectors[0]</code> is the SKAS specific section. </li>
-<li>The <code>config.connnectors[0].config.loginProvider.url</code> value targets the <code>skAuth</code> service. A noted above, 
-this is an SSL encrypted service.</li>
-<li>The <code>config.connnectors[0].config.loginProvider.insecureSkipVerify</code> is set to <code>true</code>. As the targeted service is 
-using HTTPS, we skip the certificate authority validation for this first sample.</li>
-<li>the <code>staticClients</code> section define a first OIDC client with parameter compatible with the <code>example-app</code> described below. </li>
-<li>The <code>securityContext</code> section explicit some security constraints. This may be useful if your cluster implements 
-some security restriction on running PODs. </li>
-<li>The <code>ingress</code> section should be adjusted, at least for the <code>host:</code> url and maybe more if you use another ingress controller than nginx.  </li>
+<li>The <code>config.connnectors[0].config.loginProvider.url</code> value points to the <code>skAuth</code> service. As mentioned earlier, 
+  this service uses SSL encryption</li>
+<li>The <code>config.connnectors[0].config.loginProvider.insecureSkipVerify</code> is set to <code>true</code>. This is because the targeted 
+  service uses HTTPS, and we're skipping the certificate authority validation for this first sample.</li>
+<li>the <code>staticClients</code> section defines a first OIDC client with parameters compatible with the <code>example-app</code> described below. </li>
+<li>The <code>securityContext</code> section specifies some security constraints. This can be useful if your cluster enforces
+  security restrictions on running PODs.</li>
+<li>The <code>ingress</code> section should be adjusted, especially for the <code>host:</code> URL, and possibly more if you're using an 
+ ingress controller other than nginx.  </li>
 </ul>
-<p>As we will use the public DEX helm chart, its repo must first be defined:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>dex<span class="w"> </span>https://charts.dexidp.io
+<p>This will add the DEX Helm chart repository to your Helm configuration and update the list of available charts. </p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>dex<span class="w"> </span>https://charts.dexidp.io
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>helm<span class="w"> </span>repo<span class="w"> </span>update
 </span></code></pre></div>
-<p>Then we can proceed to the DEX deployment:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>dex<span class="w"> </span>dex/dex<span class="w"> </span>--values<span class="w"> </span>./values.dex.yaml
+<p>Now you can proceed to deploy DEX using Helm with the provided values file.</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>dex<span class="w"> </span>dex/dex<span class="w"> </span>--values<span class="w"> </span>./values.dex.yaml
 </span></code></pre></div>
-<p>If everything is OK, you should have two PODs running:</p>
+<p>f everything is set up correctly, you should have two running Pods:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>pods
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>NAME<span class="w">                    </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>dex-54b4698bcd-9wbz6<span class="w">    </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>5h5m
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>skas-5cc75b8ff9-pw7nd<span class="w">   </span><span class="m">3</span>/3<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>6h23m
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>&gt;<span class="w"> </span>NAME<span class="w">                    </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>&gt;<span class="w"> </span>dex-54b4698bcd-9wbz6<span class="w">    </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>5h5m
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>&gt;<span class="w"> </span>skas-5cc75b8ff9-pw7nd<span class="w">   </span><span class="m">3</span>/3<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>6h23m
 </span></code></pre></div>
-<p>In case of problems, you may be want to check the resulting configuration. Unfortunately, this Helm chart store it in 
-a secret. This means the configuration values are encoded en base64.</p>
-<p>To display it, you can type:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>dex<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{ </span>$<span class="s2">.data.config\.yaml }&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d
+<p>In case of problems, you may want to check the resulting configuration. Unfortunately, this Helm chart stores it in a 
+secret. This means the configuration values are encoded in base64.</p>
+<p>To display it, you can use the following command:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>dex<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{ </span>$<span class="s2">.data.config\.yaml }&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d
 </span></code></pre></div>
-<p>If you modify some value in the <code>values.skas.login.yaml</code> file, execute again the Helm deployment command and restart the DEX Pod:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>dex
+<p>If you modify some value in the <code>values.skas.login.yaml</code> file, execute again the Helm deployment command and 
+restart the DEX Pod:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>dex<span class="w"> </span>dex/dex<span class="w"> </span>--values<span class="w"> </span>./values.dex.yaml
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>dex
 </span></code></pre></div>
 <h3 id="testing">Testing</h3>
-<p>By convention all OIDC provider must provide a <code>well-known</code> endpoint which describe its other endpoints and other configuration values.</p>
-<p>You can test this endpoint with the following command: </p>
+<p>By convention, all OIDC providers must provide a <code>well-known</code> endpoint that describes their other endpoints and 
+configuration values. </p>
+<p>You can test this endpoint with the following command:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>curl<span class="w"> </span>http://dex.ingress.mycluster.internal/.well-known/openid-configuration
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="o">{</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="s2">&quot;issuer&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal&quot;</span>,
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="s2">&quot;authorization_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal/auth&quot;</span>,
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span><span class="s2">&quot;token_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal/token&quot;</span>,
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span><span class="s2">&quot;jwks_uri&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal/keys&quot;</span>,
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span>....
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>&gt;<span class="w"> </span><span class="o">{</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>&gt;<span class="w">   </span><span class="s2">&quot;issuer&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal&quot;</span>,
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>&gt;<span class="w">   </span><span class="s2">&quot;authorization_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal/auth&quot;</span>,
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>&gt;<span class="w">   </span><span class="s2">&quot;token_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal/token&quot;</span>,
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>&gt;<span class="w">   </span><span class="s2">&quot;jwks_uri&quot;</span>:<span class="w"> </span><span class="s2">&quot;http://dex.ingress.mycluster.internal/keys&quot;</span>,
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>&gt;<span class="w">   </span>....
 </span></code></pre></div>
-<p>This will ensure at least DEX is started and you ingress is functional.</p>
 <blockquote>
-<p><em>Of course, you must adjust the URL to your context.</em> </p>
+<p><em>Of course, you must adjust the URL to match your specific context</em></p>
 </blockquote>
-<p>To go further, DEX provide a raw <a href="https://github.com/dexidp/dex/tree/master/examples/example-app">example-app</a>.
-The main purpose of this application is to provide a starting point for developer to integrate an OIDC client in their 
-code. But it also provide an interactive tool to test an OIDC service.</p>
-<p>For your convenience, we have setup a <a href="https://github.com/skasproject/dex-example-app/releases/tag/2.37.0">repository to host binaries of this application, for several OS and processor</a>.</p>
-<p>For example, to download/install this binary for a Mac Intel:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/tmp
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>$<span class="w"> </span>curl<span class="w"> </span>-L<span class="w"> </span>https://github.com/skasproject/dex-example-app/releases/download/2.37.0/example-app_2.37.0_darwin_amd64<span class="w"> </span>-o<span class="w"> </span>./example-app
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>$<span class="w"> </span>sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>example-app
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>$<span class="w"> </span>sudo<span class="w"> </span>mv<span class="w"> </span>example-app<span class="w"> </span>/usr/local/bin
+<p>Running the provided command will help ensure that DEX is up and running and that your ingress configuration 
+is functional.</p>
+<p>To delve deeper, DEX provides a raw <a href="https://github.com/dexidp/dex/tree/master/examples/example-app">example-app</a>. 
+The primary objective of this application is to offer a starting point for developers to integrate an OIDC client into 
+their code. However, it also provides an interactive tool for testing an OIDC service.</p>
+<p>For your convenience, we have set up a repository to host 
+<a href="https://github.com/skasproject/dex-example-app/releases/tag/2.37.0">binaries of this application</a> for various 
+operating systems and processors.</p>
+<p>For instance, to download and install this binary on a Mac Intel:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">cd</span><span class="w"> </span>/tmp
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>curl<span class="w"> </span>-L<span class="w"> </span>https://github.com/skasproject/dex-example-app/releases/download/2.37.0/example-app_2.37.0_darwin_amd64<span class="w"> </span>-o<span class="w"> </span>./example-app
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>example-app
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>sudo<span class="w"> </span>mv<span class="w"> </span>example-app<span class="w"> </span>/usr/local/bin
 </span></code></pre></div>
+<p>Then, you can launch it with the DEX issuer URL:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>example-app<span class="w"> </span>--issuer<span class="w">  </span>http://dex.ingress.mycluster.internal
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="m">2023</span>/08/28<span class="w"> </span><span class="m">18</span>:50:07<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://127.0.0.1:5555
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>&gt;<span class="w"> </span><span class="m">2023</span>/08/28<span class="w"> </span><span class="m">18</span>:50:07<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://127.0.0.1:5555
 </span></code></pre></div>
-<p>Now, launch your browser to this provided link (<code>http://127.0.0.1:5555</code>). You should land on a page like this:</p>
+<p>Now, launch your browser and navigate to the provided link (http://127.0.0.1:5555). You should land on a page like this:</p>
 <p><img alt="" src="../images/example-app1.png" /></p>
-<p>Click on the <code>Login</code> button. You should then land on a login page:</p>
+<p>Click on the <code>Login</code> button. You should then be directed to a login page:</p>
 <p><img alt="" src="../images/example-app2.png" /></p>
-<p>Enter a valid SKAS user account ('admin' for example) and you should land on a page like this:</p>
+<p>Enter the credentials of a valid SKAS user account (e.g., 'admin'), and you should be directed to a page like this:</p>
 <p><img alt="" src="../images/example-app3.png" /></p>
-<p>This is not really 'user friendly', but it is a test application.</p>
-<p>You can have a look on the log of SKAS and DEX logs. Also, you can test an invalid login.</p>
+<p>This is not really 'user-friendly', but it is a test application.</p>
+<p>You can take a look at the logs for both SKAS and DEX.</p>
+<p>You can also test an invalid login.</p>
 <blockquote>
-<p>Of course, for this to work, you must fully preserve the configuration of <code>staticClients</code> in the DEX config file</p>
+<p><em>To ensure this works correctly, you must maintain the configuration of <code>staticClients</code> in the DEX config file intact.</em></p>
 </blockquote>
-<p>DEX github repo also provide this <code>example-app</code> as a container. You can launch it as:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">5555</span>:5555<span class="w"> </span>ghcr.io/dexidp/example-app:latest<span class="w">  </span>example-app<span class="w"> </span>--issuer<span class="w">  </span>http://dex.ingress.kspray6<span class="w"> </span>--listen<span class="w"> </span>http://0.0.0.0:5555
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="m">2023</span>/08/28<span class="w"> </span><span class="m">17</span>:29:04<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://0.0.0.0:5555
+<p>The DEX GitHub repo also provides the <code>example-app</code> as a container. You can launch it using the following command:"</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">5555</span>:5555<span class="w"> </span>ghcr.io/dexidp/example-app:latest<span class="w">  </span>example-app<span class="w"> </span>--issuer<span class="w">  </span>http://dex.ingress.mycluster.internal<span class="w"> </span>--listen<span class="w"> </span>http://0.0.0.0:5555
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>&gt;<span class="w"> </span><span class="m">2023</span>/08/28<span class="w"> </span><span class="m">17</span>:29:04<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://0.0.0.0:5555
 </span></code></pre></div>
 <h2 id="securing-connection">Securing connection</h2>
-<p>The previous configuration has a major security issue: The login and password information are entered through a clear text connection. </p>
-<p>This following configuration will fix this point and also add authentication between DEX and SKAS and validate the SKAS certificate.</p>
+<p>The previous configuration has a significant security issue: The login and password information are transmitted over 
+an unencrypted connection.</p>
+<p>The following configuration aims to address this vulnerability by implementing secure communication between user's
+browser and DEX. It also add authentication from DEX to SKAS. Additionally, it verifies the authenticity of the SKAS certificate."</p>
 <h3 id="skas-reconfiguration_1">SKAS reconfiguration</h3>
-<p>Here is the modified values file for SKAS reconfiguration.</p>
+<p>The following is the modified values file for SKAS reconfiguration:</p>
 <details class="abstract" open="open">
 <summary>values.skas.login.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">skAuth</span><span class="p">:</span>
@@ -924,13 +926,15 @@ code. But it also provide an interactive tool to test an OIDC service.</p>
 </span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">              </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;aSharedSecret&quot;</span>
 </span></code></pre></div>
 </details>
-<p>The service authentication has been activated.</p>
+<p>The <code>service</code> authentication has been activated.</p>
 <p>To deploy this configuration, use the same command as previously:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>../../values.init.yaml<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>--values<span class="w"> </span>./values.skas.login.yaml
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span>--values<span class="w"> </span>./values.skas.login.yaml
 </span></code></pre></div>
 <blockquote>
-<p><em>And restart the POD</em></p>
+<p><em>Don't forget to include the <code>values.init.yaml</code> file or merge it into the <code>values.skas.yaml</code> file. Additionally,
+if you have other values files, make sure to include them in each upgrade.</em></p>
+<p><em>Also, remember to restart the pod(s) after making these configuration changes. You can find more information on how
+to do this in the <a href="../configuration/#pod-restart">Configuration: Pod restart</a> section.</em></p>
 </blockquote>
 <h3 id="dex-deployment_1">DEX deployment</h3>
 <p>And here is the modified values file for DEX deployment</p>
@@ -1005,71 +1009,76 @@ code. But it also provide an interactive tool to test an OIDC service.</p>
 </details>
 <p>The modification are the following:</p>
 <ul>
-<li>The <code>config.issuer</code> endpoint is now using HTTPS.</li>
-<li>The <code>config.connectors[0].config.loginProvider.rootCaData</code> is populated with the Certificate Authority of the 
-  <code>skAuth</code> service. To find its value, we can dig inside its certificate, which include its authority:
-  <div class="language-shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>skas-auth-cert<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span>
+<li>The <code>config.issuer</code> endpoint now uses HTTPS.</li>
+<li>The <code>config.connectors[0].config.loginProvider.rootCaData</code> is populated with the Certificate Authority of the
+ <code>skAuth</code> service. To obtain its value, you can extract it from the service's certificate as follows:
+  <div class="language-shell copy highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>skas-auth-cert<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span>
 </span></code></pre></div></li>
-<li>The <code>config.connectors[0].config.loginProvider.clientAuth</code> is set to authenticate with the id/secret defined above for <code>skAuth</code> login service.</li>
-<li>The <code>ingress</code> is now configured to handle SSL connection (And force SSL for non-SSL connection)</li>
+<li>The <code>config.connectors[0].config.loginProvider.clientAuth</code> is configured to authenticate using the ID/secret defined 
+  earlier for the <code>skAuth</code> login service.</li>
+<li>The <code>ingress</code> is now configured to handle SSL connections and enforce SSL for non-SSL connections.- </li>
 </ul>
-<p>To apply this new configuration, use the same command as previously:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>dex<span class="w"> </span>dex/dex<span class="w"> </span>--values<span class="w"> </span>./values.dex.yaml
+<p>To apply this new configuration, use the same command as before.</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>dex<span class="w"> </span>dex/dex<span class="w"> </span>--values<span class="w"> </span>./values.dex.yaml
 </span></code></pre></div>
-<p>And restart the POD:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>dex
+<p>And restart the DEX POD:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>dex
 </span></code></pre></div>
 <blockquote>
-<p>Another security improvement would be to configure the ingress in SSL passthroughs and to configure the DEX Pod to
-handle SSL itself. This would ensure real end to end encryption. Unfortunately, this is not possible with the current
-Helm Chart and refactoring it is out of the scope of this documentation.</p>
+<p>Another security enhancement involves configuring the ingress for SSL passthrough and enabling SSL for the DEX 
+Pod itself. This would ensure end-to-end encryption. However, please note that achieving this configuration with the 
+current DEX Helm Chart is not feasible, and refactoring it is beyond the scope of this documentation."</p>
 </blockquote>
 <h3 id="testing_1">Testing</h3>
-<p>You can test again this endpoint with the following command. Note the https:// now on URLs</p>
+<p>You can test again the DEX <code>well-known</code> endpoint with the following command. Note the https:// now on URLs
+You can test the DEX <code>well-known</code> endpoint again using the following command.</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$<span class="w"> </span>curl<span class="w"> </span>https://dex.ingress.mycluster.internal/.well-known/openid-configuration
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="o">{</span>
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span><span class="s2">&quot;issuer&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal&quot;</span>,
-</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="s2">&quot;authorization_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/auth&quot;</span>,
-</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">  </span><span class="s2">&quot;token_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/token&quot;</span>,
-</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">  </span><span class="s2">&quot;jwks_uri&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/keys&quot;</span>,
-</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">  </span><span class="s2">&quot;userinfo_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/userinfo&quot;</span>,<span class="w"> </span>
-</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="w">  </span>....
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>&gt;<span class="w"> </span><span class="o">{</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>&gt;<span class="w">   </span><span class="s2">&quot;issuer&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal&quot;</span>,
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>&gt;<span class="w">   </span><span class="s2">&quot;authorization_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/auth&quot;</span>,
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>&gt;<span class="w">   </span><span class="s2">&quot;token_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/token&quot;</span>,
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>&gt;<span class="w">   </span><span class="s2">&quot;jwks_uri&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/keys&quot;</span>,
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>&gt;<span class="w">   </span><span class="s2">&quot;userinfo_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/userinfo&quot;</span>,<span class="w"> </span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>&gt;<span class="w">   </span>....
 </span></code></pre></div>
-<p>And use again the <code>example-app</code> application. Note the 'https://' on the issuer.</p>
+<blockquote>
+<p>Please note the change to https:// in the URLs."</p>
+</blockquote>
+<p>Use the <code>example-app</code> application again, but this time note the 'https://' in the issuer.</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$<span class="w"> </span>example-app<span class="w"> </span>--issuer<span class="w">  </span>https://dex.ingress.mycluster.internal
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="m">2023</span>/08/28<span class="w"> </span><span class="m">18</span>:50:07<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://127.0.0.1:5555
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>&gt;<span class="w"> </span><span class="m">2023</span>/08/28<span class="w"> </span><span class="m">18</span>:50:07<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://127.0.0.1:5555
 </span></code></pre></div>
-<h4 id="got-a-certificate-issue">Got a certificate issue ?</h4>
-<p>You may get the following on the curl request:</p>
+<h3 id="encountering-a-certificate-issue">Encountering a certificate issue?</h3>
+<p>You might see the following error on the curl request:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$<span class="w"> </span>curl<span class="w"> </span>https://dex.ingress.mycluster.internal/.well-known/openid-configuration
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>curl:<span class="w"> </span><span class="o">(</span><span class="m">60</span><span class="o">)</span><span class="w"> </span>SSL<span class="w"> </span>certificate<span class="w"> </span>problem:<span class="w"> </span>unable<span class="w"> </span>to<span class="w"> </span>get<span class="w"> </span><span class="nb">local</span><span class="w"> </span>issuer<span class="w"> </span>certificate
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>More<span class="w"> </span>details<span class="w"> </span>here:<span class="w"> </span>https://curl.haxx.se/docs/sslcerts.html
-</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>....
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>&gt;<span class="w"> </span>curl:<span class="w"> </span><span class="o">(</span><span class="m">60</span><span class="o">)</span><span class="w"> </span>SSL<span class="w"> </span>certificate<span class="w"> </span>problem:<span class="w"> </span>unable<span class="w"> </span>to<span class="w"> </span>get<span class="w"> </span><span class="nb">local</span><span class="w"> </span>issuer<span class="w"> </span>certificate
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>&gt;<span class="w"> </span>More<span class="w"> </span>details<span class="w"> </span>here:<span class="w"> </span>https://curl.haxx.se/docs/sslcerts.html
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>&gt;<span class="w"> </span>....
 </span></code></pre></div>
-<p>This is the case if the DEX issuers certificate has been signed by an authority which is not recognized by your workstation.</p>
-<p>Solution is to retrieve this certificate:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>dex-server-tls<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d<span class="w"> </span>&gt;./CA.crt
+<p>This issue occurs when the DEX issuer's certificate is signed by an authority that your workstation don't recognize. </p>
+<p>To resolve this, you need to retrieve the issuer's certificate:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>dex-server-tls<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d<span class="w"> </span>&gt;./CA.crt
 </span></code></pre></div>
 <p>And to provide it to the Curl command:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span>curl<span class="w"> </span>https://dex.ingress.mycluster.internal/.well-known/openid-configuration<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>--cacert<span class="w"> </span>./CA.crt
-</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="o">{</span>
-</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w">  </span><span class="s2">&quot;issuer&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal&quot;</span>,
-</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="w">  </span><span class="s2">&quot;authorization_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/auth&quot;</span>,
-</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="w">  </span><span class="s2">&quot;token_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/token&quot;</span>,
-</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="w">  </span><span class="s2">&quot;jwks_uri&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/keys&quot;</span>,
-</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="w">  </span><span class="s2">&quot;userinfo_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/userinfo&quot;</span>,<span class="w"> </span>
-</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="w">  </span>....
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>&gt;<span class="w"> </span><span class="o">{</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>&gt;<span class="w">   </span><span class="s2">&quot;issuer&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal&quot;</span>,
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>&gt;<span class="w">   </span><span class="s2">&quot;authorization_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/auth&quot;</span>,
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>&gt;<span class="w">   </span><span class="s2">&quot;token_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/token&quot;</span>,
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>&gt;<span class="w">   </span><span class="s2">&quot;jwks_uri&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/keys&quot;</span>,
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>&gt;<span class="w">   </span><span class="s2">&quot;userinfo_endpoint&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://dex.ingress.mycluster.internal/userinfo&quot;</span>,<span class="w"> </span>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>&gt;<span class="w">   </span>....
 </span></code></pre></div>
-<p>You will encounter the same issue with the <code>example-app</code> test application. Here also, provide the certificate:</p>
+<p>You may encounter the same issue with the <code>example-app</code> test application. In this case, also provide the certificate:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>$<span class="w"> </span>example-app<span class="w"> </span>--issuer<span class="w"> </span>https://dex.ingress.kspray6<span class="w"> </span>--issuer-root-ca<span class="w"> </span>./CA.crt
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="m">2023</span>/08/29<span class="w"> </span><span class="m">09</span>:31:53<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://127.0.0.1:5555
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>&gt;<span class="w"> </span><span class="m">2023</span>/08/29<span class="w"> </span><span class="m">09</span>:31:53<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>http://127.0.0.1:5555
 </span></code></pre></div>
 <h2 id="using-a-kubernetes-secret">Using a Kubernetes secret</h2>
-<p>There is still a security issue, as two shared secreta (aSharedSecret and the staticClients secret) are in clear text 
-in both values file. As such, they may ends up in some version control system.</p>
+<p>There is still a security issue as two shared secrets (aSharedSecret and the staticClients secret) 
+are stored in plain text in both values files. As a result, they could potentially end up in a version control system.</p>
 <p>So, let's store these values in Kubernetes secrets and access them using environment variables.</p>
-<p>Here is a secret aimed to be shared between DEX and SKAS. Its value can be randomly generated, as it is accessed by both party. </p>
+<p>Here is a secret intended to be shared between DEX and SKAS. Its value can be randomly generated, as it is accessed by both parties.</p>
 <details class="abstract" open="open">
 <summary>dex-client-secret.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
@@ -1083,9 +1092,9 @@ in both values file. As such, they may ends up in some version control system.</
 </span></code></pre></div>
 </details>
 <blockquote>
-<p>There is several solutions to generate such secret value. One can use Helm with some random generator function. Or use a <a href="../toolsandtricks/#secret-generator">Secret generator</a></p>
+<p>There are several solutions to generate such a secret value. One can use Helm with some random generator function or use a <a href="../toolsandtricks/#secret-generator">Secret generator</a>."</p>
 </blockquote>
-<p>And here is the secret shared between DEX (In <code>config.staticClients[0]</code> and the <code>example-app</code> application binary)</p>
+<p>Here is the secret shared between DEX (in <code>config.staticClients[0]</code>) and the <code>example-app</code> application binary."</p>
 <details class="abstract" open="open">
 <summary>example-app-secret.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
@@ -1099,11 +1108,11 @@ in both values file. As such, they may ends up in some version control system.</
 </span></code></pre></div>
 </details>
 <blockquote>
-<p><em>Its value is hard-coded in <code>example-app</code>, so must not be changed (Or you must pass the new value as <code>--client-secret</code> parameter on launch).</em></p>
-<p><em>Note than both secret are formatted in a way compatible with <code>spec.containers[X].envFrom</code>. This is required by the DEX Helm chart.</em></p>
+<p><em>Its value is hard-coded in <code>example-app</code>, so it must not be changed (or you must pass the new value as the <code>--client-secret parameter</code> on launch).</em></p>
+<p><em>Note that both secrets are formatted in a way that is compatible with <code>spec.containers[X].envFrom</code>. This is required by the DEX Helm chart.</em></p>
 </blockquote>
 <h3 id="skas-reconfiguration_2">SKAS reconfiguration</h3>
-<p>Here is the modified values file for SKAS reconfiguration.</p>
+<p>Here is the modified values file for the SKAS reconfiguration:</p>
 <details class="abstract">
 <summary>values.skas.login.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nt">skAuth</span><span class="p">:</span>
@@ -1126,15 +1135,15 @@ in both values file. As such, they may ends up in some version control system.</
 </details>
 <p>The modifications are the following:</p>
 <ul>
-<li>The <code>skAuth.extraEnv</code> subsection inject the secret value as an environment variable in the container.</li>
-<li>the <code>skAuth.exposure.external.services.identity.clients[0].secret</code> fetch its value through this environment variable.</li>
+<li>The <code>skAuth.extraEnv</code> subsection injects the secret value as an environment variable in the container.
+  The <code>skAuth.exposure.external.services.identity.clients[0].secret</code> fetches its value through this environment variable.</li>
 </ul>
 <blockquote>
-<p>Most of the values provided by the helm chart ends up inside a configMap, which is then loaded by the SKAS executable.
-The environment variable interpolation occurs during this load.</p>
+<p><em>Most of the values provided by the Helm chart end up inside a <code>configMap</code>, which is then loaded by the SKAS 
+executable. The environment variable interpolation occurs during this load.</em></p>
 </blockquote>
 <h3 id="dex-deployment_2">DEX deployment</h3>
-<p>And here is the modified values file for DEX deployment</p>
+<p>Here is the modified values file for DEX deployment:</p>
 <details class="abstract">
 <summary>values.dex.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="nt">image</span><span class="p">:</span>
@@ -1211,13 +1220,14 @@ The environment variable interpolation occurs during this load.</p>
 </span><span id="__span-27-72"><a id="__codelineno-27-72" name="__codelineno-27-72" href="#__codelineno-27-72"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dex.ingress.mycluster.internal</span>
 </span></code></pre></div>
 </details>
-<p>DEX handle environment variable extension in two different ways, depending of the subsection:</p>
+<p>DEX handles environment variable expansion in two different ways, depending on the subsection:</p>
 <ul>
-<li>Environment variable are expanded the usual way in the <code>connectors</code> definition.</li>
-<li>This is not the case for other parts of the configuration, such as <code>staticClients</code>. So two new attributes have been
-added in a staticClient definition: <code>idEnv</code> and <code>secretEnv</code>. Only this last is used in our case.</li>
+<li>Environment variables are expanded in the usual way within the <code>connectors</code> definition.</li>
+<li>However, in other parts of the configuration, such as <code>staticClients</code>, standard environment variable expansion does 
+not occur. To address this, two new attributes have been introduced in the <code>staticClients</code> definition: 
+<code>idEnv</code> and <code>secretEnv</code>. They take the variable name as parameter. In our case, only the <code>secretEnv</code> attribute is used.</li>
 </ul>
-<p>Both secret values are injected in the Pod by the <code>envFrom:</code> subsection</p>
+<p>Both secret values are injected into the Pod using the <code>envFrom</code> subsection."</p>
 
 
 

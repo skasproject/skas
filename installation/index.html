@@ -291,11 +291,11 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#install-skas-helm-chart" class="md-nav__link">
-    Install SKAS helm chart
+  <a href="#installing-with-skas-helm-chart" class="md-nav__link">
+    Installing with SKAS Helm Chart
   </a>
   
-    <nav class="md-nav" aria-label="Install SKAS helm chart">
+    <nav class="md-nav" aria-label="Installing with SKAS Helm Chart">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -352,8 +352,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#skas-cli-installation" class="md-nav__link">
-    SKAS CLI installation.
+  <a href="#installation-of-skas-cli" class="md-nav__link">
+    Installation of SKAS CLI
   </a>
   
 </li>
@@ -565,11 +565,11 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#install-skas-helm-chart" class="md-nav__link">
-    Install SKAS helm chart
+  <a href="#installing-with-skas-helm-chart" class="md-nav__link">
+    Installing with SKAS Helm Chart
   </a>
   
-    <nav class="md-nav" aria-label="Install SKAS helm chart">
+    <nav class="md-nav" aria-label="Installing with SKAS Helm Chart">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -626,8 +626,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#skas-cli-installation" class="md-nav__link">
-    SKAS CLI installation.
+  <a href="#installation-of-skas-cli" class="md-nav__link">
+    Installation of SKAS CLI
   </a>
   
 </li>
@@ -658,143 +658,164 @@
 
 
 <h1 id="installation">INSTALLATION</h1>
-<h2 id="install-skas-helm-chart">Install SKAS helm chart</h2>
-<p>The simplest and recommended method to install the skas server is to use the provided helm chart.</p>
-<p>The following is assumed</p>
+<h2 id="installing-with-skas-helm-chart">Installing with SKAS Helm Chart</h2>
+<p>The most straightforward and recommended method for installing the SKAS server is by using the provided Helm chart. </p>
+<p>Before you begin, make sure you meet the following prerequisites:</p>
 <ul>
-<li>Certificate manager is deployed in the target cluster and a <code>ClusterIssuer</code> is defined.</li>
-<li>There is an nginx ingress controller deployed in the target cluster.</li>
-<li>You have a local client kubernetes configuration with full admin rights on target cluster.</li>
-<li>Helm is installed locally.</li>
+<li>
+<p><strong>Certificate Manager:</strong> Ensure that the Certificate Manager is deployed in your target Kubernetes cluster, and a <code>ClusterIssuer</code> is defined for certificate management.</p>
+</li>
+<li>
+<p><strong>Ingress Controller:</strong> An NGINX ingress controller should be deployed in your target Kubernetes cluster.</p>
+</li>
+<li>
+<p><strong>Kubectl Configuration:</strong> You should have a local client Kubernetes configuration with full administrative 
+rights on the target cluster.</p>
+</li>
+<li>
+<p><strong>Helm:</strong> Helm must be installed locally on your system.</p>
+</li>
 </ul>
-<p>First, add the SKAS helm repo:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>skas<span class="w"> </span>https://skasproject.github.io/skas-charts
+<p>Follow these steps to install SKAS using Helm:</p>
+<ul>
+<li>Add the SKAS Helm repository by running the following command:</li>
+</ul>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>skas<span class="w"> </span>https://skasproject.github.io/skas-charts
 </span></code></pre></div>
-<p>Then, create a dedicated namespace:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>skas-system
+<ul>
+<li>Create a dedicated namespace for SKAS:</li>
+</ul>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>skas-system
 </span></code></pre></div>
-<p>Then, you can deploy the helm chart:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span><span class="se">\</span>
+<ul>
+<li>Deploy the SKAS Helm chart using the following command:</li>
+</ul>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span>--set<span class="w"> </span><span class="nv">clusterIssuer</span><span class="o">=</span>your-cluster-issuer<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>--set<span class="w"> </span>skAuth.exposure.external.ingress.host<span class="o">=</span>skas.ingress.mycluster.internal<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span>--set<span class="w"> </span>skAuth.kubeconfig.context.name<span class="o">=</span>skas@mycluster.internal<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span>--set<span class="w"> </span>skAuth.kubeconfig.cluster.apiServerUrl<span class="o">=</span>https://kubernetes.ingress.mycluster.internal
 </span></code></pre></div>
-<p>With the following values, adjusted to your context:</p>
+<p>Replace the values with your specific configuration:</p>
 <ul>
-<li><code>clusterIssuer</code>: The Certificate Manager <code>ClusterIssuer</code> used to generate the certificate for all ingress access.</li>
-<li><code>skAuth.exposure.external.ingress.host</code>: The ingress hostname used to access the SKAS service from outside of the cluster. <blockquote>
-<p><em>You will also have to define this hostname in your DNS.</em></p>
+<li><code>clusterIssuer</code>: The ClusterIssuer from your Certificate Manager for certificate management.</li>
+<li><code>skAuth.exposure.external.ingress.host</code>: The hostname used for accessing the SKAS service from outside the cluster.<br> <blockquote>
+<p>Make sure to define this hostname in your DNS.</p>
 </blockquote>
 </li>
+<li><code>skAuth.kubeconfig.context.name</code>: A unique context name for this cluster in your local configuration.</li>
+<li><code>skAuth.kubeconfig.cluster.apiServerUrl</code>: The API server URL from outside the cluster. You can find this information 
+in an existing Kubernetes config file under <code>clusters[X].cluster.server</code>.</li>
 </ul>
-<p>The two following values will be used on generation of user's k8s config files:</p>
-<ul>
-<li><code>skAuth.kubeconfig.context.name</code>: The context name which will be used to identify this cluster in the local config file. Can be any name</li>
-<li><code>skAuth.kubeconfig.cluster.apiServerUrl</code>: The API server URL, from outside of the cluster. If you don't know it, you can find the information on an existing config file, with the yaml path <code>cluters[X].cluster.server</code>.</li>
-</ul>
-<p>As an alternate approach, you can create a local values yaml file:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>cat<span class="w"> </span>&gt;./values.init.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="s">clusterIssuer: your-cluster-issuer</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="s">skAuth:</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="s">  exposure:</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="s">    external:</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="s">      ingress:</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="s">        host: skas.ingress.mycluster.internal</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="s">  kubeconfig:</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="s">    context:</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="s">      name: skas@mycluster.internal</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="s">    cluster:</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="s">      apiServerUrl: https://kubernetes.ingress.mycluster.internal</span>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="s">EOF</span>
+<p>Alternatively, you can create a local YAML values file as follows:</p>
+<details class="abstract" open="open">
+<summary>values.init.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">      </span><span class="nt">ingress</span><span class="p">:</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">        </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas.ingress.mycluster.internal</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">  </span><span class="nt">kubeconfig</span><span class="p">:</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="nt">context</span><span class="p">:</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas@mycluster.internal</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">      </span><span class="nt">apiServerUrl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://kubernetes.ingress.mycluster.internal</span>
 </span></code></pre></div>
-<p>And issue the helm command as:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml
+</details>
+<p>And then install SKAS using this values file:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml
 </span></code></pre></div>
-<p>Then, if the installation is successful, you should be able to see the 'skas' server pod:</p>
+<p>After a successful installation, verify the SKAS server pod is running:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>pods
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>NAME<span class="w">                    </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>skas-746c54dc75-v8v2f<span class="w">   </span><span class="m">3</span>/3<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>25s
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>&gt;<span class="w"> </span>NAME<span class="w">                    </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>&gt;<span class="w"> </span>skas-746c54dc75-v8v2f<span class="w">   </span><span class="m">3</span>/3<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>25s
 </span></code></pre></div>
 <h3 id="use-another-ingress-controller-instead-of-nginx">Use another ingress controller instead of nginx</h3>
-<p>If using another ingress controller, launch the helm chart with <code>--set ingressClass=xxxx</code>. As the value will not be 'nginx', no ingress resource will be 
-created by the helm chart. It is up to you to setup your own ingress. 
+<p>If you are using an ingress controller other than NGINX, you can specify the ingress class by adding 
+the --set ingressClass=xxxx flag when launching the Helm chart. In this case, the Helm chart won't create an ingress 
+resource, and you will need to set up your own ingress. 
 (<a href="https://github.com/skasproject/skas/blob/main/helm/skas/templates/sk-auth/exposure/ingress.yaml">Here</a> is the nginx definition, as a starting point.)</p>
 <p>Please note that the ingress is configured with <code>ssl-passthroughs</code>. The underlying service will handle SSL.</p>
 <h3 id="no-certificate-manager">No Certificate Manager</h3>
-<p>If you do not use Certificate Manager, launch the helm chart without <code>ClusterIssuer</code> definition. 
-Then, the secret hosting the certificate for the services will be missing and will need to be created it manually. (The <code>skas</code> pod will fail)</p>
+<p>If you are not using a Certificate Manager, you can still install SKAS. Follow these steps:</p>
 <ul>
-<li>Prepare PEM encoded self-signed certificate and key files.The certificate must be valid for the following hostnames:<ul>
+<li>Launch the helm chart without <code>ClusterIssuer</code> definition. Then, the secret hosting the certificate for the services 
+will be missing, so the <code>skas</code> pod will fail</li>
+<li>Prepare a PEM-encoded self-signed certificate and key files. The certificate should be valid for the following hostnames:<ul>
 <li><code>skas-auth</code></li>
 <li><code>skas-auth.skas-system.svc</code></li>
 <li><code>localhost</code></li>
-<li><code>skas.ingress.mycluster.internal</code> (To be adjusted to your the effective host name provided above)</li>
+<li><code>skas.ingress.mycluster.internal</code> (Adjust this to your actual hostname)</li>
 </ul>
 </li>
-<li>Base64-encode the CA cert (in its PEM format) and its key.</li>
-<li>Create Secret in <code>skas-system</code> namespace as follows:</li>
+<li>Base64-encode the CA certificate (in PEM format) and its key.</li>
+<li>Create a secret in the skas-system namespace:
+    <div class="language-shell copy highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>tls<span class="w"> </span>skas-auth-cert<span class="w"> </span>--cert<span class="o">=</span>&lt;CERTIFICATE<span class="w"> </span>FILE&gt;<span class="w"> </span>--key<span class="o">=</span>&lt;KEY<span class="w"> </span>FILE&gt;
+</span></code></pre></div></li>
+<li>The skas pod should start successfully.</li>
 </ul>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>tls<span class="w"> </span>skas-auth-cert<span class="w"> </span>--cert<span class="o">=</span>&lt;CERTIFICATE<span class="w"> </span>FILE&gt;<span class="w"> </span>--key<span class="o">=</span>&lt;KEY<span class="w"> </span>FILE&gt;
-</span></code></pre></div>
-<p>Then, the <code>skas</code> pod should start successfully.</p>
 <h2 id="api-server-configuration">API Server configuration.</h2>
-<p>The Authentication Webhook of the API server should be configured to reach our authentication module.</p>
+<p>The API server's Authentication Webhook must be configured to communicate with our authentication module.</p>
 <h3 id="manual-configuration">Manual configuration</h3>
-<p>Depending of your installation, the directory mentioned below may differs (For information, the clusters used for test and documentation are built with <a href="https://github.com/kubernetes-sigs/kubespray">kubespray</a>)</p>
-<p>Also, this procedure assume the API Server is managed by the Kubelet, as a static Pod. If your API Server is managed by another system (i.e. systemd), you should adapt accordingly.</p>
+<p>Depending on your specific installation, the directory mentioned below may vary. For reference, the clusters used for testing and documentation purposes were built using <a href="https://github.com/kubernetes-sigs/kubespray">kubespray</a>.</p>
+<p>Additionally, this procedure assumes that the API Server is managed by the Kubelet as a static Pod. If your API Server is managed by another system, such as systemd, you should make the necessary adjustments accordingly.</p>
 <blockquote>
-<p><strong>The following operations must be performed on all nodes hosting an instance of the Kubernetes API server</strong>. Typically, all nodes of the control plane.</p>
+<p><em>Please note that the following operations must be executed on all nodes hosting an instance of the Kubernetes API server, typically encompassing all nodes within the control plane.</em></p>
 </blockquote>
-<p>Also, these operations require <code>root</code> access on these nodes.</p>
-<p>First, create a folder dedicated to <code>skas</code>:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>[root]$ mkdir -p /etc/kubernetes/skas
+<p>These operations require 'root' access on these nodes._</p>
+<p>To initiate the process, start by creating a dedicated folder for 'skas':"</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/kubernetes/skas
 </span></code></pre></div>
-<p>Then, create the Authentication webhook configuration file in this folder (You can cut/paste the following):</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="o">[</span>root<span class="o">]</span>$<span class="w"> </span>cat<span class="w"> </span>&gt;/etc/kubernetes/skas/hookconfig.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="s">apiVersion: v1</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="s">kind: Config</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="s"># clusters refers to the remote service.</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="s">clusters:</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="s">  - name: sk-auth</span>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="s">    cluster:</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="s">      certificate-authority: /etc/kubernetes/skas/skas_auth_ca.crt        # CA for verifying the remote service.</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="s">      server: https://sk-auth.skas-system.svc:7014/v1/tokenReview # URL of remote service to query. Must use &#39;https&#39;.</span>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="s"># users refers to the API server&#39;s webhook configuration.</span>
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="s">users:</span>
-</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="s">  - name: skasapisrv</span>
-</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>
-</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="s"># kubeconfig files require a context. Provide one for the API server.</span>
-</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="s">current-context: authwebhook</span>
-</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="s">contexts:</span>
-</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="s">- context:</span>
-</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="s">    cluster: sk-auth</span>
-</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="s">    user: skasapisrv</span>
-</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a><span class="s">  name: authwebhook</span>
-</span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a><span class="s">EOF</span>
+<p>Next, create the Authentication Webhook configuration file within this directory. You can conveniently copy and paste the following configuration:</p>
+<details class="abstract" open="open">
+<summary>/etc/kubernetes/skas/hookconfig.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Config</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="c1"># clusters refers to the remote service.</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="nt">clusters</span><span class="p">:</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sk-auth</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">      </span><span class="nt">certificate-authority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/kubernetes/skas/skas_auth_ca.crt</span><span class="w">        </span><span class="c1"># CA for verifying the remote service.</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">      </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://sk-auth.skas-system.svc:7014/v1/tokenReview</span><span class="w"> </span><span class="c1"># URL of remote service to query. Must use &#39;https&#39;.</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="c1"># users refers to the API server&#39;s webhook configuration.</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="nt">users</span><span class="p">:</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skasapisrv</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="c1"># kubeconfig files require a context. Provide one for the API server.</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="nt">current-context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">authwebhook</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="nt">contexts</span><span class="p">:</span>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">context</span><span class="p">:</span>
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sk-auth</span>
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skasapisrv</span>
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">authwebhook</span>
 </span></code></pre></div>
-<p>As you can see in this file, there is a reference to the certificate authority of the authentication webhook service. So, you must fetch it and copy to this location:</p>
+</details>
+<p>As indicated within this file, there is a reference to the certificate authority of the authentication webhook service. 
+Consequently, you should retrieve it and place it in this location:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>skas-auth-cert<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d<span class="w"> </span>&gt;/etc/kubernetes/skas/skas_auth_ca.crt<span class="w">  </span>
+</span></code></pre></div>
 <blockquote>
-<p>NB: It is assumed <code>kubectl</code> command was installed in this node, with an administrator configuration.</p>
+<p><em>Please ensure that the kubectl command is installed on this node with administrator configuration.</em></p>
 </blockquote>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="o">[</span>root<span class="o">]</span>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>skas-auth-cert<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d<span class="w"> </span>&gt;/etc/kubernetes/skas/skas_auth_ca.crt<span class="w">  </span>
+<p>Inspect the folder's contents:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/etc/kubernetes/skas
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>&gt;<span class="w"> </span>total<span class="w"> </span><span class="m">8</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>&gt;<span class="w"> </span>-rw-r--r--.<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w">  </span><span class="m">620</span><span class="w"> </span>May<span class="w"> </span><span class="m">11</span><span class="w"> </span><span class="m">12</span>:36<span class="w"> </span>hookconfig.yaml
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>&gt;<span class="w"> </span>-rw-r--r--.<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">1220</span><span class="w"> </span>May<span class="w"> </span><span class="m">11</span><span class="w"> </span><span class="m">12</span>:58<span class="w"> </span>skas_auth_ca.crt
 </span></code></pre></div>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="o">[</span>root<span class="o">]</span>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/etc/kubernetes/skas
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>total<span class="w"> </span><span class="m">8</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>-rw-r--r--.<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w">  </span><span class="m">620</span><span class="w"> </span>May<span class="w"> </span><span class="m">11</span><span class="w"> </span><span class="m">12</span>:36<span class="w"> </span>hookconfig.yaml
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>-rw-r--r--.<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">1220</span><span class="w"> </span>May<span class="w"> </span><span class="m">11</span><span class="w"> </span><span class="m">12</span>:58<span class="w"> </span>skas_auth_ca.crt
+<p>Now, you need to modify the API Server manifest file located at <code>/etc/kubernetes/manifests/kube-apiserver.yaml</code> to include the <code>hookconfig.yaml</code> file:"</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>vi<span class="w"> </span>/etc/kubernetes/manifests/kube-apiserver.yaml
 </span></code></pre></div>
-<p>Now, you must edit the API server manifest file (<code>/etc/kubernetes/manifests/kube-apiserver.yaml</code>) to load the <code>hookconfig.yaml</code> file:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">[</span>root<span class="o">]</span>$<span class="w"> </span>vi<span class="w"> </span>/etc/kubernetes/manifests/kube-apiserver.yaml
-</span></code></pre></div>
-<p>First step is to add two flags to the kube-apiserver command line:</p>
+<p>The initial step involves adding two flags to the kube-apiserver command line:</p>
 <ul>
-<li><code>--authentication-token-webhook-cache-ttl</code>: How long to cache authentication decisions.</li>
-<li><code>--authentication-token-webhook-config-file</code>: The path to the configuration file we just setup</li>
+<li><code>--authentication-token-webhook-cache-ttl</code>: This determines the duration for caching authentication decisions.</li>
+<li><code>--authentication-token-webhook-config-file</code>: This refers to the path of the configuration file we've just set up.</li>
 </ul>
-<p>Here is what it should look like:</p>
+<p>This is how it should appear:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nn">...</span>
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nt">spec</span><span class="p">:</span>
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
@@ -807,15 +828,15 @@ Then, the secret hosting the certificate for the services will be missing and wi
 </span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--anonymous-auth=True</span>
 </span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="nn">...</span>
 </span></code></pre></div>
-<p>And the second step will consists to map the node folder <code>/etc/kubernetes/skas</code> inside the API server pod, under the same path.
-This is required as these files are accessed in the API Server container context.</p>
-<p>For this, a new <code>volumeMounts</code> entry should be added:</p>
+<p>The second step involves mapping the node folder <code>/etc/kubernetes/skas</code> inside the API server pod, using the same path. 
+This mapping is necessary because these files are accessed within the context of the API Server container.</p>
+<p>To achieve this, you should add a new volumeMounts entry as follows:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span>
 </span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/kubernetes/skas</span>
 </span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-config</span>
 </span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">....</span>
 </span></code></pre></div>
-<p>And a corresponding new <code>volumes</code>  entry:</p>
+<p>Additionally, you need to include a corresponding new volumes entry:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span>
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">hostPath</span><span class="p">:</span>
 </span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/kubernetes/skas</span>
@@ -823,114 +844,125 @@ This is required as these files are accessed in the API Server container context
 </span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-config</span>
 </span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">....</span>
 </span></code></pre></div>
-<p>And another configuration parameter must be defined. The <code>dnsPolicy</code> must be set to <code>ClusterFirstWithHostNet</code>. Ensure such key does not already exists and add it:</p>
+<p>Furthermore, you should define another configuration parameter. Specifically, you must set the <code>dnsPolicy</code> to 
+<code>ClusterFirstWithHostNet</code>. Please verify that this key doesn't already exist and add or modify it accordingly:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="w">  </span><span class="nt">hostNetwork</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">  </span><span class="nt">dnsPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterFirstWithHostNet</span><span class="w"> </span>
 </span></code></pre></div>
-<p>This complete the API Server configuration. Saving the edited file will trigger a restart of the API Server.</p>
-<p>For more information, the kubernetes documentation on this topic is <a href="https://kubernetes.io/docs/reference/access-authn-authz/webhook/">here</a></p>
-<p><strong>Remember: Perform this on all nodes hosting an instance of API Server.</strong></p>
+<p>With these adjustments, you have completed the configuration for the API Server. Saving the edited file will trigger 
+a restart of the API Server to take the changes into account.</p>
+<p>For additional information, refer to the Kubernetes documentation on this topic, available <a href="https://kubernetes.io/docs/reference/access-authn-authz/webhook/">here</a></p>
+<blockquote>
+<p><strong>Please remember to carry out this procedure on all nodes that host an instance of the API Server.</strong></p>
+</blockquote>
 <h3 id="using-an-ansible-role">Using an Ansible role</h3>
-<p>If ansible is one of your favorite tool, you may automate these tedious tasks by using an ansible role.</p>
-<p>You will find such a role <a href="https://github.com/skasproject/skas/releases/download/0.2.1/skas-apiserver-role-0.2.1.tgz">here</a></p>
-<p>As the manual installation, you may need to modify it accordingly to you local context.</p>
-<p>To use it, we assume you have an ansible configuration with an inventory defining the target cluster. Then:</p>
+<p>If Ansible is one of your preferred tools, you can automate these laborious tasks by utilizing an Ansible role.</p>
+<p>You can obtain such a role <a href="https://github.com/skasproject/skas/releases/download/0.2.1/skas-apiserver-role-0.2.1.tgz">here</a>.</p>
+<p>Similar to manual installation, you might need to customize it to suit your local context.</p>
+<p>To utilize this role, we assume that you have an Ansible configuration in place, along with an inventory that defines the target cluster. Follow these steps:</p>
 <ul>
-<li>Download, and untar the role archive provided above in a folder which is part of the rolepath. </li>
-<li>create a playbook file, such as :</li>
+<li>Download and extract the role archive provided above into a folder that is part of the role path.</li>
+<li>Create a playbook file, for example:</li>
 </ul>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>cat<span class="w"> </span>&gt;./skas.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="s">- hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server</span>
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="s">  tags: [ &quot;skas&quot; ]</span>
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="s">  vars:</span>
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="s">    skas_state: present</span>
-</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="s">  roles:</span>
-</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="s">  - skas-apiserver</span>
-</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="s">EOF</span>
+<details class="abstract" open="open">
+<summary>skas.yaml</summary>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>- hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>  tags: [ &quot;skas&quot; ]
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>  vars:
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    skas_state: present
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>  roles:
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>  - skas-apiserver
 </span></code></pre></div>
+</details>
 <ul>
-<li>Launch the playbook:</li>
+<li>Launch this playbook:</li>
 </ul>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>ansible-playbook<span class="w"> </span>./skas.yaml
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>ansible-playbook<span class="w"> </span>./skas.yaml
 </span></code></pre></div>
-<p>The playbook will perform all the steps described in the manual installation above. This will generate a restart of the API server.</p>
+<p>The playbook will execute all the steps outlined in the manual installation process detailed above. Consequently, 
+this will trigger a restart of the API server.</p>
 <h3 id="troubleshooting">Troubleshooting</h3>
-<p>A small typo or incoherence in configuration may lead to API Server unable to restart.
-If this is the case, you may have a look in the logs of the Kubelet (Remember, as a static pod, the API Server is managed by the Kubelet) in order to figure out what'is happen.</p>
-<p>If you made a modification in this the <code>hookconfig.yaml</code> file, or if you update the CA file, will need to restart the API Server to reload the configuration.
-But, the API Server is a 'static pod', a pod managed by the kubelet. As such, it can't be restarted as a standard pod.
-The simplest way to trigger its effective reload is to modify the <code>/etc/kubernetes/manifests/kube-apiserver.yaml</code> file.
-And you will need a real modification. Touch may not be enough. A common trick here is to modify slightly <code>the authentication-token-webhook-cache-ttl</code> flag value.</p>
-<h2 id="skas-cli-installation">SKAS CLI installation.</h2>
-<p>SKAS provide a CLI interface as an <a href="https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/">extension of kubectl</a></p>
-<p>Installation is straightforward:</p>
+<p>If there is a minor typo or a configuration inconsistency, it could potentially prevent the API Server from restarting. 
+In such cases, it's advisable to examine the logs of the Kubelet. (Remember that, as a static pod, the API Server is 
+managed by the Kubelet). These logs can provide insights into what might be causing the issue.</p>
+<p>If you've made any modifications to the <code>hookconfig.yaml</code> file or updated the CA file, it's necessary to restart the 
+API Server to apply the new configuration. However, since the API Server is a 'static pod' managed by the Kubelet, 
+it can't be restarted like a standard pod.</p>
+<p>The simplest method to effectively trigger a reload of the API Server is to make a modification to the 
+<code>/etc/kubernetes/manifests/kube-apiserver.yaml</code> file. It's essential that this modification is a substantive change, 
+as simply using the touch command may not suffice. A common approach is to make a slight modification to the 
+<code>authentication-token-webhook-cache-ttl</code> flag value. This will prompt the API Server to reload its configuration 
+and apply the changes.</p>
+<h2 id="installation-of-skas-cli">Installation of SKAS CLI</h2>
+<p>SKAS offers a command-line interface (CLI) as an <a href="https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/">extension of kubectl</a>.</p>
+<p>The installation process is straightforward:</p>
 <ul>
-<li>Download the executable <strong>for your OS/Architecture</strong></li>
-<li>Name it <code>kubectl-sk</code> (To comply to the naming convention of kubectl extension)</li>
-<li>Make it executable</li>
-<li>Move it to a folder accessed by your PATH.</li>
+<li>Download the executable that corresponds to your operating system and architecture <a href="https://github.com/skasproject/skas/releases/tag/0.2.1">from this location</a>.</li>
+<li>Rename the downloaded executable to <code>kubectl-sk</code> to adhere to the naming convention of kubectl extensions.</li>
+<li>Make the file executable.</li>
+<li>Move the <code>kubectl-sk</code> executable to a directory that is included in your system's PATH environment variable.</li>
 </ul>
-<p>For example, on a Mac Intel:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/tmp
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>$<span class="w"> </span>curl<span class="w"> </span>-L<span class="w"> </span>https://github.com/skasproject/skas/releases/download/0.2.1/kubectl-sk_0.2.1_darwin_amd64<span class="w"> </span>-o<span class="w"> </span>./kubectl-sk
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>$<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>kubectl-sk
-</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>$<span class="w"> </span>sudo<span class="w"> </span>mv<span class="w"> </span>kubectl-sk<span class="w"> </span>/usr/local/bin
+<p>For instance, on a Mac with an Intel processor, you can use the following commands:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nb">cd</span><span class="w"> </span>/tmp
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>curl<span class="w"> </span>-L<span class="w"> </span>https://github.com/skasproject/skas/releases/download/0.2.1/kubectl-sk_0.2.1_darwin_amd64<span class="w"> </span>-o<span class="w"> </span>./kubectl-sk
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>kubectl-sk
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>sudo<span class="w"> </span>mv<span class="w"> </span>kubectl-sk<span class="w"> </span>/usr/local/bin
 </span></code></pre></div>
-<p>You can now check the extension is effective</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>A<span class="w"> </span>kubectl<span class="w"> </span>plugin<span class="w"> </span><span class="k">for</span><span class="w"> </span>Kubernetes<span class="w"> </span>authentication
-</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
-</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>Usage:
-</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>kubectl-sk<span class="w"> </span><span class="o">[</span>command<span class="o">]</span>
-</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
-</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>Available<span class="w"> </span>Commands:
-</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>completion<span class="w">  </span>Generate<span class="w"> </span>the<span class="w"> </span>autocompletion<span class="w"> </span>script<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>specified<span class="w"> </span>shell
-</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="nb">hash</span><span class="w">        </span>Provided<span class="w"> </span>password<span class="w"> </span>hash,<span class="w"> </span><span class="k">for</span><span class="w"> </span>use<span class="w"> </span><span class="k">in</span><span class="w"> </span>config<span class="w"> </span>file
-</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="nb">help</span><span class="w">        </span>Help<span class="w"> </span>about<span class="w"> </span>any<span class="w"> </span><span class="nb">command</span>
-</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>init<span class="w">        </span>Add<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>context<span class="w"> </span><span class="k">in</span><span class="w"> </span>Kubeconfig<span class="w"> </span>file<span class="w"> </span><span class="k">for</span><span class="w"> </span>skas<span class="w"> </span>access
-</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>login<span class="w">       </span>Logout<span class="w"> </span>and<span class="w"> </span>get<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>token
-</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="nb">logout</span><span class="w">      </span>Clear<span class="w"> </span><span class="nb">local</span><span class="w"> </span>token
-</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>password<span class="w">    </span>Change<span class="w"> </span>current<span class="w"> </span>password
-</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>user<span class="w">        </span>Skas<span class="w"> </span>user<span class="w"> </span>management
-</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>version<span class="w">     </span>display<span class="w"> </span>skas<span class="w"> </span>client<span class="w"> </span>version
-</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a>whoami<span class="w">      </span>Display<span class="w"> </span>current<span class="w"> </span>logged<span class="w"> </span>user,<span class="w"> </span><span class="k">if</span><span class="w"> </span>any
-</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a>
-</span><span id="__span-19-19"><a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a>Flags:
-</span><span id="__span-19-20"><a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a>-h,<span class="w"> </span>--help<span class="w">                </span><span class="nb">help</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>kubectl-sk
-</span><span id="__span-19-21"><a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a>--kubeconfig<span class="w"> </span>string<span class="w">   </span>kubeconfig<span class="w"> </span>file<span class="w"> </span>path.<span class="w"> </span>Override<span class="w"> </span>default<span class="w"> </span>configuration.
-</span><span id="__span-19-22"><a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a>--logLevel<span class="w"> </span>string<span class="w">     </span>Log<span class="w"> </span>level<span class="w"> </span><span class="o">(</span>default<span class="w"> </span><span class="s2">&quot;INFO&quot;</span><span class="o">)</span>
-</span><span id="__span-19-23"><a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a>--logMode<span class="w"> </span>string<span class="w">      </span>Log<span class="w"> </span>mode:<span class="w"> </span><span class="s1">&#39;dev&#39;</span><span class="w"> </span>or<span class="w"> </span><span class="s1">&#39;json&#39;</span><span class="w"> </span><span class="o">(</span>default<span class="w"> </span><span class="s2">&quot;dev&quot;</span><span class="o">)</span>
-</span><span id="__span-19-24"><a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a>
-</span><span id="__span-19-25"><a id="__codelineno-19-25" name="__codelineno-19-25" href="#__codelineno-19-25"></a>Use<span class="w"> </span><span class="s2">&quot;kubectl-sk [command] --help&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>more<span class="w"> </span>information<span class="w"> </span>about<span class="w"> </span>a<span class="w"> </span>command.
+<p>Now, you can verify whether the extension is working as intended.</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>kubectl<span class="w"> </span>sk
 </span></code></pre></div>
-<p>There is also a command to list all available plugins:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>plugin<span class="w"> </span>list
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>....
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>/usr/local/bin/kubectl-sk
-</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>....
+<p>It should display:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>A kubectl plugin for Kubernetes authentication
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>Usage:
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>kubectl-sk [command]
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>Available Commands:
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>completion  Generate the autocompletion script for the specified shell
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>hash        Provided password hash, for use in config file
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>help        Help about any command
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>init        Add a new context in Kubeconfig file for skas access
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>login       Logout and get a new token
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>logout      Clear local token
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>password    Change current password
+</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>user        Skas user management
+</span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>version     display skas client version
+</span><span id="__span-20-16"><a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a>whoami      Display current logged user, if any
+</span><span id="__span-20-17"><a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a>
+</span><span id="__span-20-18"><a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a>Flags:
+</span><span id="__span-20-19"><a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a>-h, --help                help for kubectl-sk
+</span><span id="__span-20-20"><a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a>--kubeconfig string   kubeconfig file path. Override default configuration.
+</span><span id="__span-20-21"><a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a>--logLevel string     Log level (default &quot;INFO&quot;)
+</span><span id="__span-20-22"><a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a>--logMode string      Log mode: &#39;dev&#39; or &#39;json&#39; (default &quot;dev&quot;)
+</span><span id="__span-20-23"><a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a>
+</span><span id="__span-20-24"><a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a>Use &quot;kubectl-sk [command] --help&quot; for more information about a command.
 </span></code></pre></div>
-<p>SKAS is now fully installed. You can now move on the <a href="../userguide/">User guide</a>. </p>
+<p>SKAS is now successfully installed. You can proceed to the <a href="../userguide/">User guide</a> for further instructions.</p>
 <h2 id="skas-removal">SKAS Removal</h2>
-<p>When performing SKAS removal, the first step is to reconfigure the API server.</p>
-<p>If you configured it manually, then you must remove the two entries <code>--authentication-token-webhook-cache-ttl</code> and <code>--authentication-token-webhook-config-file</code> from the API server manifest file (/etc/kubernetes/manifests/kube-apiserver.yaml)</p>
-<p>If you configured it using the ansible role, just modify the playbook by setting <code>skas_state: absent</code>: </p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$<span class="w"> </span>cat<span class="w"> </span>&gt;./skas.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="s">- hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server</span>
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="s">  tags: [ &quot;skas&quot; ]</span>
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="s">  vars:</span>
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="s">    skas_state: absent</span>
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="s">  roles:</span>
-</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="s">  - skas-apiserver</span>
-</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="s">EOF</span>
+<p>When it comes to uninstalling SKAS, the initial step involves reconfiguring the API server. 
+The approach depends on how you initially configured it:</p>
+<p>If you configured it manually, remove the two entries, <code>--authentication-token-webhook-cache-ttl</code> and 
+<code>--authentication-token-webhook-config-file</code>, from the API server manifest file located at 
+<code>/etc/kubernetes/manifests/kube-apiserver.yaml</code>.</p>
+<p>If you used the Ansible role for configuration, simply modify the playbook by setting <code>skas_state</code> to <code>absent</code>:</p>
+<details class="abstract" open="open">
+<summary>skas.yaml</summary>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>- hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>  tags: [ &quot;skas&quot; ]
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>  vars:
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>    skas_state: absent
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>  roles:
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>  - skas-apiserver
 </span></code></pre></div>
-<p>and launch it:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span>ansible-playbook<span class="w"> </span>./skas.yaml
+</details>
+<p>After making these changes, execute the playbook:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>ansible-playbook<span class="w"> </span>./skas.yaml
 </span></code></pre></div>
-<p>Then, you can uninstall the helm chart</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>uninstall<span class="w"> </span>skas
+<p>Once you have successfully reconfigured the Kubernetes API server, you can proceed to uninstall the Helm chart.</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>uninstall<span class="w"> </span>skas
 </span></code></pre></div>
-<p>And delete the namespace</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>delete<span class="w"> </span>namespace<span class="w"> </span>skas-system
+<p>And to delete the namespace</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>kubectl<span class="w"> </span>delete<span class="w"> </span>namespace<span class="w"> </span>skas-system
 </span></code></pre></div>
 
 

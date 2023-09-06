@@ -396,8 +396,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#auxiliary-pod-configuration" class="md-nav__link">
-    Auxiliary POD configuration
+  <a href="#secondary-pod-configuration" class="md-nav__link">
+    Secondary POD configuration
   </a>
   
 </li>
@@ -430,8 +430,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#auxiliary-pod-configuration_1" class="md-nav__link">
-    Auxiliary POD configuration
+  <a href="#secondary-pod-configuration_1" class="md-nav__link">
+    Secondary POD configuration
   </a>
   
 </li>
@@ -457,8 +457,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#auxiliary-pod-configuration_2" class="md-nav__link">
-    Auxiliary POD configuration
+  <a href="#secondary-pod-configuration_2" class="md-nav__link">
+    Secondary POD configuration
   </a>
   
 </li>
@@ -476,8 +476,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#setup-a-meta-helm-chart" class="md-nav__link">
-    Setup a meta helm chart
+  <a href="#set-up-a-meta-helm-chart" class="md-nav__link">
+    Set up a meta helm chart
   </a>
   
 </li>
@@ -607,8 +607,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#auxiliary-pod-configuration" class="md-nav__link">
-    Auxiliary POD configuration
+  <a href="#secondary-pod-configuration" class="md-nav__link">
+    Secondary POD configuration
   </a>
   
 </li>
@@ -641,8 +641,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#auxiliary-pod-configuration_1" class="md-nav__link">
-    Auxiliary POD configuration
+  <a href="#secondary-pod-configuration_1" class="md-nav__link">
+    Secondary POD configuration
   </a>
   
 </li>
@@ -668,8 +668,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#auxiliary-pod-configuration_2" class="md-nav__link">
-    Auxiliary POD configuration
+  <a href="#secondary-pod-configuration_2" class="md-nav__link">
+    Secondary POD configuration
   </a>
   
 </li>
@@ -687,8 +687,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#setup-a-meta-helm-chart" class="md-nav__link">
-    Setup a meta helm chart
+  <a href="#set-up-a-meta-helm-chart" class="md-nav__link">
+    Set up a meta helm chart
   </a>
   
 </li>
@@ -719,7 +719,7 @@
 <p><img align="right" alt="ldap" src="../images/draw4.png" width="300" /></p>
 <p>The obvious solution to add a second LDAP server would be to duplicate the <code>skLdap</code> Identity Provider container, hook it under the <code>skMerge</code> module and link it to our second LDAP server.</p>
 <p>Unfortunately, the provided SKAS helm chart does not allow several instance of whatever container. Doing so would be possible, but at the price of a more complex chart.</p>
-<p>A possible solution would be to modify the chart by adding this second LDAP IDP. But such specifics forks should be avoided if possible.</p>
+<p>A possible solution would be to modify the chart by adding this second LDAP IDP. However, it's best to avoid such specific forks if possible.</p>
 <p><img alt="" src="../images/empty.png" width="700" /></p>
 <p><img align="left" alt="Overview" src="../images/draw3.png" width="350" /></p>
 <p>A more convenient solution will be to create another POD hosting only the new LDAP IDP.</p>
@@ -728,17 +728,17 @@
 In this case, as the second <code>skLdap</code> module run in another POD, communication must go through a kubernetes service.</p>
 <p>This configuration requires two steps:</p>
 <ul>
-<li>Setup a new Helm deployment for <code>skas2</code> pod.</li>
+<li>Setup a new Helm deployment for the <code>skas2</code> secondary pod.</li>
 <li>Reconfigure the <code>skMerge</code> module of the main SKAS pod to connect to this new IDP.</li>
 </ul>
 <p><img alt="" src="../images/empty.png" width="700" /></p>
-<p>In the following, three variants of this configuration will be described. One with the connection in clear text, and two secured, with network encryption and inter-pod authentication.</p>
+<p>In the following section, we will describe three variants of this configuration: one with a clear text connection and two secured variants with network encryption and inter-pod authentication.</p>
 <blockquote>
-<p><em>Even if your target is a fully secured configuration, we suggest you first implement the unsecured, simplest variant, and then modify it incrementally, as described.</em></p>
+<p><em>We recommend starting with the unsecured, simplest variant even if your ultimate goal is a fully secured configuration. You can then incrementally modify it as described.</em></p>
 </blockquote>
 <h2 id="clear-text-connection">Clear text connection</h2>
-<h3 id="auxiliary-pod-configuration">Auxiliary POD configuration</h3>
-<p>Here is a sample values file to configure the auxiliary POD:</p>
+<h3 id="secondary-pod-configuration">Secondary POD configuration</h3>
+<p>Here is a sample values file for configuring the secondary POD:</p>
 <details class="abstract">
 <summary>values.skas2.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">skAuth</span><span class="p">:</span>
@@ -795,12 +795,12 @@ In this case, as the second <code>skLdap</code> module run in another POD, commu
 </span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a><span class="w">          </span><span class="nt">protected</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </span></code></pre></div>
 </details>
-<p>At the beginning of the file, we disable all other modules than <code>skLdap</code>.</p>
-<p>Then there is the connection to the second LDAP server which must be adjusted to your context. Refer to <a href="../ldap/">LDAP Setup</a></p>
+<p>At the beginning of the file, we disable all modules except for <code>skLdap</code>.</p>
+<p>Then, you will need to adjust the configuration for the second LDAP server according to your specific context. Please refer to <a href="../ldap/">LDAP Setup</a> for guidance."</p>
 <p>Then, there is the <code>exposure</code> part, who define how this service will be exposed. (The default configuration is expose to <code>localhost</code> in clear text)</p>
 <ul>
-<li><code>exposure.internal.enabled: false</code> shutdown the HTTP server bound on localhost.</li>
-<li><code>exposure.external.enabled: true</code> set the HTTP server bound on the POD IP up. This on port 7113 with no SSL.</li>
+<li><code>exposure.internal.enabled: false</code> shutdown the HTTP server bound to localhost.</li>
+<li><code>exposure.external.enabled: true</code> set up the HTTP server bound on the POD IP. This run on port 7113 with no SSL.</li>
 <li>Then the is the configuration of the <code>identity</code> service to expose:<ul>
 <li><code>clients[]</code> is a mechanism to validate who is able to access this service, by providing an <code>id</code> and a <code>secret</code>
   (or password). the values "*" will disable this feature.</li>
@@ -810,16 +810,15 @@ In this case, as the second <code>skLdap</code> module run in another POD, commu
 </ul>
 </li>
 </ul>
-<p>To deploy this configuration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
+<p>To deploy this configuration, execute:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
 </span></code></pre></div>
 <blockquote>
 <p><strong>Note the `skas2' release name</strong></p>
 </blockquote>
-<p>The Helm chart will deploy the new pod(s), under the name <code>skas2</code>. it will also deploy an associated Kubernetes <code>service</code>.</p>
+<p>The Helm chart will deploy the new pod(s) under the name <code>skas2</code> and also create an associated Kubernetes <code>service</code>.</p>
 <h3 id="main-pod-reconfiguration">Main pod reconfiguration</h3>
-<p>Second step is to reconfigure the main POD</p>
-<p>Here is a sample of appropriate configuration:</p>
+<p>The second step is to reconfigure the main pod. Here is a sample of the appropriate configuration:</p>
 <details class="abstract">
 <summary>values.skas.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">skMerge</span><span class="p">:</span>
@@ -863,41 +862,48 @@ In this case, as the second <code>skLdap</code> module run in another POD, commu
 </span><span id="__span-2-39"><a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="w">      </span><span class="nt">numericalIdAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uidNumber</span>
 </span></code></pre></div>
 </details>
-<p>There is two entries aimed to configure a provider on the bottom of the <code>skMerge</code> module:</p>
+<p>At the top of the <code>skMerge</code> module, there are two entries designed to configure a provider:</p>
 <ul>
-<li><code>providers</code> is a list of the connected providers, which allow to define their behavior. The order is important here.
-  Refers to the <a href="../chaining/#provider-configuration">IDP chaining: Provider configuration</a> chapter.</li>
-<li><code>providerInfo</code> is a map providing information on how to reach these providers.<br>For <code>crd</code> and <code>ldap1</code>, we use the
-  default <code>localhost</code> port.<br>For <code>ldap2</code> we use the service created by the <code>skas2</code> deployment.</li>
+<li>
+<p><code>providers</code> is a list of connected providers, which allows you to define their behavior. The order of providers in 
+this list is important. For more information, refer to the 
+<a href="../chaining/#provider-configuration">Identity Provider chaining: Provider configuration</a> chapter.</p>
+</li>
+<li>
+<p><code>providerInfo</code> is a map that provides information on how to reach these providers. For <code>crd</code> and <code>ldap1</code>, we use 
+the default localhost port. For <code>ldap2</code>, we use the service created by the skas2 deployment. </p>
+</li>
 </ul>
-<p>The link between these two entries is of course the provider name.</p>
-<p>Then there is the configuration for the primary LDAP server, which must be adapted to your configuration.</p>
-<p>Then, the reconfiguration must be applied:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>--values<span class="w"> </span>./values.skas.yaml
+<p>The link between these two entries is, of course, the provider name.</p>
+<p>Next, there is the configuration for the primary LDAP server, which must be adapted to your specific configuration."</p>
+<p>The reconfiguration must then be applied by executing this command:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span>--values<span class="w"> </span>./values.skas.yaml
 </span></code></pre></div>
 <blockquote>
-<p><em>Don't forget to add the <code>values.init.yaml</code>, or to merge it in the <code>values.skas.yaml</code> file. Also, if you have others values file, they must be added on each upgrade</em></p>
-<p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
+<p><em>Don't forget to include the <code>values.init.yaml</code> file or merge it into the <code>values.skas.yaml</code> file. Additionally, 
+if you have other values files, make sure to include them in each upgrade.</em></p>
+<p><em>Also, remember to restart the pod(s) after making these configuration changes. You can find more information on how 
+to do this in the <a href="../configuration/#pod-restart">Configuration: Pod restart</a> section.</em></p>
 </blockquote>
 <h2 id="test">Test</h2>
-<p>Then, you can now test your configuration:</p>
+<p>Now, you can test your configuration:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>nobody<span class="w">  </span>--explain
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>USER<span class="w">     </span>STATUS<span class="w">         </span>UID<span class="w">   </span>GROUPS<span class="w">   </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES<span class="w">   </span>AUTH
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>nobody<span class="w">   </span>userNotFound<span class="w">   </span><span class="m">0</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>&gt;<span class="w"> </span>USER<span class="w">     </span>STATUS<span class="w">         </span>UID<span class="w">   </span>GROUPS<span class="w">   </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES<span class="w">   </span>AUTH
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>&gt;<span class="w"> </span>nobody<span class="w">   </span>userNotFound<span class="w">   </span><span class="m">0</span>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Detail:
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>PROVIDER<span class="w">   </span>STATUS<span class="w">         </span>UID<span class="w">   </span>GROUPS<span class="w">   </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>crd<span class="w">        </span>userNotFound<span class="w">   </span><span class="m">0</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>ldap1<span class="w">      </span>userNotFound<span class="w">   </span><span class="m">0</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>ldap2<span class="w">      </span>userNotFound<span class="w">   </span><span class="m">0</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>&gt;<span class="w"> </span>Detail:
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>&gt;<span class="w"> </span>PROVIDER<span class="w">   </span>STATUS<span class="w">         </span>UID<span class="w">   </span>GROUPS<span class="w">   </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>&gt;<span class="w"> </span>crd<span class="w">        </span>userNotFound<span class="w">   </span><span class="m">0</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>&gt;<span class="w"> </span>ldap1<span class="w">      </span>userNotFound<span class="w">   </span><span class="m">0</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>&gt;<span class="w"> </span>ldap2<span class="w">      </span>userNotFound<span class="w">   </span><span class="m">0</span>
 </span></code></pre></div>
-<p>You can check than both ldap server are taken in account. This also ensure connection to both LDAP server are effective,
-as a provider is <code>critical</code> by default (Refers to the <a href="../chaining/#provider-configuration">IDP chaining: Provider configuration</a> chapter).</p>
+<p>You can check that both LDAP servers are taken into account. This also ensures that connections to both LDAP servers 
+are effective, as a provider is <code>critical</code> by default (Refers to the 
+<a href="../chaining/#provider-configuration">Identity Provider chaining: Provider configuration</a> chapter</p>
 <p>Of course, another test will be to describe some users existing in your LDAP servers.</p>
 <h2 id="securing-connection">Securing connection</h2>
-<p>It should ne noted than unencrypted passwords will transit through the link between the two pods. So, setting up encryption is a must have.</p>
-<h3 id="auxiliary-pod-configuration_1">Auxiliary POD configuration</h3>
+<p>It should be noted that unencrypted passwords will transit through the link between the two pods. Therefore, setting up encryption is a must-have.</p>
+<h3 id="secondary-pod-configuration_1">Secondary POD configuration</h3>
 <p>Here is the modified version for the <code>skas2</code> pod configuration:</p>
 <details class="abstract">
 <summary>values.skas2.yaml</summary>
@@ -957,20 +963,22 @@ as a provider is <code>critical</code> by default (Refers to the <a href="../cha
 </span><span id="__span-5-54"><a id="__codelineno-5-54" name="__codelineno-5-54" href="#__codelineno-5-54"></a><span class="w">          </span><span class="nt">protected</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </span></code></pre></div>
 </details>
-<p>The differences are the following:</p>
+<p>The differences are as follows:</p>
 <ul>
-<li>There is a <code>clusterIssuer</code> definition to be able to generate a certificate. (It is assumed here than <code>cert-manager</code> is deployed in the cluster)</li>
-<li><code>exposure.external.ssl</code> is set to <code>true</code>. This will also leads the generation of the server certificate.</li>
-<li>The <code>service.identity.clients</code> authentication is also activated. The <code>id</code> and <code>secret</code> values will have to be provided by the <code>skMerge</code> client.</li>
+<li>There is a <code>clusterIssuer</code> definition to enable the generation of a certificate. (It is assumed here that 
+<code>cert-manager</code> is deployed in the cluster).</li>
+<li><code>exposure.external.ssl</code> is set to <code>true</code>. This will also lead to the generation of the server certificate.</li>
+<li>The <code>service.identity.clients</code> authentication is also activated. The <code>id</code> and <code>secret</code> values will have to be 
+provided by the <code>skMerge</code> client.</li>
 </ul>
 <p>To deploy this configuration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas2<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.skas2.yaml
 </span></code></pre></div>
 <blockquote>
 <p><strong>Note the `skas2' release name</strong></p>
 </blockquote>
-<p>The Helm chart will deploy the new pod(s), under the name <code>skas2</code>. it will also deploy an associated Kubernetes <code>service</code>
-and the <code>cert-manager.io/v1/Certificate</code> request.</p>
+<p>The Helm chart will deploy the new pod(s) with the name <code>skas2</code>. It will also deploy an associated Kubernetes <code>service</code>
+and submit a <code>cert-manager.io/v1/Certificate</code> request.</p>
 <h3 id="main-pod-reconfiguration_1">Main pod reconfiguration</h3>
 <p>Here is the modified version for the main SKAS POD configuration:</p>
 <details class="abstract">
@@ -1029,27 +1037,29 @@ and the <code>cert-manager.io/v1/Certificate</code> request.</p>
 <p>The <code>providerInfo.ldap2</code> has been modified for SSL and authenticated connection:</p>
 <ul>
 <li><code>url</code> begins with <code>https</code>.</li>
-<li><code>clientAuth</code> provides information to authenticated against the <code>skLdap2</code> pod.</li>
-<li><code>insecureSkipVerify</code> is set to false, as we want to check certificate validity.</li>
+<li><code>clientAuth</code> provides information to authenticate against the <code>skLdap2</code> pod.</li>
+<li><code>insecureSkipVerify</code> is set to <code>false</code>, as we want to check certificate validity.</li>
 <li><code>rootCaPath</code> is set to access the <code>ca.crt</code>, the CA validating the <code>skLdap2</code> server certificate.</li>
 </ul>
-<p>As stated above, during the deployment of the <code>skas2</code> auxiliary POD, a server certificate has been generated to allow
-SSL enabled services. This certificate is stored in a secret (of type <code>kubernetes.io/tls</code>) named <code>skas2-ldap-cert</code>.
-Alongside the private/public key pair, it also contains the root Certificate authority under the name<code>ca.crt</code>.</p>
-<p>The <code>skMerge.extraSecrets</code> subsection instruct the POD to mount this secret to the defined location.
-The property <code>skMerge.providerInfo.ldap2.rootCaPath</code> can now refer to the mounted value.</p>
+<p>As stated above, during the deployment of the <code>skas2</code> secondary POD, a server certificate was generated to allow 
+SSL-enabled services. This certificate is stored in a secret (of type <code>kubernetes.io/tls</code>) named <code>skas2-ldap-cert</code>. 
+Alongside the private/public key pair, it also contains the root Certificate Authority under the name <code>ca.crt</code>.</p>
+<p>The <code>skMerge.extraSecrets</code> subsection instructs the POD to mount this secret at the defined location. 
+The property <code>skMerge.providerInfo.ldap2.rootCaPath</code> can now reference the mounted value.</p>
 <p>Then, the reconfiguration must be applied:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>--values<span class="w"> </span>./values.skas.yaml
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span>--values<span class="w"> </span>./values.skas.yaml
 </span></code></pre></div>
 <blockquote>
-<p><em>Don't forget to add the <code>values.init.yaml</code>, or to merge it in the <code>values.skas.yaml</code> file. Also, if you have others values file, they must be added on each upgrade</em></p>
-<p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
+<p><em>Don't forget to include the <code>values.init.yaml</code> file or merge it into the <code>values.skas.yaml</code> file. Additionally,
+if you have other values files, make sure to include them in each upgrade.</em></p>
+<p><em>Also, remember to restart the pod(s) after making these configuration changes. You can find more information on how
+to do this in the <a href="../configuration/#pod-restart">Configuration: Pod restart</a> section.</em></p>
 </blockquote>
 <p>You can now test again your configuration, as <a href="#test">described above</a></p>
 <h2 id="using-a-kubernetes-secrets">Using a Kubernetes secrets</h2>
-<p>There is still a security issue, as the shared secret (<code>aSharedSecret</code>) is in clear text in both values file. As such it may ends up in some version control system.</p>
-<p>The good practice will be to store the secret value in a kubernetes <code>secret</code> resource, such as:</p>
+<p>There is still a security issue because the shared secret (<code>aSharedSecret</code>) is stored in plain text in both values 
+files, which could lead to it being accidentally committed to a version control system.</p>
+<p>The best practice is to store the secret value in a Kubernetes <code>secret</code> resource, like this:</p>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nn">---</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
@@ -1060,12 +1070,12 @@ The property <code>skMerge.providerInfo.ldap2.rootCaPath</code> can now refer to
 </span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">  </span><span class="nt">clientSecret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sk1rbkNyYW5WV1YwR0E5</span>
 </span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Opaque</span>
 </span></code></pre></div>
-<p>Where <code>data.clientSecret</code> is the secret encoded in base 64.</p>
+<p>Where <code>data.clientSecret</code> is the secret encoded in base64.</p>
 <blockquote>
-<p>There is several solutions to generate such secret value. One can use Helm with some random generator function. Or use a <a href="../toolsandtricks/#secret-generator">Secret generator</a></p>
+<p>There are several solutions to generate such a secret value. One can use Helm with a random generator function. Another one is to use a <a href="../toolsandtricks/#secret-generator">Secret generator</a>."</p>
 </blockquote>
-<h3 id="auxiliary-pod-configuration_2">Auxiliary POD configuration</h3>
-<p>To use this secret, here is the new modified version for the <code>skas2</code> POD configuration:</p>
+<h3 id="secondary-pod-configuration_2">Secondary POD configuration</h3>
+<p>To use this secret, here is the new modified version of the <code>skas2</code> POD configuration:</p>
 <details class="abstract">
 <summary>values.skas2.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">skAuth</span><span class="p">:</span>
@@ -1130,16 +1140,17 @@ The property <code>skMerge.providerInfo.ldap2.rootCaPath</code> can now refer to
 </span><span id="__span-10-60"><a id="__codelineno-10-60" name="__codelineno-10-60" href="#__codelineno-10-60"></a><span class="w">          </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clientSecret</span>
 </span></code></pre></div>
 </details>
-<p>The modifications are the following:</p>
+<p>The modifications are as follows:</p>
 <ul>
-<li>The <code>skLdap.extraEnv</code> subsection inject the secret value as an environment variable in the container.</li>
-<li>the <code>skLdap.exposure.external.services.identity.clients[0].secret</code> fetch its value through this environment variable.</li>
+<li>The <code>skLdap.extraEnv</code> subsection injects the secret value as an environment variable into the container.</li>
+<li>The <code>skLdap.exposure.external.services.identity.clients[0].secret</code> retrieves its value through this environment variable.</li>
 </ul>
 <blockquote>
-<p>Most of the values provided by the helm chart ends up inside a configMap, which is then loaded by the SKAS executable. The environment variable interpolation occurs during this load.</p>
+<p>Most of the values provided by the Helm chart end up inside a ConfigMap, which is then loaded by the SKAS executable. 
+Environment variable interpolation occurs during this loading process.</p>
 </blockquote>
 <h3 id="main-pod-reconfiguration_2">Main pod reconfiguration</h3>
-<p>Here is the modified version, with <code>secret</code> handling, for the main SKAS pod configuration:</p>
+<p>Here is the modified version of the main SKAS pod configuration, which incorporates <code>secret</code> handling:</p>
 <details class="abstract">
 <summary>values.skas.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">skMerge</span><span class="p">:</span>
@@ -1200,23 +1211,22 @@ The property <code>skMerge.providerInfo.ldap2.rootCaPath</code> can now refer to
 </span><span id="__span-11-56"><a id="__codelineno-11-56" name="__codelineno-11-56" href="#__codelineno-11-56"></a><span class="w">      </span><span class="nt">numericalIdAttr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uidNumber</span>
 </span></code></pre></div>
 </details>
-<p>The modifications are the same as the SKAS2 POD, but on the <code>skMerge</code> module.</p>
-<h2 id="setup-a-meta-helm-chart">Setup a meta helm chart</h2>
-<p>Up to now, we had setup our configuration by performing two closely related Helm deployment.</p>
-<p>To ease automation, it could be useful to 'package' such kind of deployment by creating a 'meta chart', a chart which will embed other ones as dependencies.</p>
-<p>Such chart will have the following layout.</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span>tree
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>.
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="p">|</span>--<span class="w"> </span>Chart.yaml
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="p">|</span>--<span class="w"> </span>templates
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="p">|</span><span class="w">   </span><span class="sb">`</span>--<span class="w"> </span>stringsecret.yaml
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="sb">`</span>--<span class="w"> </span>values.yaml
+<p>The modifications for the <code>skMerge</code> module are the same as those made for the SKAS2 POD.</p>
+<h2 id="set-up-a-meta-helm-chart">Set up a meta helm chart</h2>
+<p>Up to this point, we have configured our deployment by performing two closely related Helm deployments. 
+To simplify automation, it can be helpful to create a 'meta chart,' a chart that includes other charts as dependencies.</p>
+<p>Such a chart will have the following layout:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>.
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="p">|</span>--<span class="w"> </span>Chart.yaml
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="p">|</span>--<span class="w"> </span>templates
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="p">|</span><span class="w">   </span><span class="sb">`</span>--<span class="w"> </span>stringsecret.yaml
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="sb">`</span>--<span class="w"> </span>values.yaml
 </span></code></pre></div>
 <blockquote>
-<p>This example will implement encryption and inter-pod authentication.</p>
+<p>In this example, we will implement encryption and inter-pod authentication.</p>
 </blockquote>
-<p>The <code>Chart.yaml</code> file define the meta-chart <code>skas-skas2-meta</code>.There is two dependencies deploying the same helm chart,
-but with different values (See below). Note the <code>alias: skas2</code> on the second deployment.</p>
+<p>The <code>Chart.yaml</code> file defines the meta-chart <code>skas-skas2-meta</code>. It has two dependencies that deploy the same Helm 
+chart but with different values (as shown below). Please note the <code>alias: skas2</code> in the second deployment.</p>
 <details class="abstract" open="open">
 <summary>Chart.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2</span>
@@ -1233,7 +1243,7 @@ but with different values (See below). Note the <code>alias: skas2</code> on the
 </span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skasproject.github.io/skas-charts</span>
 </span></code></pre></div>
 </details>
-<p>The following will generate the shared secret allowing inter-pods authentication</p>
+<p>The following manifest will generate the shared secret required for inter-pod authentication.</p>
 <details class="abstract">
 <summary> templates/stringsecret.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nn">---</span>
@@ -1391,15 +1401,15 @@ but with different values (See below). Note the <code>alias: skas2</code> on the
 </span><span id="__span-15-137"><a id="__codelineno-15-137" name="__codelineno-15-137" href="#__codelineno-15-137"></a><span class="w">            </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clientSecret</span>
 </span></code></pre></div>
 </details>
-<p>There is two blocks: <code>skas</code> and <code>skas2</code>, matching the name or alias in the <code>Chart.yaml</code> file.</p>
-<p>These two block hold the same definition than the ones defined in the original configuration. With two differences:</p>
+<p>There are two blocks: <code>skas</code> and <code>skas2</code>, matching the name or alias in the <code>Chart.yaml</code> file.</p>
+<p>These two blocks hold the same definitions as the ones defined in the original configuration, with two differences:</p>
 <ul>
 <li><code>skas.skMerge.providerInfo.ldap2.url: https://skas-skas2-ldap.skas-system.svc</code></li>
 <li><code>skas.skMerge.extraSecrets[0].secret: skas-skas2-ldap-cert</code></li>
 </ul>
-<p>This to accommodate service and secret name change, due to aliasing of the second dependency.</p>
+<p>This is to accommodate service and secret name changes due to aliasing of the second dependency.</p>
 <p>Then, to launch the deployment, in the same folder as <code>Chart.yaml</code>, execute:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>helm<span class="w"> </span>dependency<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>.
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>helm<span class="w"> </span>dependency<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>.
 </span></code></pre></div>
 
 

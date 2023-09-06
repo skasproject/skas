@@ -617,28 +617,33 @@
 
 <h1 id="ldap-setup">LDAP Setup</h1>
 <h2 id="overview">Overview</h2>
-<p>SKAS support the concept of 'Identity Provider'. An Identity provider (IDP) can be defined as a Database hosting 
-users and groups and providing user authentication and information. </p>
-<p>Up to now, we have used a single IDP based on resources stored in Kubernetes, in the namespace <code>skas-system</code>.</p>
-<p>SKAS provide another Identity Provider backed by an LDAP directory</p>
+<p>SKAS supports the concept of an 'Identity Provider' (IDP). An Identity Provider can be defined as a database that hosts 
+users and groups, providing user authentication and information.</p>
+<p>Up to this point, we have used a single Identity Provider (IDP) based on resources stored in Kubernetes, 
+within the <code>skas-system</code> namespace. SKAS also provides an alternative Identity Provider backed by an LDAP directory.</p>
 <blockquote>
-<p><em>The SKAS LDAP identity provider was strongly inspired from the LDAP connector of <a href="https://github.com/dexidp/dex">DEX project</a>.
-Great thanks to all its contributors.</em></p>
+<p><em>The SKAS LDAP identity provider code was heavily inspired by the LDAP connector of the <a href="https://github.com/dexidp/dex">DEX project</a>.
+Many thanks to all of its contributors for their valuable contributions.</em></p>
 </blockquote>
 <h3 id="security-considerations">Security considerations</h3>
-<p>SKAS  attempts to bind with the backing LDAP server using the admin and end user's plain text password.
-Though some LDAP implementations allow passing hashed passwords, SKAS doesn't support hashing and instead strongly recommends that all administrators just use TLS.
-This can often be achieved by using port 636 instead of 389, and by handling certificate authority.</p>
-<p>SKAS currently allows insecure connections to ensure connectivity with the wide variety of LDAP implementations and to ease initial setup.
-But such configuration should never be used in a production context, as they are actively leaking passwords.</p>
+<p>SKAS attempts to bind with the underlying LDAP server using both the admin and user's plain text password. 
+While some LDAP implementations permit the use of hashed passwords, SKAS does not support this feature. 
+Instead, it strongly recommends that all administrators employ TLS (Transport Layer Security) for secure communication.</p>
+<p>TLS can often be enabled by using port 636 instead of the default port 389 and configuring the appropriate certificate 
+authority. This ensures that passwords are transmitted securely over the network.</p>
+<p>SKAS currently permits insecure connections to ensure compatibility with a wide range of LDAP implementations and to 
+simplify the initial setup process. However, it's important to note that these configurations should never be used 
+in a production environment, as they can actively expose and compromise passwords, posing a significant security risk.</p>
 <h2 id="ldap-configuration">LDAP Configuration</h2>
 <blockquote>
-<p><em>To have a better understanding of what this configuration implies, you can refer to the <a href="../architecture/#overview">Architecture Overview</a> part.</em></p>
+<p><em>For a more comprehensive understanding of what this configuration entails, you can refer to the <a href="../architecture/#overview">Architecture Overview</a> documentation.</em></p>
 </blockquote>
 <h3 id="the-helm-values-file">The helm values file</h3>
-<p>LDAP activation and configuration can be performed by adding specifics values during Helm (re)deployment.</p>
-<p>Here is a template of such values: </p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">skMerge</span><span class="p">:</span>
+<p>LDAP activation and configuration will be performed by adding specific values during Helm (re)deployment. </p>
+<p>Here is a template of such values:</p>
+<details class="abstract">
+<summary>values.ldap.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">skMerge</span><span class="p">:</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">providers</span><span class="p">:</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crd</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ldap</span>
@@ -713,102 +718,109 @@ But such configuration should never be used in a production context, as they are
 </span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73" href="#__codelineno-0-73"></a><span class="w">      </span><span class="nt">linkGroupAttr</span><span class="p">:</span>
 </span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74" href="#__codelineno-0-74"></a><span class="w">      </span><span class="nt">linkUserAttr</span><span class="p">:</span>
 </span></code></pre></div>
+</details>
 <ul>
-<li><code>skMerge</code> is the SKAS module aimed to merge information from several Identity Provider. This merge obey to some rules which will be described <a href="../chaining/">here</a>.</li>
+<li><code>skMerge</code> is the SKAS module aimed at merging information from several Identity Provider. This merging process follows 
+specific rules, which are be described <a href="../chaining/">here</a>.</li>
 <li><code>skMerge.providers</code> is the ordered list of Identity Providers. </li>
 <li><code>crd</code> is the name of the provider managing the user database in the <code>skas-system</code> namespace.</li>
 <li><code>ldap</code> is the name of our LDAP provider, which will be configured under the <code>skLdap</code> subsection.</li>
-<li><code>skLdap.enabled</code> must be set to <code>true</code> (It is <code>false</code> by default).</li>
+<li><code>skLdap.enabled</code> must be set to <code>true</code> (It is <code>false</code> by default). </li>
 <li><code>skLdap.ldap.*</code> is the LDAP configuration with all parameters and their description.</li>
 </ul>
-<p>To apply this configuration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span><span class="se">\</span>
+<p>To apply this configuration, use the following command:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>--values<span class="w"> </span>./values.ldap.yaml
 </span></code></pre></div>
 <blockquote>
-<p><em>Don't forget to add the <code>values.init.yaml</code>, or to merge it in the <code>values.ldap.yaml</code> file. Also, if you have others values file, they must be added on each upgrade</em></p>
-<p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
+<p><em>Don't forget to include the <code>values.init.yaml</code> file, or merge its content into the values.ldap.yaml file. 
+Additionally, if you have other custom values files, make sure to include them in each <code>helm upgrade</code> command as well.</em></p>
+<p><em>Remember to restart the SKAS pod(s) after applying any configuration changes. See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
 </blockquote>
-<p>In this configuration, there is two source of identity: Our original <code>skas-system</code> user database and the newly added <code>ldap</code> server. 
-How these two sources are merged is the object of the next chapter. </p>
-<p>Once deployed, you can test your configuration using a <code>kubectl sk user describe &lt;login&gt; --explain</code> command. See the <a href="../chaining/">next chapter</a> for more information</p>
+<p>In this configuration, there are two sources of identity: our original <code>skas-system</code> user database and the newly added 
+<code>ldap</code> server. Merging multiple sources of identity is an important aspect of SKAS identity management. 
+The <a href="../chaining/">next chapter</a> will delve into this topic.</p>
+<p>After deployment, you can test your configuration using the <code>kubectl sk user describe &lt;login&gt; --explain</code> command. For more information, refer to the <a href="../chaining/">next chapter</a>.</p>
 <h3 id="sample-configurations">Sample configurations</h3>
-<p>Here is a sample of configuration, aimed to connect to an OpenLDAP server</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$ cat &gt;./values.ldap.yaml &lt;&lt;&quot;EOF&quot;
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>skMerge:
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  providers:
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    - name: crd
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    - name: ldap
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>skLdap:
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  enabled: true
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  # --------------------------------- LDAP configuration
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  ldap:
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    host: ldap.mydomain.internal
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    insecureNoSSL: false
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    rootCaData: &quot;LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K&quot;
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    bindDN: cn=Manager,dc=mydomain,dc=internal
-</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    bindPW: admin123
-</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>    groupSearch:
-</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>      baseDN: ou=Groups,dc=mydomain,dc=internal
-</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>      filter: (objectClass=posixgroup)
-</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>      linkGroupAttr: memberUid
-</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>      linkUserAttr: uid
-</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>      nameAttr: cn
-</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>    timeoutSec: 10
-</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>    userSearch:
-</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>      baseDN: ou=Users,dc=mydomain,dc=internal
-</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>      cnAttr: cn
-</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>      emailAttr: mail
-</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>      filter: (objectClass=inetOrgPerson)
-</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>      loginAttr: uid
-</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>      numericalIdAttr: uidNumber
-</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>EOF
+<p>Here is a sample configuration for connecting to an OpenLDAP server:</p>
+<details class="abstract">
+<summary>values.openldap.yaml</summary>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>skMerge:
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  providers:
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    - name: crd
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    - name: ldap
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>skLdap:
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  enabled: true
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  # --------------------------------- LDAP configuration
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  ldap:
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    host: ldap.mydomain.internal
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    insecureNoSSL: false
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    rootCaData: &quot;LS0tLS1CRUdJTiBDRVJUSUZ................................lRJRklDQVRFLS0tLS0K&quot;
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    bindDN: cn=Manager,dc=mydomain,dc=internal
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    bindPW: admin123
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    groupSearch:
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>      baseDN: ou=Groups,dc=mydomain,dc=internal
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>      filter: (objectClass=posixgroup)
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>      linkGroupAttr: memberUid
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>      linkUserAttr: uid
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>      nameAttr: cn
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>    timeoutSec: 10
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>    userSearch:
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>      baseDN: ou=Users,dc=mydomain,dc=internal
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>      cnAttr: cn
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>      emailAttr: mail
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>      filter: (objectClass=inetOrgPerson)
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>      loginAttr: uid
+</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>      numericalIdAttr: uidNumber
 </span></code></pre></div>
-<p>Note that, as the connection is using SSL, there is a need to provide the Certificate Authority of the LDAP Server. 
-Such CA can be provided in the field <code>skLdap.ldap.rootCaData</code>, as a base64 encoded certificate file.</p>
-<p>And here is a sample of configuration, aimed to connect to an FreeIPA LDAP server</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$ cat &gt;./values.ldap.yaml &lt;&lt;&quot;EOF&quot;
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>skMerge:
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  providers:
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    - name: crd
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    - name: ldap
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>skLdap:
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>  enabled: true
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>  # --------------------------------- LDAP configuration
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>  ldap:
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    host: ipa1.mydomain.internal
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    port: 636
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    rootCaData: &quot;LS0tLS1CRUdJTiBDRU4zclBySE.........................JRklDQVRFLS0tLS0K&quot;
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    bindDN: uid=admin,cn=users,cn=accounts,dc=mydomain,dc=internal
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    bindPW: ipaadmin
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    userSearch:
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>      baseDN: cn=users,cn=accounts,dc=mydomain,dc=internal
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>      emailAttr: mail
-</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>      filter: (objectClass=inetOrgPerson)
-</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>      loginAttr: uid
-</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>      numericalIdAttr: uidNumber
-</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>      cnAttr: cn
-</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>    groupSearch:
-</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>      baseDN: cn=groups,cn=accounts,dc=mydomain,dc=internal
-</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>      filter: (objectClass=posixgroup)
-</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>      linkGroupAttr: member
-</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>      linkUserAttr: DN
-</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>      nameAttr: cn
-</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>EOF
+</details>
+<p>Note that, since the connection uses SSL, you need to provide the Certificate Authority of the LDAP Server. 
+You can provide this CA in the field <code>skLdap.ldap.rootCaData</code> as a base64-encoded certificate file.</p>
+<p>Here is a sample configuration for connecting to a FreeIPA LDAP server.</p>
+<details class="abstract">
+<summary>values.freeipa.yaml</summary>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>skMerge:
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  providers:
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    - name: crd
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    - name: ldap
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>skLdap:
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>  enabled: true
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>  # --------------------------------- LDAP configuration
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>  ldap:
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    host: ipa1.mydomain.internal
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    port: 636
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    rootCaData: &quot;LS0tLS1CRUdJTiBDRU4zclBySE.........................JRklDQVRFLS0tLS0K&quot;
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    bindDN: uid=admin,cn=users,cn=accounts,dc=mydomain,dc=internal
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    bindPW: ipaadmin
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    userSearch:
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>      baseDN: cn=users,cn=accounts,dc=mydomain,dc=internal
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>      emailAttr: mail
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>      filter: (objectClass=inetOrgPerson)
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>      loginAttr: uid
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>      numericalIdAttr: uidNumber
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>      cnAttr: cn
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>    groupSearch:
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>      baseDN: cn=groups,cn=accounts,dc=mydomain,dc=internal
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>      filter: (objectClass=posixgroup)
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>      linkGroupAttr: member
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>      linkUserAttr: DN
+</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>      nameAttr: cn
 </span></code></pre></div>
-<p>Trick: To get the <code>rootCaData</code> from a FreeIPA server, log on this server and:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$ cd /etc/ipa
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>$ cat ca.crt  | base64 -w0
+</details>
+<p>Trick: To obtain the 'rootCaData' from a FreeIPA server, log onto this server and enter the following:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">cd</span><span class="w"> </span>/etc/ipa<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cat<span class="w"> </span>ca.crt<span class="w">  </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-w0
 </span></code></pre></div>
 <h3 id="setup-ldap-ca-in-a-configmap">Setup LDAP CA in a configMap</h3>
-<p>The <code>rootCaData</code> attribute could be a quite long string, which can be troublesome. 
-An alternate solution is to store this in a configMap.</p>
+<p>The <code>rootCaData</code> attribute can be a rather lengthy string, which can be troublesome. 
+An alternative solution is to store it in a ConfigMap.</p>
 <p>First, create the configMap with the CA file: </p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>kubectl -n skas-system create configmap ldap-ca.crt --from-file=./CA.crt
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>create<span class="w"> </span>configmap<span class="w"> </span>ldap-ca.crt<span class="w"> </span>--from-file<span class="o">=</span>./CA.crt
 </span></code></pre></div>
-<p>Then modify the values file as the following:</p>
+<p>Then, modify the values file as follows:</p>
+<details class="abstract">
+<summary>values.ldap.yaml</summary>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>skMerge:
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  providers:
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    - name: crd
@@ -824,19 +836,23 @@ An alternate solution is to store this in a configMap.</p>
 </span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>
 </span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>  # --------------------------------- LDAP configuration
 </span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>  ldap:
-</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>    host: ldap.ops.scw01
-</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>    insecureNoSSL: false
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>    host: ldap.mydomain.internal
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>    port: 636
 </span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>    rootCaPath: /tmp/ca/ldap/CA.crt
-</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>    .....
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>    bindDN: ..........
 </span></code></pre></div>
-<p>The <code>skLdap.extraConfigMaps</code> subsection instruct the POD to mount this configMap to the defined location. The property
-<code>skLdap.ldap.rootCaPath</code> can now refer to the mounted value. Of course <code>skLdap.ldap.rootCaData</code> should be removed.</p>
-<p>To apply this configuration:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span><span class="se">\</span>
+</details>
+<ul>
+<li>The <code>skLdap.extraConfigMaps</code> subsection instructs the POD to mount this configMap at the defined location. </li>
+<li>The property <code>skLdap.ldap.rootCaPath</code> can now refer to the mounted value, and, of course, <code>skLdap.ldap.rootCaData</code>
+should be removed.</li>
+</ul>
+<p>You can apply this modification with the following command:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>--values<span class="w"> </span>./values.ldap.yaml
 </span></code></pre></div>
 <blockquote>
-<p><em>And don't forget to restart the pod(s). See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
+<p><em>Remember to restart the SKAS pod(s) after applying any configuration changes. See <a href="../configuration/#pod-restart">Configuration: Pod restart</a></em></p>
 </blockquote>
 
 

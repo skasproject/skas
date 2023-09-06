@@ -603,26 +603,31 @@
 
 <h1 id="cluster-federation">Cluster federation</h1>
 <p><img align="right" alt="Overview" src="../images/draw6.png" width="320" /></p>
-<p>Due to its modular concept and ability to configure links between modules, even across clusters, SKAS is very effective in a multi-cluster environment.</p>
-<p>Here a sample configuration to illustrate this.</p>
+<p>Due to its modular concept and the ability to configure links between modules, even across clusters, SKAS is very effective in a multi-cluster environment.</p>
+<p>Here's a sample configuration to illustrate this:</p>
 <ul>
-<li><code>Cluster0</code> is a kind of 'control' cluster. It act as a 'hub', providing users information in a centralized approach. 
-It could be dedicated to this role, or hosting other 'meta' control function. </li>
-<li><code>Cluster1</code> is a standard cluster, hosting usual workload. It fully rely on <code>cluster0</code> for users authentication.</li>
-<li><code>Cluster2</code> is similar to <code>cluster1</code>, but is also able to manage some local users and/or groups.</li>
+<li><code>Cluster0</code> serves as a kind of 'control' cluster, acting as a 'hub' and providing centralized user information. 
+  It can be dedicated to this role or host other control functions.</li>
+<li><code>Cluster1</code> is a standard cluster that hosts typical workloads. It relies entirely on <code>Cluster0</code> for user authentication.</li>
+<li><code>Cluster2</code> is similar to <code>Cluster1</code>, but it can also manage some local users and/or groups."</li>
 </ul>
 <p>Of course, this is just one example of what could be achieved with SKAS.</p>
 <blockquote>
-<p><em>In the rich Kubernetes ecosystem, there is several solutions such as Submariner, Skupper, Cillium ClusterMesh, 
-Liqo, .... aimed to extend the concept of k8s <code>services</code> across clusters. Although these can be used in our cases, 
-the configuration described here rely on 'pure vanilla', independent Kubernetes clusters.</em>  </p>
+<p><em>In the rich Kubernetes ecosystem, there are several solutions, such as Submariner, Skupper, Cilium ClusterMesh, 
+Liqo, and more, aimed at extending the concept of Kubernetes <code>services</code> across clusters. While these can be used 
+in our cases, the configuration described here relies on 'pure vanilla', independent Kubernetes clusters.</em></p>
 </blockquote>
 <p><img alt="" src="../images/empty.png" width="700" /></p>
 <h2 id="cluster0-deployment">Cluster0 deployment.</h2>
-<p>Here are two samples of value file for <code>cluster0</code>. Without and with external LDAP server.</p>
+<p>Here are two samples of value files for <code>cluster0</code></p>
+<ul>
+<li>One with only the local user database.</li>
+<li>Another one with also an external LDAP server.</li>
+</ul>
 <blockquote>
-<p>The LDAP server will help to illustrate the chaining of provider.</p>
+<p><em>The LDAP server sample will help illustrate the chaining of providers.</em></p>
 </blockquote>
+<p>Here is the values file with only the local user database (It is activated by default):</p>
 <details class="abstract" open="open">
 <summary>values.cluster0-noldap.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
@@ -655,15 +660,17 @@ the configuration described here rely on 'pure vanilla', independent Kubernetes 
 </span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">        </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-skmerge.ingress.cluster0</span>
 </span></code></pre></div>
 </details>
-<p>The first part include what was in a separate <code>values.init.yaml</code> file in other samples of this documentation.
-As such, this file can be used for initial deployment, or for upgrading an exiting one.</p>
-<p>Then, there is the part specific to this configuration. The <a href="../architecture/#identity_1"><code>identiy</code></a> service of the 
-<code>skMerge</code> module is exposed externally. An authentication is required from the callers, which will be the two other clusters.</p>
-<p>Also, this service must be accessed externally. So the <code>ingress.enable: true</code> and <code>ingress.host</code>, which must be adjusted to your context.</p>
+<p>The first part includes what was previously in a separate <code>values.init.yaml</code> file in other samples within this 
+documentation. Consequently, this file can be used for the initial deployment or for upgrading an existing one.</p>
+<p>Then, there is the part specific to this configuration. The <a href="../architecture/#identity_1"><code>identiy</code></a>  service of the 
+<code>skMerge</code> module is exposed externally, and authentication is required from the callers, which will be the two 
+other clusters.</p>
+<p>Furthermore, this service must be accessed externally. So, set <code>ingress.enable: true</code> and adjust the <code>ingress.host</code> 
+value to your specific context.</p>
 <blockquote>
-<p>Of course, the <code>ingress.host</code> value must also be defined in your DNS.</p>
+<p><em>Remember that the <code>ingress.host</code> value must also be defined in your DNS.</em></p>
 </blockquote>
-<p>Here is the values file including the LDAP external server:</p>
+<p>Here is the values file, including the LDAP external server as well:</p>
 <details class="abstract">
 <summary>values.cluster0-ldap.yaml</summary>
 <div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
@@ -723,282 +730,293 @@ As such, this file can be used for initial deployment, or for upgrading an exiti
 </span><span id="__span-1-55"><a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a><span class="w">        </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-skmerge.ingress.cluster0</span>
 </span></code></pre></div>
 </details>
-<p>Please, refer to <a href="../ldap/">LDAP Setup</a> for how to configure this external LDAP server connection.</p>
-<p>To apply the configuration of your choice, enter: </p>
-<p><div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.cluster0-noldap.yaml<span class="w"> </span>--create-namespace
+<p>Please refer to <a href="../ldap/">LDAP Setup</a> for instructions on how to configure the connection to this external LDAP server.</p>
+<p>To apply the choosen configuration, please ensure that you have a <code>kubectl</code> configuration set up to target <code>cluster1</code> 
+with administrator privileges, and then enter one of the following commands:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.cluster0-noldap.yaml<span class="w"> </span>--create-namespace
 </span></code></pre></div>
-with a kubernetes config targeting <code>cluster0</code> with administrator privileges:</p>
+<p>or: </p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.cluster0-ldap.yaml<span class="w"> </span>--create-namespace
+</span></code></pre></div>
 <p>If this is the first deployment on this cluster, don't forget also to <a href="../installation/#api-server-configuration">configure the API Server</a></p>
-<p>For the configuration of the two other clusters, you will need the Certificate Authority of ingress on the <code>skMerge</code> 
-identity endpoint, encoded in base64. You can retrieve it with the following command:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>skas-merge-cert<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span>
+<p>For the configuration of the two other clusters, you will need the Certificate Authority of the ingress on the 
+<code>skMerge</code> identity endpoint, encoded in base64. You can retrieve it with the following command:"</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>skas-merge-cert<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.ca\.crt}&#39;</span>
 </span></code></pre></div>
 <h2 id="cluster1-deployment">Cluster1 deployment</h2>
-<p>Here is a sample of values file for <code>cluster1</code> deployment:</p>
+<p>Here is a sample values file for the deployment of <code>cluster1</code>:</p>
 <details class="abstract" open="open">
 <summary>values.cluster1.yaml</summary>
-<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">skAuth</span><span class="p">:</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">exposure</span><span class="p">:</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">external</span><span class="p">:</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">      </span><span class="nt">ingress</span><span class="p">:</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas.ingress.cluster1</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span><span class="nt">kubeconfig</span><span class="p">:</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="nt">context</span><span class="p">:</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster1</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">      </span><span class="nt">apiServerUrl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://kubernetes.ingress.cluster1</span>
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="nt">skMerge</span><span class="p">:</span>
-</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">  </span><span class="nt">providers</span><span class="p">:</span>
-</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster0</span>
-</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
-</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">  </span><span class="nt">providerInfo</span><span class="p">:</span>
-</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">    </span><span class="nt">cluster0</span><span class="p">:</span>
-</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skas-skmerge.ingress.cluster0</span>
-</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">      </span><span class="nt">rootCaData</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LS0tLS1CRUdJTiBDRV.............09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K&quot;</span>
-</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">      </span><span class="nt">insecureSkipVerify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">      </span><span class="nt">clientAuth</span><span class="p">:</span>
-</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster1</span>
-</span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="w">        </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster0Cluster1SharedSecret</span>
-</span><span id="__span-4-26"><a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>
-</span><span id="__span-4-27"><a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="nt">skCrd</span><span class="p">:</span>
-</span><span id="__span-4-28"><a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-cluster-issuer</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">      </span><span class="nt">ingress</span><span class="p">:</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas.ingress.cluster1</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span><span class="nt">kubeconfig</span><span class="p">:</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="nt">context</span><span class="p">:</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster1</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">      </span><span class="nt">apiServerUrl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://kubernetes.ingress.cluster1</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="nt">skMerge</span><span class="p">:</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">  </span><span class="nt">providers</span><span class="p">:</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster0</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">  </span><span class="nt">providerInfo</span><span class="p">:</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">    </span><span class="nt">cluster0</span><span class="p">:</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skas-skmerge.ingress.cluster0</span>
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">      </span><span class="nt">rootCaData</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LS0tLS1CRUdJTiBDRV.............09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K&quot;</span>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">      </span><span class="nt">insecureSkipVerify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">      </span><span class="nt">clientAuth</span><span class="p">:</span>
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster1</span>
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">        </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster0Cluster1SharedSecret</span>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="nt">skCrd</span><span class="p">:</span>
+</span><span id="__span-5-28"><a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span></code></pre></div>
 </details>
-<p>Again, the first part include what was in a separate <code>values.init.yaml</code> file in other samples of this documentation.
-As such, this file can be used for initial deployment, or for upgrading an exiting one.</p>
-<p>Then:</p>
+<p>Once again, the first part includes what was previously stored in a separate <code>values.init.yaml</code> file, 
+which has been used in other samples within this documentation. </p>
+<p>Then, within the configuration:</p>
 <ul>
-<li>The <code>skMerge.providers</code> list contains only one provider: <code>cluster0</code>, defined just below it.</li>
-<li>The <code>providerInfo.cluster0.url</code> target the ingress we setup on <code>cluster0</code> to reach its identity service.</li>
-<li>The <code>providerInfo.cluster0.rootCaData</code> is set to the base64 encoded Certificate Authority of ingress on the <code>skMerge</code>
-identity endpoint. We retrieved this at the end of the previous paragraph.</li>
-<li>The <code>providerInfo.cluster0.clientAuth</code> provide authentication information, as required by <code>cluster0</code>.</li>
+<li>The <code>skMerge.providers</code> list contains only one provider: <code>cluster0</code>, which is defined just below it.</li>
+<li>The <code>providerInfo.cluster0.url</code> targets the ingress we've set up on <code>cluster0</code> in order to reach its identity service.</li>
+<li>The <code>providerInfo.cluster0.rootCaData</code> is configured with the base64-encoded Certificate Authority of the ingress 
+  on the <code>skMerge</code> identity endpoint, as we obtained in the previous step.</li>
+<li>The <code>providerInfo.cluster0.clientAuth</code> provides the required authentication information for <code>cluster0</code>.</li>
 </ul>
-<p>To apply this configuration, enter:</p>
-<p><div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.cluster1.yaml<span class="w"> </span>--create-namespace
+<p>To apply this configuration, please ensure that you have a <code>kubectl</code> configuration set up to target <code>cluster1</code> with 
+administrator privileges, and then enter the following command:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.cluster1.yaml<span class="w"> </span>--create-namespace
 </span></code></pre></div>
-with a kubernetes config targeting <code>cluster1</code> with administrator privileges:</p>
 <p>If this is the first deployment on this cluster, don't forget also to <a href="../installation/#api-server-configuration">configure the API Server</a></p>
 <h3 id="testing">Testing</h3>
-<p>We can now configure our local Kubernetes config file to access to our clusters:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>init<span class="w"> </span>https://skas.ingress.cluster0
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Setup<span class="w"> </span>new<span class="w"> </span>context<span class="w"> </span><span class="s1">&#39;cluster0&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>kubeconfig<span class="w"> </span>file<span class="w"> </span><span class="s1">&#39;/Users/john/.kube/config&#39;</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>init<span class="w"> </span>https://skas.ingress.cluster1
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>Setup<span class="w"> </span>new<span class="w"> </span>context<span class="w"> </span><span class="s1">&#39;cluster1&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>kubeconfig<span class="w"> </span>file<span class="w"> </span><span class="s1">&#39;/Users/john/.kube/config&#39;</span>
-</span></code></pre></div>
-<p>We can connect as <code>admin</code> on <code>cluster0</code> and check what this user look like:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>cluster0
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Switched<span class="w"> </span>to<span class="w"> </span>context<span class="w"> </span><span class="s2">&quot;cluster0&quot;</span>.
+<blockquote>
+<p>In the following, we will use the configuration where an LDAP server is connected to <code>cluster0</code>.</p>
+</blockquote>
+<p>We can now configure our local Kubernetes config file to authenticate to our clusters through SKAS:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>init<span class="w"> </span>https://skas.ingress.cluster0
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>&gt;<span class="w"> </span>Setup<span class="w"> </span>new<span class="w"> </span>context<span class="w"> </span><span class="s1">&#39;cluster0&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>kubeconfig<span class="w"> </span>file<span class="w"> </span><span class="s1">&#39;/Users/john/.kube/config&#39;</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>admin
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>Password:
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>logged<span class="w"> </span>successfully..
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>admin<span class="w"> </span>--explain
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>USER<span class="w">    </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">                          </span>EMAILS<span class="w">           </span>COMMON<span class="w"> </span>NAMES<span class="w">               </span>AUTH
-</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>admin<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>admin,all,auditors,skas-admin<span class="w">   </span>admin@xxxx.com<span class="w">   </span>SKAS<span class="w"> </span>administrator,admin<span class="w">   </span>crd
-</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
-</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>Detail:
-</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>PROVIDER<span class="w">   </span>STATUS<span class="w">              </span>UID<span class="w">    </span>GROUPS<span class="w">               </span>EMAILS<span class="w">           </span>COMMON<span class="w"> </span>NAMES
-</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>crd<span class="w">        </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">      </span>skas-admin<span class="w">                            </span>SKAS<span class="w"> </span>administrator
-</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>ldap<span class="w">       </span>passwordUnchecked<span class="w">   </span><span class="m">2003</span><span class="w">   </span>all,auditors,admin<span class="w">   </span>admin@xxxx.com<span class="w">   </span>admin
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>init<span class="w"> </span>https://skas.ingress.cluster1
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>&gt;<span class="w"> </span>Setup<span class="w"> </span>new<span class="w"> </span>context<span class="w"> </span><span class="s1">&#39;cluster1&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>kubeconfig<span class="w"> </span>file<span class="w"> </span><span class="s1">&#39;/Users/john/.kube/config&#39;</span>
 </span></code></pre></div>
-<p>In this example, the user <code>admin</code> exists in our both provider (<code>crd</code> and <code>ldap</code>). Both values are merged to provide the user profile (Refer to <a href="../chaining/">Identity Providers chaining</a>)</p>
-<p>Now, we can make the same operation on <code>cluster1</code>:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>cluster1
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Switched<span class="w"> </span>to<span class="w"> </span>context<span class="w"> </span><span class="s2">&quot;cluster1&quot;</span>.
+<p>We can connect as <code>admin</code> on <code>cluster0</code> and check what this user looks like:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>cluster0
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>&gt;<span class="w"> </span>Switched<span class="w"> </span>to<span class="w"> </span>context<span class="w"> </span><span class="s2">&quot;cluster0&quot;</span>.
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>admin
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>Password:
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>logged<span class="w"> </span>successfully..
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>&gt;<span class="w"> </span>Password:
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>&gt;<span class="w"> </span>logged<span class="w"> </span>successfully..
 </span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
 </span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>admin<span class="w"> </span>--explain
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>USER<span class="w">    </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">                          </span>EMAILS<span class="w">           </span>COMMON<span class="w"> </span>NAMES<span class="w">               </span>AUTH
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>admin<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>admin,all,auditors,skas-admin<span class="w">   </span>admin@xxxx.com<span class="w">   </span>SKAS<span class="w"> </span>administrator,admin<span class="w">   </span>cluster0
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>&gt;<span class="w"> </span>USER<span class="w">    </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">                          </span>EMAILS<span class="w">           </span>COMMON<span class="w"> </span>NAMES<span class="w">               </span>AUTH
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>&gt;<span class="w"> </span>admin<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>admin,all,auditors,skas-admin<span class="w">   </span>admin@xxxx.com<span class="w">   </span>SKAS<span class="w"> </span>administrator,admin<span class="w">   </span>crd
 </span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>Detail:
-</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>PROVIDER<span class="w">   </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">                          </span>EMAILS<span class="w">           </span>COMMON<span class="w"> </span>NAMES
-</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>cluster0<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>admin,all,auditors,skas-admin<span class="w">   </span>admin@xxxx.com<span class="w">   </span>SKAS<span class="w"> </span>administrator,admin
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>&gt;<span class="w"> </span>Detail:
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>&gt;<span class="w"> </span>PROVIDER<span class="w">   </span>STATUS<span class="w">              </span>UID<span class="w">    </span>GROUPS<span class="w">               </span>EMAILS<span class="w">           </span>COMMON<span class="w"> </span>NAMES
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>&gt;<span class="w"> </span>crd<span class="w">        </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">      </span>skas-admin<span class="w">                            </span>SKAS<span class="w"> </span>administrator
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>&gt;<span class="w"> </span>ldap<span class="w">       </span>passwordUnchecked<span class="w">   </span><span class="m">2003</span><span class="w">   </span>all,auditors,admin<span class="w">   </span>admin@xxxx.com<span class="w">   </span>admin
 </span></code></pre></div>
-<p>From the <code>cluster1</code> point of view, we have only one provider: <code>cluster0</code>. We hide the information about how the <code>admin</code> profile was build.</p>
-<blockquote>
-<p><em>If we want to expose this information, we can refactor this configuration by connecting <code>cluster1.skMerge</code> directly to the <code>cluster0</code> identity providers (<code>crd</code> and <code>ldap</code>), a level below <code>skMerge</code>.</em></p>
-</blockquote>
-<p>Now, let's try to create a new user on <code>cluster1</code>:</p>
+<p>In this example, the user <code>admin</code> exists in both of our providers (<code>crd</code> and <code>ldap</code>). Both sets of values are merged 
+to provide the user profile (Refer to <a href="../chaining/">Identity Providers chaining</a>). </p>
+<p>Now, we can perform the same operation on 'cluster1':"</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>cluster1
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Switched<span class="w"> </span>to<span class="w"> </span>context<span class="w"> </span><span class="s2">&quot;cluster1&quot;</span>.
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>&gt;<span class="w"> </span>Switched<span class="w"> </span>to<span class="w"> </span>context<span class="w"> </span><span class="s2">&quot;cluster1&quot;</span>.
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>whoami
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>USER<span class="w">    </span>ID<span class="w">   </span>GROUPS
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>admin<span class="w">   </span><span class="m">0</span><span class="w">    </span>admin,all,auditors,skas-admin
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>admin
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>&gt;<span class="w"> </span>Password:
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>&gt;<span class="w"> </span>logged<span class="w"> </span>successfully..
 </span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>create<span class="w"> </span>localuser1<span class="w"> </span>--generatePassword
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>ERRO<span class="o">[</span><span class="m">0000</span><span class="o">]</span><span class="w"> </span>API<span class="w"> </span>server<span class="w"> </span>communication<span class="w"> </span>error<span class="w">                </span><span class="nv">error</span><span class="o">=</span><span class="s2">&quot;users.userdb.skasproject.io \&quot;localuser1\&quot; is forbidden: User \&quot;admin\&quot; cannot get resource \&quot;users\&quot; in API group \&quot;userdb.skasproject.io\&quot; in the namespace \&quot;skas-system\&quot;&quot;</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>admin<span class="w"> </span>--explain
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>&gt;<span class="w"> </span>USER<span class="w">    </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">                          </span>EMAILS<span class="w">           </span>COMMON<span class="w"> </span>NAMES<span class="w">               </span>AUTH
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>&gt;<span class="w"> </span>admin<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>admin,all,auditors,skas-admin<span class="w">   </span>admin@xxxx.com<span class="w">   </span>SKAS<span class="w"> </span>administrator,admin<span class="w">   </span>cluster0
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>&gt;<span class="w"> </span>Detail:
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>&gt;<span class="w"> </span>PROVIDER<span class="w">   </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">                          </span>EMAILS<span class="w">           </span>COMMON<span class="w"> </span>NAMES
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>&gt;<span class="w"> </span>cluster0<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>admin,all,auditors,skas-admin<span class="w">   </span>admin@xxxx.com<span class="w">   </span>SKAS<span class="w"> </span>administrator,admin
 </span></code></pre></div>
-<p>The operation fail, as the <code>admin</code> user have not rights to write the the <code>skas-system</code> namespace of the <code>cluster1</code>. 
-This is the intended behavior, as we want users definition to exists only in <code>cluster0</code>.</p>
-<p>There is a case where this operation seems to work: If your <code>admin</code> user is also kubernetes administrator 
-(i.e member of <code>system:masters</code>), it will be able to write to the <code>skas-system</code> namespace, so the creation will be successful.
-But, <strong>the users created this way will not be taken in account by the system</strong>, as there is no <code>crd</code> provider in <code>cluster1</code>. Same for <code>GroupBindinds</code></p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w">  </span>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>cluster0
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Switched<span class="w"> </span>to<span class="w"> </span>context<span class="w"> </span><span class="s2">&quot;cluster0&quot;</span>.
+<p>From the perspective of <code>cluster1</code>, we have only one provider: <code>cluster0</code>. We abstract away the details of how the 
+<code>admin</code> profile was constructed.</p>
+<blockquote>
+<p>If we wish to expose this information, we can refactor this configuration by connecting <code>cluster1.skMerge</code> directly 
+to the <code>cluster0</code> identity providers (<code>crd</code> and <code>ldap</code>), one level below <code>skMerge</code>.</p>
+</blockquote>
+<p>Now, let's attempt to create a new user on <code>cluster1</code>:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>cluster1
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>&gt;<span class="w"> </span>Switched<span class="w"> </span>to<span class="w"> </span>context<span class="w"> </span><span class="s2">&quot;cluster1&quot;</span>.
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>admin<span class="w"> </span>system:masters
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>GroupBinding<span class="w"> </span><span class="s1">&#39;admin.system.masters&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>cluster1
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>Switched<span class="w"> </span>to<span class="w"> </span>context<span class="w"> </span><span class="s2">&quot;cluster1&quot;</span>.
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>
-</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>admin
-</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>Password:
-</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>logged<span class="w"> </span>successfully..
-</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>
-</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>whoami
-</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>USER<span class="w">    </span>ID<span class="w">   </span>GROUPS
-</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>admin<span class="w">   </span><span class="m">0</span><span class="w">    </span>admin,all,auditors,skas-admin,system:masters
-</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>
-</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>create<span class="w"> </span>localuser1<span class="w"> </span>--generatePassword
-</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>The<span class="w"> </span>following<span class="w"> </span>password<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>generated:<span class="w"> </span><span class="s1">&#39;KTeZrzYEgeHS&#39;</span>
-</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="o">(</span>Save<span class="w"> </span>it<span class="w"> </span>as<span class="w"> </span>it<span class="w"> </span>will<span class="w"> </span>not<span class="w"> </span>be<span class="w"> </span>accessible<span class="w"> </span>anymore<span class="o">)</span>.
-</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a>User<span class="w"> </span><span class="s1">&#39;localuser1&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
-</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a>
-</span><span id="__span-10-23"><a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>localuser1<span class="w"> </span>KTeZrzYEgeHS
-</span><span id="__span-10-24"><a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a>Invalid<span class="w"> </span>login!
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>whoami
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>&gt;<span class="w"> </span>USER<span class="w">    </span>ID<span class="w">   </span>GROUPS
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>&gt;<span class="w"> </span>admin<span class="w">   </span><span class="m">0</span><span class="w">    </span>admin,all,auditors,skas-admin
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>create<span class="w"> </span>localuser1<span class="w"> </span>--generatePassword
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>&gt;<span class="w"> </span>ERRO<span class="o">[</span><span class="m">0000</span><span class="o">]</span><span class="w"> </span>API<span class="w"> </span>server<span class="w"> </span>communication<span class="w"> </span>error<span class="w">                </span><span class="nv">error</span><span class="o">=</span><span class="s2">&quot;users.userdb.skasproject.io \&quot;localuser1\&quot; is forbidden: User \&quot;admin\&quot; cannot get resource \&quot;users\&quot; in API group \&quot;userdb.skasproject.io\&quot; in the namespace \&quot;skas-system\&quot;&quot;</span>
+</span></code></pre></div>
+<p>The operation fails because the <code>admin</code> user does not have the necessary permissions to write to the <code>skas-system</code> 
+namespace in <code>cluster1</code>. This behavior is intentional, as we intend for user definitions to exist exclusively in 
+<code>cluster0</code>.</p>
+<p>There is a scenario where this operation might appear to succeed: If your <code>admin</code> user also has Kubernetes administrator 
+privileges (i.e., a member of <code>system:masters</code>), it will be able to write to the <code>skas-system</code> namespace, resulting 
+in a successful creation. However, it's important to note that users created in this manner <strong>will not be recognized 
+by the system</strong> in <code>cluster1</code>, as there is no <code>crd</code> provider present."</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$<span class="w">  </span>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>cluster0
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>&gt;<span class="w"> </span>Switched<span class="w"> </span>to<span class="w"> </span>context<span class="w"> </span><span class="s2">&quot;cluster0&quot;</span>.
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>admin<span class="w"> </span>system:masters
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>&gt;<span class="w"> </span>GroupBinding<span class="w"> </span><span class="s1">&#39;admin.system.masters&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>cluster1
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>&gt;<span class="w"> </span>Switched<span class="w"> </span>to<span class="w"> </span>context<span class="w"> </span><span class="s2">&quot;cluster1&quot;</span>.
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>admin
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>&gt;<span class="w"> </span>Password:
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>&gt;<span class="w"> </span>logged<span class="w"> </span>successfully..
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>whoami
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>&gt;<span class="w"> </span>USER<span class="w">    </span>ID<span class="w">   </span>GROUPS
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>&gt;<span class="w"> </span>admin<span class="w">   </span><span class="m">0</span><span class="w">    </span>admin,all,auditors,skas-admin,system:masters
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>create<span class="w"> </span>localuser1<span class="w"> </span>--generatePassword
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>&gt;<span class="w"> </span>The<span class="w"> </span>following<span class="w"> </span>password<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>generated:<span class="w"> </span><span class="s1">&#39;KTeZrzYEgeHS&#39;</span>
+</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a>&gt;<span class="w"> </span><span class="o">(</span>Save<span class="w"> </span>it<span class="w"> </span>as<span class="w"> </span>it<span class="w"> </span>will<span class="w"> </span>not<span class="w"> </span>be<span class="w"> </span>accessible<span class="w"> </span>anymore<span class="o">)</span>.
+</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a>&gt;<span class="w"> </span>User<span class="w"> </span><span class="s1">&#39;localuser1&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
+</span><span id="__span-11-22"><a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a>
+</span><span id="__span-11-23"><a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>localuser1<span class="w"> </span>KTeZrzYEgeHS
+</span><span id="__span-11-24"><a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a>&gt;<span class="w"> </span>Invalid<span class="w"> </span>login!
 </span></code></pre></div>
 <h2 id="cluster2-deployment">Cluster2 deployment</h2>
-<p>Here is a sample of values file for <code>cluster2</code> deployment:</p>
+<p>Here is a sample values file for the deployment of <code>cluster2</code>:</p>
 <details class="abstract" open="open">
-<summary>values.cluster1.yaml</summary>
-<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster-issuer1</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nt">skAuth</span><span class="p">:</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="nt">exposure</span><span class="p">:</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="nt">external</span><span class="p">:</span>
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">      </span><span class="nt">ingress</span><span class="p">:</span>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">        </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas.ingress.cluster2</span>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">  </span><span class="nt">kubeconfig</span><span class="p">:</span>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">    </span><span class="nt">context</span><span class="p">:</span>
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2</span>
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span>
-</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">      </span><span class="nt">apiServerUrl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://kubernetes.ingress.cluster2</span>
-</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>
-</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">  </span><span class="c1"># Members of these group will be allowed to perform &#39;kubectl_sk user describe&#39;</span>
-</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">  </span><span class="c1"># Also, they will be granted by RBAC to access token resources</span>
-</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">  </span><span class="nt">adminGroups</span><span class="p">:</span>
-</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-admin</span>
-</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2-skas-admin</span>
-</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>
-</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="nt">skMerge</span><span class="p">:</span>
-</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">  </span><span class="nt">providers</span><span class="p">:</span>
-</span><span id="__span-11-22"><a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster0</span>
-</span><span id="__span-11-23"><a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crd</span>
-</span><span id="__span-11-24"><a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a>
-</span><span id="__span-11-25"><a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a><span class="w">  </span><span class="nt">providerInfo</span><span class="p">:</span>
-</span><span id="__span-11-26"><a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a><span class="w">    </span><span class="nt">cluster0</span><span class="p">:</span>
-</span><span id="__span-11-27"><a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a><span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skas-skmerge.ingress.cluster0</span>
-</span><span id="__span-11-28"><a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a><span class="w">      </span><span class="nt">rootCaData</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS...........VNGelVDQT09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K&quot;</span>
-</span><span id="__span-11-29"><a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a><span class="w">      </span><span class="nt">insecureSkipVerify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-</span><span id="__span-11-30"><a id="__codelineno-11-30" name="__codelineno-11-30" href="#__codelineno-11-30"></a><span class="w">      </span><span class="nt">clientAuth</span><span class="p">:</span>
-</span><span id="__span-11-31"><a id="__codelineno-11-31" name="__codelineno-11-31" href="#__codelineno-11-31"></a><span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2</span>
-</span><span id="__span-11-32"><a id="__codelineno-11-32" name="__codelineno-11-32" href="#__codelineno-11-32"></a><span class="w">        </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster0Cluster2SharedSecret</span>
-</span><span id="__span-11-33"><a id="__codelineno-11-33" name="__codelineno-11-33" href="#__codelineno-11-33"></a>
-</span><span id="__span-11-34"><a id="__codelineno-11-34" name="__codelineno-11-34" href="#__codelineno-11-34"></a><span class="nt">skCrd</span><span class="p">:</span>
-</span><span id="__span-11-35"><a id="__codelineno-11-35" name="__codelineno-11-35" href="#__codelineno-11-35"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="__span-11-36"><a id="__codelineno-11-36" name="__codelineno-11-36" href="#__codelineno-11-36"></a>
-</span><span id="__span-11-37"><a id="__codelineno-11-37" name="__codelineno-11-37" href="#__codelineno-11-37"></a><span class="w">  </span><span class="nt">initialUser</span><span class="p">:</span>
-</span><span id="__span-11-38"><a id="__codelineno-11-38" name="__codelineno-11-38" href="#__codelineno-11-38"></a><span class="w">    </span><span class="nt">login</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2-skas-admin</span>
-</span><span id="__span-11-39"><a id="__codelineno-11-39" name="__codelineno-11-39" href="#__codelineno-11-39"></a><span class="w">    </span><span class="nt">passwordHash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G</span><span class="w">  </span><span class="c1"># admin</span>
-</span><span id="__span-11-40"><a id="__codelineno-11-40" name="__codelineno-11-40" href="#__codelineno-11-40"></a><span class="w">    </span><span class="nt">commonNames</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Cluster2</span><span class="nv"> </span><span class="s">SKAS</span><span class="nv"> </span><span class="s">administrator&quot;</span><span class="p p-Indicator">]</span>
-</span><span id="__span-11-41"><a id="__codelineno-11-41" name="__codelineno-11-41" href="#__codelineno-11-41"></a><span class="w">    </span><span class="nt">groups</span><span class="p">:</span>
-</span><span id="__span-11-42"><a id="__codelineno-11-42" name="__codelineno-11-42" href="#__codelineno-11-42"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2-skas-admin</span>
-</span><span id="__span-11-43"><a id="__codelineno-11-43" name="__codelineno-11-43" href="#__codelineno-11-43"></a>
-</span><span id="__span-11-44"><a id="__codelineno-11-44" name="__codelineno-11-44" href="#__codelineno-11-44"></a><span class="w">  </span><span class="c1"># Members of theses groups will be granted RBAC access to users and groupBinding resources in the namespace above</span>
-</span><span id="__span-11-45"><a id="__codelineno-11-45" name="__codelineno-11-45" href="#__codelineno-11-45"></a><span class="w">  </span><span class="nt">adminGroups</span><span class="p">:</span>
-</span><span id="__span-11-46"><a id="__codelineno-11-46" name="__codelineno-11-46" href="#__codelineno-11-46"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2-skas-admin</span>
-</span><span id="__span-11-47"><a id="__codelineno-11-47" name="__codelineno-11-47" href="#__codelineno-11-47"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-admin</span>
+<summary>values.cluster2.yaml</summary>
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">clusterIssuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster-issuer1</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nt">skAuth</span><span class="p">:</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span><span class="nt">exposure</span><span class="p">:</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="nt">external</span><span class="p">:</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">      </span><span class="nt">ingress</span><span class="p">:</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">        </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas.ingress.cluster2</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">  </span><span class="nt">kubeconfig</span><span class="p">:</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">    </span><span class="nt">context</span><span class="p">:</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">      </span><span class="nt">apiServerUrl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://kubernetes.ingress.cluster2</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">  </span><span class="c1"># Members of these group will be allowed to perform &#39;kubectl-sk user describe&#39;</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">  </span><span class="c1"># Also, they will be granted by RBAC to access token resources</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">  </span><span class="nt">adminGroups</span><span class="p">:</span>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-admin</span>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2-skas-admin</span>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="nt">skMerge</span><span class="p">:</span>
+</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">  </span><span class="nt">providers</span><span class="p">:</span>
+</span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster0</span>
+</span><span id="__span-12-23"><a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crd</span>
+</span><span id="__span-12-24"><a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>
+</span><span id="__span-12-25"><a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a><span class="w">  </span><span class="nt">providerInfo</span><span class="p">:</span>
+</span><span id="__span-12-26"><a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a><span class="w">    </span><span class="nt">cluster0</span><span class="p">:</span>
+</span><span id="__span-12-27"><a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a><span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://skas-skmerge.ingress.cluster0</span>
+</span><span id="__span-12-28"><a id="__codelineno-12-28" name="__codelineno-12-28" href="#__codelineno-12-28"></a><span class="w">      </span><span class="nt">rootCaData</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS...........VNGelVDQT09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K&quot;</span>
+</span><span id="__span-12-29"><a id="__codelineno-12-29" name="__codelineno-12-29" href="#__codelineno-12-29"></a><span class="w">      </span><span class="nt">insecureSkipVerify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-12-30"><a id="__codelineno-12-30" name="__codelineno-12-30" href="#__codelineno-12-30"></a><span class="w">      </span><span class="nt">clientAuth</span><span class="p">:</span>
+</span><span id="__span-12-31"><a id="__codelineno-12-31" name="__codelineno-12-31" href="#__codelineno-12-31"></a><span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2</span>
+</span><span id="__span-12-32"><a id="__codelineno-12-32" name="__codelineno-12-32" href="#__codelineno-12-32"></a><span class="w">        </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster0Cluster2SharedSecret</span>
+</span><span id="__span-12-33"><a id="__codelineno-12-33" name="__codelineno-12-33" href="#__codelineno-12-33"></a>
+</span><span id="__span-12-34"><a id="__codelineno-12-34" name="__codelineno-12-34" href="#__codelineno-12-34"></a><span class="nt">skCrd</span><span class="p">:</span>
+</span><span id="__span-12-35"><a id="__codelineno-12-35" name="__codelineno-12-35" href="#__codelineno-12-35"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-12-36"><a id="__codelineno-12-36" name="__codelineno-12-36" href="#__codelineno-12-36"></a>
+</span><span id="__span-12-37"><a id="__codelineno-12-37" name="__codelineno-12-37" href="#__codelineno-12-37"></a><span class="w">  </span><span class="nt">initialUser</span><span class="p">:</span>
+</span><span id="__span-12-38"><a id="__codelineno-12-38" name="__codelineno-12-38" href="#__codelineno-12-38"></a><span class="w">    </span><span class="nt">login</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2-skas-admin</span>
+</span><span id="__span-12-39"><a id="__codelineno-12-39" name="__codelineno-12-39" href="#__codelineno-12-39"></a><span class="w">    </span><span class="nt">passwordHash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G</span><span class="w">  </span><span class="c1"># admin</span>
+</span><span id="__span-12-40"><a id="__codelineno-12-40" name="__codelineno-12-40" href="#__codelineno-12-40"></a><span class="w">    </span><span class="nt">commonNames</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Cluster2</span><span class="nv"> </span><span class="s">SKAS</span><span class="nv"> </span><span class="s">administrator&quot;</span><span class="p p-Indicator">]</span>
+</span><span id="__span-12-41"><a id="__codelineno-12-41" name="__codelineno-12-41" href="#__codelineno-12-41"></a><span class="w">    </span><span class="nt">groups</span><span class="p">:</span>
+</span><span id="__span-12-42"><a id="__codelineno-12-42" name="__codelineno-12-42" href="#__codelineno-12-42"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2-skas-admin</span>
+</span><span id="__span-12-43"><a id="__codelineno-12-43" name="__codelineno-12-43" href="#__codelineno-12-43"></a>
+</span><span id="__span-12-44"><a id="__codelineno-12-44" name="__codelineno-12-44" href="#__codelineno-12-44"></a><span class="w">  </span><span class="c1"># Members of theses groups will be granted RBAC access to users and groupBinding resources in the namespace above</span>
+</span><span id="__span-12-45"><a id="__codelineno-12-45" name="__codelineno-12-45" href="#__codelineno-12-45"></a><span class="w">  </span><span class="nt">adminGroups</span><span class="p">:</span>
+</span><span id="__span-12-46"><a id="__codelineno-12-46" name="__codelineno-12-46" href="#__codelineno-12-46"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster2-skas-admin</span>
+</span><span id="__span-12-47"><a id="__codelineno-12-47" name="__codelineno-12-47" href="#__codelineno-12-47"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-admin</span>
 </span></code></pre></div>
 </details>
-<p>Again, the first part include what was in a separate <code>values.init.yaml</code> file in other samples of this documentation.
-As such, this file can be used for initial deployment, or for upgrading an exiting one.</p>
-<p>Then:</p>
+<p>Once again, the first part includes what was previously stored in a separate <code>values.init.yaml</code> file,
+which has been used in other samples within this documentation.</p>
+<p>Then, within the configuration:</p>
 <ul>
 <li><code>skMerge.providers</code> reference now our local <code>crd</code> providers aside the global <code>cluster0</code>.</li>
 <li><code>skMerge.providerInfo.cluster0</code> is the same as for <code>cluster1</code>, except of course the <code>clientAuth</code> part.</li>
 <li>An initial user (<code>cluster2-skas-system</code>) is created as local admin. This account will only be valid on this cluster.</li>
 <li>The list of <code>adminGroups</code> must be defined twice:<ul>
-<li>One in the <code>skAuth</code> module. This to allow <code>kubectl_sk user describe</code> command for members of these groups. </li>
-<li>One in the <code>skCrd</code> module. This to setup RBAC rules to allow SKAS resources (skusers, groupBindings, tokens) to be managed by members of theses groups.</li>
+<li>One in the <code>skAuth</code> module. This is to allow the <code>kubectl-sk user describe</code> command for members of these groups.</li>
+<li>One in the <code>skCrd</code> module. This is to set up RBAC rules to allow SKAS resources (<code>skusers</code>, <code>groupBindings</code>, <code>tokens</code>) to be managed by members of these groups.</li>
 </ul>
 </li>
 </ul>
-<p>To apply this configuration, enter:</p>
-<p><div class="language-shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.cluster2.yaml<span class="w"> </span>--create-namespace
+<p>To apply this configuration, please ensure that you have a <code>kubectl</code> configuration set up to target <code>cluster2</code> with
+administrator privileges, and then enter the following command:</p>
+<div class="language-shell copy highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span>--values<span class="w"> </span>./values.cluster2.yaml<span class="w"> </span>--create-namespace
 </span></code></pre></div>
-with a kubernetes config targeting <code>cluster2</code> with administrator privileges:</p>
 <p>If this is the first deployment on this cluster, don't forget also to <a href="../installation/#api-server-configuration">configure the API Server</a></p>
 <h3 id="testing_1">Testing</h3>
-<p>Configure our local Kubernetes config file to access to this clusters:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>init<span class="w"> </span>https://skas.ingress.cluster2
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Setup<span class="w"> </span>new<span class="w"> </span>context<span class="w"> </span><span class="s1">&#39;cluster2&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>kubeconfig<span class="w"> </span>file<span class="w"> </span><span class="s1">&#39;/Users/john/.kube/config&#39;</span>
+<p>We can now configure our local Kubernetes config file to authenticate to <code>cluster2</code> through SKAS:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>init<span class="w"> </span>https://skas.ingress.cluster2
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>&gt;<span class="w"> </span>Setup<span class="w"> </span>new<span class="w"> </span>context<span class="w"> </span><span class="s1">&#39;cluster2&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>kubeconfig<span class="w"> </span>file<span class="w"> </span><span class="s1">&#39;/Users/john/.kube/config&#39;</span>
 </span></code></pre></div>
-<p>Now, we can log as local admin, and describe ourself:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>cluster2-skas-admin
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>Password:
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>logged<span class="w"> </span>successfully..
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
-</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>cluster2-skas-admin<span class="w"> </span>--explain
-</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>USER<span class="w">                  </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">                </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES<span class="w">                  </span>AUTH
-</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>cluster2-skas-admin<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>cluster2-skas-admin<span class="w">            </span>Cluster2<span class="w"> </span>SKAS<span class="w"> </span>administrator<span class="w">   </span>crd
-</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
-</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>Detail:
-</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>PROVIDER<span class="w">   </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">                </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES
-</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>cluster0<span class="w">   </span>userNotFound<span class="w">        </span><span class="m">0</span>
-</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>crd<span class="w">        </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>cluster2-skas-admin<span class="w">            </span>Cluster2<span class="w"> </span>SKAS<span class="w"> </span>administrator
-</span></code></pre></div>
-<p>Ensure we can perform all usual user management operations under this account:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>tokens
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>NAME<span class="w">                                               </span>CLIENT<span class="w">   </span>USER<span class="w"> </span>LOGIN<span class="w">            </span>AUTH.<span class="w">   </span>USER<span class="w"> </span>ID<span class="w">   </span>CREATION<span class="w">               </span>LAST<span class="w"> </span>HIT
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>tjvygwmtparktpwiiuysydzctbunppkycsykprtdswsramtm<span class="w">            </span>cluster2-skas-admin<span class="w">   </span>crd<span class="w">     </span><span class="m">0</span><span class="w">         </span><span class="m">2023</span>-08-31T12:43:03Z<span class="w">   </span><span class="m">2023</span>-08-31T12:43:26Z
+<p>Now, we can log in as the local admin and describe ourself:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>cluster2-skas-admin
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>&gt;<span class="w"> </span>Password:
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>&gt;<span class="w"> </span>logged<span class="w"> </span>successfully..
 </span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>
-</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>create<span class="w"> </span>cluster2user1<span class="w"> </span>--generatePassword
-</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>The<span class="w"> </span>follwing<span class="w"> </span>password<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>generated:<span class="w"> </span><span class="s1">&#39;8fJoM6JFObjO&#39;</span>
-</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="o">(</span>Save<span class="w"> </span>it<span class="w"> </span>as<span class="w"> </span>it<span class="w"> </span>will<span class="w"> </span>not<span class="w"> </span>be<span class="w"> </span>accessible<span class="w"> </span>anymore<span class="o">)</span>.
-</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>User<span class="w"> </span><span class="s1">&#39;cluster2user1&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
-</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>
-</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>$<span class="w">  </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>cluster2user1<span class="w"> </span>cluster2grp1
-</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>GroupBinding<span class="w"> </span><span class="s1">&#39;cluster2user1.cluster2grp1&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
-</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>
-</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>cluster2user1
-</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>USER<span class="w">            </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">         </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES<span class="w">   </span>AUTH
-</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>cluster2user1<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>cluster2grp1<span class="w">                           </span>crd
-</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>
-</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>cluster2user1<span class="w"> </span>--explain
-</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>USER<span class="w">            </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">         </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES<span class="w">   </span>AUTH
-</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>cluster2user1<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>cluster2grp1<span class="w">                           </span>crd
-</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>
-</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>Detail:
-</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a>PROVIDER<span class="w">   </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">         </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES
-</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>cluster0<span class="w">   </span>userNotFound<span class="w">        </span><span class="m">0</span>
-</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>crd<span class="w">        </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>cluster2grp1
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>cluster2-skas-admin<span class="w"> </span>--explain
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>&gt;<span class="w"> </span>USER<span class="w">                  </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">                </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES<span class="w">                  </span>AUTH
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>&gt;<span class="w"> </span>cluster2-skas-admin<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>cluster2-skas-admin<span class="w">            </span>Cluster2<span class="w"> </span>SKAS<span class="w"> </span>administrator<span class="w">   </span>crd
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>Detail:
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>&gt;<span class="w"> </span>PROVIDER<span class="w">   </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">                </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>&gt;<span class="w"> </span>cluster0<span class="w">   </span>userNotFound<span class="w">        </span><span class="m">0</span>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>&gt;<span class="w"> </span>crd<span class="w">        </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>cluster2-skas-admin<span class="w">            </span>Cluster2<span class="w"> </span>SKAS<span class="w"> </span>administrator
 </span></code></pre></div>
-<p>And check the newly created user is effective:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>cluster2user1<span class="w"> </span>8fJoM6JFObjO
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>logged<span class="w"> </span>successfully..
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>whoami
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>USER<span class="w">            </span>ID<span class="w">   </span>GROUPS
-</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>cluster2user1<span class="w">   </span><span class="m">0</span><span class="w">    </span>cluster2grp1
-</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>
-</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>ns
-</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>Error<span class="w"> </span>from<span class="w"> </span>server<span class="w"> </span><span class="o">(</span>Forbidden<span class="o">)</span>:<span class="w"> </span>namespaces<span class="w"> </span>is<span class="w"> </span>forbidden:<span class="w"> </span>User<span class="w"> </span><span class="s2">&quot;cluster2user1&quot;</span><span class="w"> </span>cannot<span class="w"> </span>list<span class="w"> </span>resource<span class="w"> </span><span class="s2">&quot;namespaces&quot;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>API<span class="w"> </span>group<span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span>at<span class="w"> </span>the<span class="w"> </span>cluster<span class="w"> </span>scope
+<p>Ensure we can perform all usual user management operations with this account:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>get<span class="w"> </span>tokens
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>&gt;<span class="w"> </span>NAME<span class="w">                                               </span>CLIENT<span class="w">   </span>USER<span class="w"> </span>LOGIN<span class="w">            </span>AUTH.<span class="w">   </span>USER<span class="w"> </span>ID<span class="w">   </span>CREATION<span class="w">               </span>LAST<span class="w"> </span>HIT
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>&gt;<span class="w"> </span>tjvygwmtparktpwiiuysydzctbunppkycsykprtdswsramtm<span class="w">            </span>cluster2-skas-admin<span class="w">   </span>crd<span class="w">     </span><span class="m">0</span><span class="w">         </span><span class="m">2023</span>-08-31T12:43:03Z<span class="w">   </span><span class="m">2023</span>-08-31T12:43:26Z
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>create<span class="w"> </span>cluster2user1<span class="w"> </span>--generatePassword
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>&gt;<span class="w"> </span>The<span class="w"> </span>follwing<span class="w"> </span>password<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>generated:<span class="w"> </span><span class="s1">&#39;8fJoM6JFObjO&#39;</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>&gt;<span class="w"> </span><span class="o">(</span>Save<span class="w"> </span>it<span class="w"> </span>as<span class="w"> </span>it<span class="w"> </span>will<span class="w"> </span>not<span class="w"> </span>be<span class="w"> </span>accessible<span class="w"> </span>anymore<span class="o">)</span>.
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>&gt;<span class="w"> </span>User<span class="w"> </span><span class="s1">&#39;cluster2user1&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>$<span class="w">  </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span><span class="nb">bind</span><span class="w"> </span>cluster2user1<span class="w"> </span>cluster2grp1
+</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>&gt;<span class="w"> </span>GroupBinding<span class="w"> </span><span class="s1">&#39;cluster2user1.cluster2grp1&#39;</span><span class="w"> </span>created<span class="w"> </span><span class="k">in</span><span class="w"> </span>namespace<span class="w"> </span><span class="s1">&#39;skas-system&#39;</span>.
+</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>
+</span><span id="__span-16-13"><a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>cluster2user1
+</span><span id="__span-16-14"><a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a>&gt;<span class="w"> </span>USER<span class="w">            </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">         </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES<span class="w">   </span>AUTH
+</span><span id="__span-16-15"><a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a>&gt;<span class="w"> </span>cluster2user1<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>cluster2grp1<span class="w">                           </span>crd
+</span><span id="__span-16-16"><a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a>
+</span><span id="__span-16-17"><a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>user<span class="w"> </span>describe<span class="w"> </span>cluster2user1<span class="w"> </span>--explain
+</span><span id="__span-16-18"><a id="__codelineno-16-18" name="__codelineno-16-18" href="#__codelineno-16-18"></a>&gt;<span class="w"> </span>USER<span class="w">            </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">         </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES<span class="w">   </span>AUTH
+</span><span id="__span-16-19"><a id="__codelineno-16-19" name="__codelineno-16-19" href="#__codelineno-16-19"></a>&gt;<span class="w"> </span>cluster2user1<span class="w">   </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>cluster2grp1<span class="w">                           </span>crd
+</span><span id="__span-16-20"><a id="__codelineno-16-20" name="__codelineno-16-20" href="#__codelineno-16-20"></a>
+</span><span id="__span-16-21"><a id="__codelineno-16-21" name="__codelineno-16-21" href="#__codelineno-16-21"></a>&gt;<span class="w"> </span>Detail:
+</span><span id="__span-16-22"><a id="__codelineno-16-22" name="__codelineno-16-22" href="#__codelineno-16-22"></a>&gt;<span class="w"> </span>PROVIDER<span class="w">   </span>STATUS<span class="w">              </span>UID<span class="w">   </span>GROUPS<span class="w">         </span>EMAILS<span class="w">   </span>COMMON<span class="w"> </span>NAMES
+</span><span id="__span-16-23"><a id="__codelineno-16-23" name="__codelineno-16-23" href="#__codelineno-16-23"></a>&gt;<span class="w"> </span>cluster0<span class="w">   </span>userNotFound<span class="w">        </span><span class="m">0</span>
+</span><span id="__span-16-24"><a id="__codelineno-16-24" name="__codelineno-16-24" href="#__codelineno-16-24"></a>&gt;<span class="w"> </span>crd<span class="w">        </span>passwordUnchecked<span class="w">   </span><span class="m">0</span><span class="w">     </span>cluster2grp1
+</span></code></pre></div>
+<p>And check if the newly created user is effective:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>login<span class="w"> </span>cluster2user1<span class="w"> </span>8fJoM6JFObjO
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>&gt;<span class="w"> </span>logged<span class="w"> </span>successfully..
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>$<span class="w"> </span>kubectl<span class="w"> </span>sk<span class="w"> </span>whoami
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>&gt;<span class="w"> </span>USER<span class="w">            </span>ID<span class="w">   </span>GROUPS
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>&gt;<span class="w"> </span>cluster2user1<span class="w">   </span><span class="m">0</span><span class="w">    </span>cluster2grp1
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>ns
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>&gt;<span class="w"> </span>Error<span class="w"> </span>from<span class="w"> </span>server<span class="w"> </span><span class="o">(</span>Forbidden<span class="o">)</span>:<span class="w"> </span>namespaces<span class="w"> </span>is<span class="w"> </span>forbidden:<span class="w"> </span>User<span class="w"> </span><span class="s2">&quot;cluster2user1&quot;</span><span class="w"> </span>cannot<span class="w"> </span>list<span class="w"> </span>resource<span class="w"> </span><span class="s2">&quot;namespaces&quot;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>API<span class="w"> </span>group<span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span>at<span class="w"> </span>the<span class="w"> </span>cluster<span class="w"> </span>scope
 </span></code></pre></div>
 <blockquote>
-<p><em>The same operations can be performed under the <code>admin</code> account. This because it is member of the <code>skas-admin</code> group 
-and we choose to include this group in the two <code>adminGroups</code> list in the <code>values.cluster2.yaml</code> configuration file.</em></p>
+<p><em>The same operations can also be performed using the <code>admin</code> account because it is a member of the <code>skas-admin</code> 
+group, which we have included in the two <code>adminGroups</code> lists in the <code>values.cluster2.yaml</code> configuration file.</em></p>
 </blockquote>
 
 

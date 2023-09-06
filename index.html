@@ -249,9 +249,40 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Home
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="." class="md-nav__link md-nav__link--active">
         Home
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#main-features" class="md-nav__link">
+    Main Features
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -457,6 +488,21 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#main-features" class="md-nav__link">
+    Main Features
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -474,20 +520,59 @@
 
 
 <h1 id="skas-simple-kubernetes-authentication-system">SKAS: Simple Kubernetes Authentication System</h1>
-<p>SKAS is a Kubernetes extension aimed to handle users authentication and authorization.</p>
-<p>Its main features are:</p>
+<p>SKAS is a powerful Kubernetes extension designed to streamline user authentication and authorization processes. 
+Whether you're managing a single cluster or a complex multi-cluster environment, 
+SKAS offers a seamless solution to handle user authentication, integrating seamlessly with Kubernetes CLI and 
+supporting a range of identity providers.</p>
+<h2 id="main-features">Main Features</h2>
+<p>SKAS boasts an array of essential features to simplify and enhance your Kubernetes authentication and 
+authorization experience:</p>
+<ul>
+<li>
+<p><strong>Kubernetes Authentication Webhook and kubectl Extension:</strong> SKAS provides a Kubernetes authentication webhook and an 
+extension for kubectl, ensuring a smooth Kubernetes CLI integration without the need for browser interactions.</p>
+</li>
+<li>
+<p><strong>Custom Users and Groups:</strong> Define users and groups as Kubernetes Custom Resources, giving you fine-grained control 
+over access and permissions.</p>
+</li>
+<li>
+<p><strong>DEX Connector:</strong> SKAS includes a DEX connector, making it compatible with all OIDC (OpenID Connect) aware 
+applications such as Argocd and Argo Workflows, enabling secure and straightforward integration.</p>
+</li>
+<li>
+<p><strong>LDAP Integration:</strong> Support for one or several LDAP servers allows you to leverage existing identity 
+infrastructure seamlessly.</p>
+</li>
+</ul>
 <p><img align="right" alt="Overview" src="images/draw0.png" width="320" /></p>
 <ul>
-<li>Provide an Kubernetes authentication webhook and a kubectl extension, for seamless Kubernetes CLI integration (Without browser interaction)</li>
-<li>Allow definition of Users and Groups as Kubernetes custom resources.</li>
-<li>Provide a DEX connector to support all OIDC aware applications (Argocd, argo workflow, ...)</li>
-<li>Support one or several LDAP server(s).</li>
-<li>Provide ability to combine users informations from several sources (LDAP, Local users database, ....).</li>
-<li>Allow centralized user management in a multi-cluster environment.</li>
-<li>Allow delegation of the management for a subset of Users and/or Groups.</li>
-<li>Provide flexible architecture to handle sophisticated user management in a complex environment.</li>
-<li>Can use a ReadOnly access to the LDAP/AD server(s). User profile can then be enriched with local information.</li>
+<li>
+<p><strong>Unified User Information:</strong> SKAS allows you to combine user information from multiple sources, including LDAP, 
+local user databases, and more, providing a consolidated profile for users.</p>
+</li>
+<li>
+<p><strong>Centralized User Management:</strong> In multi-cluster environments, SKAS simplifies user management, 
+ensuring consistency and control across all clusters.</p>
+</li>
+<li>
+<p><strong>Delegated Management:</strong> Delegate user and group management to specific individuals or teams, enhancing 
+collaboration and reducing administrative burden.</p>
+</li>
+<li>
+<p><strong>Flexible Architecture:</strong> SKAS is designed with flexibility in mind, accommodating sophisticated user management 
+requirements in even the most complex environments.</p>
+</li>
+<li>
+<p><strong>ReadOnly LDAP/AD Access:</strong> SKAS can operate with ReadOnly access to LDAP/AD servers, allowing user profiles to be 
+enriched with local information, further enhancing the user experience.</p>
+</li>
 </ul>
+<p>With SKAS, you can ensure a secure, streamlined, and efficient authentication and authorization process, 
+enabling your Kubernetes clusters to operate at their full potential.</p>
+<p>This introduction provides a more comprehensive overview of SKAS and its main features. Depending on your requirements, 
+you can further expand on each feature with dedicated sections in your documentation. If you need assistance with any 
+specific sections or have more details to add, please let us know.</p>
 
 
 
