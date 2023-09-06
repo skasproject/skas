@@ -2,10 +2,10 @@
 
 ## reloader
 
-Forgetting to restart a POD after a configuration change is a common source of errors. Fortunately, some tools can 
-help for this. Such as [Reloader](https://github.com/stakater/Reloader)
+Forgetting to restart a POD after making a configuration change is a common source of errors. Fortunately, 
+there are tools available to help with this, such as [Reloader](https://github.com/stakater/Reloader).
 
-The SKAS Helm chart add appropriate annotations on the `deployment`:  
+The SKAS Helm chart adds the necessary annotations to the `deployment` to automate this process:
 
 ```
 apiVersion: apps/v1
@@ -17,15 +17,16 @@ metadata:
 
 > _The list of `configMap` is built dynamically by the Helm chart._
 
-Of course, if Reloader is not installed in your cluster, this annotation will have no effect.
+Of course, if Reloader is not installed in your cluster, this annotation will be ineffective."
 
 ## Secret generator
 
-As stated in [Two LDAP servers configuration](twoldapservers.md) o [Delegated users management](delegated.md), there is the need to generate 
-a random secret in the deployment. For this, one can use [kubernetes-secret-generator](https://github.com/mittwald/kubernetes-secret-generator),
-a custom kubernetes controller.
+As mentioned in [Two LDAP servers configuration](twoldapservers.md) and [Delegated users management](delegated.md), 
+it's necessary to generate a random secret during deployment. To achieve this, you can utilize 
+[kubernetes-secret-generator](https://github.com/mittwald/kubernetes-secret-generator), a custom Kubernetes controller.
 
-Here is a manifest which, once applied, will create the secret `skas2-client-secret` used the authenticate the communication between the two PODs of the two LDAP configuration referenced above.  
+Here is a manifest that, once applied, will create the secret `skas2-client-secret`, which is used for authenticating 
+communication between the two pods in the configurations mentioned above.
 
 ``` { .yaml .copy }
 ---
@@ -43,13 +44,11 @@ spec:
 
 ## k9s
 
-We would like to say two words about this great tool which is [k9s](https://github.com/derailed/k9s)
+We'd like to highlight the utility of a fantastic tool called [k9s](https://github.com/derailed/k9s). 
+K9s is exceptional in that it can seamlessly handle Custom Resource Definitions (CRDs), making it a perfect choice 
+for dynamically displaying, modifying or deleting SKAS resources.
 
-As it is able to handle Custom Resources Definition out of the box, K9s is a perfect tool to dynamically display, modify or delete SKAS resources.
-
-Note than, as User and Group are ambiguous names, which are used also by others API, alias are provided to ensure ambiguous access.
-
-For example, you can access this screen under `skusers` resource name:
+As an example, you can access this screen using the `skusers` resource name:
 
 ![](images/k9s-1.png)
 
@@ -63,7 +62,7 @@ This one using `tokens`:
 
 Of course, k9s can't do more than what the launching user is allowed to do. This user can be authenticated using SKAS, but it must have a minimum set of rights to behave correctly.
 
-For example, you can launch k9s under the `admin` user account we have set up in the installation process (Provided it is member of the `system:masters` group).
+For instance, you can launch k9s using the `admin` user account we have set up during the installation process, provided it is a member of the `system:masters` group.
 
 ```shell
 $ kubectl sk login admin
@@ -76,9 +75,11 @@ $ k9s
 
 ## Kubernetes dashboard
 
-Login to the Kubernetes dashboard with SKAS is quite easy.
+To log in to the Kubernetes dashboard with SKAS, follow these steps:
 
-First, you must be logged using the CLI. Then using the `--all` option of the `kubectl sk whoami` command, you can get your current allocated token:
+- Ensure you are logged in using the CLI.
+- Use the kubectl `sk whoami --all` command to retrieve your currently allocated token."
+
 
 ```shell
 $ kubectl sk login admin
@@ -90,20 +91,22 @@ USER    ID   GROUPS                      AUTH.   TOKEN
 admin   0    skas-admin,system:masters   crd     znitotnewjbqbuolqacckvgxyhptoxsuykznrzdacuvdhimy
 ```
 
-Now, you just have to cut and paste the token value in the dashboard login screen:
+Now, simply copy and paste the token value into the dashboard's login screen:
 
 ![](images/dashboard1.png)
 
-Of course, the set of operation you will be able to perform through the dashboard will be limited by the logged user's permissions.
+Of course, the operations you can perform through the dashboard will be limited by the logged-in user's permissions.
 
 ## Tricks: Handle two different sessions
 
-When working on user permissions, it could be useful to have separate session, at least one as admin, and one as a user to test its capability.
+When working on user permissions, it could be useful to have separate session, at least one as admin, and one as 
+a user to test its capability.
 
-But the default Kubernetes configuration is not bound to a terminal session, but to a user. 
-So, any modification (`kubectl config ....`) of the local configuration will have effect on all session.
+But, the default Kubernetes configuration is not bound to a terminal session but to a user. Therefore, any modifications 
+made to the local configuration (`kubectl config ...`) will affect all sessions.
 
-The solution is to change the location of the kubernetes configuration for a given session, by modifying the `KUBECONFIG` environment variable: 
+To work around this, you can change the location of the Kubernetes configuration for a specific session by modifying 
+the `KUBECONFIG` environment variable:
 
 ```shell
 $ export KUBECONFIG=/tmp/kconfig

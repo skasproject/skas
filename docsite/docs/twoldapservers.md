@@ -10,7 +10,7 @@ The obvious solution to add a second LDAP server would be to duplicate the `skLd
 
 Unfortunately, the provided SKAS helm chart does not allow several instance of whatever container. Doing so would be possible, but at the price of a more complex chart.
 
-A possible solution would be to modify the chart by adding this second LDAP IDP. But such specifics forks should be avoided if possible.
+A possible solution would be to modify the chart by adding this second LDAP IDP. However, it's best to avoid such specific forks if possible.
 
 ![](images/empty.png){width=700}
 
@@ -25,20 +25,20 @@ In this case, as the second `skLdap` module run in another POD, communication mu
 
 This configuration requires two steps:
 
-- Setup a new Helm deployment for `skas2` pod.
+- Setup a new Helm deployment for the `skas2` secondary pod.
 - Reconfigure the `skMerge` module of the main SKAS pod to connect to this new IDP.
 
 ![](./images/empty.png){width=700}
 
-In the following, three variants of this configuration will be described. One with the connection in clear text, and two secured, with network encryption and inter-pod authentication.
+In the following section, we will describe three variants of this configuration: one with a clear text connection and two secured variants with network encryption and inter-pod authentication.
 
-> _Even if your target is a fully secured configuration, we suggest you first implement the unsecured, simplest variant, and then modify it incrementally, as described._
+> _We recommend starting with the unsecured, simplest variant even if your ultimate goal is a fully secured configuration. You can then incrementally modify it as described._
 
 ## Clear text connection
 
-### Auxiliary POD configuration
+### Secondary POD configuration
 
-Here is a sample values file to configure the auxiliary POD:
+Here is a sample values file for configuring the secondary POD:
 
 ??? abstract "values.skas2.yaml"
 
@@ -97,14 +97,14 @@ Here is a sample values file to configure the auxiliary POD:
               protected: true
     ```
 
-At the beginning of the file, we disable all other modules than `skLdap`.
+At the beginning of the file, we disable all modules except for `skLdap`.
 
-Then there is the connection to the second LDAP server which must be adjusted to your context. Refer to [LDAP Setup](./ldap.md)
+Then, you will need to adjust the configuration for the second LDAP server according to your specific context. Please refer to [LDAP Setup](./ldap.md) for guidance."
 
 Then, there is the `exposure` part, who define how this service will be exposed. (The default configuration is expose to `localhost` in clear text)
 
-- `exposure.internal.enabled: false` shutdown the HTTP server bound on localhost.
-- `exposure.external.enabled: true` set the HTTP server bound on the POD IP up. This on port 7113 with no SSL.
+- `exposure.internal.enabled: false` shutdown the HTTP server bound to localhost.
+- `exposure.external.enabled: true` set up the HTTP server bound on the POD IP. This run on port 7113 with no SSL.
 - Then the is the configuration of the `identity` service to expose:
     - `clients[]` is a mechanism to validate who is able to access this service, by providing an `id` and a `secret`
       (or password). the values "*" will disable this feature.
@@ -112,21 +112,19 @@ Then, there is the `exposure` part, who define how this service will be exposed.
       unsuccessful connection attempts, and by limiting the number of simultaneous connections. There is no reason to
       disable it, except if you suspect a misbehavior.
 
-To deploy this configuration:
+To deploy this configuration, execute:
 
-```shell
-$ helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
+```{.shell .copy}
+helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
 ```
 
 > **Note the `skas2' release name**
 
-The Helm chart will deploy the new pod(s), under the name `skas2`. it will also deploy an associated Kubernetes `service`.
+The Helm chart will deploy the new pod(s) under the name `skas2` and also create an associated Kubernetes `service`.
 
 ### Main pod reconfiguration
 
-Second step is to reconfigure the main POD
-
-Here is a sample of appropriate configuration:
+The second step is to reconfigure the main pod. Here is a sample of the appropriate configuration:
 
 ??? abstract "values.skas.yaml"
 
@@ -172,54 +170,59 @@ Here is a sample of appropriate configuration:
           numericalIdAttr: uidNumber
     ```
 
-There is two entries aimed to configure a provider on the bottom of the `skMerge` module:
 
-- `providers` is a list of the connected providers, which allow to define their behavior. The order is important here.
-  Refers to the [IDP chaining: Provider configuration](chaining.md#provider-configuration) chapter.
-- `providerInfo` is a map providing information on how to reach these providers.<br>For `crd` and `ldap1`, we use the
-  default `localhost` port.<br>For `ldap2` we use the service created by the `skas2` deployment.
+At the top of the `skMerge` module, there are two entries designed to configure a provider:
 
-The link between these two entries is of course the provider name.
+- `providers` is a list of connected providers, which allows you to define their behavior. The order of providers in 
+this list is important. For more information, refer to the 
+[Identity Provider chaining: Provider configuration](chaining.md#provider-configuration) chapter.
 
-Then there is the configuration for the primary LDAP server, which must be adapted to your configuration.
+- `providerInfo` is a map that provides information on how to reach these providers. For `crd` and `ldap1`, we use 
+the default localhost port. For `ldap2`, we use the service created by the skas2 deployment. 
 
-Then, the reconfiguration must be applied:
+The link between these two entries is, of course, the provider name.
 
-```shell
-$ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
---values ./values.skas.yaml
+Next, there is the configuration for the primary LDAP server, which must be adapted to your specific configuration."
+
+The reconfiguration must then be applied by executing this command:
+
+```{ .shell .copy}
+helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml --values ./values.skas.yaml
 ```
 
-> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.skas.yaml` file. Also, if you have others values file, they must be added on each upgrade_
+> _Don't forget to include the `values.init.yaml` file or merge it into the `values.skas.yaml` file. Additionally, 
+if you have other values files, make sure to include them in each upgrade._
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md#pod-restart)_
+> _Also, remember to restart the pod(s) after making these configuration changes. You can find more information on how 
+to do this in the [Configuration: Pod restart](configuration.md#pod-restart) section._
 
 ## Test
 
-Then, you can now test your configuration:
+Now, you can test your configuration:
 
 ```shell
 $ kubectl sk user describe nobody  --explain
-USER     STATUS         UID   GROUPS   EMAILS   COMMON NAMES   AUTH
-nobody   userNotFound   0
+> USER     STATUS         UID   GROUPS   EMAILS   COMMON NAMES   AUTH
+> nobody   userNotFound   0
 
-Detail:
-PROVIDER   STATUS         UID   GROUPS   EMAILS   COMMON NAMES
-crd        userNotFound   0
-ldap1      userNotFound   0
-ldap2      userNotFound   0
+> Detail:
+> PROVIDER   STATUS         UID   GROUPS   EMAILS   COMMON NAMES
+> crd        userNotFound   0
+> ldap1      userNotFound   0
+> ldap2      userNotFound   0
 ```
 
-You can check than both ldap server are taken in account. This also ensure connection to both LDAP server are effective,
-as a provider is `critical` by default (Refers to the [IDP chaining: Provider configuration](chaining.md#provider-configuration) chapter).
+You can check that both LDAP servers are taken into account. This also ensures that connections to both LDAP servers 
+are effective, as a provider is `critical` by default (Refers to the 
+[Identity Provider chaining: Provider configuration](chaining.md#provider-configuration) chapter
 
 Of course, another test will be to describe some users existing in your LDAP servers.
 
 ## Securing connection
 
-It should ne noted than unencrypted passwords will transit through the link between the two pods. So, setting up encryption is a must have.
+It should be noted that unencrypted passwords will transit through the link between the two pods. Therefore, setting up encryption is a must-have.
 
-### Auxiliary POD configuration
+### Secondary POD configuration
 
 Here is the modified version for the `skas2` pod configuration:
 
@@ -282,22 +285,23 @@ Here is the modified version for the `skas2` pod configuration:
               protected: true
     ```
 
-The differences are the following:
+The differences are as follows:
 
-- There is a `clusterIssuer` definition to be able to generate a certificate. (It is assumed here than `cert-manager` is deployed in the cluster)
-- `exposure.external.ssl` is set to `true`. This will also leads the generation of the server certificate.
-- The `service.identity.clients` authentication is also activated. The `id` and `secret` values will have to be provided by the `skMerge` client.
+- There is a `clusterIssuer` definition to enable the generation of a certificate. (It is assumed here that 
+`cert-manager` is deployed in the cluster).
+- `exposure.external.ssl` is set to `true`. This will also lead to the generation of the server certificate.
+- The `service.identity.clients` authentication is also activated. The `id` and `secret` values will have to be 
+provided by the `skMerge` client.
 
 To deploy this configuration:
 
-```shell
-$ helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
+```{.shell .copy}
+helm -n skas-system install skas2 skas/skas --values ./values.skas2.yaml
 ```
-
 > **Note the `skas2' release name**
 
-The Helm chart will deploy the new pod(s), under the name `skas2`. it will also deploy an associated Kubernetes `service`
-and the `cert-manager.io/v1/Certificate` request.
+The Helm chart will deploy the new pod(s) with the name `skas2`. It will also deploy an associated Kubernetes `service`
+and submit a `cert-manager.io/v1/Certificate` request.
 
 ### Main pod reconfiguration
 
@@ -360,35 +364,38 @@ Here is the modified version for the main SKAS POD configuration:
 The `providerInfo.ldap2` has been modified for SSL and authenticated connection:
 
 - `url` begins with `https`.
-- `clientAuth` provides information to authenticated against the `skLdap2` pod.
-- `insecureSkipVerify` is set to false, as we want to check certificate validity.
+- `clientAuth` provides information to authenticate against the `skLdap2` pod.
+- `insecureSkipVerify` is set to `false`, as we want to check certificate validity.
 - `rootCaPath` is set to access the `ca.crt`, the CA validating the `skLdap2` server certificate.
 
-As stated above, during the deployment of the `skas2` auxiliary POD, a server certificate has been generated to allow
-SSL enabled services. This certificate is stored in a secret (of type `kubernetes.io/tls`) named `skas2-ldap-cert`.
-Alongside the private/public key pair, it also contains the root Certificate authority under the name`ca.crt`.
+As stated above, during the deployment of the `skas2` secondary POD, a server certificate was generated to allow 
+SSL-enabled services. This certificate is stored in a secret (of type `kubernetes.io/tls`) named `skas2-ldap-cert`. 
+Alongside the private/public key pair, it also contains the root Certificate Authority under the name `ca.crt`.
 
-The `skMerge.extraSecrets` subsection instruct the POD to mount this secret to the defined location.
-The property `skMerge.providerInfo.ldap2.rootCaPath` can now refer to the mounted value.
+The `skMerge.extraSecrets` subsection instructs the POD to mount this secret at the defined location. 
+The property `skMerge.providerInfo.ldap2.rootCaPath` can now reference the mounted value.
 
 Then, the reconfiguration must be applied:
 
-```shell
-$ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
---values ./values.skas.yaml
+```{ .shell .copy}
+helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml --values ./values.skas.yaml
 ```
 
-> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.skas.yaml` file. Also, if you have others values file, they must be added on each upgrade_
+> _Don't forget to include the `values.init.yaml` file or merge it into the `values.skas.yaml` file. Additionally,
+if you have other values files, make sure to include them in each upgrade._
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md#pod-restart)_
+> _Also, remember to restart the pod(s) after making these configuration changes. You can find more information on how
+to do this in the [Configuration: Pod restart](configuration.md#pod-restart) section._
 
 You can now test again your configuration, as [described above](#test)
 
+
 ## Using a Kubernetes secrets
 
-There is still a security issue, as the shared secret (`aSharedSecret`) is in clear text in both values file. As such it may ends up in some version control system.
+There is still a security issue because the shared secret (`aSharedSecret`) is stored in plain text in both values 
+files, which could lead to it being accidentally committed to a version control system.
 
-The good practice will be to store the secret value in a kubernetes `secret` resource, such as:
+The best practice is to store the secret value in a Kubernetes `secret` resource, like this:
 
 ``` { .yaml .copy }
 ---
@@ -402,13 +409,13 @@ data:
 type: Opaque
 ```
 
-Where `data.clientSecret` is the secret encoded in base 64.
+Where `data.clientSecret` is the secret encoded in base64.
 
-> There is several solutions to generate such secret value. One can use Helm with some random generator function. Or use a [Secret generator](toolsandtricks.md#secret-generator)
+> There are several solutions to generate such a secret value. One can use Helm with a random generator function. Another one is to use a [Secret generator](toolsandtricks.md#secret-generator)."
 
-### Auxiliary POD configuration
+### Secondary POD configuration
 
-To use this secret, here is the new modified version for the `skas2` POD configuration:
+To use this secret, here is the new modified version of the `skas2` POD configuration:
 
 ??? abstract "values.skas2.yaml"
 
@@ -475,16 +482,17 @@ To use this secret, here is the new modified version for the `skas2` POD configu
               key: clientSecret
     ```
 
-The modifications are the following:
+The modifications are as follows:
 
-- The `skLdap.extraEnv` subsection inject the secret value as an environment variable in the container.
-- the `skLdap.exposure.external.services.identity.clients[0].secret` fetch its value through this environment variable.
+- The `skLdap.extraEnv` subsection injects the secret value as an environment variable into the container.
+- The `skLdap.exposure.external.services.identity.clients[0].secret` retrieves its value through this environment variable.
 
-> Most of the values provided by the helm chart ends up inside a configMap, which is then loaded by the SKAS executable. The environment variable interpolation occurs during this load.
+> Most of the values provided by the Helm chart end up inside a ConfigMap, which is then loaded by the SKAS executable. 
+Environment variable interpolation occurs during this loading process.
 
 ### Main pod reconfiguration
 
-Here is the modified version, with `secret` handling, for the main SKAS pod configuration:
+Here is the modified version of the main SKAS pod configuration, which incorporates `secret` handling:
 
 ??? abstract "values.skas.yaml"
 
@@ -547,19 +555,16 @@ Here is the modified version, with `secret` handling, for the main SKAS pod conf
           numericalIdAttr: uidNumber
     ```
 
-The modifications are the same as the SKAS2 POD, but on the `skMerge` module.
+The modifications for the `skMerge` module are the same as those made for the SKAS2 POD.
 
+## Set up a meta helm chart
 
-## Setup a meta helm chart
+Up to this point, we have configured our deployment by performing two closely related Helm deployments. 
+To simplify automation, it can be helpful to create a 'meta chart,' a chart that includes other charts as dependencies.
 
-Up to now, we had setup our configuration by performing two closely related Helm deployment.
-
-To ease automation, it could be useful to 'package' such kind of deployment by creating a 'meta chart', a chart which will embed other ones as dependencies.
-
-Such chart will have the following layout.
+Such a chart will have the following layout:
 
 ```shell
-$ tree
 .
 |-- Chart.yaml
 |-- templates
@@ -567,10 +572,10 @@ $ tree
 `-- values.yaml
 ```
 
-> This example will implement encryption and inter-pod authentication.
+> In this example, we will implement encryption and inter-pod authentication.
 
-The `Chart.yaml` file define the meta-chart `skas-skas2-meta`.There is two dependencies deploying the same helm chart,
-but with different values (See below). Note the `alias: skas2` on the second deployment.
+The `Chart.yaml` file defines the meta-chart `skas-skas2-meta`. It has two dependencies that deploy the same Helm 
+chart but with different values (as shown below). Please note the `alias: skas2` in the second deployment.
 
 ???+ abstract "Chart.yaml"
 
@@ -589,7 +594,7 @@ but with different values (See below). Note the `alias: skas2` on the second dep
       repository: https://skasproject.github.io/skas-charts
     ```
 
-The following will generate the shared secret allowing inter-pods authentication
+The following manifest will generate the shared secret required for inter-pod authentication.
 
 ??? abstract " templates/stringsecret.yaml"
 
@@ -751,17 +756,19 @@ And here is the global `values.yaml` file:
                 key: clientSecret
     ```
 
-There is two blocks: `skas` and `skas2`, matching the name or alias in the `Chart.yaml` file.
+There are two blocks: `skas` and `skas2`, matching the name or alias in the `Chart.yaml` file.
 
-These two block hold the same definition than the ones defined in the original configuration. With two differences:
+These two blocks hold the same definitions as the ones defined in the original configuration, with two differences:
 
 - `skas.skMerge.providerInfo.ldap2.url: https://skas-skas2-ldap.skas-system.svc`
 - `skas.skMerge.extraSecrets[0].secret: skas-skas2-ldap-cert`
 
-This to accommodate service and secret name change, due to aliasing of the second dependency.
+This is to accommodate service and secret name changes due to aliasing of the second dependency.
 
 Then, to launch the deployment, in the same folder as `Chart.yaml`, execute:
 
-```shell
-$ helm dependency build && helm -n skas-system upgrade -i skas .
+```{.shell .copy}
+helm dependency build && helm -n skas-system upgrade -i skas .
 ```
+
+

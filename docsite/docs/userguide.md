@@ -3,29 +3,35 @@
 
 ## Local client configuration
 
-It is assumed here than `kubectl` is installed. (If not, [see here](https://kubernetes.io/docs/tasks/tools/))
+For this guide, we assume that kubectl is already installed. If it's not, you can refer to the [official Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/) for installation instructions.
 
-It is also assumed the `kubectl-sk` CLI extension has been installed (If not, [see here](./installation.md#skas-cli-installation))
+We also assume that you've installed the `kubectl-sk` CLI extension as outlined in the [installation guide](installation.md#installation-of-skas-cli).
 
-For accessing a kubernetes cluster with kubectl, you need a configuration file (By default in `<homedir>/.kube/config`).
+To access a Kubernetes cluster using kubectl, you need a configuration file. By default, this file is located in `<homedir>/.kube/config`.
 
-SKAS provide a mechanism to create or update this user's configuration file.
+SKAS provides a mechanism to create or update this user's configuration file, simplifying the setup process.
 
-```shell
-$ kubectl sk init https://skas.ingress.mycluster.internal
+```{.shell .copy}
+kubectl sk init https://skas.ingress.mycluster.internal
+```
+```
 Setup new context 'skas@mycluster.internal' in kubeconfig file '/Users/john/.kube/config'
 ```
 
-You can validate this new context is now the current one:
+You can verify that this new context is now set as the current one:
 
-```shell
-$ kubectl config current-context
+```{.shell .copy}
+kubectl config current-context
+```
+```
 skas@mycluster.internal
 ```
 
-### Got a certificate issue ?
 
-If your system is not configured with the CA which has been used to certify SKAS (cf the `clusterIssuer` parameter on initial installation), you will encounter an error like:
+### Encountering Certificate Issues?
+
+If your system doesn't have the CA certificate that was used to certify SKAS (refer to the `clusterIssuer` parameter 
+during the initial installation), you may encounter an error similar to the following:
 
 ```shell
 ERRO[0000] error on GET kubeconfig from remote server  
@@ -33,435 +39,447 @@ ERRO[0000] error on GET kubeconfig from remote server
  tls: failed to verify certificate: x509: certificate signed by unknown authority"
 ```
 
-You may get rid of this error by providing the root CA certificate as a file:
+You can resolve this error by providing the root CA certificate as a file:
 
-```shell
-$ kubectl sk init https://skas.ingress.mycluster.internal --authRootCaPath=./CA.crt
+```{.shell .copy}
+kubectl sk init https://skas.ingress.mycluster.internal --authRootCaPath=./CA.crt
 ```
 
-Provided you are a kubernetes system administrator, here is how you can get this CA.crt file:
+Assuming you are a Kubernetes system administrator, here is how you can obtain the `CA.crt` file:
 
-```shell
-$ kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}' | base64 -d >./CA.crt
+```{.shell .copy}
+kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}' | base64 -d >./CA.crt
 ```
 
 If you are unable to get such CA certificate, you can skip the test by setting a flag:
 
-```shell
-$ kubectl sk init --authInsecureSkipVerify=true https://skas.ingress.mycluster.internal
+```{.shell .copy}
+kubectl sk init --authInsecureSkipVerify=true https://skas.ingress.mycluster.internal
 ```
 
-> _This is a security breach, as the target site can be a fake one. Use this flag should be limited to initial evaluation context._
+> _Using this flag should be limited to the initial evaluation context due to potential security risks, as the target site could be a fraudulent one._
+
 
 ## Basic usage
 
-### login with default admin account
+### Logging in with the Default Admin Account
 
-SKAS manage a local users database, where users are stored as Kubernetes resources.
+SKAS manages a local user database where users are stored as Kubernetes resources. 
 
-For convenience, a first `admin` user has been created during the installation.  With password `admin`
+During installation, a default `admin` user with the password `admin` is created for convenience.
 
-By default, SKAS users are stored in the namespace `skas-system`.
+By default, SKAS users are stored in the namespace `skas-system`. You could list them, using standard kubectl commands:
 
-You could list them, using standard kubectl commands. If you have configured your client as described above, you now 
-have to be logged to perform any kubectl action. So the login/password interaction
-
-```shell
+```{.shell}
 $ kubectl -n skas-system get users.userdb.skasproject.io
-Login:admin
-Password:
-NAME    COMMON NAMES             EMAILS   UID   COMMENT   DISABLED
-admin   ["SKAS administrator"]
+> Login:admin
+> Password:
+> NAME    COMMON NAMES             EMAILS   UID   COMMENT   DISABLED
+> admin   ["SKAS administrator"]
 ```
 
-Several remarks:
+If you have configured your client as described above, you must now be logged in to execute any kubectl action.
+This involves the login and password interaction.
 
-- Default password is `admin`. **DON'T FORGET TO CHANGE IT**. See below.
-- The `admin` user has been granted to access SKAS resources in `skas-system` namespace using kubernetes RBAC
-- `kubectl -n skas-system get users` may no works, as `users` refers also to a standard kubernetes resources.
+A few important points to note:
 
-To ease SKAS user management, an alias `skuser` has been defined.
+- The default password is `admin`. **It's crucial to change it for obvious security reasons**. See the instructions below.
+- The `admin` user has been granted access to SKAS resources in the `skas-system` namespace using Kubernetes RBAC.
+- The command `kubectl -n skas-system get users` might not work as expected, as users is also a standard Kubernetes resource.
 
-```shell
+To simplify SKAS user management, an alias `skuser` has been defined.
+
+```{.shell}
 $ kubectl -n skas-system get skusers
-NAME    COMMON NAMES             EMAILS   UID   COMMENT   DISABLED
-admin   ["SKAS administrator"]
+> NAME    COMMON NAMES             EMAILS   UID   COMMENT   DISABLED
+> admin   ["SKAS administrator"]
 ```
 
-Note there is now no login/password interaction. A token has been granted during the first login.
-This token will expire after a delay of inactivity. (Like a Web session). This delay is 30mn by default.
+Please note that there is no longer a login/password interaction. Instead, a token was provided during the first login. 
+This token will expire after a period of inactivity, similar to a web session. The default inactivity timeout is 30 minutes.
 
-### logout and login
+### Logging Out and Logging In
 
-Once logged, you can use `kubectl` as usual. The token will be transparently used until it expire on inactivity.
+Once you are logged in, you can use `kubectl` as you normally would. The token will be transparently used until it 
+expires due to inactivity.
 
-If expired, you will be prompted again to enter login and password.
+If the token expires, you will be prompted to enter your login and password again.
 
-You can also logout at any time by using the command:
+You can also log out at any time by using the following command:
 
-```shell
+```{.shell .copy}
 $ kubectl sk logout
 ```
 
-Note the `sk` who instruct `kubectl` to forward the command to the `kubectl-sk` extension.
+Then, you will be prompted again for your login and password when you run the next `kubectl`command.
 
-Then, you will be prompted again for your login/password on the next `kubectl`command. 
+Please note the `sk` subcommand, which instructs `kubectl` to forward the command to the `kubectl-sk` extension
 
-You can also use explicit login:
+Alternatively, you can also use explicit login:
 
-```shell
+```{.shell}
 $ kubectl sk login
-Login:admin
-Password:
-logged successfully..
+> Login:admin
+> Password:
+> logged successfully..
 ```
 
 or
 
-```shell
+```{.shell}
 $ kubectl sk login admin
-Password:
-logged successfully..
+> Password:
+> logged successfully..
 ```
 
 or
 
-```shell
+```{.shell}
 $ kubectl sk login admin ${ADMIN_PASSWORD}
-logged successfully..
+> logged successfully..
 ```
 
-> _`sk login` perform an `sk logout` if logged._
+> _Running `sk login` will first perform an `sk logout` if you are currently logged in._
 
 ### Password change
 
-As stated above, you must change the password of this account:
+As previously mentioned, it's essential to change the password of this account for security reasons. 
+Here's how you can do it:
 
-```shell
+```{.shell}
 $ kubectl sk password
-Will change password for user 'admin'
-Old password:
-New password:
-Confirm new password:
-Password has been changed sucessfully.
+> Will change password for user 'admin'
+> Old password:
+> New password:
+> Confirm new password:
+> Password has been changed sucessfully.
 ```
 
-Note the `sk`, as such command is performed by the SKAS kubectl extension.
+Please note the use of `sk` as this command is executed by the SKAS kubectl extension.
 
-There is a check about password strength. So, you may have such response:
+There is a password strength check in place, so you may receive a response like this:
 
-```shell
+```{.shell .copy}
 $ kubectl sk password
-Will change password for user 'admin'
-Old password:
-New password:
-Confirm new password:
-Unsatisfactory password strength!
+> Will change password for user 'admin'
+> Old password:
+> New password:
+> Confirm new password:
+> Unsatisfactory password strength!
 ```
 
-There is no well defined password criteria (such as length, special character, etc...). 
-An algorithm provide a score for the password, and this score must match a minimum (configurable) value.
-There is also a check against a list of commonly used passwords.
+The password criteria do not follow specific rules such as length or special character requirements. 
+Instead, an algorithm assigns a score to the password, and this score must meet a minimum (configurable) value. 
+Additionally, there is a check against a list of commonly used passwords.
 
-The easiest way to overcome this restriction is to increase your password length.
+The simplest way to meet these criteria is to increase the length of your password.
+
 
 ### SKAS group binding
 
-In fact, what has been granted to access SKAS resources is not the admin account (It could be), but a group named `skas-system`.
+In reality, access to SKAS resources is granted not to the `admin` account (although it could be), but to a group named `skas-system`.
 
-And the user `admin` has been included in the group by another SKAS resources named `groupbindings.userdb.skasproject.io`, with `groupbindings`as an alias:
+The user `admin` has been included in the group `skas-system` through another SKAS resource named `groupbindings.userdb.skasproject.io`, with `groupbindings` serving as an alias.
 
 ```shell
 $ kubectl -n skas-system get groupBindings
-NAME               USER    GROUP
-admin-skas-admin   admin   skas-admin
+> NAME               USER    GROUP
+> admin-skas-admin   admin   skas-admin
 ```
 
-> _In kubernetes, a group does not exist as a concrete resources. It only exists as it is referenced by RBAC `roleBinding` or `clusterRoleBindigs`. Or by SKAS `groupBinding`_
+> _In Kubernetes, a group doesn't exist as a concrete resource; it only exists as a reference used in RBAC `roleBinding` or `clusterRoleBindings`, or in SKAS `groupBindings`._
 
-### Be a cluster admin
+### Becoming a Cluster Administrator
 
-Let's try the following:
+Let's attempt the following:
 
 ```shell
 $ kubectl get namespaces
-Error from server (Forbidden): namespaces is forbidden: User "admin" cannot list resource "namespaces" in API group "" at the cluster scope
+> Error from server (Forbidden): namespaces is forbidden: User "admin" cannot list resource "namespaces" in API group "" at the cluster scope
 ```
 
-It is clear than we are successfully authenticated as `admin`, but this account has no permissions to perform cluster-wide operation.
+It is clear that we have successfully authenticated as `admin`. However, this account does not possess the necessary permissions to execute cluster-wide operations.
 
-Such permissions can be granted by binding this user to a group having such rights:
+To gain these permissions, we must associate this user with a group that has the required rights:
 
 ```shell
 $ kubectl sk user bind admin system:masters
-GroupBinding 'admin.system.masters' created in namespace 'skas-system'.
+> GroupBinding 'admin.system.masters' created in namespace 'skas-system'.
 ```
 
-For this to be effective, logout and login back:
+To make this effective, please log out and then log back in:
 
 ```shell
 $ kubectl sk logout
-Bye!
+> Bye!
 
 $ kubectl get namespaces
-Login:admin
-Password:
-NAME              STATUS   AGE
-cert-manager      Active   4d21h
-default           Active   4d21h
-ingress-nginx     Active   4d21h
-.....
+> Login:admin
+> Password:
+> NAME              STATUS   AGE
+> cert-manager      Active   4d21h
+> default           Active   4d21h
+> ingress-nginx     Active   4d21h
+> .....
 ```
 
-You can check the new `groupBindings` list:
+You can verify the updated list of `groupBindings`:
 
 ```shell
 $ kubectl -n skas-system get groupBindings
-NAME                   USER    GROUP
-admin-skas-admin       admin   skas-admin
-admin.system.masters   admin   system:masters
+> NAME                   USER    GROUP
+> admin-skas-admin       admin   skas-admin
+> admin.system.masters   admin   system:masters
 ```
 
-**WARNING: This means any member of the group `skas-admin` can promote itself as a full cluster administrator. 
-In fact, anybody able to create or modify resources in the `skas-admin` namespace can take control of the cluster. So, access to this namespace should be strictly controlled**  
+**WARNING: This implies that any member of the `skas-admin` group can elevate their privileges to become a full cluster
+administrator. In reality, anyone with the capability to create or modify resources in the `skas-admin` namespace 
+can potentially take control of the entire cluster. Therefore, access to this namespace must be rigorously managed 
+and restricted.**  
 
-Refer to [Advanced configuration/Delegated user management]() to delegate user management without compromise cluster security. 
+You can refer to Advanced [Delegated User Management](delegated.md) to learn how to delegate certain aspects of user management without compromising cluster security.
 
-### Issue with `stdin`
+### An issue with `stdin`
 
-If you issue a `kubectl` command which use `stdin` as input, you may encounter the following error message:
+If you issue a `kubectl` command that use `stdin` as input, you may encounter the following error message:
 
 ```shell
 $ cat mymanifest.yaml | kubectl apply -f -
-Login:
-Unable to access stdin to input login. Try login with `kubectl sk login' or 'kubectl-sk login'.` and issue this command again
+> Login:
+> Unable to access stdin to input login. Try login with `kubectl sk login' or 'kubectl-sk login'.` and issue this command again
 
-Unable to connect to the server: getting credentials: exec: executable kubectl-sk failed with exit code 18
+> Unable to connect to the server: getting credentials: exec: executable kubectl-sk failed with exit code 18
 ```
 
-This occurs if you token is expired. There is a conflict on `stdin` usage for entering your login/password.
+This issue arises when your token has expired, and there is a conflict in using `stdin` for entering your login/password.
 
-Solution is to ensure to be logged before issuing such command:
+The solution is to make sure you are logged in before executing such a command:
 
 ```shell
 $ kubectl sk login
-Login:oriley
-Password:
-logged successfully..
+> Login:oriley
+> Password:
+> logged successfully..
 
-[d3] m64:addons sa$ cat mymanifest.yaml | kubectl apply -f -
-pod/mypod created
+$ cat mymanifest.yaml | kubectl apply -f -
+> pod/mypod created
 ```
 
 
 ## CLI users management
 
-The SKAS kubectl extension plugin provide a `user` command with several subcommands
+The SKAS kubectl extension plugin offers a `user` command with several subcommands
 
-You can have a complete list of such subcommands:
+You can obtain a complete list of these subcommands by running:
 
-```shell
+```{ .shell}
 $ kubectl sk user --help
-.......
+> Skas user management
+>
+> Usage:
+>   kubectl-sk user [command]
+>
+> Available Commands:
+> .....
 ```
 
-> _You must be logged as a member of the group `skas-admin` to be able to use this command._
-
+> _To use this subcommand, you must be logged in as a member of the `skas-admin` group._
 
 ### Create a new user
 
-Here is an example of user's creation:
+Here  is an example of the user creation process:
 
 ```shell
 $ kubectl sk user create luser1 --commonName "Local user1" --email "luser1@internal" --password "RtVksSuMgP5f"
-User 'luser1' created in namespace 'skas-system'.
+> User 'luser1' created in namespace 'skas-system'.
 ```
 
 The only mandatory parameters is the user's name:
 
 ```shell
 $ kubectl sk user create luser2
-User 'luser2' created in namespace 'skas-system'.
+> User 'luser2' created in namespace 'skas-system'.
 ```
 
-> _As there is no password provided, login for this user will be impossible_
+> _Since no password is provided, it will be impossible for this user to log in._
 
-A complete list of user's creation options can be displayed: 
+You can display a complete list of user creation options by running:
 
 ```
 $ kubectl sk user create --help
-Create a new user
-
-Usage:
-  kubectl-sk user create <user> [flags]
-
-Flags:
-      --comment string        User's comment
-      --commonName string     User's common name
-      --email string          User's email
-      --generatePassword      Generate and display a password
-  -h, --help                  help for create
-      --inputPassword         Interactive password request
-  -n, --namespace string      User's DB namespace (default "skas-system")
-      --password string       User's password
-      --passwordHash string   User's password hash (Result of 'kubectl skas hash')
-      --state string          User's state (enabled|disabled) (default "enabled")
-      --uid int               User's UID
-
+> Create a new user
+> 
+> Usage:
+>   kubectl-sk user create <user> [flags]
+> 
+> Flags:
+>       --comment string        User's comment
+>       --commonName string     User's common name
+>       --email string          User's email
+>       --generatePassword      Generate and display a password
+>   -h, --help                  help for create
+>       --inputPassword         Interactive password request
+>   -n, --namespace string      User's DB namespace (default "skas-system")
+>       --password string       User's password
+>       --passwordHash string   User's password hash (Result of 'kubectl skas hash')
+>       --state string          User's state (enabled|disabled) (default "enabled")
+>       --uid int               User's UID
 ```
 
-Most of the options match a user's properties
+Many of the options correspond to a user's properties.
 
-- `comment`, `commonName`, `email`, `uid` are just descriptive parameters, inspired from Unix user attributes.
-- `state` will allow to temporary disable a user.
+- The `comment`, `commonName`, `email`, `uid` parameters are purely descriptive and draw inspiration from Unix user attributes.
+- The `state` parameter will enable the temporary disabling of a user account.
 
-The `--namespace` allow to store the user resources in another namespace. See [Advanced configuration/Delegated user management]()
+The `--namespace` option permits the storage of user resources in a different namespace. 
+Refer to [Delegated User Management](delegated.md) for more details.
 
-There is several options related to the password:
+There are several options related to the password:
 
-- `--password`: The password is provided as a parameter on the command line.
-- `--inputPassword`: There will be a `Password: / Confirm password:` user interaction.
+- `--password`: The password is supplied as a parameter on the command line.
+- `--inputPassword`: : This prompts the user for input with `Password:` / `Confirm password`: interaction.
 - `--generatePassword`: A random password is generated and displayed.
-- `--passwordHash`: Provide the hash of the password, as it will be stored in the resource. 
-  Use `kubectl sk hash` to generate the value. NB: Doing this way skip the check about password strength. 
+- `--passwordHash`: This option allows you to provide the hash of the password, as it will be stored in the resource. 
+  You can use `kubectl sk hash` command to generate this value. Please note that using this method bypasses the 
+  password strength check.
 
 ### List users
 
-Users can be listed using standard `kubectl` commands:
+You can list users using standard `kubectl` commands:
 
 ```shell
 $ kubectl -n skas-system get skusers
-NAME     COMMON NAMES             EMAILS                UID   COMMENT   DISABLED
-admin    ["SKAS administrator"]
-luser1   ["Local user1"]          ["luser1@internal"]                   false
-luser2                                                                  false
+> NAME     COMMON NAMES             EMAILS                UID   COMMENT   DISABLED
+> admin    ["SKAS administrator"]
+> luser1   ["Local user1"]          ["luser1@internal"]                   false
+> luser2                                                                  false
 ```
 
 ### Modify user
 
-A subcommand `patch` is provided to modify a user. As an example:
+There's a `patch` subcommand available for modifying a user. Here's an example:
 
 ```shell
 $ kubectl sk user patch luser2 --state=disabled
-User 'luser2' updated in namespace 'skas-system'.
+> User 'luser2' updated in namespace 'skas-system'.
 
 $ kubectl -n skas-system get skuser luser2
-NAME     COMMON NAMES   EMAILS   UID   COMMENT   DISABLED
-luser2                                           true
+> NAME     COMMON NAMES   EMAILS   UID   COMMENT   DISABLED
+> luser2                                           true
 ```
 
 Most of the options are the same as the `user create` subcommand. 
 
-There is also a `--create` option which will allow user creation if it does not exists.
+Additionally, there is a `--create` option that allows user creation if it does not already exist.
 
 ### Delete user
 
-Users can be deleted using standard `kubectl` commands:
+You can delete users using standard `kubectl` commands:
 
 ```shell
 $ kubectl -n skas-system delete skuser luser2
-user.userdb.skasproject.io "luser2" deleted
+> user.userdb.skasproject.io "luser2" deleted
 ```
 
-### Manage user's groups and permissions.
+### Manage user groups and permissions.
 
 To illustrate how SKAS interact with Kubernetes RBAC, we will setup a simple example. We will:
 
 - Create a namespace named `ldemo`.
 - Create a role named `configurator` in this namespace to manage resources of type `configMaps`.
-- Create a roleBinding between this role and a group named `ldemo-devs`.
+- Create a `roleBinding` between this role and a group named `ldemo-devs`.
 - Add the user `luser1` to this group.
 
-We assume we are logged as 'admin' to perform theses tasks:
+We assume we are logged as `admin` to perform theses tasks:
 
 ```shell
 $ kubectl create namespace ldemo
-namespace/ldemo created
+> namespace/ldemo created
 
 $ kubectl -n ldemo create role configurator --verb='*' --resource=configMaps
-role.rbac.authorization.k8s.io/configurator created
+> role.rbac.authorization.k8s.io/configurator created
 
 $ kubectl -n ldemo create rolebinding configurator-ldemo-devs --role=configurator --group=ldemo-devs
-rolebinding.rbac.authorization.k8s.io/configurator-ldemo-devs created
+> rolebinding.rbac.authorization.k8s.io/configurator-ldemo-devs created
 
 $ kubectl sk user bind luser1 ldemo-devs
-GroupBinding 'luser1.ldemo-devs' created in namespace 'skas-system'.
-
+> GroupBinding 'luser1.ldemo-devs' created in namespace 'skas-system'.
 ```
-Now, we can test. First logout and login under `luser1`:
+
+Now, we can proceed with testing. First, log out and then log in as `luser1`:"
 
 ```shell
 $ kubectl sk logout
-Bye!
+> Bye!
 
 $ kubectl sk login
-Login:luser1
-Password:
-logged successfully..
+> Login:luser1
+> Password:
+> logged successfully..
 
 $ kubectl sk whoami
-USER     ID   GROUPS
-luser1   0    ldemo-devs
+> USER     ID   GROUPS
+> luser1   0    ldemo-devs
 ```
 
-Now ensure we can create a `configMap` and view it.:
+Now, let's ensure that we can create a `configMap` and view it:
 
 ```shell
 $ kubectl -n ldemo create configmap my-config --from-literal=key1=config1
-configmap/my-config created
+> configmap/my-config created
 
 $ kubectl -n ldemo get configmaps my-config -o yaml
-apiVersion: v1
-data:
-  key1: config1
-kind: ConfigMap
-metadata:
-  creationTimestamp: "2023-07-11T14:56:27Z"
-  name: my-config
-  namespace: ldemo
-  resourceVersion: "257983"
-  uid: ad55b282-9803-4688-b2df-a1c35f708313
+> apiVersion: v1
+> data:
+>   key1: config1
+> kind: ConfigMap
+> metadata:
+>   creationTimestamp: "2023-07-11T14:56:27Z"
+>   name: my-config
+>   namespace: ldemo
+>   resourceVersion: "257983"
+>   uid: ad55b282-9803-4688-b2df-a1c35f708313
 ```
 
-Also, ensure we can delete it
+Also, make sure that we can delete it:
 
 ```shell
 $ kubectl -n ldemo delete configmap my-config
-configmap "my-config" deleted
+> configmap "my-config" deleted
 ```
 
 > _Please, note than `roles` and `roleBindings` are namespaced resources while `users` and `groups` are cluster-wide resources._
 
-
 ### Kubernetes RBAC referential integrity
 
-Kubernetes does not check referential integrity when creating a resource referencing another one. For example, the following will works:
+Kubernetes does not check referential integrity when creating a resource that references another one. 
+For example, the following will work:
 
 ```shell
 kubectl -n ldemo create rolebinding missing-integrity --role=unexisting-role --group=unexisting-group
-rolebinding.rbac.authorization.k8s.io/missing-integrity created
+> rolebinding.rbac.authorization.k8s.io/missing-integrity created
 
 $ kubectl sk user bind unexisting-user unexisting-group
-GroupBinding 'unexisting-user.unexisting-group' created in namespace 'skas-system'.
+> GroupBinding 'unexisting-user.unexisting-group' created in namespace 'skas-system'.
 ```
 
-May be the referenced resource will be created later. Or the link will be useless.
+Maybe the referenced resource will be created later, or the link will be useless.
 
-This is clearly a design choice of Kubernetes. SKAS follow the same logic.
+This is evidently a design choice in Kubernetes, and SKAS follows the same logic.
 
-## Using Manifests instead of CLI
+## Using Manifests instead of the CLI
 
-As users ans groups are defined as Kubernetes custom resources, they can be created and managed as any other resources, through manifests. 
+As users and groups are defined as Kubernetes custom resources, they can be created and managed using manifests.
 
-By default, all SKAS users and groups resources are stored in the namespace `skas-system`.
+By default, all SKAS user and group resources are stored in the skas-system namespace.
 
-Kubernetes RBAC has been configured during installation to allow management of such resources by all members of the `skas-admin` group.
+Kubernetes RBAC has been configured during installation to allow members of the `skas-admin` group to manage these resources.
 
 ### User resources
 
-Here is the manifest corresponding to the users we created previously:
+Here is the manifest for the users we previously created:
 
-```yaml
+```{.yaml .copy}
 ---
 apiVersion: userdb.skasproject.io/v1alpha1
 kind: User
@@ -477,11 +495,11 @@ spec:
 ```
 
 - The resources name is the user login.
-- The password is stored in a non reversible hash form. The command `kubectl sk hash` is provided to compute such hash.
+- The password is stored in a non-reversible hashed form. You can compute such a hash using the `kubectl sk hash` command.
 
-Below is a sample of a user with all properties defined:
+Below is a sample user with all properties defined:
 
-```yaml
+```{.yaml .copy}
 ---
 apiVersion: userdb.skasproject.io/v1alpha1
 kind: User
@@ -499,17 +517,14 @@ spec:
   disabled: false 
 ```
 
-To define such user, save the yaml definition if a file and perform a `kubectl apply -f <filaName>`
-
-> _Unfortunately, when logged using SKAS, it is impossible to use stdin on kubectl. <br>So, `cat <filename> | kubectl apply -f -` 
-will not work. This is inherent to the way the kubernetes client-go credential plugin works_
+To define a user, save the YAML definition in a file and execute the `kubectl apply -f <fileName>` command.
 
 
 ### GroupBinding resources
 
-The SKAS `GroupBinding` resources can also be defined as manifest:
+The SKAS `GroupBinding` resources can also be defined using manifest:
 
-```yaml
+```{.yaml .copy}
 ---
 apiVersion: userdb.skasproject.io/v1alpha1
 kind: GroupBinding
@@ -525,72 +540,71 @@ spec:
 
 ### View active sessions
 
-En each user login, a token is generated. This token will expire after a delay of inactivity. (Like a Web session). This delay is 30mn by default.
+A token is generated for each user login, and it will expire after a period of inactivity, similar to a web session. 
+By default, this expiration period is set to 30 minutes.
+Additionally, there is a maximum token duration, which is set to 12 hours by default.
 
-On server side, the SKAS tokens are also stored as Kubernetes custom resources, in the namespace `skas-system`. 
-And RBAC has been configured to allow access by any member of the `skas-admin` group.  
+On the server side, SKAS tokens are also stored as Kubernetes custom resources in the skas-system namespace. 
+RBAC has been configured to grant access to these resources to any member of the skas-admin group.
 
-The SKAS tokens can be listed as any other kubernetes resources:
+SKAS tokens can be listed just like any other Kubernetes resources:
 
 ```shell
 $ kubectl -n skas-system get tokens
-NAME                                               CLIENT   USER LOGIN   AUTH.   USER ID   CREATION               LAST HIT
-khrvvqwvpotcufiltvymuumsvrodsbiuwypbzrjiqudzjthg            admin        crd     0         2023-07-12T08:23:36Z   2023-07-12T08:32:13Z
-ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd            luser1       crd     0         2023-07-12T08:27:19Z   2023-07-12T08:27:19Z
+> NAME                                               CLIENT   USER LOGIN   AUTH.   USER ID   CREATION               LAST HIT
+> khrvvqwvpotcufiltvymuumsvrodsbiuwypbzrjiqudzjthg            admin        crd     0         2023-07-12T08:23:36Z   2023-07-12T08:32:13Z
+> ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd            luser1       crd     0         2023-07-12T08:27:19Z   2023-07-12T08:27:19Z
 ```
 
-Each token represents an active user session. SKAS will remove it automatically after 30 minutes of inactivity by default.
+Each token represents an active user session, and SKAS will automatically remove it after 30 minutes of inactivity by default.
 
-Also, there is a maximum token duration, which is set to 12 hours by default.
-
-A detailed view of each token can be displayed:
+You can view the details of each token in a detailed manner:
 
 ```shell
 $ kubectl -n skas-system get tokens ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd -o yaml
-apiVersion: session.skasproject.io/v1alpha1
-kind: Token
-metadata:
-  creationTimestamp: "2023-07-12T08:27:19Z"
-  generation: 1
-  name: ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd
-  namespace: skas-system
-  resourceVersion: "513150"
-  uid: 220471a2-2ec1-4b7f-af85-8647c4406343
-spec:
-  authority: crd
-  client: ""
-  creation: "2023-07-12T08:27:19Z"
-  user:
-    commonNames:
-    - Local user1
-    emails:
-    - luser1@internal
-    groups:
-    - ldemo-devs
-    login: luser1
-    uid: 0
-status:
-  lastHit: "2023-07-12T08:27:19Z"
+> apiVersion: session.skasproject.io/v1alpha1
+> kind: Token
+> metadata:
+>   creationTimestamp: "2023-07-12T08:27:19Z"
+>   generation: 1
+>   name: ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd
+>   namespace: skas-system
+>   resourceVersion: "513150"
+>   uid: 220471a2-2ec1-4b7f-af85-8647c4406343
+> spec:
+>   authority: crd
+>   client: ""
+>   creation: "2023-07-12T08:27:19Z"
+>   user:
+>     commonNames:
+>     - Local user1
+>     emails:
+>     - luser1@internal
+>     groups:
+>     - ldemo-devs
+>     login: luser1
+>     uid: 0
+> status:
+>   lastHit: "2023-07-12T08:27:19Z"
 ```
 
 ### Terminate session
 
-To end a session, the corresponding token is to be deleted:
+To end a session, you need to delete the corresponding token:
 
 ```shell
 $ kubectl -n skas-system delete tokens ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd
-token.session.skasproject.io "ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd" deleted
+> token.session.skasproject.io "ltdrlwnzzzhpxipgqgsvsaftmmucxxmfzhhwrdtuijabhvfd" deleted
 ```
 
-Note there is a local cache of 30 seconds on the client side. So the session will remains active on this short (and configurable) delay.
+Please note that there is a local cache of 30 seconds on the client side. So, the session will remain active for this short (and configurable) period even after the token is deleted.
 
 ## Others `kubectl sk` commands
 
 ### hash
 
-This command compute the Hash value of a password. It is intended to be used when creating a user through a manifest.
-
-Note there is no password strength check doing this way.
+This command computes the hash value of a password. It is intended to be used when creating a user through a manifest.
+Please note that there is no password strength check when using this method.
 
 ### init
 
@@ -600,25 +614,33 @@ This command has been used at the beginning of this chapter. If you enter `kubec
 - Some allow overriding of values provided by the server.
 - `clientId/Secret` is an optional method to restrict access to this command to users provided with these information. To be configured on the server.
 
+
+This command has been used at the beginning of this chapter. If you enter `kubectl sk init --help`, you can see that 
+there are some more options:
+
+- Some are related to certificate management and have already been mentioned.
+- Some allow for overriding values provided by the server.
+- `clientId/Secret` is an optional method to restrict access to this command to users provided with this information.
+  This needs to be configured on the server.
+
 ### login
 
-Perform the login/pasword interaction. 
-
-Will also allow providing login and password on the command line. 
+Perform the login/password interaction. You can also provide the login and password on the command line.
 
 ### logout
 
-Logout the user, by deleting locally cached token.
+Log out the user by deleting the locally cached token.
 
 ### password
 
-To change current user password. 
+Change the current user password. 
 
-To change the password of another user, use the `kubectl sk user patch` command. Of course, you need to be member of the group `skas-admin` to do so.
+If you want to change the password of another user, you can use the `kubectl sk user patch` command. However, 
+please note that you need to be a member of the `skas-admin` group to perform this action.
 
 ### whoami
 
-Display the currently logged user and the groups its belong to.
+Display the currently logged-in user and the groups to which it belongs.
 
 ### version
 
@@ -636,5 +658,18 @@ Here is a small checklist of what to provide to non-admin users to allow them to
 
 About this last point: You can instruct them to add the `--namespaceOverride` option on `kubectl sk init ...` command.
 This will define the provided namespace as the default one in the `~/.kube/config` file.
+
+
+Here is a small checklist of what to provide to non-admin users to allow them to use kubectl on a SKAS enabled cluster:
+
+- Installation instructions for `kubectl`.
+- Installation instructions for `kubectl-sk`.
+- The `CA.crt` certificate file (if needed).
+- The `kubectl sk init https://skas.....` command line.
+- The namespace(s) they are allowed to access.
+- 
+Regarding the last point, you can instruct them to add the `--namespaceOverride` option to the `kubectl sk init ...` 
+command. This will set the provided namespace as the default one in the `~/.kube/config` file.
+
 
 

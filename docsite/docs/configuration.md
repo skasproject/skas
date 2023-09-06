@@ -3,100 +3,101 @@
 
 ## Principle
 
-As installation was performed using an helm chart, configuration will be performed by providing a 'values' file overriding 
-the default [`values.yaml`](https://github.com/skasproject/skas/blob/main/helm/skas/values.yaml) of the helm chart
+Installation is performed using a Helm chart, and configurations are made by providing a 'values' file that overrides 
+the default [values.yaml](https://github.com/skasproject/skas/blob/main/helm/skas/values.yaml) of the Helm chart. 
 
-This is what was did in the initial configuration, which such a file:
+This is what was done during the initial configuration, with such a file:
 
-```shell
-$ cat >./values.init.yaml <<EOF
-clusterIssuer: your-cluster-issuer
+???+ abstract "values.init.yaml"
 
-skAuth:
-  exposure:
-    external:
-      ingress:
-        host: skas.ingress.mycluster.internal
-  kubeconfig:
-    context:
-      name: skas@mycluster.internal
-    cluster:
-      apiServerUrl: https://kubernetes.ingress.mycluster.internal
-EOF
-```
+    ``` {.yaml .copy}
+    clusterIssuer: your-cluster-issuer
+    
+    skAuth:
+      exposure:
+        external:
+          ingress:
+            host: skas.ingress.mycluster.internal
+      kubeconfig:
+        context:
+          name: skas@mycluster.internal
+        cluster:
+          apiServerUrl: https://kubernetes.ingress.mycluster.internal
+    ```
 
-SKAS is a very flexible product and, as such, there is a lot of variables in the default `values.yaml` of the helm chart.
-Fortunately, default values are appropriate in most case.
+SKAS is a highly flexible product, and consequently, there are numerous variables in the default `values.yaml` of the 
+Helm chart. Fortunately, the default values are suitable for most use cases.
 
-We will not describe in this chapter all the variables (You can refer to comments in the file) but will explicit some typical configuration variation.
+In this chapter, we won't describe all the variables (you can refer to the comments in the file for details), 
+but we will explain some typical configuration variations. 
 
-To apply a modified file, the `helm upgrade` command should be used.
+To apply a modified file, you should use the helm upgrade command:
 
-```shell
-$ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml
+```{.shell .copy}
+helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml
 ```
 
 ### Pod restart
 
-For the new configuration to be taken in account, the `skas` pod(s) must be restarted. The best and simple way is to perform a 'rollout' on the skas deployment:
+To ensure that the new configuration is taken into account, you need to restart the SKAS pod(s). 
+The most straightforward way to do this is by performing a 'rollout' on the skas deployment:
 
 ```shell
 $ kubectl -n skas-system rollout restart deployment skas
-deployment.apps/skas restarted
+> deployment.apps/skas restarted
 ```
 
 > _There is some solution to perform an automatic restart. See [reloader](toolsandtricks.md/#reloader)_
 
-
 ## Skas behavior
 
-Here is a values file which redefine the most common variable related to SKAS behavior:
+Here is a values file that redefines the most common variables related to SKAS behavior:
 
-```
-$ cat >./values.behavior.yaml <<"EOF"
-# Default value. May be overridden by component
-log: 
-  mode: json # 'json' or 'dev'
-  level: info
+???+ abstract "values.behavior.yaml"
 
-skAuth:
-  # Define password requirement
-  passwordStrength:
-    forbidCommon: true    # Test against lists of common password
-    minimumScore: 3       # From 0 (Accept anything) to 4
+    ```
+    # Default value. May be overridden by component
+    log: 
+      mode: json # 'json' or 'dev'
+      level: info
+    
+    skAuth:
+      # Define password requirement
+      passwordStrength:
+        forbidCommon: true    # Test against lists of common password
+        minimumScore: 3       # From 0 (Accept anything) to 4
+    
+      tokenConfig:
+        # After this period without token validation, the session expire
+        inactivityTimeout: "30m"
+        # After this period, the session expire, in all case.
+        sessionMaxTTL: "12h"
+        # This is intended for the client CLI, for token caching
+        clientTokenTTL: "30s"
 
-  tokenConfig:
-    # After this period without token validation, the session expire
-    inactivityTimeout: "30m"
-    # After this period, the session expire, in all case.
-    sessionMaxTTL: "12h"
-    # This is intended for the client CLI, for token caching
-    clientTokenTTL: "30s"
+    skCrd:
+      initialUser:
+        login: admin
+        # passwordHash: $2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G  # admin
+        commonNames: ["SKAS administrator"]
+        groups:
+          - skas-admin
+    ```
 
-
-skCrd:
-  initialUser:
-    login: admin
-    # passwordHash: $2a$10$ijE4zPB2nf49KhVzVJRJE.GPYBiSgnsAHM04YkBluNaB3Vy8Cwv.G  # admin
-    commonNames: ["SKAS administrator"]
-    groups:
-      - skas-admin
-EOF
-```
-
-- There is a `log` section, to adjust the level and to set the mode. By default, `log.mode` is set to `json`, 
-aimed to be injected to a log management external system. To have a more 'human' form, `log.mode` can be set to `dev`.
-- `skAuth.passwordStrength` will allow to modify the criteria of a valid password. 
-- `skAuth.token.config` section will configure the token lifecycle.
-- `skCrd.initialUser` will define the default admin user. Note the `passwordHash` has been commented out, 
-otherwise password would be reset on each apply of these values.
+- The `log` section allows you to adjust the log level and set the log mode. 
+By default, `log.mode` is set to `json`, which is intended for injection into an external log management system. 
+To have a more human-readable log format, you can set `log.mode` to `dev`.
+- `skAuth.passwordStrength` lets you modify the criteria for a valid password.
+- The `skAuth.token.config` section configures the token lifecycle.
+- `skCrd.initialUser` is used to defines the default admin user. Note that `passwordHash` has been commented out, 
+otherwise the password would be reset on each application of these values.
 
 > _The meaning of `skAuth` and `skCrd` subsection is described in the [Architecture](architecture.md) chapter._
 
-Then, to apply a modified configuration:
+To apply a modified configuration, enter the following command:
 
-```shell
-$ helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
+```{.shell .copy}
+helm -n skas-system upgrade skas skas/skas --values ./values.init.yaml \
 --values ./values.behavior.yaml
 ```
 
@@ -106,43 +107,44 @@ We still need to add `values.init.yaml`, otherwise, corresponding default/empty 
 
 ## Kubernetes integration
 
-Here is a values file which redefine the most common variable related to SKAS integration with Kubernetes:
+Here is a values file that redefines the most common variables related to SKAS integration with Kubernetes:
 
-```
-$ cat >./values.k8s.yaml <<EOF
+???+ abstract "values.k8s.yaml"
+    
+    ```
+    replicaCount: 1
+    
+    # -- Annotations to be added to the pod
+    podAnnotations: {}
+    
+    # -- Annotations to be added to all other resources
+    commonAnnotations: {}
+    
+    image:
+      pullSecrets: []
+      repository: ghcr.io/skasproject/skas
+      # -- Overrides the image tag whose default is the chart appVersion.
+      tag:
+      pullPolicy: IfNotPresent
+    
+    # Node placement of SKAS pod(s) 
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    ```
 
-replicaCount: 1
+- `replicaCount` allows you to define the number of pod replicas for the SKAS deployment.
+Note that we are in an active-active configuration with no need for a leader election mechanism.
+- `podAnnotations` and `commonAnnotations` allow you to annotate pods and other SKAS resources if required.
+- The `image` subsection allows you to define an alternate image version or location. 
+This is useful in an air-gap deployment where the SKAS image is stored in a private repository.
+- `nodeSelector`, `toleration`, and `affinity` are standard Kubernetes properties related to the node placement of SKAS pod(s).
 
-# -- Annotations to be added to the pod
-podAnnotations: {}
 
-# -- Annotations to be added to all other resources
-commonAnnotations: {}
+To apply a modified configuration, enter the following command:
 
-image:
-  pullSecrets: []
-  repository: ghcr.io/skasproject/skas
-  # -- Overrides the image tag whose default is the chart appVersion.
-  tag:
-  pullPolicy: IfNotPresent
-
-# Node placement of SKAS pod(s) 
-nodeSelector: {}
-tolerations: []
-affinity: {}
-
-EOF
-```
-
-- `replicaCount` allow to define the number of pod replica for SKAS deployment. Note we are in an active-active configuration, with no need for a leader election mechanism.
-- `podAnnotations` and `commonAnnotations` will allow to annotate pods and others SKAS resources, if required.
-- `image` subsection will allow to define an alternate image version or location. Useful in an air-gap deployment, where SKAS image is stored in a private repository. 
-- `nodeSelector`, `toleration` and `affinity` are usual Kubernetes properties related to the node placement of SKAS pod(s)
-
-To apply a modified configuration:
-
-```shell
-$ helm -n skas-system upgrade skas skas/skas \
+```{.shell .copy}
+helm -n skas-system upgrade skas skas/skas \
 --values ./values.init.yaml --values ./values.behavior.yaml --values ./values.k8s.yaml
 ```
 
