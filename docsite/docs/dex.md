@@ -1,17 +1,16 @@
-
 # DEX integration
 
-[DEX](https://dexidp.io/) is an OpenID Connect provider. As such, will serve OpenID Connect clients to provide Single Sign On services.
+[DEX](https://dexidp.io/) is an OpenID Connect provider. As such, it will serve OpenID Connect clients to provide Single Sign-On services.
 
-It does not host any user identity information by itself, but rely on other Identity Provider for this, through configurable `connectors`.
+DEX does not host any user identity information by itself but relies on other Identity Providers for this through configurable `connectors`.
 
-A connector has been developed for SKAS. As DEX does not provide some extension mechanism, adding a connector requires 
-to patch the code. So, a specific DEX image with a SKAS connector has been build.
+A connector has been developed for SKAS. As DEX does not provide an extension mechanism, adding a connector requires 
+patching the code. So, a specific DEX image with a SKAS connector has been built.
 
-Deploying DEX in standalone mode require to operation:
+Deploying DEX in standalone mode requires two operations:
 
-- Reconfigure SKAS to open a service for the usage of DEX (`login` service)
-- Deploying DEX itself, with the proper connector configuration.
+- Reconfiguring SKAS to open a service for the usage of DEX (the `login` service).
+- Deploying DEX itself with the proper connector configuration.
 
 In the following, three variants of this configuration will be described. One with the connection in clear text, and two secured, with network encryption and inter-pod authentication.
 
@@ -21,10 +20,11 @@ In the following, three variants of this configuration will be described. One wi
 
 ### SKAS reconfiguration
 
-The login service is provided by the `skAuth` SKAS module. It is disabled by default and must be enabled to be used. 
-Refer to [Architecture/Modules and interface](architecture.md#modules-and-interfaces) for more information
+The `login` service is provided by the `skAuth` module in SKAS. By default, this service is disabled and must be 
+enabled to be used. You can find more information about SKAS modules and interfaces in the 
+[Architecture/Modules and interface](architecture.md#modules-and-interfaces) section.
 
-Here is a values file to enable this service: 
+Below is a sample values file that enables the login service:
 
 ???+ abstract "values.skas.login.yaml"
 
@@ -37,25 +37,26 @@ Here is a values file to enable this service:
               disabled: false
     ```
 
-Note than, by default, the `skAuth` module provide only SSL encrypted service. This will be the case of our `login` service.
+Please note that by default, the `skAuth` module provides only SSL-encrypted services. This includes our login service.
 
 To deploy this configuration:
 
-```shell
-$ helm -n skas-system upgrade -i skas skas/skas --values ../../values.init.yaml \
---values ./values.skas.login.yaml
+```{.shell .copy}
+helm -n skas-system upgrade -i skas skas/skas --values ./values.init.yaml --values ./values.skas.login.yaml
 ```
 
-> _Don't forget to add the `values.init.yaml`, or to merge it in the `values.skas.yaml` file. Also, if you have others values file, they must be added on each upgrade_
+> _Don't forget to include the `values.init.yaml` file or merge it into the `values.skas.yaml` file. Additionally,
+if you have other values files, make sure to include them in each upgrade._
 
-> _And don't forget to restart the pod(s). See [Configuration: Pod restart](configuration.md#pod-restart)_
+> _Also, remember to restart the pod(s) after making these configuration changes. You can find more information on how
+to do this in the [Configuration: Pod restart](configuration.md#pod-restart) section._
 
 ### DEX deployment
 
-For this sample, we will use the official [DEX Helm chart](https://github.com/dexidp/helm-charts/tree/master/charts/dex). 
-This will require some configuration, by providing a specific value file.
+For this example, we will use the official [DEX Helm chart](https://github.com/dexidp/helm-charts/tree/master/charts/dex). 
+However, this will require some configuration adjustments by providing a specific value file.
 
-Here is such file (Some value will need to be adjusted to your context)
+Here is such sample file (Please note that some values may need to be customized to match your specific context):
 
 ??? abstract "values.dex.yaml"
 
@@ -120,132 +121,146 @@ Here is such file (Some value will need to be adjusted to your context)
                     number: 5556
     ```
 
-Here are some comment about this values file:
+Here are some comments about this values file:
 
-- The `image` section target the SKAS patched image of DEX.
-- The `config` section is the DEX configuration file. Refer to the 
-[sample DEX config file](https://github.com/dexidp/dex/blob/master/examples/config-dev.yaml) for more explanation.
-- The `config.issuer` value must be adjusted to your local DNS name. Note it is an unsecured URL.
+- The `image` section is used to specify the SKAS patched image of DEX.
+- The `config` section represents the DEX configuration file. For a more detailed explanation, please refer to the
+  [sample DEX config file](https://github.com/dexidp/dex/blob/master/examples/config-dev.yaml).
+- The `config.issuer` value needs to be adjusted according to your local domain name. Note that it is an unsecured URL.
 - The `config.connnectors[0]` is the SKAS specific section. 
-- The `config.connnectors[0].config.loginProvider.url` value targets the `skAuth` service. A noted above, 
-this is an SSL encrypted service.
-- The `config.connnectors[0].config.loginProvider.insecureSkipVerify` is set to `true`. As the targeted service is 
-using HTTPS, we skip the certificate authority validation for this first sample.
-- the `staticClients` section define a first OIDC client with parameter compatible with the `example-app` described below. 
-- The `securityContext` section explicit some security constraints. This may be useful if your cluster implements 
-some security restriction on running PODs. 
-- The `ingress` section should be adjusted, at least for the `host:` url and maybe more if you use another ingress controller than nginx.  
+- The `config.connnectors[0].config.loginProvider.url` value points to the `skAuth` service. As mentioned earlier, 
+  this service uses SSL encryption
+- The `config.connnectors[0].config.loginProvider.insecureSkipVerify` is set to `true`. This is because the targeted 
+  service uses HTTPS, and we're skipping the certificate authority validation for this first sample.
+- the `staticClients` section defines a first OIDC client with parameters compatible with the `example-app` described below. 
+- The `securityContext` section specifies some security constraints. This can be useful if your cluster enforces
+  security restrictions on running PODs.
+- The `ingress` section should be adjusted, especially for the `host:` URL, and possibly more if you're using an 
+ ingress controller other than nginx.  
 
-As we will use the public DEX helm chart, its repo must first be defined:
+This will add the DEX Helm chart repository to your Helm configuration and update the list of available charts. 
 
-```shell
-$ helm repo add dex https://charts.dexidp.io
+```{.shell .copy}
+helm repo add dex https://charts.dexidp.io
+helm repo update
 ```
 
-Then we can proceed to the DEX deployment:
+Now you can proceed to deploy DEX using Helm with the provided values file.
 
-```shell
-$ helm -n skas-system upgrade -i dex dex/dex --values ./values.dex.yaml
+```{.shell .copy}
+helm -n skas-system upgrade -i dex dex/dex --values ./values.dex.yaml
 ```
 
-If everything is OK, you should have two PODs running:
+f everything is set up correctly, you should have two running Pods:
 
 ```shell
 $ kubectl -n skas-system get pods
-NAME                    READY   STATUS    RESTARTS   AGE
-dex-54b4698bcd-9wbz6    1/1     Running   0          5h5m
-skas-5cc75b8ff9-pw7nd   3/3     Running   0          6h23m
+> NAME                    READY   STATUS    RESTARTS   AGE
+> dex-54b4698bcd-9wbz6    1/1     Running   0          5h5m
+> skas-5cc75b8ff9-pw7nd   3/3     Running   0          6h23m
 ```
 
-In case of problems, you may be want to check the resulting configuration. Unfortunately, this Helm chart store it in 
-a secret. This means the configuration values are encoded en base64.
+In case of problems, you may want to check the resulting configuration. Unfortunately, this Helm chart stores it in a 
+secret. This means the configuration values are encoded in base64.
 
-To display it, you can type:
+To display it, you can use the following command:
 
-```shell
-$ kubectl get secret -n skas-system dex -o jsonpath="{ $.data.config\.yaml }" | base64 -d
+```{.shell .copy}
+kubectl get secret -n skas-system dex -o jsonpath="{ $.data.config\.yaml }" | base64 -d
 ```
 
-If you modify some value in the `values.skas.login.yaml` file, execute again the Helm deployment command and restart the DEX Pod:
+If you modify some value in the `values.skas.login.yaml` file, execute again the Helm deployment command and 
+restart the DEX Pod:
 
-```shell
-$ kubectl -n skas-system rollout restart deployment dex
+```{.shell .copy}
+helm -n skas-system upgrade -i dex dex/dex --values ./values.dex.yaml
+kubectl -n skas-system rollout restart deployment dex
 ```
 
 ### Testing
 
-By convention all OIDC provider must provide a `well-known` endpoint which describe its other endpoints and other configuration values.
+By convention, all OIDC providers must provide a `well-known` endpoint that describes their other endpoints and 
+configuration values. 
 
-You can test this endpoint with the following command: 
+You can test this endpoint with the following command:
 
 ```shell
 $ curl http://dex.ingress.mycluster.internal/.well-known/openid-configuration
-{
-  "issuer": "http://dex.ingress.mycluster.internal",
-  "authorization_endpoint": "http://dex.ingress.mycluster.internal/auth",
-  "token_endpoint": "http://dex.ingress.mycluster.internal/token",
-  "jwks_uri": "http://dex.ingress.mycluster.internal/keys",
-  ....
+> {
+>   "issuer": "http://dex.ingress.mycluster.internal",
+>   "authorization_endpoint": "http://dex.ingress.mycluster.internal/auth",
+>   "token_endpoint": "http://dex.ingress.mycluster.internal/token",
+>   "jwks_uri": "http://dex.ingress.mycluster.internal/keys",
+>   ....
 ```
 
-This will ensure at least DEX is started and you ingress is functional.
+> _Of course, you must adjust the URL to match your specific context_
 
-> _Of course, you must adjust the URL to your context._ 
+Running the provided command will help ensure that DEX is up and running and that your ingress configuration 
+is functional.
 
-To go further, DEX provide a raw [example-app](https://github.com/dexidp/dex/tree/master/examples/example-app).
-The main purpose of this application is to provide a starting point for developer to integrate an OIDC client in their 
-code. But it also provide an interactive tool to test an OIDC service.
+To delve deeper, DEX provides a raw [example-app](https://github.com/dexidp/dex/tree/master/examples/example-app). 
+The primary objective of this application is to offer a starting point for developers to integrate an OIDC client into 
+their code. However, it also provides an interactive tool for testing an OIDC service.
 
-For your convenience, we have setup a [repository to host binaries of this application, for several OS and processor](https://github.com/skasproject/dex-example-app/releases/tag/2.37.0).
+For your convenience, we have set up a repository to host 
+[binaries of this application](https://github.com/skasproject/dex-example-app/releases/tag/2.37.0) for various 
+operating systems and processors.
 
-For example, to download/install this binary for a Mac Intel:
+For instance, to download and install this binary on a Mac Intel:
 
-```shell
-$ cd /tmp
-$ curl -L https://github.com/skasproject/dex-example-app/releases/download/2.37.0/example-app_2.37.0_darwin_amd64 -o ./example-app
-$ sudo chmod 755 example-app
-$ sudo mv example-app /usr/local/bin
+```{.shell .copy}
+cd /tmp
+curl -L https://github.com/skasproject/dex-example-app/releases/download/2.37.0/example-app_2.37.0_darwin_amd64 -o ./example-app
+sudo chmod 755 example-app
+sudo mv example-app /usr/local/bin
 ```
+
+Then, you can launch it with the DEX issuer URL:
 
 ```shell
 $ example-app --issuer  http://dex.ingress.mycluster.internal
-2023/08/28 18:50:07 listening on http://127.0.0.1:5555
+> 2023/08/28 18:50:07 listening on http://127.0.0.1:5555
 ```
 
-Now, launch your browser to this provided link (`http://127.0.0.1:5555`). You should land on a page like this:
+Now, launch your browser and navigate to the provided link (http://127.0.0.1:5555). You should land on a page like this:
 
 ![](images/example-app1.png)
 
-Click on the `Login` button. You should then land on a login page:
+Click on the `Login` button. You should then be directed to a login page:
 
 ![](images/example-app2.png)
 
-Enter a valid SKAS user account ('admin' for example) and you should land on a page like this:
+Enter the credentials of a valid SKAS user account (e.g., 'admin'), and you should be directed to a page like this:
 
 ![](images/example-app3.png)
 
-This is not really 'user friendly', but it is a test application.
+This is not really 'user-friendly', but it is a test application.
 
-You can have a look on the log of SKAS and DEX logs. Also, you can test an invalid login.
+You can take a look at the logs for both SKAS and DEX.
 
-> Of course, for this to work, you must fully preserve the configuration of `staticClients` in the DEX config file
+You can also test an invalid login.
 
-DEX github repo also provide this `example-app` as a container. You can launch it as:
+> _To ensure this works correctly, you must maintain the configuration of `staticClients` in the DEX config file intact._
+
+The DEX GitHub repo also provides the `example-app` as a container. You can launch it using the following command:"
 
 ```shell
-$ docker run -p 5555:5555 ghcr.io/dexidp/example-app:latest  example-app --issuer  http://dex.ingress.kspray6 --listen http://0.0.0.0:5555
-2023/08/28 17:29:04 listening on http://0.0.0.0:5555
+$ docker run -p 5555:5555 ghcr.io/dexidp/example-app:latest  example-app --issuer  http://dex.ingress.mycluster.internal --listen http://0.0.0.0:5555
+> 2023/08/28 17:29:04 listening on http://0.0.0.0:5555
 ```
 
 ## Securing connection
 
-The previous configuration has a major security issue: The login and password information are entered through a clear text connection. 
+The previous configuration has a significant security issue: The login and password information are transmitted over 
+an unencrypted connection.
 
-This following configuration will fix this point and also add authentication between DEX and SKAS and validate the SKAS certificate.
+The following configuration aims to address this vulnerability by implementing secure communication between user's
+browser and DEX. It also add authentication from DEX to SKAS. Additionally, it verifies the authenticity of the SKAS certificate."
 
 ### SKAS reconfiguration
 
-Here is the modified values file for SKAS reconfiguration.
+The following is the modified values file for SKAS reconfiguration:
 
 ???+ abstract "values.skas.login.yaml"
 
@@ -261,16 +276,19 @@ Here is the modified values file for SKAS reconfiguration.
                   secret: "aSharedSecret"
     ```
 
-The service authentication has been activated.
+The `service` authentication has been activated.
 
 To deploy this configuration, use the same command as previously:
 
-```shell
-$ helm -n skas-system upgrade -i skas skas/skas --values ../../values.init.yaml \
---values ./values.skas.login.yaml
+```{.shell .copy}
+helm -n skas-system upgrade -i skas skas/skas --values ./values.init.yaml --values ./values.skas.login.yaml
 ```
 
-> _And restart the POD_
+> _Don't forget to include the `values.init.yaml` file or merge it into the `values.skas.yaml` file. Additionally,
+if you have other values files, make sure to include them in each upgrade._
+
+> _Also, remember to restart the pod(s) after making these configuration changes. You can find more information on how
+to do this in the [Configuration: Pod restart](configuration.md#pod-restart) section._
 
 ### DEX deployment
 
@@ -348,70 +366,74 @@ And here is the modified values file for DEX deployment
 
 The modification are the following:
 
-- The `config.issuer` endpoint is now using HTTPS.
-- The `config.connectors[0].config.loginProvider.rootCaData` is populated with the Certificate Authority of the 
-  `skAuth` service. To find its value, we can dig inside its certificate, which include its authority:
-  ```shell
-  $ kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}'
+- The `config.issuer` endpoint now uses HTTPS.
+- The `config.connectors[0].config.loginProvider.rootCaData` is populated with the Certificate Authority of the
+ `skAuth` service. To obtain its value, you can extract it from the service's certificate as follows:
+  ```{.shell .copy }
+  kubectl -n skas-system get secret skas-auth-cert -o=jsonpath='{.data.ca\.crt}'
   ```
-- The `config.connectors[0].config.loginProvider.clientAuth` is set to authenticate with the id/secret defined above for `skAuth` login service.
-- The `ingress` is now configured to handle SSL connection (And force SSL for non-SSL connection)
+- The `config.connectors[0].config.loginProvider.clientAuth` is configured to authenticate using the ID/secret defined 
+  earlier for the `skAuth` login service.
+- The `ingress` is now configured to handle SSL connections and enforce SSL for non-SSL connections.- 
 
-To apply this new configuration, use the same command as previously:
+To apply this new configuration, use the same command as before.
 
-```shell
-$ helm -n skas-system upgrade -i dex dex/dex --values ./values.dex.yaml
+```{.shell .copy }
+helm -n skas-system upgrade -i dex dex/dex --values ./values.dex.yaml
 ```
 
-And restart the POD:
+And restart the DEX POD:
 
-```shell
-$ kubectl -n skas-system rollout restart deployment dex
+```{.shell .copy }
+kubectl -n skas-system rollout restart deployment dex
 ```
 
-> Another security improvement would be to configure the ingress in SSL passthroughs and to configure the DEX Pod to
-handle SSL itself. This would ensure real end to end encryption. Unfortunately, this is not possible with the current
-Helm Chart and refactoring it is out of the scope of this documentation.
+> Another security enhancement involves configuring the ingress for SSL passthrough and enabling SSL for the DEX 
+Pod itself. This would ensure end-to-end encryption. However, please note that achieving this configuration with the 
+current DEX Helm Chart is not feasible, and refactoring it is beyond the scope of this documentation."
 
 ### Testing
 
-You can test again this endpoint with the following command. Note the https:// now on URLs
+You can test again the DEX `well-known` endpoint with the following command. Note the https:// now on URLs
+You can test the DEX `well-known` endpoint again using the following command.
 
 ```shell
 $ curl https://dex.ingress.mycluster.internal/.well-known/openid-configuration
-{
-  "issuer": "https://dex.ingress.mycluster.internal",
-  "authorization_endpoint": "https://dex.ingress.mycluster.internal/auth",
-  "token_endpoint": "https://dex.ingress.mycluster.internal/token",
-  "jwks_uri": "https://dex.ingress.mycluster.internal/keys",
-  "userinfo_endpoint": "https://dex.ingress.mycluster.internal/userinfo", 
-  ....
+> {
+>   "issuer": "https://dex.ingress.mycluster.internal",
+>   "authorization_endpoint": "https://dex.ingress.mycluster.internal/auth",
+>   "token_endpoint": "https://dex.ingress.mycluster.internal/token",
+>   "jwks_uri": "https://dex.ingress.mycluster.internal/keys",
+>   "userinfo_endpoint": "https://dex.ingress.mycluster.internal/userinfo", 
+>   ....
 ```
 
-And use again the `example-app` application. Note the 'https://' on the issuer.
+> Please note the change to https:// in the URLs."
+
+Use the `example-app` application again, but this time note the 'https://' in the issuer.
 
 ```shell
 $ example-app --issuer  https://dex.ingress.mycluster.internal
-2023/08/28 18:50:07 listening on http://127.0.0.1:5555
+> 2023/08/28 18:50:07 listening on http://127.0.0.1:5555
 ```
 
-#### Got a certificate issue ?
+### Encountering a certificate issue? 
 
-You may get the following on the curl request:
+You might see the following error on the curl request:
 
-```shell
+```{.shell}
 $ curl https://dex.ingress.mycluster.internal/.well-known/openid-configuration
-curl: (60) SSL certificate problem: unable to get local issuer certificate
-More details here: https://curl.haxx.se/docs/sslcerts.html
-....
+> curl: (60) SSL certificate problem: unable to get local issuer certificate
+> More details here: https://curl.haxx.se/docs/sslcerts.html
+> ....
 ```
 
-This is the case if the DEX issuers certificate has been signed by an authority which is not recognized by your workstation.
+This issue occurs when the DEX issuer's certificate is signed by an authority that your workstation don't recognize. 
 
-Solution is to retrieve this certificate:
+To resolve this, you need to retrieve the issuer's certificate:
 
-```shell
-$ kubectl -n skas-system get secret dex-server-tls -o=jsonpath='{.data.ca\.crt}' | base64 -d >./CA.crt
+```{.shell .copy}
+kubectl -n skas-system get secret dex-server-tls -o=jsonpath='{.data.ca\.crt}' | base64 -d >./CA.crt
 ```
 
 And to provide it to the Curl command:
@@ -419,30 +441,30 @@ And to provide it to the Curl command:
 ```shell
 $ curl https://dex.ingress.mycluster.internal/.well-known/openid-configuration \
 --cacert ./CA.crt
-{
-  "issuer": "https://dex.ingress.mycluster.internal",
-  "authorization_endpoint": "https://dex.ingress.mycluster.internal/auth",
-  "token_endpoint": "https://dex.ingress.mycluster.internal/token",
-  "jwks_uri": "https://dex.ingress.mycluster.internal/keys",
-  "userinfo_endpoint": "https://dex.ingress.mycluster.internal/userinfo", 
-  ....
+> {
+>   "issuer": "https://dex.ingress.mycluster.internal",
+>   "authorization_endpoint": "https://dex.ingress.mycluster.internal/auth",
+>   "token_endpoint": "https://dex.ingress.mycluster.internal/token",
+>   "jwks_uri": "https://dex.ingress.mycluster.internal/keys",
+>   "userinfo_endpoint": "https://dex.ingress.mycluster.internal/userinfo", 
+>   ....
 ```
 
-You will encounter the same issue with the `example-app` test application. Here also, provide the certificate:
+You may encounter the same issue with the `example-app` test application. In this case, also provide the certificate:
 
 ```shell
 $ example-app --issuer https://dex.ingress.kspray6 --issuer-root-ca ./CA.crt
-2023/08/29 09:31:53 listening on http://127.0.0.1:5555
+> 2023/08/29 09:31:53 listening on http://127.0.0.1:5555
 ```
 
 ## Using a Kubernetes secret
 
-There is still a security issue, as two shared secreta (aSharedSecret and the staticClients secret) are in clear text 
-in both values file. As such, they may ends up in some version control system.
+There is still a security issue as two shared secrets (aSharedSecret and the staticClients secret) 
+are stored in plain text in both values files. As a result, they could potentially end up in a version control system.
 
 So, let's store these values in Kubernetes secrets and access them using environment variables.
 
-Here is a secret aimed to be shared between DEX and SKAS. Its value can be randomly generated, as it is accessed by both party. 
+Here is a secret intended to be shared between DEX and SKAS. Its value can be randomly generated, as it is accessed by both parties.
 
 ???+ abstract "dex-client-secret.yaml"
 
@@ -457,9 +479,9 @@ Here is a secret aimed to be shared between DEX and SKAS. Its value can be rando
       DEX_CLIENT_SECRET: cGZRM3lXSTBBN2M3aGJE
     ```
 
-> There is several solutions to generate such secret value. One can use Helm with some random generator function. Or use a [Secret generator](toolsandtricks.md#secret-generator)
+> There are several solutions to generate such a secret value. One can use Helm with some random generator function or use a [Secret generator](toolsandtricks.md#secret-generator)."
 
-And here is the secret shared between DEX (In `config.staticClients[0]` and the `example-app` application binary)
+Here is the secret shared between DEX (in `config.staticClients[0]`) and the `example-app` application binary."
 
 ???+ abstract "example-app-secret.yaml"
 
@@ -474,13 +496,14 @@ And here is the secret shared between DEX (In `config.staticClients[0]` and the 
       EXAMPLE_APP_SECRET: WlhoaGJYQnNaUzFoY0hBdGMyVmpjbVYw    # Result of printf "ZXhhbXBsZS1hcHAtc2VjcmV0" | base64
     ```
 
-> _Its value is hard-coded in `example-app`, so must not be changed (Or you must pass the new value as `--client-secret` parameter on launch)._
+> _Its value is hard-coded in `example-app`, so it must not be changed (or you must pass the new value as the `--client-secret parameter` on launch)._
 
-> _Note than both secret are formatted in a way compatible with `spec.containers[X].envFrom`. This is required by the DEX Helm chart._
+> _Note that both secrets are formatted in a way that is compatible with `spec.containers[X].envFrom`. This is required by the DEX Helm chart._
+
 
 ### SKAS reconfiguration
 
-Here is the modified values file for SKAS reconfiguration.
+Here is the modified values file for the SKAS reconfiguration:
 
 ??? abstract "values.skas.login.yaml"
 
@@ -505,15 +528,15 @@ Here is the modified values file for SKAS reconfiguration.
 
 The modifications are the following:
 
-- The `skAuth.extraEnv` subsection inject the secret value as an environment variable in the container.
-- the `skAuth.exposure.external.services.identity.clients[0].secret` fetch its value through this environment variable.
+- The `skAuth.extraEnv` subsection injects the secret value as an environment variable in the container.
+  The `skAuth.exposure.external.services.identity.clients[0].secret` fetches its value through this environment variable.
 
-> Most of the values provided by the helm chart ends up inside a configMap, which is then loaded by the SKAS executable.
-The environment variable interpolation occurs during this load.
+> _Most of the values provided by the Helm chart end up inside a `configMap`, which is then loaded by the SKAS 
+executable. The environment variable interpolation occurs during this load._
 
 ### DEX deployment
 
-And here is the modified values file for DEX deployment
+Here is the modified values file for DEX deployment:
 
 ??? abstract "values.dex.yaml"
 
@@ -592,10 +615,13 @@ And here is the modified values file for DEX deployment
             - dex.ingress.mycluster.internal
     ```
 
-DEX handle environment variable extension in two different ways, depending of the subsection:
 
-- Environment variable are expanded the usual way in the `connectors` definition.
-- This is not the case for other parts of the configuration, such as `staticClients`. So two new attributes have been
-added in a staticClient definition: `idEnv` and `secretEnv`. Only this last is used in our case.
+DEX handles environment variable expansion in two different ways, depending on the subsection:
 
-Both secret values are injected in the Pod by the `envFrom:` subsection
+- Environment variables are expanded in the usual way within the `connectors` definition.
+- However, in other parts of the configuration, such as `staticClients`, standard environment variable expansion does 
+not occur. To address this, two new attributes have been introduced in the `staticClients` definition: 
+`idEnv` and `secretEnv`. They take the variable name as parameter. In our case, only the `secretEnv` attribute is used.
+
+Both secret values are injected into the Pod using the `envFrom` subsection."
+
