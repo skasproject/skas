@@ -20,25 +20,25 @@ Follow these steps to install SKAS using Helm:
 
 - Add the SKAS Helm repository by running the following command:
 
-``` {.shell .copy}
-helm repo add skas https://skasproject.github.io/skas-charts
-```
+    ``` {.shell .copy}
+    helm repo add skas https://skasproject.github.io/skas-charts
+    ```
 
 - Create a dedicated namespace for SKAS:
 
-```{.shell .copy}
-kubectl create namespace skas-system
-```
+    ```{.shell .copy}
+    kubectl create namespace skas-system
+    ```
 
 - Deploy the SKAS Helm chart using the following command:
 
-```{.shell .copy}
-helm -n skas-system install skas skas/skas \
-    --set clusterIssuer=your-cluster-issuer \
-    --set skAuth.exposure.external.ingress.host=skas.ingress.mycluster.internal \
-    --set skAuth.kubeconfig.context.name=skas@mycluster.internal \
-    --set skAuth.kubeconfig.cluster.apiServerUrl=https://kubernetes.ingress.mycluster.internal
-```
+    ```{.shell .copy}
+    helm -n skas-system install skas skas/skas \
+        --set clusterIssuer=your-cluster-issuer \
+        --set skAuth.exposure.external.ingress.host=skas.ingress.mycluster.internal \
+        --set skAuth.kubeconfig.context.name=skas@mycluster.internal \
+        --set skAuth.kubeconfig.cluster.apiServerUrl=https://kubernetes.ingress.mycluster.internal
+    ```
 
 Replace the values with your specific configuration:
 
