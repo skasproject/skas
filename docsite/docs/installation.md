@@ -249,14 +249,20 @@ You can obtain such a role [here](https://github.com/skasproject/skas/releases/d
 
 Similar to manual installation, you might need to customize it to suit your local context.
 
-To utilize this role, we assume that you have an Ansible configuration in place, along with an inventory that defines the target cluster. Follow these steps:
+To utilize this role, we assume that you have an Ansible configuration in place, along with an inventory that defines the target cluster.
+
+Additionally, this role utilizes the
+[`kubernetes.core.k8s_info module`](https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_info_module.html).
+Please review the requirements for this module
+
+Then, follow these steps:
 
 - Download and extract the role archive provided above into a folder that is part of the role path.
 - Create a playbook file, for example:
 
 ???+ abstract "skas.yaml"
 
-    ```{.copy}
+    ```{.yaml .copy }
     - hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server
       tags: [ "skas" ]
       vars:
@@ -346,7 +352,11 @@ Flags:
 Use "kubectl-sk [command] --help" for more information about a command.
 ```
 
-SKAS is now successfully installed. You can proceed to the [User guide](./userguide.md) for further instructions.
+SKAS is now successfully installed. You can proceed with the [User guide](./userguide.md) for further instructions.
+
+> _Depending on your cluster architecture, you may need to adjust your configuration for a safer and more resilient 
+installation. Please refer to the [Configuration: Kubernetes Integration](configuration.md#kubernetes-integration) 
+section for more information._
 
 ## SKAS Removal
 
@@ -361,7 +371,7 @@ If you used the Ansible role for configuration, simply modify the playbook by se
 
 ???+ abstract "skas.yaml"
 
-    ```{.copy}
+    ```{.yaml .copy}
     - hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server
       tags: [ "skas" ]
       vars:

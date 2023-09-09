@@ -48,7 +48,7 @@ then
   if [[ "x$NAME" == "xUbuntu" ]]
   then
     echo "On Ubuntu system"
-  	echo "Assuming python3,virtualenv and python3-pip already installed"
+  	echo "Assuming python3, virtualenv and python3-pip already installed"
 	  echo "else: sudo apt update && sudo apt install python3 python3-pip virtualenv "
     VENV=venv
   	virtualenv -p python3  "${MYDIR}/../${VENV}"
