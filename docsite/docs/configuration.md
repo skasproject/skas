@@ -138,7 +138,8 @@ Note that we are in an active-active configuration with no need for a leader ele
 - `podAnnotations` and `commonAnnotations` allow you to annotate pods and other SKAS resources if required.
 - The `image` subsection allows you to define an alternate image version or location. 
 This is useful in an air-gap deployment where the SKAS image is stored in a private repository.
-- `nodeSelector`, `toleration`, and `affinity` are standard Kubernetes properties related to the node placement of SKAS pod(s).
+- `nodeSelector`, `toleration`, and `affinity` are standard Kubernetes properties related to the node placement of 
+SKAS pod(s). See below
 
 
 To apply a modified configuration, enter the following command:
@@ -148,4 +149,68 @@ helm -n skas-system upgrade skas skas/skas \
 --values ./values.init.yaml --values ./values.behavior.yaml --values ./values.k8s.yaml
 ```
 
-> _Don't forget to restart the pod(s). See [above](#pod-restart)_
+> _Remember to restart the pod(s) after making these configuration changes. See [above](#pod-restart)_
+
+### SKAS PODs node placement
+
+With the default configuration, SKAS pods will be scheduled on worker nodes, just like any other workload.
+
+To place them on nodes carrying the control plane, the following configuration can be used:
+
+???+ abstract "values.k8s.yaml"
+
+    ```
+    replicaCount: 2
+    
+    # -- Annotations to be added to the pod
+    podAnnotations: {}
+    
+    # -- Annotations to be added to all other resources
+    commonAnnotations: {}
+    
+    image:
+      pullSecrets: []
+      repository: ghcr.io/skasproject/skas
+      # -- Overrides the image tag whose default is the chart appVersion.
+      tag:
+      pullPolicy: IfNotPresent
+    
+    # Node placement of SKAS pod(s) 
+    nodeSelector: {}
+    tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: In
+                  values:
+                    - ""
+            weight: 100
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                      - skas
+              topologyKey: kubernetes.io/hostname
+    ```
+
+By default, Kubernetes prevents standard workloads from running on the control-plane nodes by using the `taint` 
+mechanism. To work around this limitation, a `toleration` section is defined.
+
+Then there is the `affinity.nodeAffinity part`, which instructs the pod to run on nodes with a control-plane label.
+
+Additionally, there is the `affinity.podAntiAffinity` part, which prevents two SKAS pods from being scheduled on 
+the same node.
+
