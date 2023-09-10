@@ -678,24 +678,26 @@ rights on the target cluster.</p>
 </ul>
 <p>Follow these steps to install SKAS using Helm:</p>
 <ul>
-<li>Add the SKAS Helm repository by running the following command:</li>
-</ul>
+<li>
+<p>Add the SKAS Helm repository by running the following command:</p>
 <div class="language-shell copy highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>skas<span class="w"> </span>https://skasproject.github.io/skas-charts
 </span></code></pre></div>
-<ul>
-<li>Create a dedicated namespace for SKAS:</li>
-</ul>
+</li>
+<li>
+<p>Create a dedicated namespace for SKAS:</p>
 <div class="language-shell copy highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>skas-system
 </span></code></pre></div>
-<ul>
-<li>Deploy the SKAS Helm chart using the following command:</li>
-</ul>
+</li>
+<li>
+<p>Deploy the SKAS Helm chart using the following command:</p>
 <div class="language-shell copy highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>install<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span>--set<span class="w"> </span><span class="nv">clusterIssuer</span><span class="o">=</span>your-cluster-issuer<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>--set<span class="w"> </span>skAuth.exposure.external.ingress.host<span class="o">=</span>skas.ingress.mycluster.internal<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span>--set<span class="w"> </span>skAuth.kubeconfig.context.name<span class="o">=</span>skas@mycluster.internal<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span>--set<span class="w"> </span>skAuth.kubeconfig.cluster.apiServerUrl<span class="o">=</span>https://kubernetes.ingress.mycluster.internal
 </span></code></pre></div>
+</li>
+</ul>
 <p>Replace the values with your specific configuration:</p>
 <ul>
 <li><code>clusterIssuer</code>: The ClusterIssuer from your Certificate Manager for certificate management.</li>
@@ -859,19 +861,23 @@ a restart of the API Server to take the changes into account.</p>
 <p>If Ansible is one of your preferred tools, you can automate these laborious tasks by utilizing an Ansible role.</p>
 <p>You can obtain such a role <a href="https://github.com/skasproject/skas/releases/download/0.2.1/skas-apiserver-role-0.2.1.tgz">here</a>.</p>
 <p>Similar to manual installation, you might need to customize it to suit your local context.</p>
-<p>To utilize this role, we assume that you have an Ansible configuration in place, along with an inventory that defines the target cluster. Follow these steps:</p>
+<p>To utilize this role, we assume that you have an Ansible configuration in place, along with an inventory that defines the target cluster.</p>
+<p>Additionally, this role utilizes the
+<a href="https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_info_module.html"><code>kubernetes.core.k8s_info module</code></a>.
+Please review the requirements for this module</p>
+<p>Then, follow these steps:</p>
 <ul>
 <li>Download and extract the role archive provided above into a folder that is part of the role path.</li>
 <li>Create a playbook file, for example:</li>
 </ul>
 <details class="abstract" open="open">
 <summary>skas.yaml</summary>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>- hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>  tags: [ &quot;skas&quot; ]
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>  vars:
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    skas_state: present
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>  roles:
-</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>  - skas-apiserver
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kube_control_plane</span><span class="w">  </span><span class="c1"># This group must target all the nodes hosting an instance of the kubernetes API server</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;skas&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">  </span><span class="nt">vars</span><span class="p">:</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">    </span><span class="nt">skas_state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">present</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">  </span><span class="nt">roles</span><span class="p">:</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-apiserver</span>
 </span></code></pre></div>
 </details>
 <ul>
@@ -937,7 +943,12 @@ and apply the changes.</p>
 </span><span id="__span-20-23"><a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a>
 </span><span id="__span-20-24"><a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a>Use &quot;kubectl-sk [command] --help&quot; for more information about a command.
 </span></code></pre></div>
-<p>SKAS is now successfully installed. You can proceed to the <a href="../userguide/">User guide</a> for further instructions.</p>
+<p>SKAS is now successfully installed. You can proceed with the <a href="../userguide/">User guide</a> for further instructions.</p>
+<blockquote>
+<p><em>Depending on your cluster architecture, you may need to adjust your configuration for a safer and more resilient 
+installation. Please refer to the <a href="../configuration/#kubernetes-integration">Configuration: Kubernetes Integration</a> 
+section for more information.</em></p>
+</blockquote>
 <h2 id="skas-removal">SKAS Removal</h2>
 <p>When it comes to uninstalling SKAS, the initial step involves reconfiguring the API server. 
 The approach depends on how you initially configured it:</p>
@@ -947,12 +958,12 @@ The approach depends on how you initially configured it:</p>
 <p>If you used the Ansible role for configuration, simply modify the playbook by setting <code>skas_state</code> to <code>absent</code>:</p>
 <details class="abstract" open="open">
 <summary>skas.yaml</summary>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>- hosts: kube_control_plane  # This group must target all the nodes hosting an instance of the kubernetes API server
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>  tags: [ &quot;skas&quot; ]
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>  vars:
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>    skas_state: absent
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>  roles:
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>  - skas-apiserver
+<div class="language-yaml copy highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kube_control_plane</span><span class="w">  </span><span class="c1"># This group must target all the nodes hosting an instance of the kubernetes API server</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">  </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;skas&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">  </span><span class="nt">vars</span><span class="p">:</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">    </span><span class="nt">skas_state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">absent</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="w">  </span><span class="nt">roles</span><span class="p">:</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skas-apiserver</span>
 </span></code></pre></div>
 </details>
 <p>After making these changes, execute the playbook:</p>

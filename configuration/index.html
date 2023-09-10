@@ -352,6 +352,19 @@
     Kubernetes integration
   </a>
   
+    <nav class="md-nav" aria-label="Kubernetes integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skas-pods-node-placement" class="md-nav__link">
+    SKAS PODs node placement
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -555,6 +568,19 @@
     Kubernetes integration
   </a>
   
+    <nav class="md-nav" aria-label="Kubernetes integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skas-pods-node-placement" class="md-nav__link">
+    SKAS PODs node placement
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -695,15 +721,72 @@ Note that we are in an active-active configuration with no need for a leader ele
 <li><code>podAnnotations</code> and <code>commonAnnotations</code> allow you to annotate pods and other SKAS resources if required.</li>
 <li>The <code>image</code> subsection allows you to define an alternate image version or location. 
 This is useful in an air-gap deployment where the SKAS image is stored in a private repository.</li>
-<li><code>nodeSelector</code>, <code>toleration</code>, and <code>affinity</code> are standard Kubernetes properties related to the node placement of SKAS pod(s).</li>
+<li><code>nodeSelector</code>, <code>toleration</code>, and <code>affinity</code> are standard Kubernetes properties related to the node placement of 
+SKAS pod(s). See below</li>
 </ul>
 <p>To apply a modified configuration, enter the following command:</p>
 <div class="language-shell copy highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>helm<span class="w"> </span>-n<span class="w"> </span>skas-system<span class="w"> </span>upgrade<span class="w"> </span>skas<span class="w"> </span>skas/skas<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>--values<span class="w"> </span>./values.init.yaml<span class="w"> </span>--values<span class="w"> </span>./values.behavior.yaml<span class="w"> </span>--values<span class="w"> </span>./values.k8s.yaml
 </span></code></pre></div>
 <blockquote>
-<p><em>Don't forget to restart the pod(s). See <a href="#pod-restart">above</a></em></p>
+<p><em>Remember to restart the pod(s) after making these configuration changes. See <a href="#pod-restart">above</a></em></p>
 </blockquote>
+<h3 id="skas-pods-node-placement">SKAS PODs node placement</h3>
+<p>With the default configuration, SKAS pods will be scheduled on worker nodes, just like any other workload.</p>
+<p>To place them on nodes carrying the control plane, the following configuration can be used:</p>
+<details class="abstract" open="open">
+<summary>values.k8s.yaml</summary>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>replicaCount: 2
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a># -- Annotations to be added to the pod
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>podAnnotations: {}
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a># -- Annotations to be added to all other resources
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>commonAnnotations: {}
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>image:
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>  pullSecrets: []
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>  repository: ghcr.io/skasproject/skas
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>  # -- Overrides the image tag whose default is the chart appVersion.
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>  tag:
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>  pullPolicy: IfNotPresent
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a># Node placement of SKAS pod(s) 
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>nodeSelector: {}
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>tolerations:
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>  - effect: NoSchedule
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>    key: node-role.kubernetes.io/master
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>  - effect: NoSchedule
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>    key: node-role.kubernetes.io/control-plane
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>
+</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>affinity:
+</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>  nodeAffinity:
+</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>    preferredDuringSchedulingIgnoredDuringExecution:
+</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>      - preference:
+</span><span id="__span-7-28"><a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>          matchExpressions:
+</span><span id="__span-7-29"><a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>            - key: node-role.kubernetes.io/control-plane
+</span><span id="__span-7-30"><a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a>              operator: In
+</span><span id="__span-7-31"><a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a>              values:
+</span><span id="__span-7-32"><a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a>                - &quot;&quot;
+</span><span id="__span-7-33"><a id="__codelineno-7-33" name="__codelineno-7-33" href="#__codelineno-7-33"></a>        weight: 100
+</span><span id="__span-7-34"><a id="__codelineno-7-34" name="__codelineno-7-34" href="#__codelineno-7-34"></a>  podAntiAffinity:
+</span><span id="__span-7-35"><a id="__codelineno-7-35" name="__codelineno-7-35" href="#__codelineno-7-35"></a>    preferredDuringSchedulingIgnoredDuringExecution:
+</span><span id="__span-7-36"><a id="__codelineno-7-36" name="__codelineno-7-36" href="#__codelineno-7-36"></a>      - weight: 100
+</span><span id="__span-7-37"><a id="__codelineno-7-37" name="__codelineno-7-37" href="#__codelineno-7-37"></a>        podAffinityTerm:
+</span><span id="__span-7-38"><a id="__codelineno-7-38" name="__codelineno-7-38" href="#__codelineno-7-38"></a>          labelSelector:
+</span><span id="__span-7-39"><a id="__codelineno-7-39" name="__codelineno-7-39" href="#__codelineno-7-39"></a>            matchExpressions:
+</span><span id="__span-7-40"><a id="__codelineno-7-40" name="__codelineno-7-40" href="#__codelineno-7-40"></a>              - key: app.kubernetes.io/instance
+</span><span id="__span-7-41"><a id="__codelineno-7-41" name="__codelineno-7-41" href="#__codelineno-7-41"></a>                operator: In
+</span><span id="__span-7-42"><a id="__codelineno-7-42" name="__codelineno-7-42" href="#__codelineno-7-42"></a>                values:
+</span><span id="__span-7-43"><a id="__codelineno-7-43" name="__codelineno-7-43" href="#__codelineno-7-43"></a>                  - skas
+</span><span id="__span-7-44"><a id="__codelineno-7-44" name="__codelineno-7-44" href="#__codelineno-7-44"></a>          topologyKey: kubernetes.io/hostname
+</span></code></pre></div>
+</details>
+<p>By default, Kubernetes prevents standard workloads from running on the control-plane nodes by using the <code>taint</code> 
+mechanism. To work around this limitation, a <code>toleration</code> section is defined.</p>
+<p>Then there is the <code>affinity.nodeAffinity part</code>, which instructs the pod to run on nodes with a control-plane label.</p>
+<p>Additionally, there is the <code>affinity.podAntiAffinity</code> part, which prevents two SKAS pods from being scheduled on 
+the same node.</p>
 
 
 
