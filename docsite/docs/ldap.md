@@ -146,7 +146,7 @@ Here is a sample configuration for connecting to an OpenLDAP server:
 
 ??? abstract "values.openldap.yaml"
 
-    ```
+    ```{.yaml .copy}
     skMerge:
       providers:
         - name: crd
@@ -184,7 +184,7 @@ Here is a sample configuration for connecting to a FreeIPA LDAP server.
 
 ??? abstract "values.freeipa.yaml"
 
-    ```
+    ```{.yaml .copy}
     skMerge:
       providers:
         - name: crd
@@ -235,7 +235,7 @@ Then, modify the values file as follows:
 
 ??? abstract "values.ldap.yaml"
 
-    ```
+    ```{.yaml}
     skMerge:
       providers:
         - name: crd
