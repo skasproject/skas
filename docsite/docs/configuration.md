@@ -189,9 +189,7 @@ To place them on nodes carrying the control plane, the following configuration c
           - preference:
               matchExpressions:
                 - key: node-role.kubernetes.io/control-plane
-                  operator: In
-                  values:
-                    - ""
+                  operator: Exists
             weight: 100
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
