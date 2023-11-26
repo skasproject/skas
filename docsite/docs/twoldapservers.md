@@ -585,12 +585,12 @@ chart but with different values (as shown below). Please note the `alias: skas2`
     version: 0.1.0
     dependencies:
     - name: skas
-      version: 0.2.1
+      version: 0.2.2
       repository: https://skasproject.github.io/skas-charts
     
     - name: skas
       alias: skas2
-      version: 0.2.1
+      version: 0.2.2
       repository: https://skasproject.github.io/skas-charts
     ```
 
