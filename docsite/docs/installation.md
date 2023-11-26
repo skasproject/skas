@@ -245,7 +245,7 @@ For additional information, refer to the Kubernetes documentation on this topic,
 
 If Ansible is one of your preferred tools, you can automate these laborious tasks by utilizing an Ansible role.
 
-You can obtain such a role [here](https://github.com/skasproject/skas/releases/download/0.2.1/skas-apiserver-role-0.2.1.tgz).
+You can obtain such a role [here](https://github.com/skasproject/skas/releases/download/0.2.2/skas-apiserver-role-0.2.2.tgz).
 
 Similar to manual installation, you might need to customize it to suit your local context.
 
@@ -303,7 +303,7 @@ SKAS offers a command-line interface (CLI) as an [extension of kubectl](https://
 
 The installation process is straightforward:
 
-- Download the executable that corresponds to your operating system and architecture [from this location](https://github.com/skasproject/skas/releases/tag/0.2.1).
+- Download the executable that corresponds to your operating system and architecture [from this location](https://github.com/skasproject/skas/releases/tag/0.2.2).
 - Rename the downloaded executable to `kubectl-sk` to adhere to the naming convention of kubectl extensions.
 - Make the file executable.
 - Move the `kubectl-sk` executable to a directory that is included in your system's PATH environment variable.
@@ -312,7 +312,7 @@ For instance, on a Mac with an Intel processor, you can use the following comman
 
 ```{.shell .copy}
 cd /tmp
-curl -L https://github.com/skasproject/skas/releases/download/0.2.1/kubectl-sk_0.2.1_darwin_amd64 -o ./kubectl-sk
+curl -L https://github.com/skasproject/skas/releases/download/0.2.2/kubectl-sk_0.2.2_darwin_amd64 -o ./kubectl-sk
 chmod 755 kubectl-sk
 sudo mv kubectl-sk /usr/local/bin
 ```

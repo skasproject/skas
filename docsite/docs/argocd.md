@@ -61,7 +61,7 @@ Here is the patch file for the DEX image (It is a JSON RFC 6902 Patch):
     [
       { "op": "replace",
         "path": "/spec/template/spec/containers/0/image",
-        "value": "ghcr.io/skasproject/dex:v2.37.0-skas-0.2.1"
+        "value": "ghcr.io/skasproject/dex:v2.37.0-skas-0.2.2"
       }
     ]
     ```

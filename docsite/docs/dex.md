@@ -63,7 +63,7 @@ Here is such sample file (Please note that some values may need to be customized
     ``` { .yaml .copy } 
     image:
       repository: ghcr.io/skasproject/dex
-      tag: v2.37.0-skas-0.2.1
+      tag: v2.37.0-skas-0.2.2
     
     config:
       issuer: http://dex.ingress.mycluster.internal
@@ -299,7 +299,7 @@ And here is the modified values file for DEX deployment
     ``` { .yaml .copy }     
     image:
       repository: ghcr.io/skasproject/dex
-      tag: v2.37.0-skas-0.2.1
+      tag: v2.37.0-skas-0.2.2
     
     config:
       issuer: https://dex.ingress.mycluster.internal
@@ -543,7 +543,7 @@ Here is the modified values file for DEX deployment:
     ``` { .yaml  .copy}
     image:
       repository: ghcr.io/skasproject/dex
-      tag: v2.37.0-skas-0.2.1
+      tag: v2.37.0-skas-0.2.2
     
     config:
       issuer: https://dex.ingress.mycluster.internal

@@ -2,6 +2,6 @@
 
 package config
 
-var Version = "0.2.1"
-var BuildTs = "20230831.101306"
+var Version = "0.2.2"
+var BuildTs = "20231126.103712"
 

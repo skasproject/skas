@@ -1,9 +1,10 @@
 
 # Image URL to use all building/pushing image targets
-DOCKER_IMG := ghcr.io/skasproject/skas
+# DOCKER_IMG := ghcr.io/skasproject/skas
+DOCKER_IMG := ghcr.io/skasproject/skas-priv
 
-DOCKER_TAG := 0.2.1
-VERSION ?= 0.2.1
+DOCKER_TAG := 0.2.2
+VERSION ?= 0.2.2
 
 BUILD_TS ?= $(shell date -u +%Y%m%d.%H%M%S)
 
@@ -77,9 +78,10 @@ doc: ## Generate doc index
 	doctoc docs/installation.md --github --title '## Index'
 	doctoc docs/usage.md --github --title '## Index'
 
-.PHONY: docsite
-docsite: ## Publish documentation
-	cd docsite && . ./setup/activate.sh && mkdocs gh-deploy --clean --force
+# Commented out to avoid mistake. Remove comment to publish
+# .PHONY: docsite
+# docsite: ## Publish documentation
+# 	cd docsite && . ./setup/activate.sh && mkdocs gh-deploy --clean --force
 
 # ----------------------------------------------------------------------Docker local config
 
