@@ -1,6 +1,6 @@
 module skas/sk-auth
 
-go 1.19
+go 1.21
 
 replace skas/sk-common v0.2.2 => ../sk-common
 

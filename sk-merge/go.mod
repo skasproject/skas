@@ -1,5 +1,7 @@
 module skas/sk-merge
 
+go 1.21
+
 replace skas/sk-common v0.2.2 => ../sk-common
 
 require (
@@ -22,4 +24,3 @@ require (
 	k8s.io/utils v0.0.0-20221128185143-99ec85e7a448 // indirect
 )
 
-go 1.19
