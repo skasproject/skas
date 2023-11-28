@@ -20,7 +20,7 @@ var (
 	KeyPath                   string
 	UidFromUserFilterRegexes  []*regexp.Regexp
 	UidFromGroupFilterRegexes []*regexp.Regexp
-	UidFromDnRegex            *regexp.Regexp
+	UidFromDnRegexes          []*regexp.Regexp
 )
 
 var yes = true
@@ -121,12 +121,13 @@ func Setup() error {
 			`^\(\&\(objectClass=groupOfNames\)\(memberUid=(\w+)\)\)$`,
 		}
 	}
-	if Conf.UidFromDnRegex == "" {
-		Conf.UidFromDnRegex = `^uid=(\w+),.*$`
+	if Conf.UidFromDnRegexes == nil || len(Conf.UidFromDnRegexes) == 0 {
+		Conf.UidFromDnRegexes = []string{
+			`^uid=(\w+),.*$`,
+		}
 	}
 
 	UidFromUserFilterRegexes = make([]*regexp.Regexp, 0, 10)
-
 	for idx, expr := range Conf.UidFromUserFilterRegexes {
 		re, err := regexp.Compile(expr)
 		if err != nil {
@@ -134,8 +135,8 @@ func Setup() error {
 		}
 		UidFromUserFilterRegexes = append(UidFromUserFilterRegexes, re)
 	}
-	UidFromGroupFilterRegexes = make([]*regexp.Regexp, 0, 10)
 
+	UidFromGroupFilterRegexes = make([]*regexp.Regexp, 0, 10)
 	for idx, expr := range Conf.UidFromGroupFilterRegexes {
 		re, err := regexp.Compile(expr)
 		if err != nil {
@@ -143,9 +144,15 @@ func Setup() error {
 		}
 		UidFromGroupFilterRegexes = append(UidFromGroupFilterRegexes, re)
 	}
-	UidFromDnRegex, err = regexp.Compile(Conf.UidFromDnRegex)
-	if err != nil {
-		return fmt.Errorf("unable to compile UidFromDnRegex: %w", err)
+
+	UidFromDnRegexes = make([]*regexp.Regexp, 0, 10)
+	for idx, expr := range Conf.UidFromDnRegexes {
+		re, err := regexp.Compile(expr)
+		if err != nil {
+			return fmt.Errorf("unable to compile UidFromDnRegexes[%d]: %w", idx, err)
+		}
+		UidFromDnRegexes = append(UidFromDnRegexes, re)
 	}
+
 	return nil
 }

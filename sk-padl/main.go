@@ -5,6 +5,7 @@ import (
 	"github.com/nmcclain/ldap"
 	"os"
 	cconfig "skas/sk-common/pkg/config"
+	"skas/sk-common/pkg/skclient"
 	"skas/sk-padl/internal/config"
 	"skas/sk-padl/internal/handlers"
 )
@@ -16,8 +17,14 @@ func main() {
 	}
 	config.Log.Info("sk-padl start", "version", cconfig.Version, "build", cconfig.BuildTs, "logLevel", config.Conf.Log.Level, "roBindDn", config.Conf.RoBindDn, "usersBaseDn", config.Conf.UsersBaseDn, "groupsBaseDn", config.Conf.GroupsBaseDn)
 
+	provider, err := skclient.New(&config.Conf.Provider, "", "")
+	if err != nil {
+		config.Log.Error(err, "Error on client login creation")
+		os.Exit(3)
+	}
+
 	server := ldap.NewServer()
-	handler := handlers.New(config.Log)
+	handler := handlers.New(config.Log, provider)
 	server.BindFunc("", handler)
 	server.SearchFunc("", handler)
 	server.CloseFunc("", handler)

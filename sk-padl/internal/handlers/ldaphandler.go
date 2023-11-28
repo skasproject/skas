@@ -6,6 +6,7 @@ import (
 	"github.com/nmcclain/ldap"
 	"net"
 	"regexp"
+	"skas/sk-common/pkg/skclient"
 	"skas/sk-common/proto/v1/proto"
 	"skas/sk-padl/internal/config"
 	"strconv"
@@ -29,12 +30,14 @@ type LdapHandler interface {
 }
 
 type ldapHandler struct {
-	log logr.Logger
+	log      logr.Logger
+	provider skclient.SkClient
 }
 
-func New(logger logr.Logger) LdapHandler {
+func New(logger logr.Logger, provider skclient.SkClient) LdapHandler {
 	return &ldapHandler{
-		log: logger,
+		log:      logger,
+		provider: provider,
 	}
 }
 
@@ -43,12 +46,28 @@ var _ LdapHandler = &ldapHandler{}
 func (h ldapHandler) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAPResultCode, error) {
 	h.log.V(1).Info("Bind()", "bindDN", bindDN, "remote", conn.RemoteAddr().String())
 
-	if bindDN == config.Conf.RoBindDn && bindSimplePw == config.Conf.RoBindPassword {
+	if bindDN == config.Conf.RoBindDn {
+		// It is THE admin (ro) bind password
+		if bindSimplePw != config.Conf.RoBindPassword {
+			h.log.V(1).Info("Bind() FAILED", "bindDN", bindDN, "remote", conn.RemoteAddr().String())
+			return ldap.LDAPResultInvalidCredentials, nil
+		}
 		h.log.V(1).Info("Bind() Success", "bindDN", bindDN, "remote", conn.RemoteAddr().String())
 		return ldap.LDAPResultSuccess, nil
 	} else {
-		h.log.V(1).Info("Bind() FAILED", "bindDN", bindDN, "remote", conn.RemoteAddr().String())
-		return ldap.LDAPResultInvalidCredentials, nil
+		// It is a bind for a standard user password
+		uid := h.getUserIdFromDn(bindDN)
+		if uid == "" {
+			return ldap.LDAPResultInvalidCredentials, nil
+		}
+		_, status, err := h.getUserFromUid(uid, bindSimplePw)
+		if err != nil {
+			return ldap.LDAPResultOperationsError, err
+		}
+		if status != proto.PasswordChecked {
+			return ldap.LDAPResultInvalidCredentials, nil
+		}
+		return ldap.LDAPResultSuccess, nil
 	}
 }
 
@@ -72,11 +91,14 @@ func (h ldapHandler) Search(boundDN string, req ldap.SearchRequest, conn net.Con
 	entries := []*ldap.Entry{}
 	if req.BaseDN == config.Conf.UsersBaseDn {
 		// It is a search for user information
-		uid := extractUidFromFilter(req.Filter, config.UidFromUserFilterRegexes)
+		uid := h.extractUidFromFilter(req.Filter, config.UidFromUserFilterRegexes)
 		if uid == "" {
 			return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("ERROR: Unable to extract 'uid' from user filter '%s'", req.Filter)
 		}
-		user := getUserFromUid(uid)
+		user, _, err := h.getUserFromUid(uid, "")
+		if err != nil {
+			return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, err
+		}
 		if user != nil {
 			attrs := []*ldap.EntryAttribute{}
 			attrs = append(attrs, &ldap.EntryAttribute{Name: "objectClass", Values: []string{"top", "inetOrgPerson"}})
@@ -103,11 +125,14 @@ func (h ldapHandler) Search(boundDN string, req ldap.SearchRequest, conn net.Con
 		}
 	} else if req.BaseDN == config.Conf.GroupsBaseDn {
 		// It is a search for group list
-		uid := extractUidFromFilter(req.Filter, config.UidFromGroupFilterRegexes)
+		uid := h.extractUidFromFilter(req.Filter, config.UidFromGroupFilterRegexes)
 		if uid == "" {
 			return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("ERROR: Unable to extract 'uid' from group filter '%s'", req.Filter)
 		}
-		user := getUserFromUid(uid)
+		user, _, err := h.getUserFromUid(uid, "")
+		if err != nil {
+			return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, err
+		}
 		if user != nil {
 			for _, grp := range user.Groups {
 				attrs := []*ldap.EntryAttribute{}
@@ -170,6 +195,50 @@ func (h ldapHandler) ModifyDN(boundDN string, req ldap.ModifyDNRequest, conn net
 
 // -------------------------------------------------------------------------------------
 
+func (h ldapHandler) extractUidFromFilter(filter string, regexps []*regexp.Regexp) string {
+	for _, regex := range regexps {
+		matches := regex.FindStringSubmatch(filter)
+		if len(matches) == 2 {
+			h.log.V(2).Info("extractUidFromFilter() SUCCESS", "regex", regex.String(), "filter", filter)
+			return matches[1]
+		}
+		h.log.V(2).Info("extractUidFromFilter() attempt failure", "regex", regex.String(), "filter", filter)
+	}
+	return ""
+}
+
+func (h ldapHandler) getUserIdFromDn(dn string) string {
+	for _, regex := range config.UidFromDnRegexes {
+		matches := regex.FindStringSubmatch(dn)
+		if len(matches) == 2 {
+			h.log.V(2).Info("getUserIdFromDn() SUCCESS", "regex", regex.String(), "dn", dn)
+			return matches[1]
+		}
+		h.log.V(2).Info("getUserIdFromDn() attempt failure", "regex", regex.String(), "dn", dn)
+	}
+	return ""
+}
+
+func (h ldapHandler) getUserFromUid(uid string, password string) (*proto.User, proto.Status, error) {
+	request := &proto.IdentityRequest{
+		ClientAuth: h.provider.GetClientAuth(),
+		Login:      uid,
+		Password:   password,
+		Detailed:   false,
+	}
+	response := &proto.IdentityResponse{}
+	err := h.provider.Do(proto.IdentityMeta, request, response, nil)
+	if err != nil {
+		return nil, proto.Undefined, err
+	}
+	if response.Status == proto.Undefined || response.Status == proto.UserNotFound || response.Status == proto.Disabled {
+		return nil, response.Status, nil
+	}
+	return &response.User, response.Status, nil
+}
+
+// -------------------------------------------------------------------------------------
+
 func dumpSearchRequest(prefix string, req ldap.SearchRequest) string {
 	var b strings.Builder
 	b.WriteString(prefix + "\n{\n")
@@ -193,46 +262,4 @@ func dumpSearchRequest(prefix string, req ldap.SearchRequest) string {
 
 	b.WriteString(prefix + "}")
 	return b.String()
-}
-
-//
-//var r2 = regexp.MustCompile(`^\((\w+)=(\w+)\)$`)
-//var r1 = regexp.MustCompile(`^\(\&\(objectClass=inetOrgPerson\)\((\w+)=(\w+)\)\)$`)
-//
-//func parseFilter(filter string) (attr string, value string, err error) {
-//	matches := r1.FindStringSubmatch(filter)
-//	if len(matches) == 3 {
-//		return matches[1], matches[2], nil
-//	}
-//	matches = r2.FindStringSubmatch(filter)
-//	if len(matches) == 3 {
-//		return matches[1], matches[2], nil
-//	}
-//	return "", "", fmt.Errorf("invalid filter: '%s'", filter)
-//}
-
-// Fake function
-func getUserFromUid(uid string) *proto.User {
-	if uid == "user1" {
-		u := &proto.User{
-			Login:       uid,
-			Uid:         2333,
-			CommonNames: []string{"User ONE"},
-			Emails:      []string{"xxx@yy.com"},
-			Groups:      []string{"grp1", "grp2"},
-		}
-		return u
-	}
-	return nil
-}
-
-func extractUidFromFilter(filter string, regexps []*regexp.Regexp) string {
-	for _, regex := range regexps {
-		matches := regex.FindStringSubmatch(filter)
-		fmt.Printf("Trying regeg %s with '%s'  len(matches)=%d\n", regex.String(), filter, len(matches))
-		if len(matches) == 2 {
-			return matches[1]
-		}
-	}
-	return ""
 }

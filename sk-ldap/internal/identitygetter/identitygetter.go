@@ -73,9 +73,11 @@ func (l *ldapIdentityGetter) GetIdentity(request proto.IdentityRequest) (*proto.
 	if ldapUser != nil {
 		l.logger.V(2).Info(fmt.Sprint("Will fetch Attributes"))
 		uid := getAttr(*ldapUser, l.UserSearch.NumericalIdAttr)
-
-		if response.Uid, err = strconv.Atoi(uid); err != nil {
-			l.logger.Error(err, "Non numerical Uid value (%s) for user '%s'", uid, request.Login)
+		if uid != "" {
+			response.Uid, err = strconv.Atoi(uid)
+			if err != nil {
+				l.logger.Error(err, "Non numerical Uid value (%s) for user '%s'", uid, request.Login)
+			}
 		}
 		response.Emails = getAttrs(*ldapUser, l.UserSearch.EmailAttr)
 		response.CommonNames = getAttrs(*ldapUser, l.UserSearch.CnAttr)
