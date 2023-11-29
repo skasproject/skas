@@ -1,0 +1,81 @@
+
+{{/*
+Expand skPadl container
+*/}}
+{{- define "container.skPadl" -}}
+- name: sk-padl
+  command:
+    - /sk-padl
+  args:
+    - --configFile
+    - /config.yaml
+    {{-  range .Values.skPadl.additionalArgs }}
+    - {{ . }}
+    {{- end }}
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+  {{- with .Values.skPadl.extraEnv }}
+  env:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.skPadl.resources }}
+  resources:
+  {{- toYaml . | nindent 4 }}
+  {{ end }}
+  securityContext:
+    {{- toYaml .Values.commonContainerSecurityContext | nindent 4 }}
+    {{- with .Values.skPadl.securityContext }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  ports:
+    - containerPort: {{ include "skPadl.pod.port" . }}
+      name: ldap
+      protocol: TCP
+  volumeMounts:
+    - mountPath: /config.yaml
+      name: sk-padl-config
+      subPath: config.yaml
+    {{ if and .Values.skPadl.exposure.ssl }}
+    - mountPath: /tmp/cert/server
+      name: sk-padl-server-cert
+      readOnly: true
+    {{ end }}
+    {{- range .Values.skPadl.extraConfigMaps }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+    {{- range .Values.skPadl.extraSecrets }}
+    - name: {{ .volume }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+    {{- end }}
+{{- end }}
+
+{{/*
+Expand skPadl volumes in pod
+*/}}
+{{- define "volumes.skPadl" -}}
+- name: sk-padl-config
+  configMap:
+    name: {{ include "skPadl.configmapName" . }}
+{{- if and .Values.skPadl.exposure.ssl }}
+- name: sk-padl-server-cert
+  secret:
+    defaultMode: 420
+    secretName: {{ include "skPadl.certificateSecretName" . }}
+{{- end }}
+{{- range .Values.skPadl.extraConfigMaps }}
+- name: {{ .volume }}
+  configMap:
+    name: {{ .configMap }}
+{{- end }}
+{{- range .Values.skPadl.extraSecrets }}
+- name: {{ .volume }}
+  secret:
+    secretName: {{ .secret }}
+    defaultMode: 420
+{{- end }}
+
+{{- end }}

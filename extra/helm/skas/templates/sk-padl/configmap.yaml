@@ -1,0 +1,37 @@
+{{ if .Values.skPadl.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "skPadl.configmapName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  config.yaml: |
+    log:
+      mode: {{ default .Values.log.mode .Values.skPadl.log.mode }}
+      level: {{ default .Values.log.level .Values.skPadl.log.level }}
+    roBindPassword: {{ required "'padl.ldap.bindPassword' must be defined" .Values.skPadl.ldap.bindPassword }}
+    ssl: {{ .Values.skPadl.exposure.ssl }}
+    port: {{ include "skPadl.pod.port" . }}
+    {{- if .Values.skPadl.exposure.ssl }}
+    certDir: /tmp/cert/server
+    {{- end }}
+    usersBaseDn: {{.Values.skPadl.ldap.usersBaseDn }}
+    groupsBaseDn: {{ .Values.skPadl.ldap.groupsBaseDn }}
+    roBindDn: {{ .Values.skPadl.ldap.bindDn }}
+    uidFromUserFilterRegexes:
+{{ .Values.skPadl.ldap.uidFromUserFilterRegexes | toYaml | indent 6 }}
+    uidFromGroupFilterRegexes:
+{{ .Values.skPadl.ldap.uidFromGroupFilterRegexes | toYaml | indent 6 }}
+    uidFromDnRegexes:
+{{ .Values.skPadl.ldap.uidFromDnRegexes | toYaml | indent 6 }}
+    provider:
+{{ .Values.skAuth.provider | toYaml | indent 6 }}
+
+{{ end }}
+
