@@ -135,15 +135,21 @@ skPadl:
     usersBaseDn: "ou=users,dc=skasproject,dc=com"
     groupsBaseDn: "ou=groups,dc=skasproject,dc=com"
     uidFromUserFilterRegexes:
-      - '^\(uid=(\w+)\)$'
-      - '^\(\&\(objectClass=inetOrgPerson\)\(uid=(\w+)\)\)$'
+      - '^\(uid=([\w\-]+)\)$'
+      - '^\(\&\(objectClass=inetOrgPerson\)\(uid=([\w\-]+)\)\)$'
     uidFromGroupFilterRegexes:
-      - '^\(memberUid=(\w+)\)$'
-      - '^\(\&\(objectClass=groupOfUniqueNames\)\(memberUid=(\w+)\)\)$'
-      - '^\(\&\(objectClass=groupOfNames\)\(memberUid=(\w+)\)\)$'
+      - '`^\(memberUid=([\w\-]+)\)$'
+      - '^\(member=uid=([\w\-]+),.*\)$'
+      - '^\(\&\(objectClass=groupOfUniqueNames\)\(memberUid=([\w\-]+)\)\)$'
+      - '^\(\&\(objectClass=groupOfUniqueNames\)\(member=uid=([\w\-]+),.*\)\)$'
     uidFromDnRegexes:
-    - '^uid=(\w+),.*$'
-
+      - '^uid=([\w\-]+),.*$'
+    emptyFilters:
+      - ''
+      - '(objectclass=*)'
+      - '(objectClass=*)'
+    cnFromDnRegexes:
+      - '^cn=([\w\-]+),.*$'
 
   # Container specific securityContext
   securityContext:

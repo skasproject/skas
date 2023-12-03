@@ -58,15 +58,17 @@ func (h ldapHandler) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAP
 		// It is a bind for a standard user password
 		uid := h.getUserIdFromDn(bindDN)
 		if uid == "" {
-			return ldap.LDAPResultInvalidCredentials, nil
+			return ldap.LDAPResultOperationsError, fmt.Errorf("unable to extract uid from DN '%s'", bindDN)
 		}
-		_, status, err := h.getUserFromUid(uid, bindSimplePw)
+		_, status, err := h.getSkasUserFromUid(uid, bindSimplePw)
 		if err != nil {
 			return ldap.LDAPResultOperationsError, err
 		}
 		if status != proto.PasswordChecked {
+			h.log.V(1).Info("Bind() FAILED", "bindDN", bindDN, "remote", conn.RemoteAddr().String(), "status", status)
 			return ldap.LDAPResultInvalidCredentials, nil
 		}
+		h.log.V(1).Info("Bind() Success", "bindDN", bindDN, "remote", conn.RemoteAddr().String())
 		return ldap.LDAPResultSuccess, nil
 	}
 }
@@ -76,7 +78,7 @@ func (h ldapHandler) Search(boundDN string, req ldap.SearchRequest, conn net.Con
 		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultInvalidCredentials}, nil
 	}
 
-	h.log.V(1).Info("Search()", "boundDN", boundDN, "remote", conn.RemoteAddr().String())
+	h.log.V(1).Info("Search()", "boundDN", boundDN, "remote", conn.RemoteAddr().String(), "baseDN", req.BaseDN, "filter", req.Filter)
 	h.log.V(2).Info(dumpSearchRequest("", req))
 
 	if req.DerefAliases != ldap.NeverDerefAliases { // [-a {never|always|search|find}
@@ -90,46 +92,25 @@ func (h ldapHandler) Search(boundDN string, req ldap.SearchRequest, conn net.Con
 
 	entries := []*ldap.Entry{}
 	if req.BaseDN == config.Conf.UsersBaseDn {
-		// It is a search for user information
+		// It is a search for user information from baseDN, using filter
 		uid := h.extractUidFromFilter(req.Filter, config.UidFromUserFilterRegexes)
 		if uid == "" {
 			return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("ERROR: Unable to extract 'uid' from user filter '%s'", req.Filter)
 		}
-		user, _, err := h.getUserFromUid(uid, "")
+		entry, err := h.getUserEntryFromUid(uid)
 		if err != nil {
 			return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, err
 		}
-		if user != nil {
-			attrs := []*ldap.EntryAttribute{}
-			attrs = append(attrs, &ldap.EntryAttribute{Name: "objectClass", Values: []string{"top", "inetOrgPerson"}})
-
-			attrs = append(attrs, &ldap.EntryAttribute{Name: "uid", Values: []string{user.Login}})
-			if len(user.CommonNames) > 0 {
-				attrs = append(attrs, &ldap.EntryAttribute{Name: "cn", Values: user.CommonNames})
-				if user.CommonNames[0] != "" {
-					// Get the surname as last work of the common name
-					sp := strings.Split(user.CommonNames[0], " ")
-					attrs = append(attrs, &ldap.EntryAttribute{Name: "sn", Values: []string{sp[len(sp)-1]}})
-				}
-			}
-			if user.Uid != 0 {
-				attrs = append(attrs, &ldap.EntryAttribute{Name: "uidNumber", Values: []string{strconv.Itoa(user.Uid)}})
-			}
-			if len(user.Emails) > 0 {
-				attrs = append(attrs, &ldap.EntryAttribute{Name: "mail", Values: user.Emails})
-			}
-
-			dn := fmt.Sprintf("uid=%s,%s", uid, config.Conf.UsersBaseDn)
-			h.log.V(1).Info("Search user result", "dn", dn)
-			entries = append(entries, &ldap.Entry{DN: dn, Attributes: attrs})
+		if entry != nil {
+			entries = append(entries, entry)
 		}
 	} else if req.BaseDN == config.Conf.GroupsBaseDn {
-		// It is a search for group list
+		// It is a search for group list, for a given uid
 		uid := h.extractUidFromFilter(req.Filter, config.UidFromGroupFilterRegexes)
 		if uid == "" {
 			return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("ERROR: Unable to extract 'uid' from group filter '%s'", req.Filter)
 		}
-		user, _, err := h.getUserFromUid(uid, "")
+		user, _, err := h.getSkasUserFromUid(uid, "")
 		if err != nil {
 			return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, err
 		}
@@ -144,16 +125,81 @@ func (h ldapHandler) Search(boundDN string, req ldap.SearchRequest, conn net.Con
 				entries = append(entries, &ldap.Entry{DN: dn, Attributes: attrs})
 			}
 		}
+	} else if isFilterEmpty(req.Filter) {
+		if strings.HasSuffix(req.BaseDN, config.Conf.UsersBaseDn) {
+			// The baseDN is the searched DN. MinIO use this form on 'mc idp ldap policy attach --user=....'
+			uid := h.getUserIdFromDn(req.BaseDN)
+			if uid == "" {
+				return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("ERROR: Unable to extract 'uid' from baseDN '%s' (filter='%s')", req.BaseDN, req.Filter)
+			}
+			entry, err := h.getUserEntryFromUid(uid)
+			if err != nil {
+				return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, err
+			}
+			if entry != nil {
+				entries = append(entries, entry)
+			}
+		} else if strings.HasSuffix(req.BaseDN, config.Conf.GroupsBaseDn) {
+			// The baseDN is the searched DN. MinIO use this form on 'mc idp ldap policy attach --groups=....'
+			cn := h.getCnFromDn(req.BaseDN)
+			if cn == "" {
+				return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("ERROR: Unable to extract 'cn' from baseDN '%s' (filter='%s')", req.BaseDN, req.Filter)
+			}
+			// In such case, we don't try to check if group really exits. All groups may potentially exits
+			attrs := []*ldap.EntryAttribute{}
+			attrs = append(attrs, &ldap.EntryAttribute{Name: "objectClass", Values: []string{"top", "groupOfUniqueNames"}})
+			attrs = append(attrs, &ldap.EntryAttribute{Name: "cn", Values: []string{cn}})
+			dn := fmt.Sprintf("cn=%s,%s", cn, config.Conf.GroupsBaseDn)
+			h.log.V(1).Info("Search group result", "dn", dn)
+			entries = append(entries, &ldap.Entry{DN: dn, Attributes: attrs})
+		} else {
+			return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("ERROR: Filter is empty and baseDn ('%s') does not match users or groups one", req.BaseDN)
+		}
 	} else {
 		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("ERROR: Invalid baseDN=%s on search request", req.BaseDN)
 	}
 
-	return ldap.ServerSearchResult{
+	result := ldap.ServerSearchResult{
 		Entries:    entries,
 		Referrals:  make([]string, 0),
 		Controls:   make([]ldap.Control, 0),
 		ResultCode: ldap.LDAPResultSuccess,
-	}, nil
+	}
+	logSearchResult(result, h.log)
+	return result, nil
+}
+
+func (h ldapHandler) getUserEntryFromUid(uid string) (*ldap.Entry, error) {
+	user, _, err := h.getSkasUserFromUid(uid, "")
+	if err != nil {
+		return nil, err
+	}
+	if user != nil {
+		attrs := []*ldap.EntryAttribute{}
+		attrs = append(attrs, &ldap.EntryAttribute{Name: "objectClass", Values: []string{"top", "inetOrgPerson"}})
+
+		attrs = append(attrs, &ldap.EntryAttribute{Name: "uid", Values: []string{user.Login}})
+		if len(user.CommonNames) > 0 {
+			attrs = append(attrs, &ldap.EntryAttribute{Name: "cn", Values: user.CommonNames})
+			if user.CommonNames[0] != "" {
+				// Get the surname as last work of the common name
+				sp := strings.Split(user.CommonNames[0], " ")
+				attrs = append(attrs, &ldap.EntryAttribute{Name: "sn", Values: []string{sp[len(sp)-1]}})
+			}
+		}
+		if user.Uid != 0 {
+			attrs = append(attrs, &ldap.EntryAttribute{Name: "uidNumber", Values: []string{strconv.Itoa(user.Uid)}})
+		}
+		if len(user.Emails) > 0 {
+			attrs = append(attrs, &ldap.EntryAttribute{Name: "mail", Values: user.Emails})
+		}
+
+		dn := fmt.Sprintf("uid=%s,%s", uid, config.Conf.UsersBaseDn)
+		h.log.V(1).Info("Search user result", "dn", dn)
+		return &ldap.Entry{DN: dn, Attributes: attrs}, nil
+	} else {
+		return nil, nil
+	}
 }
 
 func (h ldapHandler) Close(boundDN string, conn net.Conn) error {
@@ -211,7 +257,7 @@ func (h ldapHandler) getUserIdFromDn(dn string) string {
 	for _, regex := range config.UidFromDnRegexes {
 		matches := regex.FindStringSubmatch(dn)
 		if len(matches) == 2 {
-			h.log.V(2).Info("getUserIdFromDn() SUCCESS", "regex", regex.String(), "dn", dn)
+			h.log.V(2).Info("getUserIdFromDn() SUCCESS", "regex", regex.String(), "dn", dn, "uid", matches[1])
 			return matches[1]
 		}
 		h.log.V(2).Info("getUserIdFromDn() attempt failure", "regex", regex.String(), "dn", dn)
@@ -219,7 +265,19 @@ func (h ldapHandler) getUserIdFromDn(dn string) string {
 	return ""
 }
 
-func (h ldapHandler) getUserFromUid(uid string, password string) (*proto.User, proto.Status, error) {
+func (h ldapHandler) getCnFromDn(dn string) string {
+	for _, regex := range config.CnFromDnRegexes {
+		matches := regex.FindStringSubmatch(dn)
+		if len(matches) == 2 {
+			h.log.V(2).Info("getCnFromDn() SUCCESS", "regex", regex.String(), "dn", dn, "cn", matches[1])
+			return matches[1]
+		}
+		h.log.V(2).Info("getCnFromDn() attempt failure", "regex", regex.String(), "dn", dn)
+	}
+	return ""
+}
+
+func (h ldapHandler) getSkasUserFromUid(uid string, password string) (*proto.User, proto.Status, error) {
 	request := &proto.IdentityRequest{
 		ClientAuth: h.provider.GetClientAuth(),
 		Login:      uid,
@@ -235,6 +293,15 @@ func (h ldapHandler) getUserFromUid(uid string, password string) (*proto.User, p
 		return nil, response.Status, nil
 	}
 	return &response.User, response.Status, nil
+}
+
+func isFilterEmpty(filter string) bool {
+	for _, f := range config.Conf.EmptyFilters {
+		if f == filter {
+			return true
+		}
+	}
+	return false
 }
 
 // -------------------------------------------------------------------------------------
@@ -262,4 +329,12 @@ func dumpSearchRequest(prefix string, req ldap.SearchRequest) string {
 
 	b.WriteString(prefix + "}")
 	return b.String()
+}
+
+func logSearchResult(result ldap.ServerSearchResult, logger logr.Logger) {
+	entries := make([]string, 0, 10)
+	for _, entry := range result.Entries {
+		entries = append(entries, entry.DN)
+	}
+	logger.V(0).Info("ServerSearchResult", "entries", entries)
 }

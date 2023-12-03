@@ -21,6 +21,7 @@ var (
 	UidFromUserFilterRegexes  []*regexp.Regexp
 	UidFromGroupFilterRegexes []*regexp.Regexp
 	UidFromDnRegexes          []*regexp.Regexp
+	CnFromDnRegexes           []*regexp.Regexp
 )
 
 var yes = true
@@ -110,48 +111,71 @@ func Setup() error {
 	}
 	if Conf.UidFromUserFilterRegexes == nil || len(Conf.UidFromUserFilterRegexes) == 0 {
 		Conf.UidFromUserFilterRegexes = []string{
-			`^\(uid=(\w+)\)$`,
-			`^\(\&\(objectClass=inetOrgPerson\)\(uid=(\w+)\)\)$`,
+			`^\(uid=([\w\-]+)\)$`,
+			`^\(\&\(objectClass=inetOrgPerson\)\(uid=([\w\-]+)\)\)$`,
 		}
 	}
 	if Conf.UidFromGroupFilterRegexes == nil || len(Conf.UidFromGroupFilterRegexes) == 0 {
 		Conf.UidFromGroupFilterRegexes = []string{
-			`^\(memberUid=(\w+)\)$`,
-			`^\(\&\(objectClass=groupOfUniqueNames\)\(memberUid=(\w+)\)\)$`,
-			`^\(\&\(objectClass=groupOfNames\)\(memberUid=(\w+)\)\)$`,
+			`^\(memberUid=([\w\-]+)\)$`,
+			`^\(member=uid=([\w\-]+),.*\)$`,
+			`^\(\&\(objectClass=groupOfUniqueNames\)\(memberUid=([\w\-]+)\)\)$`,
+			`^\(\&\(objectClass=groupOfUniqueNames\)\(member=uid=([\w\-]+),.*\)\)$`,
 		}
 	}
 	if Conf.UidFromDnRegexes == nil || len(Conf.UidFromDnRegexes) == 0 {
 		Conf.UidFromDnRegexes = []string{
-			`^uid=(\w+),.*$`,
+			`^uid=([\w\-]+),.*$`,
+		}
+	}
+	if Conf.EmptyFilters == nil || len(Conf.EmptyFilters) == 0 {
+		Conf.EmptyFilters = []string{
+			``,
+			`(objectclass=*)`,
+			`(objectClass=*)`,
+		}
+	}
+	if Conf.CnFromDnRegexes == nil || len(Conf.CnFromDnRegexes) == 0 {
+		Conf.CnFromDnRegexes = []string{
+			`^cn=([\w\-]+),.*$`,
 		}
 	}
 
-	UidFromUserFilterRegexes = make([]*regexp.Regexp, 0, 10)
+	// ------------------------------------------------------------------------------------------
+	UidFromUserFilterRegexes = make([]*regexp.Regexp, 0, len(Conf.UidFromUserFilterRegexes))
 	for idx, expr := range Conf.UidFromUserFilterRegexes {
-		re, err := regexp.Compile(expr)
+		re, err := regexp.Compile("(?i)" + expr)
 		if err != nil {
 			return fmt.Errorf("unable to compile UidFromUserFilterRegexes[%d]: %w", idx, err)
 		}
 		UidFromUserFilterRegexes = append(UidFromUserFilterRegexes, re)
 	}
 
-	UidFromGroupFilterRegexes = make([]*regexp.Regexp, 0, 10)
+	UidFromGroupFilterRegexes = make([]*regexp.Regexp, 0, len(Conf.UidFromGroupFilterRegexes))
 	for idx, expr := range Conf.UidFromGroupFilterRegexes {
-		re, err := regexp.Compile(expr)
+		re, err := regexp.Compile("(?i)" + expr)
 		if err != nil {
 			return fmt.Errorf("unable to compile UidFromGroupFilterRegexes[%d]: %w", idx, err)
 		}
 		UidFromGroupFilterRegexes = append(UidFromGroupFilterRegexes, re)
 	}
 
-	UidFromDnRegexes = make([]*regexp.Regexp, 0, 10)
+	UidFromDnRegexes = make([]*regexp.Regexp, 0, len(Conf.UidFromDnRegexes))
 	for idx, expr := range Conf.UidFromDnRegexes {
-		re, err := regexp.Compile(expr)
+		re, err := regexp.Compile("(?i)" + expr)
 		if err != nil {
 			return fmt.Errorf("unable to compile UidFromDnRegexes[%d]: %w", idx, err)
 		}
 		UidFromDnRegexes = append(UidFromDnRegexes, re)
+	}
+
+	CnFromDnRegexes = make([]*regexp.Regexp, 0, len(Conf.CnFromDnRegexes))
+	for idx, expr := range Conf.CnFromDnRegexes {
+		re, err := regexp.Compile("(?i)" + expr)
+		if err != nil {
+			return fmt.Errorf("unable to compile CnFromDnRegexes[%d]: %w", idx, err)
+		}
+		CnFromDnRegexes = append(CnFromDnRegexes, re)
 	}
 
 	return nil

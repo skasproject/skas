@@ -30,6 +30,10 @@ data:
 {{ .Values.skPadl.ldap.uidFromGroupFilterRegexes | toYaml | indent 6 }}
     uidFromDnRegexes:
 {{ .Values.skPadl.ldap.uidFromDnRegexes | toYaml | indent 6 }}
+    emptyFilters:
+{{ .Values.skPadl.ldap.emptyFilters | toYaml | indent 6 }}
+    cnFromDnRegexes:
+{{ .Values.skPadl.ldap.cnFromDnRegexes | toYaml | indent 6 }}
     provider:
 {{ .Values.skAuth.provider | toYaml | indent 6 }}
 
