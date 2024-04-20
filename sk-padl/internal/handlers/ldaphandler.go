@@ -81,14 +81,16 @@ func (h ldapHandler) Search(boundDN string, req ldap.SearchRequest, conn net.Con
 	h.log.V(1).Info("Search()", "boundDN", boundDN, "remote", conn.RemoteAddr().String(), "baseDN", req.BaseDN, "filter", req.Filter)
 	h.log.V(2).Info(dumpSearchRequest("", req))
 
-	if req.DerefAliases != ldap.NeverDerefAliases { // [-a {never|always|search|find}
-		// Server DerefAliases not supported: RFC4511 4.5.1.3
-		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("req.DerefAliases != ldap.NeverDerefAliases. Not supported")
-	}
-	if req.TimeLimit > 0 {
-		// Server TimeLimit not implemented
-		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("ERROR: req.TimeLimit > 0. Not supported")
-	}
+	// We can't have aliases. So whatever value in req.DerefAliases is OK.
+	//if req.DerefAliases != ldap.NeverDerefAliases { // [-a {never|always|search|find}
+	//	// Server DerefAliases not supported: RFC4511 4.5.1.3
+	//	return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("req.DerefAliases != ldap.NeverDerefAliases. Not supported")
+	//}
+	// We don't handle req.TimeLimit. But, let's do as we do it
+	//if req.TimeLimit > 0 {
+	//	// Server TimeLimit not implemented
+	//	return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultOperationsError}, fmt.Errorf("ERROR: req.TimeLimit > 0. Not supported")
+	//}
 
 	entries := []*ldap.Entry{}
 	if req.BaseDN == config.Conf.UsersBaseDn {
@@ -321,7 +323,7 @@ func dumpSearchRequest(prefix string, req ldap.SearchRequest) string {
 	}
 	b.WriteString(fmt.Sprintf("%s\tScope: %s\n", prefix, ldap.ScopeMap[req.Scope]))
 
-	b.WriteString(fmt.Sprintf("%s\tScope: %d\n", prefix, req.DerefAliases))
+	b.WriteString(fmt.Sprintf("%s\tScope: %d\n", prefix, req.Scope))
 	b.WriteString(fmt.Sprintf("%s\tSizeLimit: %d\n", prefix, req.SizeLimit))
 	b.WriteString(fmt.Sprintf("%s\tTimeLimit: %d\n", prefix, req.TimeLimit))
 	b.WriteString(fmt.Sprintf("%s\tDerefAliases: %d\n", prefix, req.DerefAliases))
