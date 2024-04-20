@@ -1,6 +1,6 @@
 module skas/sk-common
 
-go 1.19
+go 1.21
 
 require (
 	github.com/bombsimon/logrusr/v4 v4.0.0

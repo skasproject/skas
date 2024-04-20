@@ -8,7 +8,7 @@ import (
 	"github.com/go-logr/logr"
 	"gopkg.in/ldap.v2"
 	"os"
-	"path/filepath"
+	"skas/sk-common/pkg/misc"
 	commonHandlers "skas/sk-common/pkg/skserver/handlers"
 	"time"
 )
@@ -58,9 +58,9 @@ func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (commonHa
 	ldap.DefaultTimeout = time.Duration(ldapGetter.TimeoutSec) * time.Second
 
 	//ldapGetter.logger.V(2).Info("paths", "configFolder", configFolder, "RootCA", ldapGetter.RootCaPath, "ClientCert", ldapGetter.ClientCert, "ClientKey", ldapGetter.ClientKey)
-	ldapGetter.RootCaPath = adjustPath(configFolder, ldapGetter.RootCaPath)
-	ldapGetter.ClientCert = adjustPath(configFolder, ldapGetter.ClientCert)
-	ldapGetter.ClientKey = adjustPath(configFolder, ldapGetter.ClientKey)
+	ldapGetter.RootCaPath = misc.AdjustPath(configFolder, ldapGetter.RootCaPath)
+	ldapGetter.ClientCert = misc.AdjustPath(configFolder, ldapGetter.ClientCert)
+	ldapGetter.ClientKey = misc.AdjustPath(configFolder, ldapGetter.ClientKey)
 	//ldapGetter.logger.V(2).Info("adjusted paths", "RootCA", ldapGetter.RootCaPath, "ClientCert", ldapGetter.ClientCert, "ClientKey", ldapGetter.ClientKey)
 
 	ldapGetter.tlsConfig = &tls.Config{ServerName: ldapGetter.Host, InsecureSkipVerify: ldapGetter.InsecureSkipVerify}
@@ -102,14 +102,4 @@ func New(ldapConfig *Config, baseLog logr.Logger, configFolder string) (commonHa
 		return &ldapGetter, fmt.Errorf("groupSearch.Scope unknown value %q", ldapGetter.GroupSearch.Scope)
 	}
 	return &ldapGetter, nil
-}
-
-func adjustPath(baseFolder string, path string) string {
-	if path != "" {
-		if !filepath.IsAbs(path) {
-			path = filepath.Join(baseFolder, path)
-		}
-		path = filepath.Clean(path)
-	}
-	return path
 }

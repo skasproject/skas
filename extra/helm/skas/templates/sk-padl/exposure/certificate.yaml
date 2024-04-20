@@ -1,0 +1,29 @@
+{{ if and .Values.skPadl.enabled .Values.skPadl.exposure.ssl }}
+{{ if .Values.clusterIssuer }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "skPadl.certificateName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  dnsNames:
+    - {{ include "skPadl.serviceName" . }}
+    - {{ include "skPadl.serviceName" . }}.{{ .Release.Namespace }}.svc
+    - localhost
+  {{ if .Values.skPadl.exposure.loadBalancer.enabled }}
+    {{ range .Values.skPadl.exposure.loadBalancer.hosts }}
+    - {{ . }}
+    {{ end }}
+  {{ end }}
+  secretName: {{ include "skPadl.certificateSecretName" . }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ .Values.clusterIssuer }}
+{{ end }}
+{{ end }}

@@ -34,6 +34,7 @@ then
 	  source "${BASE_DIR}"/venv/usr/local/bin/activate
 	else
 	  echo "Unable to find an 'activate' script!"
+	  read a
 	  exit 1
 	fi
 	PS1='[mkdocs] \h:\W \u\$ '

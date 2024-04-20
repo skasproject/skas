@@ -88,4 +88,7 @@ Create list of config map for reloader.stakater.com
 {{- if .Values.skLdap.enabled }}
 {{- include "skLdap.configmapName" . }},
 {{- end }}
+{{- if .Values.skPadl.enabled }}
+{{- include "skPadl.configmapName" . }},
+{{- end }}
 {{- end }}

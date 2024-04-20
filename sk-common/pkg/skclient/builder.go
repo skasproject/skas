@@ -22,6 +22,9 @@ func New(conf *Config, altRootCaPaths string, altRootCaDatas string) (SkClient, 
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse url '%s': %w", conf.Url, err)
 	}
+	if strings.ToLower(u.Scheme) != "https" && strings.ToLower(u.Scheme) != "http" {
+		return nil, fmt.Errorf("invalid url scheme '%s'", conf.Url)
+	}
 	var tlsConfig *tls.Config = nil
 	if strings.ToLower(u.Scheme) == "https" {
 		pool, err := x509.SystemCertPool()
