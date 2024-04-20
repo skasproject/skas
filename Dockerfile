@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM  --platform=$BUILDPLATFORM golang:1.19 as builder
+FROM  --platform=$BUILDPLATFORM golang:1.21 as builder
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -34,11 +34,19 @@ COPY sk-merge/go.mod sk-merge/go.mod
 COPY sk-merge/go.sum sk-merge/go.sum
 RUN cd sk-merge && go mod download
 
+COPY sk-padl/go.mod sk-padl/go.mod
+COPY sk-padl/go.sum sk-padl/go.sum
+RUN cd sk-padl && go mod download
+
 # Copy and build go programs
 
 COPY sk-common/pkg/ sk-common/pkg/
 COPY sk-common/proto/ sk-common/proto/
 COPY sk-common/k8sapis/ sk-common/k8sapis/
+
+COPY sk-padl/internal/ sk-padl/internal/
+COPY sk-padl/main.go sk-padl/main.go
+RUN cd sk-padl && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o sk-padl main.go
 
 COPY sk-crd/internal/ sk-crd/internal/
 COPY sk-crd/main.go sk-crd/main.go
@@ -66,6 +74,7 @@ RUN cd sk-merge && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
 WORKDIR /
+COPY --from=builder /workspace/sk-padl/sk-padl .
 COPY --from=builder /workspace/sk-crd/sk-crd .
 COPY --from=builder /workspace/sk-ldap/sk-ldap .
 COPY --from=builder /workspace/sk-static/sk-static .

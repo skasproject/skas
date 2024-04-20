@@ -1,0 +1,22 @@
+{{ if and .Values.skPadl.enabled .Values.skPadl.exposure.loadBalancer }}
+{{ if eq .Values.skPadl.exposure.loadBalancer.type "metallb" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  {{ include "skPadl.loadBalancerName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: {{ .Values.skPadl.exposure.loadBalancer.ip }}
+spec:
+  selector:
+    {{- include "skas.selectorLabels" . | nindent 4 }}
+  type: LoadBalancer
+  ports:
+    - name: ldap
+      port: {{ ternary 636 389 .Values.skPadl.exposure.ssl }}
+      protocol: TCP
+      targetPort: {{ include "skPadl.pod.port" . }}
+{{ end }}
+{{ end }}

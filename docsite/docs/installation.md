@@ -47,7 +47,7 @@ Replace the values with your specific configuration:
   > Make sure to define this hostname in your DNS.
 - `skAuth.kubeconfig.context.name`: A unique context name for this cluster in your local configuration.
 - `skAuth.kubeconfig.cluster.apiServerUrl`: The API server URL from outside the cluster. You can find this information 
-in an existing Kubernetes config file under `clusters[X].cluster.server`.
+in an existing Kubernetes config file (i.e. ~/.kube/config) `clusters[X].cluster.server`.
 
 Alternatively, you can create a local YAML values file as follows:
 
@@ -142,7 +142,7 @@ Next, create the Authentication Webhook configuration file within this directory
       - name: sk-auth
         cluster:
           certificate-authority: /etc/kubernetes/skas/skas_auth_ca.crt        # CA for verifying the remote service.
-          server: https://sk-auth.skas-system.svc:7014/v1/tokenReview # URL of remote service to query. Must use 'https'.
+          server: https://skas-auth.skas-system.svc/v1/tokenReview # URL of remote service to query. Must use 'https'.
     
     # users refers to the API server's webhook configuration.
     users:

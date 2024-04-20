@@ -87,6 +87,7 @@ func main() {
 	provider, err := skclient.New(&config.Conf.Provider, "", "")
 	if err != nil {
 		config.Log.Error(err, "Error on client login creation")
+		os.Exit(5)
 	}
 	identityGetter := identitygetter.New(provider)
 

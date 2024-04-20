@@ -91,6 +91,98 @@ generatedSecrets: []
 #        length: 15
 
 
+# --------------------------------------------------------------------------------------------------------- skPadl
+
+skPadl:
+  enabled: false
+
+  log:
+    mode:
+    level:
+
+  provider:
+    url: http://localhost:7011
+  #  url: https://sk-merge.ingress.mycluster.com
+  #  rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
+  #  insecureSkipVerify: false
+  #  clientAuth:
+  #    id: merger
+  #    secret: "1234"
+
+  exposure:
+    ssl: yes
+    loadBalancer:
+      type: metallb   # Currently, the only one supported by this chart.
+      enabled: false
+      ip: # TBD
+      hosts: [] # TBD (Will be added to ldap server certificate)
+    # Will default to {{ include "skas.fullname" . }}-padl-cert
+    certificateSecretName:
+    # Will default to {{ include "skas.fullname" . }}-padl
+    certificateName:
+    # Will default to {{{ include "skas.fullname" . }}-padl
+    serviceName:
+    # Will default to {{{ include "skas.fullname" . }}-padl
+    loadBalancerName:
+
+
+  ldap:
+    bindPassword: # TBD
+    # We strongly suggest you leave followings values as-is, and adjust your LDAP client(s) accordingly.
+    # Consider this part as documentation, not configuration options.
+    # Anyway, you can modify this if you know what you are doing
+    bindDn: "cn=readonly,dc=system,dc=skasproject,dc=com"
+    usersBaseDn: "ou=users,dc=skasproject,dc=com"
+    groupsBaseDn: "ou=groups,dc=skasproject,dc=com"
+    uidFromUserFilterRegexes:
+      - '^\(uid=([\w\-]+)\)$'
+      - '^\(\&\(objectClass=inetOrgPerson\)\(uid=([\w\-]+)\)\)$'
+    uidFromGroupFilterRegexes:
+      - '`^\(memberUid=([\w\-]+)\)$'
+      - '^\(member=uid=([\w\-]+),.*\)$'
+      - '^\(\&\(objectClass=groupOfUniqueNames\)\(memberUid=([\w\-]+)\)\)$'
+      - '^\(\&\(objectClass=groupOfUniqueNames\)\(member=uid=([\w\-]+),.*\)\)$'
+    uidFromDnRegexes:
+      - '^uid=([\w\-]+),.*$'
+    emptyFilters:
+      - ''
+      - '(objectclass=*)'
+      - '(objectClass=*)'
+    cnFromDnRegexes:
+      - '^cn=([\w\-]+),.*$'
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+  #    If you want to specify resources, uncomment the following
+  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #    limits:
+  #      cpu: 100m
+  #      memory: 200Mi
+  #    requests:
+  #      cpu: 100m
+  #      memory: 100Mi
+
+  # Will default to {{ include "skas.fullname" . }}-padl-config
+  configmapName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  extraConfigMaps: []
+  # - configMap:
+  #   volume:
+  #   mountPath:
+
+  extraSecrets: []
+  # - secret:
+  #   volume:
+  #   mountPath:
+
 # --------------------------------------------------------------------------------------------------------- skAuth
 
 skAuth:
@@ -213,13 +305,13 @@ skAuth:
       ingress:
         enabled: true
         host:
-      # Will default to {{ include "skas.fullname" . }}-static-cert
+      # Will default to {{ include "skas.fullname" . }}-auth-cert
       certificateSecretName:
-      # Will default to {{ include "skas.fullname" . }}-static
+      # Will default to {{ include "skas.fullname" . }}-auth
       certificateName:
-      # Will default to {{{ include "skas.fullname" . }}-static
+      # Will default to {{{ include "skas.fullname" . }}-auth
       serviceName:
-      # Will default to {{ include "skas.fullname" . }}-static
+      # Will default to {{ include "skas.fullname" . }}-auth
       ingressName:
 
 
@@ -239,7 +331,7 @@ skAuth:
 
   provider:
     url: http://localhost:7011
-  #  url: https://sk-static1.ingress.kspray1.project33.scw01
+  #  url: https://sk-merge.ingress.mycluster.com
   #  rootCaData: "LS0tLS1CRUdJ.........VRFLS0tLS0K"
   #  insecureSkipVerify: false
   #  clientAuth:
@@ -376,13 +468,13 @@ skMerge:
       ingress:
         enabled: false
         host:
-      # Will default to {{ include "skas.fullname" . }}-static-cert
+      # Will default to {{ include "skas.fullname" . }}-merge-cert
       certificateSecretName:
-      # Will default to {{ include "skas.fullname" . }}-static
+      # Will default to {{ include "skas.fullname" . }}-merge
       certificateName:
-      # Will default to {{{ include "skas.fullname" . }}-static
+      # Will default to {{{ include "skas.fullname" . }}-merge
       serviceName:
-      # Will default to {{ include "skas.fullname" . }}-static
+      # Will default to {{ include "skas.fullname" . }}-merge
       ingressName:
 
   extraConfigMaps: []
@@ -485,13 +577,13 @@ skCrd:
       ingress:
         enabled: false
         host:
-      # Will default to {{ include "skas.fullname" . }}-static-cert
+      # Will default to {{ include "skas.fullname" . }}-crd-cert
       certificateSecretName:
-      # Will default to {{ include "skas.fullname" . }}-static
+      # Will default to {{ include "skas.fullname" . }}-crd
       certificateName:
-      # Will default to {{{ include "skas.fullname" . }}-static
+      # Will default to {{{ include "skas.fullname" . }}-crd
       serviceName:
-      # Will default to {{ include "skas.fullname" . }}-static
+      # Will default to {{ include "skas.fullname" . }}-crd
       ingressName:
 
   initialUser:
@@ -573,13 +665,13 @@ skLdap:
       ingress:
         enabled: false
         host:
-      # Will default to {{ include "skas.fullname" . }}-static-cert
+      # Will default to {{ include "skas.fullname" . }}-ldap-cert
       certificateSecretName:
-      # Will default to {{ include "skas.fullname" . }}-static
+      # Will default to {{ include "skas.fullname" . }}-ldap
       certificateName:
-      # Will default to {{{ include "skas.fullname" . }}-static
+      # Will default to {{{ include "skas.fullname" . }}-ldap
       serviceName:
-      # Will default to {{ include "skas.fullname" . }}-static
+      # Will default to {{ include "skas.fullname" . }}-ldap
       ingressName:
 
   # --------------------------------- LDAP configuration

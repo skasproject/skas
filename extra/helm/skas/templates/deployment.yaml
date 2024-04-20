@@ -44,6 +44,9 @@ spec:
         {{- if .Values.skCrd.enabled }}
         {{- include "container.skCrd" . | nindent 8 }}
         {{- end }}
+        {{- if .Values.skPadl.enabled }}
+        {{- include "container.skPadl" . | nindent 8 }}
+        {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if or .Values.skAuth.enabled .Values.skCrd.enabled }}
@@ -77,6 +80,9 @@ spec:
         {{- end }}
         {{- if .Values.skCrd.enabled }}
         {{- include "volumes.skCrd" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.skPadl.enabled }}
+        {{- include "volumes.skPadl" . | nindent 8 }}
         {{- end }}
 
 

@@ -1,6 +1,8 @@
 module skas/sk-crd
 
-go 1.19
+go 1.21
+
+toolchain go1.21.3
 
 replace skas/sk-common v0.2.2 => ../sk-common
 
