@@ -21,7 +21,7 @@ type Config struct {
 			Namespace string `yaml:"namespace"`
 			Name      string `yaml:"name"`
 		}
-		JsonPath string `yaml:"jsonPath"`
+		KeyInData string `yaml:"keyInData"`
 	} `yaml:"certificateAuthority"`
 	WebhookCacheTtl time.Duration `yaml:"webhookCacheTtl"`
 }
