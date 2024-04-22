@@ -6,12 +6,16 @@ import (
 
 type Config struct {
 	// Shared by 'patcher' and 'monitor'
-	ApiServerNamespace    string `yaml:"apiServerNamespace"`
+	ApiServerNamespace string `yaml:"apiServerNamespace"`
+	ApiServerPodName   string `yaml:"apiServerPodName"`
+	// ----------------------------- Used by patcher
+	// The 3 following values are interpreted inside the container, so depends of the 'hostPath' configuration
 	ApiServerManifestPath string `yaml:"apiServerManifestPath"`
-	ApiServerPodName      string `yaml:"apiServerPodName"` // # TODO: Fatch from apiServerManifestPath/metadata.name
-	// Used by patcher
-	SkasFolder           string `yaml:"skasFolder"`
-	HookConfigContent    string `yaml:"hookConfigContent"`
+	KubernetesCAPath      string `yaml:"kubernetesCAPath"`
+	SkasFolder            string `yaml:"skasFolder"`
+	//
+	HookConfigContent string `yaml:"hookConfigContent"`
+	// This is where to lookup the CA used by the `skauth` module
 	CertificateAuthority struct {
 		Secret struct {
 			Namespace string `yaml:"namespace"`

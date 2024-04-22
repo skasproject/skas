@@ -5,6 +5,7 @@ import (
 	sourcev1 "github.com/fluxcd/source-controller/api/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/client-go/kubernetes"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -84,4 +85,12 @@ func GetKubeClient(kubeconfig string) (client.Client, error) {
 		return nil, err
 	}
 	return GetKubeClientFromConfig(config)
+}
+
+func GetClientSet(kubeconfig string) (*kubernetes.Clientset, error) {
+	config, err := BuildRestConfig(kubeconfig)
+	if err != nil {
+		return nil, err
+	}
+	return kubernetes.NewForConfig(config)
 }

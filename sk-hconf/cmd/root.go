@@ -40,7 +40,7 @@ var RootCmd = &cobra.Command{
 			_, _ = fmt.Fprintf(os.Stderr, "Unable to load configuration: %v\n", err)
 			os.Exit(2)
 		}
-		global.KubeClient, err = k8sapi.GetKubeClient(rootParams.kubeconfig)
+		global.ClientSet, err = k8sapi.GetClientSet(rootParams.kubeconfig)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Unable to initialize kubernetes client: %v\n", err)
 			os.Exit(1)

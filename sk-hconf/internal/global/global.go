@@ -2,10 +2,10 @@ package global
 
 import (
 	"github.com/go-logr/logr"
-	"sigs.k8s.io/controller-runtime/pkg/client"
+	"k8s.io/client-go/kubernetes"
 	"skas/sk-hconf/internal/config"
 )
 
 var Logger logr.Logger
 var Config config.Config
-var KubeClient client.Client
+var ClientSet *kubernetes.Clientset
