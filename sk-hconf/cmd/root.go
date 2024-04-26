@@ -13,14 +13,17 @@ var rootParams struct {
 	logConfig  misc.LogConfig
 	kubeconfig string
 	configFile string
+	config     string
 }
 
 func init() {
 	RootCmd.AddCommand(PatchCmd)
+	RootCmd.AddCommand(MonitorCmd)
 	RootCmd.PersistentFlags().StringVar(&rootParams.logConfig.Level, "logLevel", "INFO", "Log level")
 	RootCmd.PersistentFlags().StringVar(&rootParams.logConfig.Mode, "logMode", "dev", "Log mode: 'dev' or 'json'")
 	RootCmd.PersistentFlags().StringVar(&rootParams.kubeconfig, "kubeconfig", "", "kubeconfig file path. Override default configuration.")
-	RootCmd.PersistentFlags().StringVar(&rootParams.configFile, "configFile", "config.yaml", "Configuration file")
+	RootCmd.PersistentFlags().StringVar(&rootParams.configFile, "configFile", "", "Configuration file")
+	RootCmd.PersistentFlags().StringVar(&rootParams.config, "config", "", "The config itself")
 
 }
 
@@ -35,10 +38,18 @@ var RootCmd = &cobra.Command{
 			_, _ = fmt.Fprintf(os.Stderr, "Unable to set logging configuration: %v\n", err)
 			os.Exit(2)
 		}
-		err = misc.LoadYaml(rootParams.configFile, &global.Config)
-		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Unable to load configuration: %v\n", err)
-			os.Exit(2)
+		if rootParams.configFile != "" {
+			err = misc.LoadYaml(rootParams.configFile, &global.Config)
+			if err != nil {
+				_, _ = fmt.Fprintf(os.Stderr, "Unable to load configuration: %v\n", err)
+				os.Exit(2)
+			}
+		} else if rootParams.config != "" {
+			err = misc.ParseYaml(rootParams.config, &global.Config)
+			if err != nil {
+				_, _ = fmt.Fprintf(os.Stderr, "Unable to parse configuration from command line: %v\n", err)
+				os.Exit(2)
+			}
 		}
 		global.ClientSet, err = k8sapi.GetClientSet(rootParams.kubeconfig)
 		if err != nil {

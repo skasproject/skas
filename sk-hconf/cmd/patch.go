@@ -163,13 +163,13 @@ func patchApiServerManifest(remove bool) error {
 		BlockOperations: []filepatcher.BlockOperation{
 			{
 				Block:       block1,
-				Marker:      "# Skas config 1/4 hacking {mark}",
+				Marker:      "# Skas config 1/2 hacking {mark}",
 				InsertAfter: "^.*volumeMounts:.*",
 				Indent:      4,
 			},
 			{
 				Block:       block2,
-				Marker:      "# Skas config 2/4 hacking {mark}",
+				Marker:      "# Skas config 2/2 hacking {mark}",
 				InsertAfter: "^.*volumes:.*",
 				Indent:      2,
 			},
@@ -192,6 +192,12 @@ func patchApiServerManifest(remove bool) error {
 				Regex:       "^.*skas.skasproject.com/patch.timestamp:.*",
 				InsertAfter: "^.*annotations",
 				Indent:      4,
+			},
+			{
+				Line:        "dnsPolicy: ClusterFirstWithHostNet",
+				Regex:       "^.*dnsPolicy:.*",
+				InsertAfter: "^.*hostNetwork:.*",
+				Indent:      2,
 			},
 		},
 	}

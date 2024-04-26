@@ -21,10 +21,22 @@ func LoadYaml(fileName string, target interface{}) error {
 	dec.KnownFields(true)
 	err = dec.Decode(target)
 	//err = yaml.Unmarshal([]byte(cnt), target)
-
 	if err != nil {
 		if err != io.EOF { // EOF is not an error. Just an empty file (with or without comment)
 			return fmt.Errorf("error while unmarshalling '%s': %w", fileName, err)
+		}
+	}
+	return nil
+}
+
+func ParseYaml(content string, target interface{}) error {
+	dec := yaml.NewDecoder(strings.NewReader(content))
+	dec.KnownFields(true)
+	err := dec.Decode(target)
+	//err = yaml.Unmarshal([]byte(cnt), target)
+	if err != nil {
+		if err != io.EOF { // EOF is not an error. Just an empty file (with or without comment)
+			return fmt.Errorf("error while unmarshalling configuration: %w", err)
 		}
 	}
 	return nil

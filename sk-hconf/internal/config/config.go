@@ -15,6 +15,7 @@ type Config struct {
 	SkasFolder            string `yaml:"skasFolder"`
 	BackupFolder          string `yaml:"backupFolder"`
 	TmpFolder             string `yaml:"tmpFolder"`
+	SkasNamespace         string `yaml:"skasNamespace"`
 	//
 	HookConfigContent string `yaml:"hookConfigContent"`
 	// This is where to lookup the CA used by the `skauth` module
