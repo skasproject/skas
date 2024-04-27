@@ -35,7 +35,7 @@ var PatchCmd = &cobra.Command{
 	Short: "Patch an api server configuration",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		global.Logger.Info("Authentication webhook configurator", "version", global.Version, "build", global.BuildTs, "logLevel", rootParams.logConfig.Level, "nodeName", patchParams.nodeName, "remove", patchParams.remove)
+		global.Logger.Info("Auth webhook node configurator", "version", global.Version, "build", global.BuildTs, "logLevel", rootParams.logConfig.Level, "nodeName", patchParams.nodeName, "remove", patchParams.remove)
 
 		// First, ensure the api server is ready
 		probe, err := readiness.GetProbe(patchParams.nodeName)

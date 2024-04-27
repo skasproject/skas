@@ -17,10 +17,12 @@ import (
 )
 
 var monitorParams struct {
-	remove  bool
-	timeout time.Duration
-	mark    bool
-	force   bool
+	remove           bool
+	timeout          time.Duration
+	mark             bool
+	force            bool
+	image            string
+	ttlAfterFinished time.Duration
 }
 
 func init() {
@@ -28,12 +30,19 @@ func init() {
 	MonitorCmd.PersistentFlags().BoolVar(&monitorParams.force, "force", false, "Perform even if apiserver is down")
 	MonitorCmd.PersistentFlags().DurationVar(&monitorParams.timeout, "timeout", time.Second*240, "Timeout on API server down or up")
 	MonitorCmd.PersistentFlags().BoolVar(&monitorParams.mark, "mark", false, "Display dot on pod state change wait. Log if false")
+	MonitorCmd.PersistentFlags().StringVar(&monitorParams.image, "image", "", "container image for patch")
+	// This is a last resort parameter, as the child job should be cleanup up by its parent
+	MonitorCmd.PersistentFlags().DurationVar(&monitorParams.ttlAfterFinished, "ttlAfterFinished", time.Minute*10, "Wait before cleanup")
+
+	_ = MonitorCmd.MarkPersistentFlagRequired("image")
 }
 
 var MonitorCmd = &cobra.Command{
 	Use:   "monitor",
 	Short: "Monitor SKAS authentication webhook configuration",
 	Run: func(cmd *cobra.Command, args []string) {
+		global.Logger.Info("Auth webhook configuration monitor", "version", global.Version, "build", global.BuildTs, "logLevel", rootParams.logConfig.Level, "remove", monitorParams.remove)
+
 		nodes, err := lookupApiServerNodes()
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Error while listing APIs server nodes: %v\n", err)
@@ -114,21 +123,38 @@ func isJobFinished(job *batchv1.Job) (bool, batchv1.JobConditionType) {
 	return false, ""
 }
 
+func buildOwnerReference() map[string]interface{} {
+	myPodName := os.Getenv("MY_POD_NAME")
+	myPodUid := os.Getenv("MY_POD_UID")
+	if myPodName != "" && myPodUid != "" {
+		oref := make(map[string]interface{})
+		oref["name"] = myPodName
+		oref["uid"] = myPodUid
+		global.Logger.Info("setting ownerReferences", "podName", myPodName, "uid", myPodUid)
+		return oref
+	} else {
+		global.Logger.Info("Unable to set ownerReferences. Missing MY_POD_NAME and/or MY_POD_UID environment variables")
+		return nil
+	}
+}
+
 // https://github.com/kubernetes/client-go/issues/193
 
 func buildJob(idx int, nodeName string) (*batchv1.Job, error) {
-	image := "ghcr.io/skasproject/sk-hconf:0.2.2.snapshot"
 
 	model := map[string]interface{}{
 		"Values": map[string]interface{}{
-			"jobName":   fmt.Sprintf("sk-hconf-%d", idx),
-			"namespace": global.Config.SkasNamespace,
-			"image":     image,
-			"nodeName":  nodeName,
-			"remove":    monitorParams.remove,
-			"force":     monitorParams.force,
-			"timeout":   monitorParams.timeout.String(),
-			"mark":      monitorParams.mark,
+			"jobName":                 fmt.Sprintf("job-sk-hconf-%d", idx),
+			"namespace":               global.Config.SkasNamespace,
+			"serviceAccount":          global.Config.ServiceAccount,
+			"image":                   monitorParams.image,
+			"ttlSecondsAfterFinished": monitorParams.ttlAfterFinished.Seconds(),
+			"nodeName":                nodeName,
+			"remove":                  monitorParams.remove,
+			"force":                   monitorParams.force,
+			"timeout":                 monitorParams.timeout.String(),
+			"mark":                    monitorParams.mark,
+			"ownerReferences":         buildOwnerReference(),
 			"log": map[string]interface{}{
 				"level": rootParams.logConfig.Level,
 				"mode":  rootParams.logConfig.Mode,
@@ -156,14 +182,25 @@ kind: Job
 metadata:
   name: {{ .Values.jobName }}
   namespace: {{ .Values.namespace }}
+  {{- with .Values.ownerReferences }}
+  ownerReferences:
+  - apiVersion: v1
+    kind: Pod
+    name: {{ .name }}
+    uid: {{ .uid }}
+    blockOwnerDeletion: true
+    controller: true
+  {{- end }}
 spec:
+  ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
+  backoffLimit: 1
   template:
     metadata:
       labels:
         app.kubernetes.io/name: sk-hconf
         app.kubernetes.io/instance: {{ .Values.jobName }}
     spec:
-      serviceAccountName: sk-hconf
+      serviceAccountName: {{ .Values.serviceAccount }}
       nodeName: {{ .Values.nodeName }}
       securityContext:
         runAsUser: 0
@@ -210,5 +247,4 @@ spec:
           configMap:
             name: sk-hconf
       restartPolicy: Never
-  backoffLimit: 1
 `
