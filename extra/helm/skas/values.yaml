@@ -751,6 +751,71 @@ skLdap:
   #   volume:
   #   mountPath:
 
+
+# --------------------------------------------------------------------------------------------------------- skHConf
+
+skHConf:
+  enabled: false
+
+  # Will default to {{ include "skas.fullname" . }}-hconf
+  configmapName:
+
+  # Will default to {{ include "skas.fullname" . }}-hconf
+  serviceAccountName:
+
+  # Will default to {{ include "skas.fullname" . }}-hconf
+  clusterRoleName:
+
+  # Will default to job-{{ include "skas.fullname" . }}-hconf-monitor
+  jobName:
+
+  # Additional arguments to be added to the executable's args list
+  additionalArgs: {}
+
+  # Additional env variable definition
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  config: |
+    apiServerNamespace: kube-system
+    apiServerPodName: kube-apiserver
+    apiServerManifestPath: /etc/kubernetes/manifests/kube-apiserver.yaml
+    kubernetesCAPath: /etc/kubernetes/pki/ca.crt
+    skasFolder: /etc/kubernetes/skas
+    backupFolder: /etc/kubernetes/bck
+    tmpFolder: /etc/kubernetes/tmp
+    serviceAccount: sk-hconf
+    skasNamespace: {{ .Release.Namespace }}
+    hookConfigContent: |
+      apiVersion: v1
+      kind: Config
+      # clusters refers to the remote service.
+      clusters:
+        - name: sk-auth
+          cluster:
+            certificate-authority: /etc/kubernetes/skas/skas_auth_ca.crt        # CA for verifying the remote service.
+            server: "https://skas-auth.skas-system.svc/v1/tokenReview" # URL of remote service to query. Must use 'https'.
+
+      # users refers to the API server's webhook configuration.
+      users:
+        - name: skasapisrv
+      # kubeconfig files require a context. Provide one for the API server.
+      current-context: authwebhook
+      contexts:
+      - context:
+          cluster: sk-auth
+          user: skasapisrv
+        name: authwebhook
+    certificateAuthority:
+      secret:
+        namespace: {{ .Release.Namespace }}
+        name: skas-auth-cert
+      keyInData: "ca.crt"
+    webhookCacheTtl: "30s"
+
+
 # --------------------------------------------------------------------------------------------------------- skStatic
 
 skStatic:

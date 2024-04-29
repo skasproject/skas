@@ -10,15 +10,17 @@ import (
 	"skas/sk-hconf/internal/global"
 	"skas/sk-hconf/internal/readiness"
 	"skas/sk-hconf/pkg/filepatcher"
+	"skas/sk-hconf/pkg/texttemplate"
 	"time"
 )
 
 var patchParams struct {
-	nodeName string
-	remove   bool
-	timeout  time.Duration
-	mark     bool
-	force    bool
+	nodeName           string
+	remove             bool
+	timeout            time.Duration
+	mark               bool
+	force              bool
+	hookConfigTemplate string
 }
 
 func init() {
@@ -27,6 +29,7 @@ func init() {
 	PatchCmd.PersistentFlags().StringVar(&patchParams.nodeName, "nodeName", "", "Node Name")
 	PatchCmd.PersistentFlags().DurationVar(&patchParams.timeout, "timeout", time.Second*240, "Timeout on API server down or up")
 	PatchCmd.PersistentFlags().BoolVar(&patchParams.mark, "mark", false, "Display dot on pod state change wait. Log if false")
+	PatchCmd.PersistentFlags().StringVar(&patchParams.hookConfigTemplate, "hookConfigTemplate", "/hookconfig.tmpl", "hookconfig file template")
 	_ = PatchCmd.MarkPersistentFlagRequired("nodeName")
 }
 
@@ -99,8 +102,15 @@ func configure() error {
 		return err
 	}
 	// And copy the hookConfig.yaml file
+	model := map[string]interface{}{
+		"Config": global.Config,
+	}
+	hookConfigTxt, err := texttemplate.NewAndRenderToTextFromFile(patchParams.hookConfigTemplate, model)
+	if err != nil {
+		return err
+	}
 	hc := path.Join(global.Config.SkasFolder, hookConfig)
-	if err := os.WriteFile(hc, []byte(global.Config.HookConfigContent), 0600); err != nil {
+	if err := os.WriteFile(hc, []byte(hookConfigTxt), 0600); err != nil {
 		return err
 	}
 	// And now the sk-auth CA certificate

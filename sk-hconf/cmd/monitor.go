@@ -23,9 +23,11 @@ var monitorParams struct {
 	force            bool
 	image            string
 	ttlAfterFinished time.Duration
+	jobTemplate      string
 }
 
 func init() {
+	MonitorCmd.PersistentFlags().StringVar(&monitorParams.jobTemplate, "jobTemplate", "/job.tmpl", "Job template file for each node")
 	MonitorCmd.PersistentFlags().BoolVar(&monitorParams.remove, "remove", false, "Remove webhook configuration")
 	MonitorCmd.PersistentFlags().BoolVar(&monitorParams.force, "force", false, "Perform even if apiserver is down")
 	MonitorCmd.PersistentFlags().DurationVar(&monitorParams.timeout, "timeout", time.Second*240, "Timeout on API server down or up")
@@ -168,11 +170,7 @@ func buildJob(idx int, nodeName string) (*batchv1.Job, error) {
 			},
 		},
 	}
-	tmpl, err := texttemplate.New("jobTemplate", jobTemplate)
-	if err != nil {
-		return nil, err
-	}
-	result, err := tmpl.RenderToText(model)
+	result, err := texttemplate.NewAndRenderToTextFromFile(monitorParams.jobTemplate, model)
 	if err != nil {
 		return nil, err
 	}
@@ -183,77 +181,3 @@ func buildJob(idx int, nodeName string) (*batchv1.Job, error) {
 	}
 	return job, nil
 }
-
-const jobTemplate = `apiVersion: batch/v1
-kind: Job
-metadata:
-  name: {{ .Values.jobName }}
-  namespace: {{ .Values.namespace }}
-  {{- with .Values.ownerReferences }}
-  ownerReferences:
-  - apiVersion: v1
-    kind: Pod
-    name: {{ .name }}
-    uid: {{ .uid }}
-    blockOwnerDeletion: true
-    controller: true
-  {{- end }}
-spec:
-  ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
-  backoffLimit: 1
-  parallelism: 1
-  completions: 1
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: sk-hconf
-        app.kubernetes.io/instance: {{ .Values.jobName }}
-    spec:
-      serviceAccountName: {{ .Values.serviceAccount }}
-      nodeName: {{ .Values.nodeName }}
-      securityContext:
-        runAsUser: 0
-      containers:
-        - name: patch
-          image: {{ .Values.image }}
-          imagePullPolicy: Always
-          args:
-            - patch
-            - --configFile
-            - /config.yaml
-            - --logMode
-            - {{ .Values.log.mode }}
-            - --logLevel
-            - {{ .Values.log.level }}
-            - --nodeName
-            - {{ .Values.nodeName }}
-            - --timeout
-            - {{ .Values.timeout }}
-            {{- if .Values.mark }}
-            - --mark
-            {{- end }}
-            {{- if .Values.force }}
-            - --force
-            {{- end }}
-            {{- if .Values.remove }}
-            - --remove
-            {{- end }}
-          securityContext:
-            allowPrivilegeEscalation: true
-          volumeMounts:
-            - mountPath: /etc/kubernetes
-              name: kube-conf
-              readOnly: false
-            - mountPath: /config.yaml
-              name: config
-              subPath: config.yaml
-      volumes:
-        - name: kube-conf
-          hostPath:
-            path: /etc/kubernetes
-            type: Directory
-        - name: config
-          configMap:
-            name: sk-hconf
-      restartPolicy: Never
-`

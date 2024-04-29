@@ -17,8 +17,6 @@ type Config struct {
 	TmpFolder             string `yaml:"tmpFolder"`
 	SkasNamespace         string `yaml:"skasNamespace"`
 	ServiceAccount        string `yaml:"serviceAccount"`
-	//
-	HookConfigContent string `yaml:"hookConfigContent"`
 	// This is where to lookup the CA used by the `skauth` module
 	CertificateAuthority struct {
 		Secret struct {

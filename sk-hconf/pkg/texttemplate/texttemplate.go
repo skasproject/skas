@@ -3,6 +3,8 @@ package texttemplate
 import (
 	"bytes"
 	"gopkg.in/yaml.v3"
+	"os"
+	"path"
 	"strings"
 	"text/template"
 )
@@ -83,4 +85,12 @@ func NewAndRenderToText(templateName string, tmplText string, model map[string]i
 		return "", err
 	}
 	return txt, nil
+}
+
+func NewAndRenderToTextFromFile(templatePath string, model map[string]interface{}) (string, error) {
+	tmpl, err := os.ReadFile(templatePath)
+	if err != nil {
+		return "", err
+	}
+	return NewAndRenderToText(path.Base(templatePath), string(tmpl), model)
 }
