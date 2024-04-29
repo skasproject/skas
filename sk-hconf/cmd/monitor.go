@@ -85,25 +85,32 @@ func handleNodeJob(ctx context.Context, idx int, nodeName string) error {
 	if err != nil {
 		return err
 	}
-
 	// And loop until job end
 	global.Logger.Info("Wait for child job to end", "nodeName", nodeName, "idx", idx)
+	limit := time.Now().Add(monitorParams.timeout)
 	for {
 		time.Sleep(time.Second)
 		job2, err := global.ClientSet.BatchV1().Jobs(global.Config.SkasNamespace).Get(ctx, job.Name, metav1.GetOptions{})
 		if err != nil {
-			return err
-		}
-		ended, st := isJobFinished(job2)
-		if ended {
-			if st == batchv1.JobFailed {
-				return fmt.Errorf("child job#%d failed (node:%s)", idx, nodeName)
-			}
-			global.Logger.Info("child job OK", "nodeName", nodeName, "idx", idx)
-			return nil
-		} else {
+			// Api server unreachable is a normal case on a 1 node control plane)
 			if monitorParams.mark {
-				fmt.Printf(".")
+				fmt.Printf(":")
+			}
+			if time.Now().After(limit) {
+				return fmt.Errorf("timeout on apiserver up expired. Last error: %v", err)
+			}
+		} else {
+			ended, st := isJobFinished(job2)
+			if ended {
+				if st == batchv1.JobFailed {
+					return fmt.Errorf("child job#%d failed (node:%s)", idx, nodeName)
+				}
+				global.Logger.Info("child job OK", "nodeName", nodeName, "idx", idx)
+				return nil
+			} else {
+				if monitorParams.mark {
+					fmt.Printf(".")
+				}
 			}
 		}
 	}
@@ -194,6 +201,8 @@ metadata:
 spec:
   ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
   backoffLimit: 1
+  parallelism: 1
+  completions: 1
   template:
     metadata:
       labels:

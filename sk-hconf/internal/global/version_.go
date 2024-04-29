@@ -3,4 +3,4 @@
 package global
 
 var Version = "0.2.2"
-var BuildTs = "20240427.193401"
+var BuildTs = "20240429.080014"
