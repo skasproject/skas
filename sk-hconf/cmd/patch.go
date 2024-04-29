@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/yaml"
 	"os"
 	"path"
 	"skas/sk-hconf/internal/global"
@@ -17,9 +18,9 @@ import (
 var patchParams struct {
 	nodeName           string
 	remove             bool
-	timeout            time.Duration
 	mark               bool
 	force              bool
+	patcherTemplate    string
 	hookConfigTemplate string
 }
 
@@ -27,9 +28,9 @@ func init() {
 	PatchCmd.PersistentFlags().BoolVar(&patchParams.remove, "remove", false, "Remove webhook configuration")
 	PatchCmd.PersistentFlags().BoolVar(&patchParams.force, "force", false, "Perform even if apiserver is down")
 	PatchCmd.PersistentFlags().StringVar(&patchParams.nodeName, "nodeName", "", "Node Name")
-	PatchCmd.PersistentFlags().DurationVar(&patchParams.timeout, "timeout", time.Second*240, "Timeout on API server down or up")
 	PatchCmd.PersistentFlags().BoolVar(&patchParams.mark, "mark", false, "Display dot on pod state change wait. Log if false")
-	PatchCmd.PersistentFlags().StringVar(&patchParams.hookConfigTemplate, "hookConfigTemplate", "/hookconfig.tmpl", "hookconfig file template")
+	PatchCmd.PersistentFlags().StringVar(&patchParams.hookConfigTemplate, "hookConfigTemplate", "/templates/hookconfig.tmpl", "hookconfig file template")
+	PatchCmd.PersistentFlags().StringVar(&patchParams.patcherTemplate, "patcherTemplate", "/templates/patcher.tmpl", "patcher file template")
 	_ = PatchCmd.MarkPersistentFlagRequired("nodeName")
 }
 
@@ -72,13 +73,13 @@ var PatchCmd = &cobra.Command{
 			// So no down state is a 'normal' case
 			_ = probe.WaitForDown(time.Second*30, patchParams.mark)
 		} else {
-			err = probe.WaitForDown(patchParams.timeout, patchParams.mark)
+			err = probe.WaitForDown(global.Config.TimeoutApiServer, patchParams.mark)
 			if err != nil {
 				_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 				os.Exit(3)
 			}
 		}
-		err = probe.WaitForUp(patchParams.timeout, patchParams.mark)
+		err = probe.WaitForUp(global.Config.TimeoutApiServer, patchParams.mark)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 			os.Exit(3)
@@ -162,57 +163,26 @@ const block2 = `- hostPath:
 
 func patchApiServerManifest(remove bool) error {
 
-	cacheTtl := "30s"
-
-	patchOperation := &filepatcher.PatchOperation{
-		File:         global.Config.ApiServerManifestPath,
-		Backup:       true,
-		BackupFolder: global.Config.BackupFolder,
-		TmpFolder:    global.Config.TmpFolder,
-		Remove:       remove,
-		BlockOperations: []filepatcher.BlockOperation{
-			{
-				Block:       block1,
-				Marker:      "# Skas config 1/2 hacking {mark}",
-				InsertAfter: "^.*volumeMounts:.*",
-				Indent:      4,
-			},
-			{
-				Block:       block2,
-				Marker:      "# Skas config 2/2 hacking {mark}",
-				InsertAfter: "^.*volumes:.*",
-				Indent:      2,
-			},
-		},
-		LineOperations: []filepatcher.LineOperation{
-			{
-				Line:        "- --authentication-token-webhook-config-file=/etc/kubernetes/skas/hookconfig.yaml",
-				Regex:       "^.*authentication-token-webhook-config-file.*",
-				InsertAfter: "^.*- kube-apiserver.*",
-				Indent:      4,
-			},
-			{
-				Line:        fmt.Sprintf("- --authentication-token-webhook-cache-ttl=%s", cacheTtl),
-				Regex:       "^.*authentication-token-webhook-cache-ttl.*",
-				InsertAfter: "^.*- kube-apiserver",
-				Indent:      4,
-			},
-			{
-				Line:        fmt.Sprintf("skas.skasproject.com/patch.timestamp: \"%s\"", time.Now().Format(time.RFC3339)),
-				Regex:       "^.*skas.skasproject.com/patch.timestamp:.*",
-				InsertAfter: "^.*annotations",
-				Indent:      4,
-			},
-			{
-				Line:        "dnsPolicy: ClusterFirstWithHostNet",
-				Regex:       "^.*dnsPolicy:.*",
-				InsertAfter: "^.*hostNetwork:.*",
-				Indent:      2,
-			},
+	model := map[string]interface{}{
+		"Config": global.Config,
+		"Values": map[string]interface{}{
+			"remove":     remove,
+			"nowRFC3339": time.Now().Format(time.RFC3339),
 		},
 	}
+	patchOp, err := texttemplate.NewAndRenderToTextFromFile(patchParams.patcherTemplate, model)
+	if err != nil {
+		return err
+	}
 
-	err := patchOperation.Run()
+	//fmt.Printf("\n%s\n", patchOp)
+	patchOperation := &filepatcher.PatchOperation{}
+	err = yaml.UnmarshalStrict([]byte(patchOp), patchOperation)
+	if err != nil {
+		return err
+	}
+
+	err = patchOperation.Run()
 	if err != nil {
 		return err
 	}

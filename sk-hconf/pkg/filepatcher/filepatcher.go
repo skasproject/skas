@@ -13,27 +13,27 @@ import (
 // Public structures
 
 type BlockOperation struct {
-	Block       string
-	Marker      string // Text surrounding the block. Must contain '{mark}', which will be substituted with 'BEGIN' and END
-	InsertAfter string // A regex. Block will be inserted after if not present. If not found will be inserted at the end of file
-	Indent      int
+	Block       string `yaml:"block"`
+	Marker      string `yaml:"marker"`      // Text surrounding the block. Must contain '{mark}', which will be substituted with 'BEGIN' and END
+	InsertAfter string `yaml:"insertAfter"` // A regex. Block will be inserted after if not present. If not found will be inserted at the end of file
+	Indent      int    `yaml:"indent"`
 }
 
 type LineOperation struct {
-	Line        string // The line to insert
-	Regex       string // If matched, The 'Line' will be inserted at this place. If no match, the line will be inserted under 'InsertAfter'
-	InsertAfter string // Regex. The Line will be inserted after this if regex had no matches. Or at the end if InsertAfter has no match (or is "")
-	Indent      int
+	Line        string `yaml:"line"`        // The line to insert
+	Regex       string `yaml:"regex"`       // If matched, The 'Line' will be inserted at this place. If no match, the line will be inserted under 'InsertAfter'
+	InsertAfter string `yaml:"insertAfter"` // Regex. The Line will be inserted after this if regex had no matches. Or at the end if InsertAfter has no match (or is "")
+	Indent      int    `yaml:"indent"`
 }
 
 type PatchOperation struct {
-	File            string
-	Backup          bool
-	BackupFolder    string
-	TmpFolder       string
-	Remove          bool
-	BlockOperations []BlockOperation
-	LineOperations  []LineOperation
+	File            string           `yaml:"file"`
+	Backup          bool             `yaml:"backup"`
+	BackupFolder    string           `yaml:"backupFolder"`
+	TmpFolder       string           `yaml:"tmpFolder"`
+	Remove          bool             `yaml:"remove"`
+	BlockOperations []BlockOperation `yaml:"blockOperations"`
+	LineOperations  []LineOperation  `yaml:"lineOperations"`
 }
 
 // Internal structures

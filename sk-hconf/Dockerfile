@@ -30,4 +30,6 @@ FROM gcr.io/distroless/static:nonroot
 WORKDIR /
 COPY --from=builder /workspace/sk-hconf .
 
+COPY templates/ /templates/
+
 ENTRYPOINT ["/sk-hconf"]

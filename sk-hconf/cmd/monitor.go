@@ -18,23 +18,19 @@ import (
 
 var monitorParams struct {
 	remove           bool
-	timeout          time.Duration
 	mark             bool
 	force            bool
-	image            string
 	ttlAfterFinished time.Duration
 	jobTemplate      string
 }
 
 func init() {
-	MonitorCmd.PersistentFlags().StringVar(&monitorParams.jobTemplate, "jobTemplate", "/job.tmpl", "Job template file for each node")
+	MonitorCmd.PersistentFlags().StringVar(&monitorParams.jobTemplate, "jobTemplate", "/templates/job.tmpl", "Job template file for each node")
 	MonitorCmd.PersistentFlags().BoolVar(&monitorParams.remove, "remove", false, "Remove webhook configuration")
 	MonitorCmd.PersistentFlags().BoolVar(&monitorParams.force, "force", false, "Perform even if apiserver is down")
-	MonitorCmd.PersistentFlags().DurationVar(&monitorParams.timeout, "timeout", time.Second*240, "Timeout on API server down or up")
 	MonitorCmd.PersistentFlags().BoolVar(&monitorParams.mark, "mark", false, "Display dot on pod state change wait. Log if false")
-	MonitorCmd.PersistentFlags().StringVar(&monitorParams.image, "image", "", "container image for patch")
 	// This is a last resort parameter, as the child job should be cleanup up by its parent
-	MonitorCmd.PersistentFlags().DurationVar(&monitorParams.ttlAfterFinished, "ttlAfterFinished", time.Minute*10, "Wait before cleanup")
+	MonitorCmd.PersistentFlags().DurationVar(&monitorParams.ttlAfterFinished, "ttlAfterFinished", time.Minute*30, "Wait before cleanup")
 
 	_ = MonitorCmd.MarkPersistentFlagRequired("image")
 }
@@ -82,14 +78,14 @@ func handleNodeJob(ctx context.Context, idx int, nodeName string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("name:%s    nodeName:%s    image:%s\n", job.Name, job.Spec.Template.Spec.NodeName, job.Spec.Template.Spec.Containers[0].Image)
+	global.Logger.Info("handle node job", "jobName", job.Name, "nodeName", job.Spec.Template.Spec.NodeName, "image", job.Spec.Template.Spec.Containers[0].Image)
 	_, err = global.ClientSet.BatchV1().Jobs(global.Config.SkasNamespace).Create(ctx, job, metav1.CreateOptions{})
 	if err != nil {
 		return err
 	}
 	// And loop until job end
 	global.Logger.Info("Wait for child job to end", "nodeName", nodeName, "idx", idx)
-	limit := time.Now().Add(monitorParams.timeout)
+	limit := time.Now().Add(global.Config.TimeoutApiServer)
 	for {
 		time.Sleep(time.Second)
 		job2, err := global.ClientSet.BatchV1().Jobs(global.Config.SkasNamespace).Get(ctx, job.Name, metav1.GetOptions{})
@@ -99,13 +95,22 @@ func handleNodeJob(ctx context.Context, idx int, nodeName string) error {
 				fmt.Printf(":")
 			}
 			if time.Now().After(limit) {
+				if monitorParams.mark {
+					fmt.Printf("\n")
+				}
 				return fmt.Errorf("timeout on apiserver up expired. Last error: %v", err)
 			}
 		} else {
 			ended, st := isJobFinished(job2)
 			if ended {
 				if st == batchv1.JobFailed {
+					if monitorParams.mark {
+						fmt.Printf("\n")
+					}
 					return fmt.Errorf("child job#%d failed (node:%s)", idx, nodeName)
+				}
+				if monitorParams.mark {
+					fmt.Printf("\n")
 				}
 				global.Logger.Info("child job OK", "nodeName", nodeName, "idx", idx)
 				return nil
@@ -152,24 +157,22 @@ func buildOwnerReference() map[string]interface{} {
 func buildJob(idx int, nodeName string) (*batchv1.Job, error) {
 
 	model := map[string]interface{}{
+		"Config": global.Config,
 		"Values": map[string]interface{}{
-			"jobName":                 fmt.Sprintf("job-sk-hconf-%d", idx),
-			"namespace":               global.Config.SkasNamespace,
-			"serviceAccount":          global.Config.ServiceAccount,
-			"image":                   monitorParams.image,
-			"ttlSecondsAfterFinished": monitorParams.ttlAfterFinished.Seconds(),
+			"idx":                     idx,
 			"nodeName":                nodeName,
+			"ownerReferences":         buildOwnerReference(),
+			"ttlSecondsAfterFinished": monitorParams.ttlAfterFinished.Seconds(),
+			"mark":                    monitorParams.mark,
 			"remove":                  monitorParams.remove,
 			"force":                   monitorParams.force,
-			"timeout":                 monitorParams.timeout.String(),
-			"mark":                    monitorParams.mark,
-			"ownerReferences":         buildOwnerReference(),
 			"log": map[string]interface{}{
 				"level": rootParams.logConfig.Level,
 				"mode":  rootParams.logConfig.Mode,
 			},
 		},
 	}
+
 	result, err := texttemplate.NewAndRenderToTextFromFile(monitorParams.jobTemplate, model)
 	if err != nil {
 		return nil, err

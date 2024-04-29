@@ -1,0 +1,43 @@
+
+file: {{ .Config.ApiServerManifestPath }}
+backup: true
+backupFolder: {{ .Config.BackupFolder }}
+tmpFolder: {{ .Config.TmpFolder }}
+remove: {{ .Values.remove }}
+blockOperations:
+  - block: |
+      - mountPath: /etc/kubernetes/skas
+        name: skas-config
+    marker: "# Skas config 1/2 hacking {mark}"
+    insertAfter: "^.*volumeMounts:.*"
+    indent: 4
+  - block: |
+      - hostPath:
+          path: /etc/kubernetes/skas
+          type: ""
+        name: skas-config
+    marker: "# Skas config 2/2 hacking {mark}"
+    insertAfter: "^.*volumes:.*"
+    indent: 2
+lineOperations:
+  - line: "- --authentication-token-webhook-config-file=/etc/kubernetes/skas/hookconfig.yaml"
+    regex: "^.*authentication-token-webhook-config-file.*"
+    insertAfter: "^.*- kube-apiserver.*"
+    indent: 4
+  - line:  "- --authentication-token-webhook-cache-ttl={{ .Config.WebhookCacheTtl }}"
+    Regex:  "^.*authentication-token-webhook-cache-ttl.*"
+    InsertAfter: "^.*- kube-apiserver"
+    Indent: 4
+  - line: "skas.skasproject.com/patch.timestamp: \"{{ .Values.nowRFC3339}}\"" # time.Now().Format(time.RFC3339))
+    regex: "^.*skas.skasproject.com/patch.timestamp:.*"
+    insertAfter: "^.*annotations"
+    indent: 4
+  - line: "dnsPolicy: ClusterFirstWithHostNet"
+    regex: "^.*dnsPolicy:.*"
+    insertAfter: "^.*hostNetwork:.*"
+    indent: 2
+
+
+
+
+

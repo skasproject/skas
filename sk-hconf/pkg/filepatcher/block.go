@@ -81,13 +81,16 @@ func (bop *blockOp) pushBlock(lines []string) []string {
 	lines = append(lines, bop.padding+bop.beginMarker)
 	blockLines := strings.Split(bop.op.Block, "\n")
 	for _, l := range blockLines {
-		lines = append(lines, bop.padding+l)
+		if len(l) != 0 { // Skip empty line (may occurs
+			lines = append(lines, bop.padding+l)
+		}
 	}
 	lines = append(lines, bop.padding+bop.endMarker)
 	return lines
 }
 
 func (bop *blockOp) unPatch(lines []string) ([]string, error) {
+
 	newLines := make([]string, 0, len(lines)+20)
 	for idx, line := range lines {
 		switch bop.state {

@@ -2,8 +2,8 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Values.jobName }}
-  namespace: {{ .Values.namespace }}
+  name: job-sk-hconf-{{ .Values.idx }}
+  namespace: {{ .Config.SkasNamespace }}
   {{- with .Values.ownerReferences }}
   ownerReferences:
   - apiVersion: v1
@@ -22,16 +22,16 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: sk-hconf
-        app.kubernetes.io/instance: {{ .Values.jobName }}
+        app.kubernetes.io/instance: {{ .Values.idx }}
     spec:
-      serviceAccountName: {{ .Values.serviceAccount }}
+      serviceAccountName: {{ .Config.ServiceAccount }}
       nodeName: {{ .Values.nodeName }}
       securityContext:
         runAsUser: 0
       containers:
         - name: patch
-          image: {{ .Values.image }}
-          imagePullPolicy: Always
+          image: {{ .Config.Image }}
+          imagePullPolicy: {{ .Config.ImagePullPolicy }}
           args:
             - patch
             - --configFile
@@ -42,8 +42,6 @@ spec:
             - {{ .Values.log.level }}
             - --nodeName
             - {{ .Values.nodeName }}
-            - --timeout
-            - {{ .Values.timeout }}
             {{- if .Values.mark }}
             - --mark
             {{- end }}
