@@ -5,7 +5,7 @@ apiVersion: userdb.skasproject.io/v1alpha1
 kind: User
 metadata:
   name: {{ .Values.skCrd.initialUser.login }}
-  namespace: {{ $.Values.skCrd.namespace }}
+  namespace: {{ include "skCrd.userDbNamespace" $ }}
 spec:
 {{- with .Values.skCrd.initialUser.commonNames }}
   commonNames:
@@ -20,7 +20,7 @@ apiVersion: userdb.skasproject.io/v1alpha1
 kind: GroupBinding
 metadata:
   name: {{ (printf "%s-%s" $.Values.skCrd.initialUser.login .) | replace ":" "-" }}
-  namespace: {{ $.Values.skCrd.namespace }}
+  namespace: {{ include "skCrd.userDbNamespace" $ }}
 spec:
   user: {{ $.Values.skCrd.initialUser.login }}
   group: {{ . }}

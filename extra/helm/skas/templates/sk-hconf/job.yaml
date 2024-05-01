@@ -1,0 +1,88 @@
+{{ if .Values.skHConf.enabled }}
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "skHConf.monitorJobName" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    # Don't add xxx-upgrade, as this will trigger a removal (as .Release.IsInstall is false, see below)
+    # Problem is there is no .Release.IsUninstall flag. We can't make difference between upgrade and delete
+    "helm.sh/hook": post-install,pre-delete
+    "helm.sh/hook-delete-policy": before-hook-creation # hook-succeeded
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: {{ .Values.skHConf.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "skHConf.monitorJobName" . }}
+        app.kubernetes.io/instance: {{ include "skHConf.monitorJobName" . }}
+    spec:
+      {{- with .Values.skHConf.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+        - name: monitor
+          image: {{ .Values.skHConf.image.repository }}:{{ .Values.skHConf.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.skHConf.image.pullPolicy }}
+          args:
+            - monitor
+            - --configFile
+            - /config.yaml
+            - --logMode
+            - dev
+            - --logLevel
+            - INFO
+            {{- if not .Release.IsInstall }}
+            - --remove
+            {{- end }}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+          {{- with .Values.skHConf.extraEnv }}
+            {{- toYaml . | nindent 4 }}
+          {{- end }}
+          {{- with .Values.skHConf.resources }}
+          resources:
+          {{- toYaml . | nindent 4 }}
+          {{ end }}
+          securityContext:
+            {{- toYaml .Values.commonContainerSecurityContext | nindent 12 }}
+            {{- with .Values.skHConf.securityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /config.yaml
+              name: config
+              subPath: config.yaml
+      serviceAccountName: {{ include "skHConf.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.skHConf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.skHConf.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.skHConf.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "skHConf.configmapName" . }}
+      restartPolicy: Never
+
+{{ end }}

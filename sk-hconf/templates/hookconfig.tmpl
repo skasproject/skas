@@ -5,7 +5,7 @@ clusters:
   - name: sk-auth
     cluster:
       certificate-authority: {{ .Config.SkasFolder }}/skas_auth_ca.crt        # CA for verifying the remote service.
-      server: "https://skas-auth.skas-system.svc/v1/tokenReview" # URL of remote service to query. Must use 'https'.
+      server: "https://{{ .Config.SkasServiceName }}.{{ .Config.SkasNamespace }}.svc/v1/tokenReview" # URL of remote service to query. Must use 'https'.
 # users refers to the API server's webhook configuration.
 users:
   - name: skasapisrv

@@ -1,0 +1,31 @@
+{{ if .Values.skHConf.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "skHConf.configmapName" . }}
+  labels:
+    {{- include "skas.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  config.yaml: |
+    image: {{ .Values.skHConf.image.repository }}:{{ .Values.skHConf.image.tag | default .Chart.AppVersion }}
+    imagePullPolicy: {{ .Values.skHConf.image.pullPolicy }}
+    {{- with .Values.skHConf.image.pullSecrets }}
+    imagePullSecrets:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    skasNamespace: {{ .Release.Namespace }}
+    skasServiceName: {{ include "skAuth.serviceName" . }}
+    certificateAuthority:
+      secret:
+        namespace: {{ default .Release.Namespace .Values.skHConf.certificateAuthority.secret.namespace }}
+        name: {{ include "skAuth.certificateSecretName" . }}
+      keyInData: "ca.crt"
+    serviceAccountName: {{ include "skHConf.serviceAccountName" . }}
+    configMapName: {{ include "skHConf.configmapName" . }}
+    {{- toYaml .Values.skHConf.config | nindent 4 }}
+{{ end }}

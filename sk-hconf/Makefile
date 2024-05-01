@@ -2,9 +2,9 @@
 # Image URL to use all building/pushing image targets
 DOCKER_IMG := ghcr.io/skasproject/sk-hconf
 
-DOCKER_TAG := 0.2.2.snapshot
+DOCKER_TAG := 0.2.2-snapshot
 # Keep in sync with helm/kad-controller/Chart.yaml
-APP_VERSION ?= 0.2.2
+APP_VERSION ?= 0.2.2-snapshot
 
 BUILD_TS ?= $(shell date -u +%Y%m%d.%H%M%S)
 
