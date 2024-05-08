@@ -204,8 +204,8 @@ skAuth:
   adminGroups:
   - skas-admin
 
-    # The namespace used as storage for token definition. Default to skas-system
-  namespace: skas-system
+    # The namespace used as storage for token definition. Default to .Release.Namespace
+  tokenNamespace:
 
   # Will default to {{ include "skas.fullname" . }}-auth-config
   configmapName:
@@ -503,8 +503,8 @@ skCrd:
   metric:
     port: 8082
 
-  # Namespace for SKAS users and groupBindings storage
-  namespace: skas-system
+  # Namespace for SKAS users and groupBindings storage. Default to .Release.Namespace
+  userDbNamespace:
 
   # Members of theses groups will be granted RBAC access to users and groupBinding resources in the namespace above
   adminGroups:
@@ -750,6 +750,86 @@ skLdap:
   # - secret:
   #   volume:
   #   mountPath:
+
+
+# --------------------------------------------------------------------------------------------------------- skHConf
+
+skHConf:
+  enabled: false
+
+  # Will default to {{ include "skas.fullname" . }}-hconf
+  configmapName:
+
+  # Will default to {{ include "skas.fullname" . }}-hconf
+  serviceAccountName:
+
+  # Will default to {{ include "skas.fullname" . }}-hconf
+  clusterRoleName:
+
+  # Will default to job-{{ include "skas.fullname" . }}-hconf-monitor
+  monitorJobName:
+
+  # Additional arguments to be added to the executable's args list for monitor job
+  additionalArgs: {}
+
+  # Additional env variable definition for monitr job
+  extraEnv: {}
+
+  # Container specific securityContext
+  securityContext:
+
+  resources: {}
+  #    If you want to specify resources, uncomment the following
+  #    lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #    limits:
+  #      cpu: 100m
+  #      memory: 200Mi
+  #    requests:
+  #      cpu: 100m
+  #      memory: 100Mi
+
+  # This is the image used by the authentication webhook configurator (Both monitor and patcher jobs)
+  image:
+    pullSecrets: []
+    repository: ghcr.io/skasproject/sk-hconf
+    # -- Overrides the image tag whose default is the chart appVersion.
+    tag:
+    pullPolicy: IfNotPresent
+
+  # This is where to find the ca.crt used by the apiserver to validate request to the webhook.
+  # These values matches the default installation
+  certificateAuthority:
+    secret:
+      # default to .Release.Namespace
+      namespace:
+      name: skas-auth-cert
+    keyInData: "ca.crt"
+
+
+  # Nodeselector for monitor job
+  nodeSelector: {}
+
+  # -- Tolerations for monitor job
+  tolerations: []
+
+  # -- Affinity ffor monitor job
+  affinity: {}
+
+  config:
+    apiServerNamespace: kube-system
+    apiServerPodName: kube-apiserver
+    apiServerManifestPath: /etc/kubernetes/manifests/kube-apiserver.yaml
+    webhookCacheTtl: "30s"
+    timeoutApiServer: "4m"
+    kubernetesCAPath: /etc/kubernetes/pki/ca.crt
+    skasFolder: /etc/kubernetes/skas
+    backupFolder: /etc/kubernetes/bck
+    tmpFolder: /etc/kubernetes/tmp
+
+  # Duration before the finished job will be cleaned
+  ttlSecondsAfterFinished: 60
+
+
 
 # --------------------------------------------------------------------------------------------------------- skStatic
 

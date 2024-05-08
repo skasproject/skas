@@ -2,13 +2,16 @@
 # Image URL to use all building/pushing image targets
 DOCKER_IMG := ghcr.io/skasproject/skas
 
-DOCKER_TAG := 0.2.2.pre-alpha
-VERSION ?= 0.2.2
+VERSION := 0.2.2-snapshot
+DOCKER_TAG := 0.2.2-snapshot
+# Must be in sync with corresponding Chart.yaml
+CHART_VERSION ?= 0.2.2-snapshot
+SK_USERS_CHART_VERSION ?= 0.2.2
 
 BUILD_TS ?= $(shell date -u +%Y%m%d.%H%M%S)
 
 SKAS_CHARTS ?= "../skas-charts"
-SKAS_CHARTS_PRE_ALPHA ?= "../skas-charts-pre-alpha"
+#SKAS_CHARTS_PRE_ALPHA ?= "../skas-charts-pre-alpha"
 
 # To authenticate for pushing in github repo:
 # echo $GITHUB_TOKEN | docker login ghcr.io -u $USER_NAME --password-stdin
@@ -72,12 +75,21 @@ doc: ## Generate doc index
 	doctoc docs/installation.md --github --title '## Index'
 	doctoc docs/usage.md --github --title '## Index'
 
-.PHONY: charts-pre-alpha
-charts-pre-alpha: ## Publish helm chart in a private (pre-alpha) repo
-	cd extra/helm && helm package -d ../dist skas
-	cp extra/dist/skas-$(VERSION).tgz $(SKAS_CHARTS_PRE_ALPHA)/charts/skas-$(VERSION).tgz
-	cd $(SKAS_CHARTS_PRE_ALPHA) && helm repo index --url https://skasproject.github.io/skas-charts-pre-alpha . && git add . && git commit -m "Update charts" && git push
+#.PHONY: charts-pre-alpha
+#charts-pre-alpha: ## Publish helm chart in a private (pre-alpha) repo
+#	cd extra/helm && helm package -d ../dist skas
+#	cp extra/dist/skas-$(VERSION).tgz $(SKAS_CHARTS_PRE_ALPHA)/charts/skas-$(VERSION).tgz
+#	cd $(SKAS_CHARTS_PRE_ALPHA) && helm repo index --url https://skasproject.github.io/skas-charts-pre-alpha . && git add . && git commit -m "Update charts" && git push
 
+
+.PHONY: charts
+charts: ## Publish helm chart in our public repo
+	cd extra/helm && helm package -d ../dist skas
+	cd extra/helm && helm package -d ../dist skusers
+	cd $(SKAS_CHARTS) && git pull
+	cp extra/dist/skas-$(CHART_VERSION).tgz $(SKAS_CHARTS)/charts/skas-$(CHART_VERSION).tgz
+	cp extra/dist/skusers-$(SK_USERS_CHART_VERSION).tgz $(SKAS_CHARTS)/charts/skusers-$(SK_USERS_CHART_VERSION).tgz
+	cd $(SKAS_CHARTS) && helm repo index --url https://skasproject.github.io/skas-charts . && git add . && git commit -m "Update charts" && git push
 
 # .PHONY: charts
 # charts: ## Publish helm chart in a public repo

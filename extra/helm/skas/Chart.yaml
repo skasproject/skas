@@ -1,8 +1,8 @@
 apiVersion: v2
 name: skas
-version: "0.2.2"
-appVersion: "0.2.2.pre-alpha"
-description: A Helm chart for SKAS, a kubernetes authentication system
+version: "0.2.2-snapshot"
+appVersion: "0.2.2-snapshot"
+description: "SKAS, a kubernetes authentication system"
 keywords:
   - skasproject
   - authentication

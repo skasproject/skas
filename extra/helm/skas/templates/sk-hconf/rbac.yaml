@@ -1,0 +1,45 @@
+{{ if .Values.skHConf.enabled }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "skHConf.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace}}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "skHConf.clusterRoleName" . }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+      - configmaps
+      - pods
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "batch"
+    resources:
+      - jobs
+    verbs:
+      - "*"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "skHConf.clusterRoleName" . }}-{{ include "skHConf.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace}}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "skHConf.clusterRoleName" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "skHConf.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace}}
+
+{{ end }}
