@@ -94,7 +94,7 @@ data:
       {{- end }}
     provider:
 {{ .Values.skAuth.provider | toYaml | indent 6 }}
-    namespace: {{ .Values.skAuth.namespace }}
+    namespace: {{ include "skAuth.tokenNamespace" . }}
     token:
       inactivityTimeout: {{ .Values.skAuth.tokenConfig.inactivityTimeout }}
       sessionMaxTTL: {{ .Values.skAuth.tokenConfig.sessionMaxTTL }}

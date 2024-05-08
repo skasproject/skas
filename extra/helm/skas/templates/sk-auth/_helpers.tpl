@@ -34,3 +34,10 @@ Compute the serverUrl for the kubeconfig.User.AuthServerUrl (Automatic client co
 {{- .Values.skAuth.kubeconfig.user.authServerUrl }}
 {{- end }}
 {{- end }}
+
+{{/*
+The namespace to store tokens
+*/}}
+{{- define "skAuth.tokenNamespace" -}}
+{{- default .Release.Namespace .Values.skAuth.tokenNamespace }}
+{{- end }}

@@ -23,3 +23,11 @@ Create the name of the user editor role
 {{- define "skCrd.editorRoleName" -}}
 {{- default (printf "%s-crd-edit" (include "skas.fullname" .)) .Values.skCrd.editorRoleName }}
 {{- end }}
+
+
+{{/*
+The namespace to store users and groupBinding
+*/}}
+{{- define "skCrd.userDbNamespace" -}}
+{{- default .Release.Namespace .Values.skCrd.userDbNamespace }}
+{{- end }}
