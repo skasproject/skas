@@ -1,15 +1,19 @@
 
 
-{{- range .Values.groupBindings }}
+{{- range $name, $value := .Values.bindingByName }}
 ---
 apiVersion: userdb.skasproject.io/v1alpha1
 kind: GroupBinding
 metadata:
-  name: {{ (printf "%s-%s" .user .group) | replace ":" "-" }}
+  name: {{ $name }}
   namespace: {{ $.Release.Namespace }}
   labels:
       {{- include "skusers.labels" $ | nindent 4 }}
+  {{- with $.Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  user: {{ .user }}
-  group: {{ .group }}
+  user: {{ $value.user }}
+  group: {{ $value.group }}
 {{- end }}

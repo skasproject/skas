@@ -6,7 +6,7 @@ VERSION := 0.2.2-snapshot
 DOCKER_TAG := 0.2.2-snapshot
 # Must be in sync with corresponding Chart.yaml
 CHART_VERSION ?= 0.2.2-snapshot
-SK_USERS_CHART_VERSION ?= 0.2.2
+SK_USERS_CHART_VERSION ?= 0.3.0
 
 BUILD_TS ?= $(shell date -u +%Y%m%d.%H%M%S)
 

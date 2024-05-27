@@ -1,6 +1,38 @@
 
 commonAnnotations: {}
 
-users:
+# We choose to use Map instead of list, as map are merge-able by Helm
 
-groupBindings:
+userByLogin: {}
+#  johnny:
+#    commonNames:
+#      - Johnny SMITH
+#    passwordHash: $2a$10$MN1e34CO0Q96r9RbmQnFO.VsLn5v6qHcX6IW.gef3BisnC4zN.N3S
+#    disabled: false
+#    emails:
+#      - js@somecompany.com
+#    comment: A sample user
+#    uid: 20500
+#
+#  oliver:
+#    commonNames:
+#      - Oliver RILEY
+#    passwordHash: $2a$10$RtuUMCwTX5pxqe0onTUqeuxlchzuJpYpuFUWlGk75N8LnArZZdAjW
+#    disabled: false
+#    emails:
+#      - or@somecompany.com
+#    comment: Another sample user
+#    uid: 20501
+
+bindingByName: {}
+#  johnny.app-admin:
+#    user: johnny
+#    group: app-admin
+#
+#  johnny.app-user:
+#    user: johnny
+#    group: app-user
+#
+#  oliver.app-admin:
+#    user: oliver
+#    group: app-user

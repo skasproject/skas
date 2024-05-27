@@ -1,5 +1,4 @@
 apiVersion: v2
 name: skusers
-version: 0.2.2
-appVersion: "0.2.2"
-description: Will allow t
+version: 0.3.0
+description: Will allow to create users and groupBindings
