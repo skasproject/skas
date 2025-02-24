@@ -1,4 +1,4 @@
-{{ if and .Values.skPadl.enabled .Values.skPadl.exposure.loadBalancer }}
+{{ if and .Values.skPadl.enabled .Values.skPadl.exposure.loadBalancer.enabled }}
 {{ if eq .Values.skPadl.exposure.loadBalancer.type "metallb" }}
 ---
 apiVersion: v1
@@ -20,3 +20,5 @@ spec:
       targetPort: {{ include "skPadl.pod.port" . }}
 {{ end }}
 {{ end }}
+{{ end }}
+
